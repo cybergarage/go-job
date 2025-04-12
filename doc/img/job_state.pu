@@ -1,0 +1,18 @@
+@startuml
+[*] --> Pending : Job created
+
+Pending --> Running : Job started
+Running --> Succeeded : Job completed successfully
+Running --> Failed : Job encountered an error
+Running --> Cancelled : Job was cancelled
+Running --> TimedOut : Job exceeded time limit
+
+Failed --> Retrying : Retry logic (if applicable)
+Retrying --> Running : Retry started
+Retrying --> Failed : Retry failed
+
+Cancelled --> [*] : End
+Succeeded --> [*] : End
+TimedOut --> [*] : End
+Failed --> [*] : End
+@enduml
