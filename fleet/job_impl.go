@@ -23,6 +23,7 @@ type job struct {
 	uuid    uuid.UUID
 	state   JobState
 	payload any
+	handler JobHandler
 }
 
 // JobOption is a function that configures a job.
@@ -57,6 +58,12 @@ func WithJobUUID(uuid uuid.UUID) JobOption {
 	}
 }
 
+func WithJobHandler(handler JobHandler) JobOption {
+	return func(j *job) {
+		j.handler = handler
+	}
+}
+
 // NewJob creates a new job with the given name and options.
 func NewJob(name string, opts ...JobOption) Job {
 	j := &job{
@@ -64,6 +71,7 @@ func NewJob(name string, opts ...JobOption) Job {
 		uuid:    uuid.Nil,
 		state:   Pending,
 		payload: nil,
+		handler: nil,
 	}
 
 	for _, opt := range opts {
@@ -84,6 +92,11 @@ func (j *job) UUID() uuid.UUID {
 		j.uuid = uuid.New()
 	}
 	return j.uuid
+}
+
+// Handler returns the handler of the job.
+func (j *job) Handler() JobHandler {
+	return j.handler
 }
 
 // Payload returns the payload of the job.

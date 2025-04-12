@@ -15,8 +15,18 @@
 package fleet
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 )
+
+// JobHandler is an interface that defines methods for handling jobs.
+type JobHandler interface {
+	// ProcessJob processes a job by executing it and updating its state.
+	ProcessJob(ctx context.Context, job Job) error
+	// HandleJobError handles errors that occur during job processing.
+	HandleJobError(ctx context.Context, job Job, err error) error
+}
 
 // Job represents a job that can be scheduled to run at a specific time or interval.
 type Job interface {
