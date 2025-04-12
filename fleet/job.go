@@ -24,6 +24,8 @@ type Job interface {
 	Name() string
 	// UUID returns the UUID of the job.
 	UUID() uuid.UUID
+	// State returns the current state of the job.
+	State() JobState
 	// String returns a string representation of the job.
 	String() string
 }

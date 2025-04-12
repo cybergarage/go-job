@@ -19,8 +19,9 @@ import (
 )
 
 type job struct {
-	name string
-	uuid uuid.UUID
+	name  string
+	uuid  uuid.UUID
+	state JobState
 }
 
 // JobOption is a function that configures a job.
@@ -29,8 +30,9 @@ type JobOption func(*job)
 // NewJob creates a new job with the given name and options.
 func NewJob(name string, opts ...JobOption) Job {
 	j := &job{
-		name: name,
-		uuid: uuid.Nil,
+		name:  name,
+		uuid:  uuid.Nil,
+		state: Pending,
 	}
 
 	for _, opt := range opts {
@@ -51,6 +53,11 @@ func (j *job) UUID() uuid.UUID {
 		j.uuid = uuid.New()
 	}
 	return j.uuid
+}
+
+// State returns the current state of the job.
+func (j *job) State() JobState {
+	return j.state
 }
 
 // String returns a string representation of the job.
