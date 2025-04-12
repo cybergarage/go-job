@@ -1,4 +1,4 @@
-module github.com/cybergarage/go-fleet
+module github.com/cybergarage/go-job
 
 go 1.24
 

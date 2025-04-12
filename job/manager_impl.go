@@ -1,12 +1,4 @@
-#!/bin/sh
-
-major=$(git tag | sort | tail -n 1 | awk -F'.' '{print $1}')
-minor=$(git tag | sort | tail -n 1 | awk -F'.' '{print $2}')
-patch=$(git tag | sort | tail -n 1 | awk -F'.' '{print ($3+1)}')
-version="${major}.${minor}.${patch}"
-
-cat <<EOF
-// Copyright (C) 2025 The go-fleet Authors. All rights reserved.
+// Copyright (C) 2025 The go-job Authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +12,4 @@ cat <<EOF
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fleet
-
-const (
-	Version = "$version"
-)
-EOF
+package job

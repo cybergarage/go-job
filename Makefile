@@ -1,4 +1,4 @@
-# Copyright (C) 2025 The go-fleet Authors All rights reserved.
+# Copyright (C) 2025 The go-job Authors All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ SHELL := bash
 GOBIN := $(shell go env GOPATH)/bin
 PATH := $(GOBIN):$(PATH)
 
-MODULE_ROOT=github.com/cybergarage/go-fleet
-PKG_NAME=fleet
+MODULE_ROOT=github.com/cybergarage/go-job
+PKG_NAME=job
 PKG_COVER=${PKG_NAME}-cover
 
 PKG_ID=${MODULE_ROOT}/${PKG_NAME}
