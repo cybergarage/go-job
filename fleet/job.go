@@ -14,8 +14,16 @@
 
 package fleet
 
+import (
+	"github.com/google/uuid"
+)
+
 // Job represents a job that can be scheduled to run at a specific time or interval.
 type Job interface {
 	// Name returns the name of the job.
 	Name() string
+	// UUID returns the UUID of the job.
+	UUID() uuid.UUID
+	// String returns a string representation of the job.
+	String() string
 }
