@@ -19,13 +19,13 @@ import (
 )
 
 type manager struct {
-	jobs []Job
+	store Store
 }
 
 // NewManager creates a new instance of the job manager.
 func NewManager() *manager {
 	return &manager{
-		jobs: make([]Job, 0),
+		store: NewMemStore(),
 	}
 }
 
@@ -55,8 +55,5 @@ func (mgr *manager) CancelJob(ctx context.Context, job Job) error {
 
 // ListJobs lists all jobs with the specified state.
 func (mgr *manager) ListJobs(ctx context.Context, state JobState) ([]Job, error) {
-	// Implement the logic to list jobs with the specified state
-	// For example, you might want to query the database or in-memory store
-	// for jobs that match the specified state and return them as a slice.
-	return mgr.jobs, nil
+	return mgr.store.ListJobs(ctx)
 }
