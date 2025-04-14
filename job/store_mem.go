@@ -16,6 +16,7 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/google/uuid"
@@ -51,7 +52,7 @@ func (s *memStore) RemoveJob(ctx context.Context, id uuid.UUID) error {
 func (s *memStore) FindJob(ctx context.Context, id uuid.UUID) (Job, error) {
 	job, ok := s.jobs.Load(id)
 	if !ok {
-		return nil, ErrNotFound
+		return nil, fmt.Errorf("job (%v) %w", id.String(), ErrNotFound)
 	}
 	return job.(Job), nil
 }
