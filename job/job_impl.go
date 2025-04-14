@@ -15,15 +15,21 @@
 package job
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
 type job struct {
-	name    string
-	uuid    uuid.UUID
-	state   JobState
-	payload any
-	handler JobHandler
+	name        string
+	uuid        uuid.UUID
+	state       JobState
+	payload     any
+	handler     JobHandler
+	createdAt   time.Time
+	scheduledAt *time.Time
+	startedAt   *time.Time
+	finishedAt  *time.Time
 }
 
 // JobOption is a function that configures a job.
@@ -58,24 +64,40 @@ func WithJobUUID(uuid uuid.UUID) JobOption {
 	}
 }
 
+// WithJobScheduledAt sets the scheduled time of the job.
 func WithJobHandler(handler JobHandler) JobOption {
 	return func(j *job) {
 		j.handler = handler
 	}
 }
 
+// WithJobScheduledAt sets the scheduled time of the job.
+func WithJobScheduledAt(scheduledAt time.Time) JobOption {
+	return func(j *job) {
+		j.scheduledAt = &scheduledAt
+	}
+}
+
 // NewJob creates a new job with the given name and options.
 func NewJob(name string, opts ...JobOption) Job {
 	j := &job{
-		name:    name,
-		uuid:    uuid.Nil,
-		state:   JobCreated,
-		payload: nil,
-		handler: nil,
+		name:        name,
+		uuid:        uuid.Nil,
+		state:       JobCreated,
+		payload:     nil,
+		handler:     nil,
+		createdAt:   time.Now(),
+		scheduledAt: nil,
+		startedAt:   nil,
+		finishedAt:  nil,
 	}
 
 	for _, opt := range opts {
 		opt(j)
+	}
+
+	if j.scheduledAt == nil {
+		j.scheduledAt = &j.createdAt
 	}
 
 	return j
@@ -113,6 +135,26 @@ func (j *job) State() JobState {
 func (j *job) SetState(state JobState) error {
 	j.state = state
 	return nil
+}
+
+// CreatedAt returns the creation time of the job.
+func (j *job) CreatedAt() time.Time {
+	return j.createdAt
+}
+
+// ScheduledAt returns the scheduled time of the job.
+func (j *job) ScheduledAt() time.Time {
+	return *j.scheduledAt
+}
+
+// StartedAt returns the start time of the job.
+func (j *job) StartedAt() time.Time {
+	return *j.startedAt
+}
+
+// FinishedAt returns the finish time of the job.
+func (j *job) FinishedAt() time.Time {
+	return *j.finishedAt
 }
 
 // String returns a string representation of the job.

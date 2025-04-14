@@ -16,6 +16,7 @@ package job
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -34,12 +35,22 @@ type Job interface {
 	Name() string
 	// UUID returns the UUID of the job.
 	UUID() uuid.UUID
+	// Handler returns the job handler for the job.
+	Handler() JobHandler
 	// Payload returns the payload of the job.
 	Payload() any
 	// State returns the current state of the job.
 	State() JobState
 	// SetState sets the state of the job.
 	SetState(state JobState) error
+	// CreatedAt returns the time when the job was created.
+	CreatedAt() time.Time
+	// ScheduledAt returns the time when the job is scheduled to run.
+	ScheduledAt() time.Time
+	// StartedAt returns the time when the job started running.
+	StartedAt() time.Time
+	// FinishedAt returns the time when the job finished running.
+	FinishedAt() time.Time
 	// String returns a string representation of the job.
 	String() string
 }
