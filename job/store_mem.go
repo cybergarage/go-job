@@ -16,38 +16,46 @@ package job
 
 import (
 	"context"
-
-	"github.com/google/uuid"
+	"sync"
 )
 
 type memStore struct {
-	jobs map[uuid.UUID]Job
+	jobs sync.Map
 }
 
 // NewMemStore creates a new in-memory job store.
 func NewMemStore() Store {
 	return &memStore{
-		jobs: make(map[uuid.UUID]Job),
+		jobs: sync.Map{},
 	}
 }
 
 // StoreJob stores a job in the in-memory store.
 func (s *memStore) StoreJob(ctx context.Context, job Job) error {
-	s.jobs[job.UUID()] = job
+	if job == nil {
+		return nil
+	}
+	s.jobs.Store(job.UUID(), job)
 	return nil
 }
 
 // RemoveJob removes a job from the in-memory store.
 func (s *memStore) RemoveJob(ctx context.Context, job Job) error {
-	delete(s.jobs, job.UUID())
+	if job == nil {
+		return nil
+	}
+	s.jobs.Delete(job.UUID())
 	return nil
 }
 
 // ListJobs lists all jobs in the in-memory store.
 func (s *memStore) ListJobs(ctx context.Context) ([]Job, error) {
-	jobs := make([]Job, 0, len(s.jobs))
-	for _, job := range s.jobs {
-		jobs = append(jobs, job)
-	}
+	jobs := make([]Job, 0)
+	s.jobs.Range(func(key, value interface{}) bool {
+		if job, ok := value.(Job); ok {
+			jobs = append(jobs, job)
+		}
+		return true
+	})
 	return jobs, nil
 }
