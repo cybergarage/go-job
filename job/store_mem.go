@@ -42,6 +42,14 @@ func (s *memStore) StoreJob(ctx context.Context, job Job) error {
 	return nil
 }
 
+func (s *memStore) UpdateJob(ctx context.Context, job Job) error {
+	if job == nil {
+		return nil
+	}
+	s.jobs.Store(job.UUID(), job)
+	return nil
+}
+
 // RemoveJob removes a job from the in-memory store by its unique identifier.
 func (s *memStore) RemoveJob(ctx context.Context, id uuid.UUID) error {
 	s.jobs.Delete(id)
