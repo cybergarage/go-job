@@ -18,8 +18,11 @@ import (
 	"errors"
 )
 
-// ErrNotFound is an error that indicates that a job was not found.
+// ErrInvalid is an invalid error.
+var ErrInvalid = errors.New("invalid")
+
+// ErrNotFound is an not found error.
 var ErrNotFound = errors.New("not found")
 
-// ErrExists is an error that indicates that a job already exists.
+// ErrExists is an exists error.
 var ErrExists = errors.New("exists")
