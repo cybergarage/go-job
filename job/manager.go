@@ -22,8 +22,6 @@ import (
 type JobManager interface {
 	// SetStore sets the store for the job manager.
 	SetStore(store Store)
-	// FindJob finds a job by the specified parameter.
-	FindJob(ctx context.Context, v any) (Job, error)
 	// ProcessJob processes a job by executing it and updating its state.
 	ProcessJob(ctx context.Context, job Job) error
 	// // ScheduleJob schedules a job to run at a specific time or interval.

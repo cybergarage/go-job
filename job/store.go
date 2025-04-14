@@ -35,8 +35,6 @@ type Store interface {
 	UpdateJob(ctx context.Context, job Job) error
 	// RemoveJob removes a job from the store by its unique identifier.
 	RemoveJob(ctx context.Context, id uuid.UUID) error
-	// FindJob retrieves a job from the store by its unique identifier.
-	FindJob(ctx context.Context, id uuid.UUID) (Job, error)
 	// ListJobs lists all jobs in the store.
 	ListJobs(ctx context.Context) ([]Job, error)
 }

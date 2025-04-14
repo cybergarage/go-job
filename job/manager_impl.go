@@ -16,9 +16,6 @@ package job
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/google/uuid"
 )
 
 type manager struct {
@@ -29,18 +26,6 @@ type manager struct {
 func NewManager() *manager {
 	return &manager{
 		store: NewMemStore(),
-	}
-}
-
-// FindJob finds a job by the specified parameter.
-func (mgr *manager) FindJob(ctx context.Context, v any) (Job, error) {
-	switch v := v.(type) {
-	case Job:
-		return mgr.store.FindJob(ctx, v.UUID())
-	case uuid.UUID:
-		return mgr.store.FindJob(ctx, v)
-	default:
-		return nil, fmt.Errorf("unsupported type: %T", v)
 	}
 }
 

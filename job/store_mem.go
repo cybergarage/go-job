@@ -16,7 +16,6 @@ package job
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/google/uuid"
@@ -54,15 +53,6 @@ func (s *memStore) UpdateJob(ctx context.Context, job Job) error {
 func (s *memStore) RemoveJob(ctx context.Context, id uuid.UUID) error {
 	s.jobs.Delete(id)
 	return nil
-}
-
-// FindJob retrieves a job from the in-memory store by its unique identifier.
-func (s *memStore) FindJob(ctx context.Context, id uuid.UUID) (Job, error) {
-	job, ok := s.jobs.Load(id)
-	if !ok {
-		return nil, fmt.Errorf("job (%v) %w", id.String(), ErrNotFound)
-	}
-	return job.(Job), nil
 }
 
 // ListJobs lists all jobs in the in-memory store.

@@ -15,11 +15,19 @@
 package job
 
 type jobQueue struct {
+	store Store
 }
 
 // NewJobQueue creates a new instance of the job queue.
 func NewJobQueue() JobQueue {
-	return &jobQueue{}
+	return &jobQueue{
+		store: nil,
+	}
+}
+
+// SetStore sets the store for the job queue.
+func (q *jobQueue) SetStore(store Store) {
+	q.store = store
 }
 
 // Enqueue adds a job to the queue.
