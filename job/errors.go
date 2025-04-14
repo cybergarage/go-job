@@ -15,11 +15,11 @@
 package job
 
 import (
-	"error"
+	"errors"
 )
 
 // ErrNotFound is an error that indicates that a job was not found.
-var ErrNotFound = error.New("not found")
+var ErrNotFound = errors.New("not found")
 
 // ErrExists is an error that indicates that a job already exists.
-var ErrExists = error.New("exists")
+var ErrExists = errors.New("exists")
