@@ -30,6 +30,6 @@ type JobManager interface {
 	// ScheduleJob(ctx context.Context, job Job) error
 	// // CancelJob cancels a scheduled job.
 	// CancelJob(ctx context.Context, job Job) error
-	// 	// ListJobs lists all jobs with the specified state.
-	// 	ListJobs(ctx context.Context, state JobState) ([]Job, error)
+	// ListJobs lists all jobs with the specified state.
+	ListJobs(ctx context.Context, state JobState) ([]Job, error)
 }
