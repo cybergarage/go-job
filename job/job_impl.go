@@ -109,6 +109,12 @@ func (j *job) State() JobState {
 	return j.state
 }
 
+// SetState sets the state of the job.
+func (j *job) SetState(state JobState) error {
+	j.state = state
+	return nil
+}
+
 // String returns a string representation of the job.
 func (j *job) String() string {
 	return j.name

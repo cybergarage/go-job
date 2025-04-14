@@ -38,6 +38,8 @@ type Job interface {
 	Payload() any
 	// State returns the current state of the job.
 	State() JobState
+	// SetState sets the state of the job.
+	SetState(state JobState) error
 	// String returns a string representation of the job.
 	String() string
 }
