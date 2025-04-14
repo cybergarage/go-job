@@ -69,7 +69,7 @@ func NewJob(name string, opts ...JobOption) Job {
 	j := &job{
 		name:    name,
 		uuid:    uuid.Nil,
-		state:   Pending,
+		state:   JobCreated,
 		payload: nil,
 		handler: nil,
 	}

@@ -31,6 +31,9 @@ func NewManager() *manager {
 
 // ProcessJob processes a job by executing it and updating its state.
 func (mgr *manager) ProcessJob(ctx context.Context, job Job) error {
+	if job == nil {
+		return nil
+	}
 	// Implement the logic to process the job
 	// For example, you might want to execute the job's command or function
 	// and update its state in the database or in-memory store.

@@ -18,23 +18,26 @@ package job
 type JobState int
 
 const (
-	// Pending indicates the job is created but not yet started.
-	Pending JobState = iota // 0
+	// JobCreated indicates the job has been created but not yet started.
+	JobCreated JobState = iota
 
-	// Running indicates the job is currently executing.
-	Running // 1
+	// JobPending indicates the job is created but not yet started.
+	JobPending
 
-	// Succeeded indicates the job has completed successfully.
-	Succeeded // 2
+	// JobRunning indicates the job is currently executing.
+	JobRunning // 1
 
-	// Failed indicates the job has completed with an error.
-	Failed // 3
+	// JobSucceeded indicates the job has completed successfully.
+	JobSucceeded // 2
 
-	// Cancelled indicates the job was cancelled before completion.
-	Cancelled // 4
+	// JobFailed indicates the job has completed with an error.zz
+	JobFailed // 3
 
-	// TimedOut indicates the job has exceeded its allowed execution time.
-	TimedOut // 5
+	// JobCancelled indicates the job was cancelled before completion.
+	JobCancelled // 4
+
+	// JobTimedOut indicates the job has exceeded its allowed execution time.
+	JobTimedOut // 5
 )
 
 // Is checks if the current JobState is equal to the provided state.
@@ -45,17 +48,17 @@ func (s JobState) Is(state JobState) bool {
 // String returns the string representation of the JobState.
 func (s JobState) String() string {
 	switch s {
-	case Pending:
+	case JobPending:
 		return "Pending"
-	case Running:
+	case JobRunning:
 		return "Running"
-	case Succeeded:
+	case JobSucceeded:
 		return "Succeeded"
-	case Failed:
+	case JobFailed:
 		return "Failed"
-	case Cancelled:
+	case JobCancelled:
 		return "Cancelled"
-	case TimedOut:
+	case JobTimedOut:
 		return "TimedOut"
 	default:
 		return "Unknown"
