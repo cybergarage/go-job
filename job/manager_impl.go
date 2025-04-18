@@ -34,7 +34,7 @@ type ManagerOption func(*manager)
 func WithManagerNumWorkers(num int) ManagerOption {
 	return func(m *manager) {
 		m.workers = make([]Worker, num)
-		for i := 0; i < num; i++ {
+		for i := range num {
 			m.workers[i] = NewWorker()
 		}
 	}
