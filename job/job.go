@@ -51,6 +51,8 @@ type Job interface {
 	StartedAt() time.Time
 	// FinishedAt returns the time when the job finished running.
 	FinishedAt() time.Time
+	// Process processes the job using the job handler.
+	Process() error
 	// String returns a string representation of the job.
 	String() string
 }

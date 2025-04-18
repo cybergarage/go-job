@@ -157,6 +157,13 @@ func (j *job) FinishedAt() time.Time {
 	return *j.finishedAt
 }
 
+func (j *job) Process() error {
+	// Implement the logic to process the job
+	// For example, you might want to execute the job's command or function
+	// and update its state in the database or in-memory store.
+	return nil
+}
+
 // String returns a string representation of the job.
 func (j *job) String() string {
 	return j.name
