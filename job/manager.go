@@ -30,4 +30,10 @@ type JobManager interface {
 	// CancelJob(ctx context.Context, job Job) error
 	// ListJobs lists all jobs with the specified state.
 	ListJobs(ctx context.Context, state JobState) ([]Job, error)
+	// ScaleWorkers scales the number of workers for the job manager.
+	ScaleWorkers(num int) error
+	// Start starts the job manager.
+	Start() error
+	// Stop stops the job manager.
+	Stop() error
 }
