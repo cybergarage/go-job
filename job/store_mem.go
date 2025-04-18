@@ -66,3 +66,12 @@ func (s *memStore) ListJobs(ctx context.Context) ([]Job, error) {
 	})
 	return jobs, nil
 }
+
+// ClearJobs clears all jobs from the in-memory store.
+func (s *memStore) ClearJobs(ctx context.Context) error {
+	s.jobs.Range(func(key, value interface{}) bool {
+		s.jobs.Delete(key)
+		return true
+	})
+	return nil
+}

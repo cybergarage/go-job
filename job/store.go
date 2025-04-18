@@ -37,4 +37,6 @@ type Store interface {
 	RemoveJob(ctx context.Context, id uuid.UUID) error
 	// ListJobs lists all jobs in the store.
 	ListJobs(ctx context.Context) ([]Job, error)
+	// ClearJobs clears all jobs from the store.
+	ClearJobs(ctx context.Context) error
 }
