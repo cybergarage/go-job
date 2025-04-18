@@ -17,8 +17,6 @@ package job
 import (
 	"context"
 	"sync"
-
-	"github.com/google/uuid"
 )
 
 type memStore struct {
@@ -50,8 +48,11 @@ func (s *memStore) UpdateJob(ctx context.Context, job Job) error {
 }
 
 // RemoveJob removes a job from the in-memory store by its unique identifier.
-func (s *memStore) RemoveJob(ctx context.Context, id uuid.UUID) error {
-	s.jobs.Delete(id)
+func (s *memStore) RemoveJob(ctx context.Context, job Job) error {
+	if job == nil {
+		return nil
+	}
+	s.jobs.Delete(job.UUID())
 	return nil
 }
 

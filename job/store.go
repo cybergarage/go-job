@@ -16,8 +16,6 @@ package job
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 // Store is an interface that defines methods for storing and retrieving jobs.
@@ -34,7 +32,7 @@ type Store interface {
 	// UpdateJob updates an existing job in the store.
 	UpdateJob(ctx context.Context, job Job) error
 	// RemoveJob removes a job from the store by its unique identifier.
-	RemoveJob(ctx context.Context, id uuid.UUID) error
+	RemoveJob(ctx context.Context, job Job) error
 	// ListJobs lists all jobs in the store.
 	ListJobs(ctx context.Context) ([]Job, error)
 	// ClearJobs clears all jobs from the store.
