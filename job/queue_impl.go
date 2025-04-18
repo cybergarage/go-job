@@ -18,16 +18,30 @@ type jobQueue struct {
 	store Store
 }
 
-// NewQueue creates a new instance of the job queue.
-func NewQueue() Queue {
-	return &jobQueue{
-		store: nil,
+// QueueOption is a function that configures a job queue.
+type QueueOption func(*jobQueue)
+
+// WithQueueStore sets the store for the job queue.
+func WithQueueStore(store Store) QueueOption {
+	return func(q *jobQueue) {
+		q.store = store
 	}
 }
 
+// NewQueue creates a new instance of the job queue.
+func NewQueue(opts ...QueueOption) Queue {
+	queue := &jobQueue{
+		store: nil,
+	}
+	for _, opt := range opts {
+		opt(queue)
+	}
+	return queue
+}
+
 // SetStore sets the store for the job queue.
-func (q *jobQueue) SetStore(store Store) {
-	q.store = store
+func (queue *jobQueue) SetStore(store Store) {
+	queue.store = store
 }
 
 // Enqueue adds a job to the queue.
