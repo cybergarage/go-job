@@ -1,0 +1,88 @@
+run:
+  go: '1.21'
+  timeout: 10m
+issues:
+  fix: true
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - goconst
+        - gosec
+        - exhaustruct
+linters:
+  enable-all: true
+  disable:
+    - dupword
+    - gocyclo
+    - paralleltest
+    - testpackage
+    - gofumpt
+    - nlreturn
+    - varnamelen
+    - wsl
+    - funlen
+    - errcheck
+    - unparam
+    - gocognit
+    - lll
+    - nolintlint
+    - godox
+    - cyclop
+    - wrapcheck
+    - unused
+    - ireturn
+    - nilnil
+    - makezero
+    - nestif
+    - gochecknoglobals
+    - typecheck
+    - dupl
+    - exhaustive
+    - forbidigo
+    - depguard
+    - musttag
+    - unconvert
+    - gochecknoinits
+    - containedctx
+    - asasalint
+    - iface
+    - inamedparam # Deprecated
+    - perfsprint # Deprecated
+    - mnd # Deprecated
+    - err113 # Deprecated
+    - deadcode # Deprecated
+    - exhaustivestruct # Deprecated
+    - golint # Deprecated
+    - ifshort # Deprecated
+    - interfacer # Deprecated
+    - maligned # Deprecated
+    - gomnd # Deprecated
+    - nosnakecase # Deprecated
+    - scopelint # Deprecated
+    - structcheck # Deprecated
+    - varcheck # Deprecated
+    - execinquery # Deprecated
+linters-settings:
+  govet:
+    disable:
+      - printf
+  gosec:
+    excludes:
+      - G101
+      - G115
+      - G401
+      - G505
+  staticcheck:
+    checks: ["all", "-SA5008", "-SA1008", "-SA1006"]
+  revive:
+    rules:
+      - name: unused-parameter
+        disabled: true
+  gocritic:
+    disabled-checks:
+      - singleCaseSwitch
+      - dupArg
+  interfacebloat:
+    max: 100
