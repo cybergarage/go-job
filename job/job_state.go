@@ -30,7 +30,7 @@ const (
 	// JobSucceeded indicates the job has completed successfully.
 	JobSucceeded // 2
 
-	// JobFailed indicates the job has completed with an error.zz
+	// JobFailed indicates the job has completed with an error.
 	JobFailed // 3
 
 	// JobCancelled indicates the job was cancelled before completion.
