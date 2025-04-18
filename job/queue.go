@@ -14,8 +14,8 @@
 
 package job
 
-// JobQueue is an interface that defines methods for managing a job queue.
-type JobQueue interface {
+// Queue is an interface that defines methods for managing a job queue.
+type Queue interface {
 	// SetStore sets the store for the job queue.
 	SetStore(store Store)
 	// Enqueue adds a job to the queue.

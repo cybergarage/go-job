@@ -15,7 +15,7 @@
 package job
 
 type worker struct {
-	jobQueue JobQueue
+	jobQueue Queue
 	done     chan struct{}
 }
 
@@ -23,7 +23,7 @@ type worker struct {
 type WorkerOption func(*worker)
 
 // WithWorkerJobQueue sets the job queue for the worker.
-func WithWorkerJobQueue(queue JobQueue) WorkerOption {
+func WithWorkerJobQueue(queue Queue) WorkerOption {
 	return func(w *worker) {
 		w.jobQueue = queue
 	}

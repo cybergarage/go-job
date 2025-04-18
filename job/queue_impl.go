@@ -18,8 +18,8 @@ type jobQueue struct {
 	store Store
 }
 
-// NewJobQueue creates a new instance of the job queue.
-func NewJobQueue() JobQueue {
+// NewQueue creates a new instance of the job queue.
+func NewQueue() Queue {
 	return &jobQueue{
 		store: nil,
 	}
