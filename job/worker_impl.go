@@ -16,6 +16,7 @@ package job
 
 type worker struct {
 	jobQueue JobQueue
+	done     chan struct{}
 }
 
 // WorkerOption is a function that configures a job worker.
@@ -30,7 +31,10 @@ func WithWorkerJobQueue(queue JobQueue) WorkerOption {
 
 // NewWorker creates a new instance of the job worker.
 func NewWorker(opts ...WorkerOption) Worker {
-	w := &worker{}
+	w := &worker{
+		jobQueue: nil,
+		done:     make(chan struct{}),
+	}
 	for _, opt := range opts {
 		opt(w)
 	}
@@ -39,16 +43,25 @@ func NewWorker(opts ...WorkerOption) Worker {
 
 // Start starts the worker to process jobs.
 func (w *worker) Start() error {
-	// Implement the logic to start the worker
-	// For example, you might want to start a goroutine that listens for jobs
-	// and processes them using the job manager.
+	go func() {
+		for {
+			select {
+			case <-w.done:
+				return
+			default:
+				job, err := w.jobQueue.Dequeue()
+				if err != nil {
+					continue
+				}
+				job.Process()
+			}
+		}
+	}()
 	return nil
 }
 
 // Stop stops the worker from processing jobs.
 func (w *worker) Stop() error {
-	// Implement the logic to stop the worker
-	// For example, you might want to signal the goroutine to stop processing jobs
-	// and wait for it to finish.
+	close(w.done)
 	return nil
 }
