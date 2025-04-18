@@ -39,11 +39,6 @@ func NewQueue(opts ...QueueOption) Queue {
 	return queue
 }
 
-// SetStore sets the store for the job queue.
-func (queue *jobQueue) SetStore(store Store) {
-	queue.store = store
-}
-
 // Enqueue adds a job to the queue.
 func (q *jobQueue) Enqueue(job Job) error {
 	// Implement the logic to add a job to the queue

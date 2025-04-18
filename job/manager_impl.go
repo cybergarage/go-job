@@ -44,12 +44,13 @@ func WithManagerNumWorkers(num int) ManagerOption {
 func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
 		store:   NewMemStore(),
-		queue:   NewQueue(),
+		queue:   nil,
 		workers: make([]Worker, 0),
 	}
 	for _, opt := range opts {
 		opt(mgr)
 	}
+	mgr.queue = NewQueue(WithQueueStore(mgr.store))
 	return mgr
 }
 
