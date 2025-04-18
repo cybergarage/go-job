@@ -60,6 +60,7 @@ func WithLogTimestamp(ts time.Time) LogOption {
 func NewLog(opts ...LogOption) Log {
 	l := &log{
 		ts:    time.Now(),
+		job:   nil,
 		level: LogInfo,
 		msg:   "",
 	}

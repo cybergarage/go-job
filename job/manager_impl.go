@@ -43,6 +43,7 @@ func WithManagerNumWorkers(num int) ManagerOption {
 // NewManager creates a new instance of the job manager.
 func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
+		Mutex:   sync.Mutex{},
 		store:   NewMemStore(),
 		queue:   nil,
 		workers: make([]Worker, 0),
