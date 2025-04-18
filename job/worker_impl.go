@@ -17,9 +17,16 @@ package job
 type worker struct {
 }
 
+// WorkerOption is a function that configures a job worker.
+type WorkerOption func(*job)
+
 // NewWorker creates a new instance of the job worker.
-func NewWorker() Worker {
-	return &worker{}
+func NewWorker(opts ...WorkerOption) Worker {
+	w := &worker{}
+	for _, opt := range opts {
+		opt(w)
+	}
+	return w
 }
 
 // Start starts the worker to process jobs.
