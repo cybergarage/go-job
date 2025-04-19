@@ -22,6 +22,7 @@ import (
 
 type manager struct {
 	sync.Mutex
+	logger  Logger
 	store   Store
 	queue   Queue
 	workers []Worker
@@ -40,10 +41,25 @@ func WithManagerNumWorkers(num int) ManagerOption {
 	}
 }
 
+// WithManagerLogger sets the logger for the job manager.
+func WithManagerLogger(logger Logger) ManagerOption {
+	return func(m *manager) {
+		m.logger = logger
+	}
+}
+
+// WithManagerQueue sets the queue for the job manager.
+func WithManagerStore(store Store) ManagerOption {
+	return func(m *manager) {
+		m.store = store
+	}
+}
+
 // NewManager creates a new instance of the job manager.
 func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
 		Mutex:   sync.Mutex{},
+		logger:  NewNullLogger(),
 		store:   NewMemStore(),
 		queue:   nil,
 		workers: make([]Worker, 0),
