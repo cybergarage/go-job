@@ -16,9 +16,11 @@ package job
 
 type nullLogger struct{}
 
+var nullLoggerInstance Logger = &nullLogger{}
+
 // NewNullLogger creates a new instance of null logger.
 func NewNullLogger() Logger {
-	return &nullLogger{}
+	return nullLoggerInstance
 }
 
 // Infof logs an informational message.
