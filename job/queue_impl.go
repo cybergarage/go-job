@@ -14,7 +14,13 @@
 
 package job
 
+import (
+	"context"
+	"sync"
+)
+
 type jobQueue struct {
+	sync.Mutex
 	store Store
 }
 
@@ -31,6 +37,7 @@ func WithQueueStore(store Store) QueueOption {
 // NewQueue creates a new instance of the job queue.
 func NewQueue(opts ...QueueOption) Queue {
 	queue := &jobQueue{
+		Mutex: sync.Mutex{},
 		store: nil,
 	}
 	for _, opt := range opts {
@@ -41,21 +48,26 @@ func NewQueue(opts ...QueueOption) Queue {
 
 // Enqueue adds a job to the queue.
 func (q *jobQueue) Enqueue(job Job) error {
-	// Implement the logic to add a job to the queue
-	// For example, you might want to use a slice or a channel to store the jobs
-	return nil
+	q.Lock()
+	defer q.Unlock()
+	return q.store.StoreJob(context.Background(), job)
 }
 
 // Dequeue removes and returns a job from the queue.
 func (q *jobQueue) Dequeue() (Job, error) {
-	// Implement the logic to remove and return a job from the queue
-	// For example, you might want to use a slice or a channel to store the jobs
+	q.Lock()
+	defer q.Unlock()
+	ctx := context.Background()
+	_, err := q.store.ListJobs(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 
 // Clear removes all jobs from the queue.
 func (q *jobQueue) Clear() error {
-	// Implement the logic to clear all jobs from the queue
-	// For example, you might want to use a slice or a channel to store the jobs
-	return nil
+	q.Lock()
+	defer q.Unlock()
+	return q.store.ClearJobs(context.Background())
 }
