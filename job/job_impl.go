@@ -30,6 +30,7 @@ type job struct {
 	scheduledAt *time.Time
 	startedAt   *time.Time
 	finishedAt  *time.Time
+	logger      Logger
 }
 
 // JobOption is a function that configures a job.
@@ -78,6 +79,13 @@ func WithJobScheduledAt(scheduledAt time.Time) JobOption {
 	}
 }
 
+// WithJobStartedAt sets the start time of the job.
+func WithJobLogger(logger Logger) JobOption {
+	return func(j *job) {
+		j.logger = logger
+	}
+}
+
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...JobOption) Job {
 	j := &job{
@@ -90,6 +98,7 @@ func NewJob(opts ...JobOption) Job {
 		scheduledAt: nil,
 		startedAt:   nil,
 		finishedAt:  nil,
+		logger:      NewNullLogger(),
 	}
 
 	for _, opt := range opts {
