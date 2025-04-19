@@ -79,9 +79,9 @@ func WithJobScheduledAt(scheduledAt time.Time) JobOption {
 }
 
 // NewJob creates a new job with the given name and options.
-func NewJob(name string, opts ...JobOption) Job {
+func NewJob(opts ...JobOption) Job {
 	j := &job{
-		name:        name,
+		name:        "",
 		uuid:        uuid.Nil,
 		state:       JobCreated,
 		payload:     nil,
