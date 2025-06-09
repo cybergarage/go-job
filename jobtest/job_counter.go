@@ -14,26 +14,20 @@
 
 package jobtest
 
-import (
-	"testing"
-)
+// CounterJob is a simple job that maintains a counter.
+type CounterJob struct {
+	Value int
+}
 
-func TestJob(t *testing.T) {
-	counter := NewCounterJob()
-	job := counter.IncrementJob()
+// NewCounterJob creates a new instance of CounterJob with an initial value of 0.
+func NewCounterJob() *CounterJob {
+	return &CounterJob{Value: 0}
+}
 
-	// Check value before execution
-	if counter.Value != 0 {
-		t.Fatalf("expected 0, got %d", counter.Value)
-	}
-
-	// Execute the job
-	if err := job(); err != nil {
-		t.Fatalf("job failed: %v", err)
-	}
-
-	// Check value after execution
-	if counter.Value != 1 {
-		t.Fatalf("expected 1, got %d", counter.Value)
+// Job that increments the counter
+func (c *CounterJob) IncrementJob() func() error {
+	return func() error {
+		c.Value++
+		return nil
 	}
 }
