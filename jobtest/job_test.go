@@ -16,24 +16,16 @@ package jobtest
 
 import (
 	"testing"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func TestJob(t *testing.T) {
-	counter := NewCounterJob()
-	job := counter.IncrementJob()
+	jobMgr := job.NewManager()
 
-	// Check value before execution
-	if counter.Value != 0 {
-		t.Fatalf("expected 0, got %d", counter.Value)
+	if err := jobMgr.Start(); err != nil {
+		t.Fatalf("Failed to start job manager: %v", err)
 	}
 
-	// Execute the job
-	if err := job(); err != nil {
-		t.Fatalf("job failed: %v", err)
-	}
-
-	// Check value after execution
-	if counter.Value != 1 {
-		t.Fatalf("expected 1, got %d", counter.Value)
-	}
+	if err := jobMgr.St
 }
