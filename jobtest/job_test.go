@@ -27,5 +27,7 @@ func TestJob(t *testing.T) {
 		t.Fatalf("Failed to start job manager: %v", err)
 	}
 
-	if err := jobMgr.St
+	if err := jobMgr.Stop(); err != nil {
+		t.Fatalf("Failed to stop job manager: %v", err)
+	}
 }
