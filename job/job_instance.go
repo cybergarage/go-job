@@ -15,19 +15,15 @@
 package job
 
 import (
-	"time"
+	"github.com/google/uuid"
 )
 
 // JobInstance represents a specific instance of a job that has been scheduled or executed.
 type JobInstance interface {
 	// UUID returns the unique identifier of the job instance.
-	UUID() string
+	UUID() uuid.UUID
 	// State returns the current state of the job instance.
 	State() JobState
-	// CreatedAt returns the time when the job instance was created.
-	CreatedAt() time.Time
-	// UpdatedAt returns the time when the job instance was last updated.
-	UpdatedAt() time.Time
 	// String returns a string representation of the job instance.
 	String() string
 }

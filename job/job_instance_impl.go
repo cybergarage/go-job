@@ -15,23 +15,33 @@
 package job
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
 type jobInstance struct {
-	UUID      uuid.UUID
-	State     JobState
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	uuid  uuid.UUID
+	state JobState
 }
 
+// NewJobInstance creates a new JobInstance with a unique identifier and initial state.
 func NewJobInstance() JobInstance {
 	return &jobInstance{
-		UUID:      uuid.New(),
-		State:     JobStatePending,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		uuid:  uuid.New(),
+		state: JobPending,
 	}
+}
+
+// UUID returns the unique identifier of the job instance.
+func (ji *jobInstance) UUID() uuid.UUID {
+	return ji.uuid
+}
+
+// State returns the current state of the job instance.
+func (ji *jobInstance) State() JobState {
+	return ji.state
+}
+
+// String returns a string representation of the job instance.
+func (ji *jobInstance) String() string {
+	return ""
 }

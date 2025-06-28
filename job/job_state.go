@@ -20,22 +20,16 @@ type JobState int
 const (
 	// JobCreated indicates the job has been created but not yet started.
 	JobCreated JobState = iota
-
 	// JobPending indicates the job is created but not yet started.
 	JobPending
-
 	// JobRunning indicates the job is currently executing.
 	JobRunning // 1
-
 	// JobSucceeded indicates the job has completed successfully.
 	JobSucceeded // 2
-
 	// JobFailed indicates the job has completed with an error.
 	JobFailed // 3
-
 	// JobCancelled indicates the job was cancelled before completion.
 	JobCancelled // 4
-
 	// JobTimedOut indicates the job has exceeded its allowed execution time.
 	JobTimedOut // 5
 )
