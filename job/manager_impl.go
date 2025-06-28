@@ -99,12 +99,12 @@ func (mgr *manager) CancelJob(ctx context.Context, job Job) error {
 }
 
 // ListJobs lists all jobs with the specified state.
-func (mgr *manager) ListJobs(ctx context.Context, state JobState) ([]Job, error) {
+func (mgr *manager) ListJobs(ctx context.Context, state JobState) ([]JobInstance, error) {
 	storeJobs, err := mgr.store.ListJobs(ctx)
 	if err != nil {
 		return nil, err
 	}
-	jobs := make([]Job, 0)
+	jobs := make([]JobInstance, 0)
 	for _, job := range storeJobs {
 		if job.State() == state {
 			jobs = append(jobs, job)
