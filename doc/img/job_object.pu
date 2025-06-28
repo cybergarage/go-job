@@ -1,14 +1,17 @@
 @startuml
 
 object Job{
-
+  +Kind: String
 }
 
 object JobInstance {
+  +Kind: String
   +UUID: uuid.UUID
   +status: String
   +createdAt: DateTime
   +updatedAt: DateTime
 }
+
+JobInstance --|> Job
 
 @enduml
