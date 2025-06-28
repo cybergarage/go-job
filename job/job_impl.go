@@ -16,14 +16,10 @@ package job
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type job struct {
 	name        string
-	uuid        uuid.UUID
-	state       JobState
 	payload     any
 	handler     JobHandler
 	createdAt   time.Time
@@ -43,25 +39,10 @@ func WithJobName(name string) JobOption {
 	}
 }
 
-// WithJobState sets the state of the job.
-func WithJobState(state JobState) JobOption {
-	return func(j *job) {
-		j.state = state
-	}
-}
-
 // WithJobPayload sets the payload of the job.
 func WithJobPayload(payload any) JobOption {
 	return func(j *job) {
 		j.payload = payload
-	}
-}
-
-// WithJobUUID sets the UUID of the job.
-// If you want to generate a new UUID, use the NewJob function.
-func WithJobUUID(uuid uuid.UUID) JobOption {
-	return func(j *job) {
-		j.uuid = uuid
 	}
 }
 
@@ -90,8 +71,6 @@ func WithJobLogger(logger Logger) JobOption {
 func NewJob(opts ...JobOption) Job {
 	j := &job{
 		name:        "",
-		uuid:        uuid.Nil,
-		state:       JobCreated,
 		payload:     nil,
 		handler:     nil,
 		createdAt:   time.Now(),
@@ -117,14 +96,6 @@ func (j *job) Kind() string {
 	return j.name
 }
 
-// UUID returns the UUID of the job. If the UUID is not set, it generates a new one.
-func (j *job) UUID() uuid.UUID {
-	if j.uuid == uuid.Nil {
-		j.uuid = uuid.New()
-	}
-	return j.uuid
-}
-
 // Handler returns the handler of the job.
 func (j *job) Handler() JobHandler {
 	return j.handler
@@ -133,17 +104,6 @@ func (j *job) Handler() JobHandler {
 // Payload returns the payload of the job.
 func (j *job) Payload() any {
 	return j.payload
-}
-
-// State returns the current state of the job.
-func (j *job) State() JobState {
-	return j.state
-}
-
-// SetState sets the state of the job.
-func (j *job) SetState(state JobState) error {
-	j.state = state
-	return nil
 }
 
 // CreatedAt returns the creation time of the job.

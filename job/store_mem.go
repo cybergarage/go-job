@@ -35,7 +35,6 @@ func (s *memStore) StoreJob(ctx context.Context, job Job) error {
 	if job == nil {
 		return nil
 	}
-	s.jobs.Store(job.UUID(), job)
 	return nil
 }
 
@@ -43,7 +42,6 @@ func (s *memStore) UpdateJob(ctx context.Context, job Job) error {
 	if job == nil {
 		return nil
 	}
-	s.jobs.Store(job.UUID(), job)
 	return nil
 }
 
@@ -52,7 +50,6 @@ func (s *memStore) RemoveJob(ctx context.Context, job Job) error {
 	if job == nil {
 		return nil
 	}
-	s.jobs.Delete(job.UUID())
 	return nil
 }
 

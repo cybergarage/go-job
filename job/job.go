@@ -17,8 +17,6 @@ package job
 import (
 	"context"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // JobHandler is an interface that defines methods for handling jobs.
@@ -33,16 +31,10 @@ type JobHandler interface {
 type Job interface {
 	// Kind returns the name of the job.
 	Kind() string
-	// UUID returns the UUID of the job.
-	UUID() uuid.UUID
 	// Handler returns the job handler for the job.
 	Handler() JobHandler
 	// Payload returns the payload of the job.
 	Payload() any
-	// State returns the current state of the job.
-	State() JobState
-	// SetState sets the state of the job.
-	SetState(state JobState) error
 	// CreatedAt returns the time when the job was created.
 	CreatedAt() time.Time
 	// ScheduledAt returns the time when the job is scheduled to run.
