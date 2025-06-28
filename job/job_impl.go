@@ -112,8 +112,8 @@ func NewJob(opts ...JobOption) Job {
 	return j
 }
 
-// Name returns the name of the job.
-func (j *job) Name() string {
+// Kind returns the name of the job.
+func (j *job) Kind() string {
 	return j.name
 }
 

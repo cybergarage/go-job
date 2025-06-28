@@ -31,8 +31,8 @@ type JobHandler interface {
 
 // Job represents a job that can be scheduled to run at a specific time or interval.
 type Job interface {
-	// Name returns the name of the job.
-	Name() string
+	// Kind returns the name of the job.
+	Kind() string
 	// UUID returns the UUID of the job.
 	UUID() uuid.UUID
 	// Handler returns the job handler for the job.
