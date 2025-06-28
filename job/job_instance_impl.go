@@ -15,20 +15,38 @@
 package job
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 )
 
 type jobInstance struct {
-	uuid  uuid.UUID
-	state JobState
+	job  Job
+	uuid uuid.UUID
+}
+
+// JobInstanceOption defines a function that configures a job instance.
+type JobInstanceOption func(*jobInstance) error
+
+// WithJobInstanceJob sets the job for the job instance.
+func WithJobInstanceJob(job Job) JobInstanceOption {
+	return func(ji *jobInstance) error {
+		ji.job = job
+		return nil
+	}
 }
 
 // NewJobInstance creates a new JobInstance with a unique identifier and initial state.
-func NewJobInstance() JobInstance {
-	return &jobInstance{
-		uuid:  uuid.New(),
-		state: JobPending,
+func NewJobInstance(opts ...JobInstanceOption) (JobInstance, error) {
+	ji := &jobInstance{
+		uuid: uuid.New(),
 	}
+	for _, opt := range opts {
+		if err := opt(ji); err != nil {
+			return nil, err
+		}
+	}
+	return ji, nil
 }
 
 // UUID returns the unique identifier of the job instance.
@@ -38,10 +56,10 @@ func (ji *jobInstance) UUID() uuid.UUID {
 
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	return ji.state
+	return JobPending
 }
 
 // String returns a string representation of the job instance.
 func (ji *jobInstance) String() string {
-	return ""
+	return fmt.Sprintf("JobInstance{UUID: %s, Job: %v, State: %v}", ji.uuid, ji.job, ji.State())
 }

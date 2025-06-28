@@ -48,9 +48,13 @@ func NewQueue(opts ...QueueOption) Queue {
 
 // Enqueue adds a job to the queue.
 func (q *jobQueue) Enqueue(job Job) error {
+	ji, err := NewJobInstance(WithJobInstanceJob(job))
+	if err != nil {
+		return err
+	}
 	q.Lock()
 	defer q.Unlock()
-	return q.store.StoreJob(context.Background(), job)
+	return q.store.StoreJob(context.Background(), ji)
 }
 
 // Dequeue removes and returns a job from the queue.
