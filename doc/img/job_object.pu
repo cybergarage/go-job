@@ -3,4 +3,12 @@
 object Job{
 
 }
+
+object JobInstance {
+  +UUID: uuid.UUID
+  +status: String
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
 @enduml
