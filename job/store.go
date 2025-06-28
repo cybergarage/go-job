@@ -30,7 +30,7 @@ type Store interface {
 	// StoreJob stores a job in the store.
 	StoreJob(ctx context.Context, job JobInstance) error
 	// UpdateJob updates an existing job in the store.
-	UpdateJob(ctx context.Context, job Job) error
+	UpdateJob(ctx context.Context, job JobInstance) error
 	// RemoveJob removes a job from the store by its unique identifier.
 	RemoveJob(ctx context.Context, job JobInstance) error
 	// ListJobs lists all jobs in the store.
