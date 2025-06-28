@@ -49,6 +49,11 @@ func NewJobInstance(opts ...JobInstanceOption) (JobInstance, error) {
 	return ji, nil
 }
 
+// Job returns the job associated with this job instance.
+func (ji *jobInstance) Job() Job {
+	return ji.job
+}
+
 // UUID returns the unique identifier of the job instance.
 func (ji *jobInstance) UUID() uuid.UUID {
 	return ji.uuid

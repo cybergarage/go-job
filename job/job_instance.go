@@ -20,6 +20,8 @@ import (
 
 // JobInstance represents a specific instance of a job that has been scheduled or executed.
 type JobInstance interface {
+	// Job returns the job associated with this job instance.
+	Job() Job
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
 	// State returns the current state of the job instance.
