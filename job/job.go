@@ -16,7 +16,6 @@ package job
 
 import (
 	"context"
-	"time"
 )
 
 // JobHandler is an interface that defines methods for handling jobs.
@@ -35,14 +34,6 @@ type Job interface {
 	Handler() JobHandler
 	// Payload returns the payload of the job.
 	Payload() any
-	// CreatedAt returns the time when the job was created.
-	CreatedAt() time.Time
-	// ScheduledAt returns the time when the job is scheduled to run.
-	ScheduledAt() time.Time
-	// StartedAt returns the time when the job started running.
-	StartedAt() time.Time
-	// FinishedAt returns the time when the job finished running.
-	FinishedAt() time.Time
 	// Process processes the job using the job handler.
 	Process() error
 	// String returns a string representation of the job.
