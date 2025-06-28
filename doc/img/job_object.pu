@@ -14,4 +14,12 @@ object JobInstance {
 
 JobInstance --|> Job
 
+object Manager {
+  +Kind: String
+  +UUID: uuid.UUID
+  +status: String
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
 @enduml
