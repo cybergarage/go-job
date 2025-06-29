@@ -5,31 +5,21 @@ object Job{
 }
 
 object JobInstance {
-  History: JobStateHistory
-  +Kind: String
-  +UUID: uuid.UUID
-  +status: String
-  +createdAt: DateTime
-  +updatedAt: DateTime
+  History: JobStateHistory -- JobStateHistory
 }
 
 History -> JobStateHistory
 
-JobInstance --|> Job
-
 object Manager {
-  +Kind: String
-  +UUID: uuid.UUID
-  +status: String
-  +createdAt: DateTime
-  +updatedAt: DateTime
 }
 
 object JobStateHistory {
-  +UUID: uuid.UUID
-  +status: String
-  +createdAt: DateTime
-  +updatedAt: DateTime
+  +Records(): []JobStateRecord -- JobStateRecord
+}
+
+object JobStateRecord {
+  +Timestamp(): time.Time
+  +State(): JobState
 }
 
 @enduml
