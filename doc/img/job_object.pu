@@ -5,6 +5,7 @@ object Job{
 }
 
 object JobInstance {
+  History: JobStateHistory
   +Kind: String
   +UUID: uuid.UUID
   +status: String
@@ -12,10 +13,19 @@ object JobInstance {
   +updatedAt: DateTime
 }
 
+History -> JobStateHistory
+
 JobInstance --|> Job
 
 object Manager {
   +Kind: String
+  +UUID: uuid.UUID
+  +status: String
+  +createdAt: DateTime
+  +updatedAt: DateTime
+}
+
+object JobStateHistory {
   +UUID: uuid.UUID
   +status: String
   +createdAt: DateTime
