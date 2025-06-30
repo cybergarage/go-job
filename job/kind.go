@@ -14,25 +14,5 @@
 
 package job
 
-// JobRegistry is responsible for managing job instances.
-type JobRegistry struct {
-	jobs map[string]Job
-}
-
-// NewJobRegistry creates a new instance of JobRegistry.
-func NewJobRegistry() *JobRegistry {
-	return &JobRegistry{
-		jobs: make(map[string]Job),
-	}
-}
-
-// RegisterJob registers a job in the registry.
-func (r *JobRegistry) RegisterJob(job Job) {
-	r.jobs[job.Kind()] = job
-}
-
-// LookupJob looks up a job by its kind in the registry.
-func (r *JobRegistry) LookupJob(kind string) (Job, bool) {
-	job, exists := r.jobs[kind]
-	return job, exists
-}
+// JobKind is a type that represents the kind of a job.
+type JobKind = string
