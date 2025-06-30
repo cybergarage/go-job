@@ -38,8 +38,7 @@ func TestNewJob(t *testing.T) {
 	}{
 		{
 			opts: []any{
-				job.WithJobName("test-job"),
-				job.WithJobPayload("test payload"),
+				job.WithExecutor(func(params ...any) error { return nil }),
 			},
 		},
 	}
