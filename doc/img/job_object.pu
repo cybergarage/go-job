@@ -13,6 +13,9 @@ History -> JobStateHistory
 object Manager {
 }
 
+object Scheduler {
+}
+
 object JobStateHistory {
   +Records(): []JobStateRecord -- JobStateRecord
 }
