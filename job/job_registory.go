@@ -30,3 +30,9 @@ func NewJobRegistry() *JobRegistry {
 func (r *JobRegistry) RegisterJob(job Job) {
 	r.jobs[job.Kind()] = job
 }
+
+// LookupJob looks up a job by its kind in the registry.
+func (r *JobRegistry) LookupJob(kind string) (Job, bool) {
+	job, exists := r.jobs[kind]
+	return job, exists
+}
