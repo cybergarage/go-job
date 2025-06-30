@@ -39,6 +39,7 @@ func TestNewJob(t *testing.T) {
 		{
 			opts: []any{
 				job.WithExecutor(func(params ...any) error { return nil }),
+				job.WithArguments("arg1", "arg2"),
 			},
 		},
 	}

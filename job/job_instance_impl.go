@@ -24,6 +24,8 @@ type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
 	*JobStateHistory
+	handler *jobHandler
+	ctx     *jobContext
 }
 
 // JobInstanceOption defines a function that configures a job instance.
@@ -38,15 +40,26 @@ func WithJobInstanceJob(job Job) JobInstanceOption {
 }
 
 // NewJobInstance creates a new JobInstance with a unique identifier and initial state.
-func NewJobInstance(opts ...JobInstanceOption) (JobInstance, error) {
+func NewJobInstance(opts ...any) (JobInstance, error) {
 	ji := &jobInstance{
 		job:             nil, // Default to nil, must be set by options
 		uuid:            uuid.New(),
 		JobStateHistory: NewJobStateHistory(),
+		handler:         newJobHandler(),
+		ctx:             newJobContext(),
 	}
 	for _, opt := range opts {
-		if err := opt(ji); err != nil {
-			return nil, err
+		switch opt := opt.(type) {
+		case JobInstanceOption:
+			if err := opt(ji); err != nil {
+				return nil, err
+			}
+		case JobHandlerOption:
+			opt(ji.handler)
+		case JobContextOption:
+			opt(ji.ctx)
+		default:
+			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
 	}
 	return ji, nil
