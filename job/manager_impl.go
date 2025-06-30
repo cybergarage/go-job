@@ -26,6 +26,7 @@ type manager struct {
 	store   Store
 	queue   Queue
 	workers []Worker
+	*JobScheduler
 }
 
 // ManagerOption is a function that configures a job manager.
@@ -58,11 +59,12 @@ func WithManagerStore(store Store) ManagerOption {
 // NewManager creates a new instance of the job manager.
 func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
-		Mutex:   sync.Mutex{},
-		logger:  NewNullLogger(),
-		store:   NewMemStore(),
-		queue:   nil,
-		workers: make([]Worker, 0),
+		Mutex:        sync.Mutex{},
+		logger:       NewNullLogger(),
+		store:        NewMemStore(),
+		JobScheduler: NewJobScheduler(),
+		queue:        nil,
+		workers:      make([]Worker, 0),
 	}
 	for _, opt := range opts {
 		opt(mgr)
