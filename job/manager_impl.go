@@ -27,6 +27,7 @@ type manager struct {
 	queue   Queue
 	workers []Worker
 	*JobScheduler
+	*JobRegistry
 }
 
 // ManagerOption is a function that configures a job manager.
@@ -63,6 +64,7 @@ func NewManager(opts ...ManagerOption) *manager {
 		logger:       NewNullLogger(),
 		store:        NewMemStore(),
 		JobScheduler: NewJobScheduler(),
+		JobRegistry:  NewJobRegistry(),
 		queue:        nil,
 		workers:      make([]Worker, 0),
 	}
