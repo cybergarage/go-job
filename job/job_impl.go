@@ -14,11 +14,13 @@
 
 package job
 
+import "fmt"
+
 type job struct {
 	name    string
 	payload any
-	handler JobHandler
 	logger  Logger
+	handler *jobHandler
 }
 
 // JobOption is a function that configures a job.
@@ -38,13 +40,6 @@ func WithJobPayload(payload any) JobOption {
 	}
 }
 
-// WithJobScheduledAt sets the scheduled time of the job.
-func WithJobHandler(handler JobHandler) JobOption {
-	return func(j *job) {
-		j.handler = handler
-	}
-}
-
 // WithJobStartedAt sets the start time of the job.
 func WithJobLogger(logger Logger) JobOption {
 	return func(j *job) {
@@ -53,19 +48,26 @@ func WithJobLogger(logger Logger) JobOption {
 }
 
 // NewJob creates a new job with the given name and options.
-func NewJob(opts ...JobOption) Job {
+func NewJob(opts ...any) (Job, error) {
 	j := &job{
 		name:    "",
 		payload: nil,
-		handler: nil,
+		handler: newJobHandler(),
 		logger:  NewNullLogger(),
 	}
 
 	for _, opt := range opts {
-		opt(j)
+		switch opt := opt.(type) {
+		case JobOption:
+			opt(j)
+		case JobHandlerOption:
+			opt(j.handler)
+		default:
+			return nil, fmt.Errorf("invalid job option type: %T", opt)
+		}
 	}
 
-	return j
+	return j, nil
 }
 
 // Kind returns the name of the job.
