@@ -18,8 +18,10 @@ package job
 type JobState int
 
 const (
+	// JobStateUnknown indicates an unknown state, typically used for uninitialized jobs.
+	JobStateUnknown JobState = iota - 1 // -1 indicates an unknown state
 	// JobCreated indicates the job has been created but not yet started.
-	JobCreated JobState = iota
+	JobCreated
 	// JobPending indicates the job is created but not yet started.
 	JobPending
 	// JobRunning indicates the job is currently executing.
