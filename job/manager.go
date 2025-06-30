@@ -20,6 +20,8 @@ import (
 
 // JobManager is an interface that defines methods for managing jobs.
 type JobManager interface {
+	// JobRegistry provides access to the job registry.
+	JobRegistry
 	// SetStore sets the store for the job manager.
 	SetStore(store Store)
 	// ProcessJob processes a job by executing it and updating its state.

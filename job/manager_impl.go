@@ -27,7 +27,7 @@ type manager struct {
 	queue   Queue
 	workers []Worker
 	*JobScheduler
-	*JobRegistry
+	JobRegistry
 }
 
 // ManagerOption is a function that configures a job manager.

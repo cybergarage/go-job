@@ -14,30 +14,51 @@
 
 package job
 
-// JobRegistry is responsible for managing job instances.
-type JobRegistry struct {
+// JobRegistry is an interface that defines methods for managing job instances.
+type JobRegistry interface {
+	// RegisterJob registers a job in the registry.
+	RegisterJob(job Job)
+	// UnregisterJob removes a job from the registry by its kind.
+	UnregisterJob(kind JobKind)
+	// RegisteredJobs returns a slice of all registered jobs.
+	RegisteredJobs() []Job
+	// LookupJob looks up a job by its kind in the registry.
+	LookupJob(kind JobKind) (Job, bool)
+}
+
+// jobRegistry is responsible for managing job instances.
+type jobRegistry struct {
 	jobs map[string]Job
 }
 
 // NewJobRegistry creates a new instance of JobRegistry.
-func NewJobRegistry() *JobRegistry {
-	return &JobRegistry{
+func NewJobRegistry() JobRegistry {
+	return &jobRegistry{
 		jobs: make(map[string]Job),
 	}
 }
 
 // RegisterJob registers a job in the registry.
-func (r *JobRegistry) RegisterJob(job Job) {
+func (r *jobRegistry) RegisterJob(job Job) {
 	r.jobs[job.Kind()] = job
 }
 
 // UnregisterJob removes a job from the registry by its kind.
-func (r *JobRegistry) UnregisterJob(kind JobKind) {
+func (r *jobRegistry) UnregisterJob(kind JobKind) {
 	delete(r.jobs, kind)
 }
 
+// RegisteredJobs returns a slice of all registered jobs.
+func (r *jobRegistry) RegisteredJobs() []Job {
+	jobs := make([]Job, 0, len(r.jobs))
+	for _, job := range r.jobs {
+		jobs = append(jobs, job)
+	}
+	return jobs
+}
+
 // LookupJob looks up a job by its kind in the registry.
-func (r *JobRegistry) LookupJob(kind JobKind) (Job, bool) {
+func (r *jobRegistry) LookupJob(kind JobKind) (Job, bool) {
 	job, exists := r.jobs[kind]
 	return job, exists
 }
