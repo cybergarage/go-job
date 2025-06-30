@@ -31,6 +31,11 @@ func (r *JobRegistry) RegisterJob(job Job) {
 	r.jobs[job.Kind()] = job
 }
 
+// UnregisterJob removes a job from the registry by its kind.
+func (r *JobRegistry) UnregisterJob(kind JobKind) {
+	delete(r.jobs, kind)
+}
+
 // LookupJob looks up a job by its kind in the registry.
 func (r *JobRegistry) LookupJob(kind JobKind) (Job, bool) {
 	job, exists := r.jobs[kind]
