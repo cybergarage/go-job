@@ -26,25 +26,20 @@ func NewJobStateHistory() *JobStateHistory {
 	}
 }
 
-// AddRecord adds a new state record to the history.
-func (sh *JobStateHistory) AddRecord(state JobState) {
+// AppendStateRecord adds a new state record to the history with the current timestamp.
+func (sh *JobStateHistory) AppendStateRecord(state JobState) {
 	sh.records = append(sh.records, NewJobStateRecord(state))
 }
 
-// Records returns the state records of the job.
-func (sh *JobStateHistory) Records() []*JobStateRecord {
+// StateRecords returns the state records of the job.
+func (sh *JobStateHistory) StateRecords() []*JobStateRecord {
 	return sh.records
 }
 
-// LastRecord returns the most recent state record, or nil if there are no records.
-func (sh *JobStateHistory) LastRecord() *JobStateRecord {
+// LastStateRecord returns the most recent state record, or nil if there are no records.
+func (sh *JobStateHistory) LastStateRecord() *JobStateRecord {
 	if len(sh.records) == 0 {
 		return nil
 	}
 	return sh.records[len(sh.records)-1]
-}
-
-// Clear removes all records from the history.
-func (sh *JobStateHistory) Clear() {
-	sh.records = make([]*JobStateRecord, 0)
 }

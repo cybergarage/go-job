@@ -23,6 +23,7 @@ import (
 type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
+	*JobStateHistory
 }
 
 // JobInstanceOption defines a function that configures a job instance.
@@ -39,7 +40,9 @@ func WithJobInstanceJob(job Job) JobInstanceOption {
 // NewJobInstance creates a new JobInstance with a unique identifier and initial state.
 func NewJobInstance(opts ...JobInstanceOption) (JobInstance, error) {
 	ji := &jobInstance{
-		uuid: uuid.New(),
+		job:             nil, // Default to nil, must be set by options
+		uuid:            uuid.New(),
+		JobStateHistory: NewJobStateHistory(),
 	}
 	for _, opt := range opts {
 		if err := opt(ji); err != nil {
@@ -61,7 +64,11 @@ func (ji *jobInstance) UUID() uuid.UUID {
 
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	return JobPending
+	r := ji.LastStateRecord()
+	if r == nil {
+		return JobStateUnknown
+	}
+	return r.State()
 }
 
 // String returns a string representation of the job instance.
