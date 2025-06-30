@@ -31,3 +31,23 @@ func TestJob(t *testing.T) {
 		t.Fatalf("Failed to stop job manager: %v", err)
 	}
 }
+
+func TestNewJob(t *testing.T) {
+	tests := []struct {
+		opts []any
+	}{
+		{
+			opts: []any{
+				job.WithJobName("test-job"),
+				job.WithJobPayload("test payload"),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		_, err := job.NewJob(tt.opts...)
+		if err != nil {
+			t.Fatalf("Failed to create job: %v", err)
+		}
+	}
+}
