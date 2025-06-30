@@ -24,6 +24,8 @@ type JobInstance interface {
 	Job() Job
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
+	// UpdateState updates the state of the job instance and records the state change.
+	UpdateState(state JobState) error
 	// State returns the current state of the job instance.
 	State() JobState
 	// String returns a string representation of the job instance.

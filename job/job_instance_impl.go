@@ -62,6 +62,12 @@ func (ji *jobInstance) UUID() uuid.UUID {
 	return ji.uuid
 }
 
+// UpdateState updates the state of the job instance and records the state change.
+func (ji *jobInstance) UpdateState(state JobState) error {
+	ji.AppendStateRecord(state)
+	return nil
+}
+
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
 	r := ji.LastStateRecord()
