@@ -24,8 +24,8 @@ import (
 type JobSchedule interface {
 	// Spec returns the crontab spec string.
 	Spec() string
-	// Next returns the next scheduled time after the given time.
-	Next(time.Time) time.Time
+	// Next returns the next scheduled time.
+	Next() time.Time
 }
 
 // JobScheduleOption defines a function that configures a job schedule.
@@ -33,14 +33,14 @@ type JobScheduleOption func(*jobSchedule) error
 
 // jobSchedule implements the JobSchedule interface using a crontab spec string.
 type jobSchedule struct {
-	spec     string
-	schedule cron.Schedule
+	crontabSpec string
+	schedule    cron.Schedule
 }
 
-// WithCronSpec sets the crontab spec string for the job schedule.
-func WithCronSpec(spec string) JobScheduleOption {
+// WithCrontabSpec sets the crontab spec string for the job schedule.
+func WithCrontabSpec(spec string) JobScheduleOption {
 	return func(js *jobSchedule) error {
-		js.spec = spec
+		js.crontabSpec = spec
 		var err error
 		js.schedule, err = cron.ParseStandard(spec)
 		if err != nil {
@@ -53,8 +53,8 @@ func WithCronSpec(spec string) JobScheduleOption {
 // NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
 func NewJobSchedule(opts ...JobScheduleOption) (*jobSchedule, error) {
 	js := &jobSchedule{
-		spec:     "",
-		schedule: nil, // Default to nil, must be set by options
+		crontabSpec: "",
+		schedule:    nil, // Default to nil, must be set by options
 	}
 	for _, opt := range opts {
 		if err := opt(js); err != nil {
@@ -66,13 +66,13 @@ func NewJobSchedule(opts ...JobScheduleOption) (*jobSchedule, error) {
 
 // Spec returns the crontab spec string for the job schedule.
 func (js *jobSchedule) Spec() string {
-	return js.spec
+	return js.crontabSpec
 }
 
-// Next returns the next scheduled time after the given time.
-func (js *jobSchedule) Next(t time.Time) time.Time {
+// Next returns the next scheduled time.
+func (js *jobSchedule) Next() time.Time {
 	if js.schedule == nil {
-		return t // If no schedule is set, return the given time
+		return time.Now() // If no schedule is set, return the current time
 	}
-	return js.schedule.Next(t)
+	return js.schedule.Next(time.Now())
 }
