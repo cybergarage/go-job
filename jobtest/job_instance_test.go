@@ -21,6 +21,8 @@ import (
 )
 
 func TestNewJobInstance(t *testing.T) {
+	_ = make(chan []any)
+
 	tests := []struct {
 		opts []any
 	}{
