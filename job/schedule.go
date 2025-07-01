@@ -14,13 +14,43 @@
 
 package job
 
+import (
+	"time"
+
+	"github.com/robfig/cron/v3"
+)
+
+// JobSchedule defines the interface for job scheduling, supporting crontab expressions.
 type JobSchedule interface {
+	// Spec returns the crontab spec string.
+	Spec() string
+	// Next returns the next scheduled time after the given time.
+	Next(time.Time) time.Time
 }
 
 type jobSchedule struct {
+	spec     string
+	schedule cron.Schedule
 }
 
-// NewJobSchedule creates a new JobSchedule instance.
-func NewJobSchedule() *jobSchedule {
-	return &jobSchedule{}
+// NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
+func NewJobSchedule(spec string) (*jobSchedule, error) {
+	sched, err := cron.ParseStandard(spec)
+	if err != nil {
+		return nil, err
+	}
+	return &jobSchedule{
+		spec:     spec,
+		schedule: sched,
+	}, nil
+}
+
+// Spec returns the crontab spec string for the job schedule.
+func (js *jobSchedule) Spec() string {
+	return js.spec
+}
+
+// Next returns the next scheduled time after the given time.
+func (js *jobSchedule) Next(t time.Time) time.Time {
+	return js.schedule.Next(t)
 }
