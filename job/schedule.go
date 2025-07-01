@@ -28,21 +28,40 @@ type JobSchedule interface {
 	Next(time.Time) time.Time
 }
 
+// JobScheduleOption defines a function that configures a job schedule.
+type JobScheduleOption func(*jobSchedule) error
+
+// jobSchedule implements the JobSchedule interface using a crontab spec string.
 type jobSchedule struct {
 	spec     string
 	schedule cron.Schedule
 }
 
-// NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
-func NewJobSchedule(spec string) (*jobSchedule, error) {
-	sched, err := cron.ParseStandard(spec)
-	if err != nil {
-		return nil, err
+// WithCronSpec sets the crontab spec string for the job schedule.
+func WithCronSpec(spec string) JobScheduleOption {
+	return func(js *jobSchedule) error {
+		js.spec = spec
+		var err error
+		js.schedule, err = cron.ParseStandard(spec)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	return &jobSchedule{
-		spec:     spec,
-		schedule: sched,
-	}, nil
+}
+
+// NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
+func NewJobSchedule(opts ...JobScheduleOption) (*jobSchedule, error) {
+	js := &jobSchedule{
+		spec:     "",
+		schedule: nil, // Default to nil, must be set by options
+	}
+	for _, opt := range opts {
+		if err := opt(js); err != nil {
+			return nil, err
+		}
+	}
+	return js, nil
 }
 
 // Spec returns the crontab spec string for the job schedule.
@@ -52,5 +71,8 @@ func (js *jobSchedule) Spec() string {
 
 // Next returns the next scheduled time after the given time.
 func (js *jobSchedule) Next(t time.Time) time.Time {
+	if js.schedule == nil {
+		return t // If no schedule is set, return the given time
+	}
 	return js.schedule.Next(t)
 }
