@@ -14,24 +14,12 @@
 
 package job
 
-import (
-	"context"
-)
-
 // JobManager is an interface that defines methods for managing jobs.
 type JobManager interface {
 	// JobRegistry provides access to the job registry.
 	JobRegistry
 	// JobScheduler provides access to the job scheduler.
 	JobScheduler
-	// // ScheduleJob schedules a job to run at a specific time or interval.
-	// ScheduleJob(ctx context.Context, job Job) error
-	// // CancelJob cancels a scheduled job.
-	// CancelJob(ctx context.Context, job Job) error
-	// ListJobs lists all jobs with the specified state.
-	ListJobs(ctx context.Context, state JobState) ([]JobInstance, error)
-	// ScaleWorkers scales the number of workers for the job manager.
-	ScaleWorkers(num int) error
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
