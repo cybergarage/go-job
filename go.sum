@@ -1,3 +1,5 @@
+github.com/cybergarage/go-safecast v1.3.3 h1:ShXzs7PLDsomNeueg65IyPPEc+cw5QLd10+/JI+c2mI=
+github.com/cybergarage/go-safecast v1.3.3/go.mod h1:flFLUrI49kNK+U7ZeQDQxbaxxQyFVQGKpT7KYN3A4ew=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/robfig/cron/v3 v3.0.1 h1:WdRxkvbJztn8LMz/QEvLN5sBU+xKpSqwwUO1Pjr4qDs=
