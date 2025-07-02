@@ -22,6 +22,8 @@ import (
 type JobManager interface {
 	// JobRegistry provides access to the job registry.
 	JobRegistry
+	// JobScheduler provides access to the job scheduler.
+	JobScheduler
 	// SetStore sets the store for the job manager.
 	SetStore(store Store)
 	// ProcessJob processes a job by executing it and updating its state.
