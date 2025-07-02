@@ -15,10 +15,21 @@
 package job
 
 // JobScheduler is responsible for scheduling jobs.
-type JobScheduler struct {
+type JobScheduler interface {
+	ScheduleJob(job Job) error
+}
+
+type jobScheduler struct {
+	// Add fields as necessary for job scheduling, such as a queue or worker pool.
 }
 
 // NewJobScheduler creates a new instance of Scheduler.
-func NewJobScheduler() *JobScheduler {
-	return &JobScheduler{}
+func NewJobScheduler() *jobScheduler {
+	return &jobScheduler{}
+}
+
+// ScheduleJob schedules a job for execution.
+func (s *jobScheduler) ScheduleJob(job Job) error {
+	// Implementation for scheduling the job
+	return nil
 }

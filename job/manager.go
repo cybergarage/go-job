@@ -26,8 +26,6 @@ type JobManager interface {
 	JobScheduler
 	// SetStore sets the store for the job manager.
 	SetStore(store Store)
-	// ProcessJob processes a job by executing it and updating its state.
-	ProcessJob(ctx context.Context, job Job) error
 	// // ScheduleJob schedules a job to run at a specific time or interval.
 	// ScheduleJob(ctx context.Context, job Job) error
 	// // CancelJob cancels a scheduled job.

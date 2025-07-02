@@ -26,7 +26,7 @@ type manager struct {
 	store   Store
 	queue   Queue
 	workers []Worker
-	*JobScheduler
+	*jobScheduler
 	JobRegistry
 }
 
@@ -63,7 +63,7 @@ func NewManager(opts ...ManagerOption) *manager {
 		Mutex:        sync.Mutex{},
 		logger:       NewNullLogger(),
 		store:        NewMemStore(),
-		JobScheduler: NewJobScheduler(),
+		jobScheduler: NewJobScheduler(),
 		JobRegistry:  NewJobRegistry(),
 		queue:        nil,
 		workers:      make([]Worker, 0),
