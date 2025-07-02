@@ -1,13 +1,20 @@
 @startuml
 
-== Schedule Job ==
+== Register Job  ==
 
-Client -> Manager : Schedule Job
-Manager -> Schedular : Schedule Job
-Schedular -> Schedular : Create Job Instance
-Schedular -> Queue : Enqueue Job Instance
+Client -> Manager : Register Job
+Manager -> Registry : Register Job
 
-== Process Job ==
+== Schedule Job Instance ==
+
+Client -> Manager : Schedule Job Instance
+Manager -> Scheduler : Schedule Job Instance
+Manager -> Registry : Query Job
+Registry -> Manager : Response Job
+Scheduler -> Scheduler : Create Job Instance
+Scheduler -> Queue : Enqueue Job Instance
+
+== Process Job Instance ==
 
 Queue --> Worker : Dequeue Job Instance
 Worker -> History : Update Job State
@@ -15,9 +22,9 @@ Worker -> Worker : Execute Job Instance
 Worker -> History : Update Job State
 Worker --> Client : Notify Job Completion
 
-== Query Job State ==
+== Query Job Instance State  ==
 
-Client -> History : Query Job State
-History -> Client : Return Job State
+Client -> History : Query Job Instance State
+History -> Client : Return Job Instance State
 
 @enduml
