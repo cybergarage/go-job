@@ -37,9 +37,6 @@ type ManagerOption func(*manager)
 func WithNumWorkers(num int) ManagerOption {
 	return func(m *manager) {
 		m.workers = make([]Worker, num)
-		for i := range num {
-			m.workers[i] = NewWorker()
-		}
 	}
 }
 
@@ -66,12 +63,18 @@ func NewManager(opts ...ManagerOption) *manager {
 		jobScheduler: NewJobScheduler(),
 		JobRegistry:  NewJobRegistry(),
 		queue:        nil,
-		workers:      make([]Worker, 0),
+		workers:      make([]Worker, 1),
 	}
 	for _, opt := range opts {
 		opt(mgr)
 	}
+
 	mgr.queue = NewQueue(WithQueueStore(mgr.store))
+
+	for i := 0; i < len(mgr.workers); i++ {
+		mgr.workers[i] = NewWorker(WithWorkerQueue(mgr.queue))
+	}
+
 	return mgr
 }
 
