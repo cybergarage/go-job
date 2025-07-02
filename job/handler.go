@@ -14,9 +14,6 @@
 
 package job
 
-// JobExecutor is a function type that defines the signature for job execution functions.
-type JobExecutor = func(params ...any) error
-
 // JobErrorHandler is a function type that defines how to handle errors during job execution.
 type JobErrorHandler = func(job Job, err error) (bool, error)
 
@@ -66,7 +63,11 @@ func (h *jobHandler) Execute(params ...any) error {
 	if h.executor == nil {
 		return nil // No executor set, nothing to do
 	}
-	return h.executor(params...)
+	_, err := Execute(h.executor, params...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (h *jobHandler) HandleError(job Job, err error) (bool, error) {
