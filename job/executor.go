@@ -22,8 +22,8 @@ import (
 // JobExecutor is a type that represents a function that executes a job.
 type JobExecutor any
 
-// ExecuteJob calls the given function with the provided parameters.
-func ExecuteJob(fn any, params ...any) (result []reflect.Value, err error) {
+// ExecuteJob calls the given function with the provided parameters and returns results as []any.
+func ExecuteJob(fn any, params ...any) (result []any, err error) {
 	v := reflect.ValueOf(fn)
 	t := v.Type()
 	if t.Kind() != reflect.Func {
@@ -41,6 +41,10 @@ func ExecuteJob(fn any, params ...any) (result []reflect.Value, err error) {
 		}
 		in[i] = val
 	}
-	result = v.Call(in)
+	reflectResults := v.Call(in)
+	result = make([]any, len(reflectResults))
+	for i, r := range reflectResults {
+		result[i] = r.Interface()
+	}
 	return result, nil
 }
