@@ -22,8 +22,8 @@ type worker struct {
 // WorkerOption is a function that configures a job worker.
 type WorkerOption func(*worker)
 
-// WithWorkerJobQueue sets the job queue for the worker.
-func WithWorkerJobQueue(queue Queue) WorkerOption {
+// WithWorkerQueue sets the job queue for the worker.
+func WithWorkerQueue(queue Queue) WorkerOption {
 	return func(w *worker) {
 		w.jobQueue = queue
 	}
