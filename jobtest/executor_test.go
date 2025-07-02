@@ -35,6 +35,20 @@ func TestExecutor(t *testing.T) {
 			params:   []any{1, 2},
 			expected: []any{3},
 		},
+		{
+			fn: func(v1 int, v2 int) int {
+				return v1 + v2
+			},
+			params:   []any{"1", "2"},
+			expected: []any{3},
+		},
+		{
+			fn: func(v1 int, v2 int) int {
+				return v1 + v2
+			},
+			params:   []any{1, "2"},
+			expected: []any{3},
+		},
 	}
 
 	for _, tt := range tests {

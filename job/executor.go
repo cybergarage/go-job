@@ -17,31 +17,40 @@ package job
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/cybergarage/go-safecast/safecast"
 )
 
 // JobExecutor is a type that represents a function that executes a job.
 type JobExecutor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
-func Execute(fn any, params ...any) (result []any, err error) {
-	v := reflect.ValueOf(fn)
-	t := v.Type()
-	if t.Kind() != reflect.Func {
-		return nil, fmt.Errorf("executor is not a function")
+func Execute(fn any, args ...any) (result []any, err error) {
+	fnObj := reflect.ValueOf(fn)
+	fnType := fnObj.Type()
+	if fnType.Kind() != reflect.Func {
+		return nil, fmt.Errorf("executor is not a function (%s)", fnType)
 	}
-	if t.NumIn() != len(params) {
-		return nil, fmt.Errorf("argument count mismatch")
+	if fnType.NumIn() != len(args) {
+		return nil, fmt.Errorf("argument count mismatch for function %s: want %d, got %d", fnType, fnType.NumIn(), len(args))
 	}
-	in := make([]reflect.Value, len(params))
-	for i, p := range params {
-		paramType := t.In(i)
-		val := reflect.ValueOf(p)
-		if !val.Type().AssignableTo(paramType) {
-			return nil, fmt.Errorf("argument[%d] type mismatch: want %v, got %v", i, paramType, val.Type())
+	fnArgs := make([]reflect.Value, len(args))
+	for i, arg := range args {
+		fnParamType := fnType.In(i)
+		argValue := reflect.ValueOf(arg)
+		if argValue.Type().AssignableTo(fnParamType) {
+			fnArgs[i] = argValue
+			continue
 		}
-		in[i] = val
+		v := reflect.New(fnParamType).Interface()
+		err := safecast.To(argValue.Interface(), v)
+		if err == nil {
+			fnArgs[i] = reflect.ValueOf(v).Elem()
+			continue
+		}
+		return nil, fmt.Errorf("argument[%d] type mismatch: want %v, got %v (%v)", i, fnParamType, argValue.Type(), arg)
 	}
-	reflectResults := v.Call(in)
+	reflectResults := fnObj.Call(fnArgs)
 	result = make([]any, len(reflectResults))
 	for i, r := range reflectResults {
 		result[i] = r.Interface()
