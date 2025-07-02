@@ -19,7 +19,7 @@ type JobManager interface {
 	// JobRegistry provides access to the job registry.
 	JobRegistry
 	// JobScheduler provides access to the job scheduler.
-	JobScheduler
+	Scheduler
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.

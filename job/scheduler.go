@@ -14,22 +14,33 @@
 
 package job
 
-// JobScheduler is responsible for scheduling jobs.
-type JobScheduler interface {
+// Scheduler is responsible for scheduling jobs.
+type Scheduler interface {
 	ScheduleJob(job Job) error
 }
 
-type jobScheduler struct {
-	// Add fields as necessary for job scheduling, such as a queue or worker pool.
+// SchedulerOption is a function that configures a job scheduler.
+type SchedulerOption func(*scheduler)
+
+func WithSchedulerQueue(queue Queue) SchedulerOption {
+	return func(s *scheduler) {
+		s.Queue = queue
+	}
 }
 
-// NewJobScheduler creates a new instance of Scheduler.
-func NewJobScheduler() *jobScheduler {
-	return &jobScheduler{}
+type scheduler struct {
+	Queue
+}
+
+// NewScheduler creates a new instance of Scheduler.
+func NewScheduler() *scheduler {
+	return &scheduler{
+		Queue: nil, // Initialize with a default queue or nil
+	}
 }
 
 // ScheduleJob schedules a job for execution.
-func (s *jobScheduler) ScheduleJob(job Job) error {
+func (s *scheduler) ScheduleJob(job Job) error {
 	// Implementation for scheduling the job
 	return nil
 }

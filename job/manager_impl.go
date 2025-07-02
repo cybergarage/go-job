@@ -26,7 +26,7 @@ type manager struct {
 	store   Store
 	queue   Queue
 	workers []Worker
-	*jobScheduler
+	*scheduler
 	JobRegistry
 }
 
@@ -57,19 +57,21 @@ func WithStore(store Store) ManagerOption {
 // NewManager creates a new instance of the job manager.
 func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
-		Mutex:        sync.Mutex{},
-		logger:       NewNullLogger(),
-		store:        NewMemStore(),
-		jobScheduler: NewJobScheduler(),
-		JobRegistry:  NewJobRegistry(),
-		queue:        nil,
-		workers:      make([]Worker, 1),
+		Mutex:       sync.Mutex{},
+		logger:      NewNullLogger(),
+		store:       NewMemStore(),
+		scheduler:   nil,
+		JobRegistry: NewJobRegistry(),
+		queue:       nil,
+		workers:     make([]Worker, 1),
 	}
 	for _, opt := range opts {
 		opt(mgr)
 	}
 
 	mgr.queue = NewQueue(WithQueueStore(mgr.store))
+
+	mgr.scheduler = NewScheduler(WithSchedulerQueue(mgr.queue))
 
 	for i := 0; i < len(mgr.workers); i++ {
 		mgr.workers[i] = NewWorker(WithWorkerQueue(mgr.queue))
