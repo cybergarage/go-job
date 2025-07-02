@@ -14,7 +14,69 @@
 
 package job
 
+import (
+	"context"
+	"sync"
+)
+
 // Queue is an interface that defines queue operations for job management.
 type Quey interface {
 	JobState() JobState
+}
+
+type jobQueue struct {
+	sync.Mutex
+	store Store
+}
+
+// QueueOption is a function that configures a job queue.
+type QueueOption func(*jobQueue)
+
+// WithQueueStore sets the store for the job queue.
+func WithQueueStore(store Store) QueueOption {
+	return func(q *jobQueue) {
+		q.store = store
+	}
+}
+
+// NewQueue creates a new instance of the job queue.
+func NewQueue(opts ...QueueOption) Queue {
+	queue := &jobQueue{
+		Mutex: sync.Mutex{},
+		store: nil,
+	}
+	for _, opt := range opts {
+		opt(queue)
+	}
+	return queue
+}
+
+// Enqueue adds a job to the queue.
+func (q *jobQueue) Enqueue(job Job) error {
+	ji, err := NewJobInstance(WithJobInstanceJob(job))
+	if err != nil {
+		return err
+	}
+	q.Lock()
+	defer q.Unlock()
+	return q.store.StoreJob(context.Background(), ji)
+}
+
+// Dequeue removes and returns a job from the queue.
+func (q *jobQueue) Dequeue() (Job, error) {
+	q.Lock()
+	defer q.Unlock()
+	ctx := context.Background()
+	_, err := q.store.ListJobs(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+// Clear removes all jobs from the queue.
+func (q *jobQueue) Clear() error {
+	q.Lock()
+	defer q.Unlock()
+	return q.store.ClearJobs(context.Background())
 }
