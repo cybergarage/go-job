@@ -24,8 +24,6 @@ type JobManager interface {
 	JobRegistry
 	// JobScheduler provides access to the job scheduler.
 	JobScheduler
-	// SetStore sets the store for the job manager.
-	SetStore(store Store)
 	// // ScheduleJob schedules a job to run at a specific time or interval.
 	// ScheduleJob(ctx context.Context, job Job) error
 	// // CancelJob cancels a scheduled job.
