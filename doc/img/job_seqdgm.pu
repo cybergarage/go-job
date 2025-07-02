@@ -10,5 +10,14 @@ Schedular -> Queue : Enqueue Job Instance
 == Process Job ==
 
 Worker -> Queue : Dequeue Job Instance
+Worker -> History : Update Job State
 Worker -> Worker : Execute Job Instance
+Worker -> History : Update Job State
+Worker --> Client : Notify Job Completion
+
+== Query Job State ==
+
+Client -> History : Query Job State
+History -> Client : Return Job State
+
 @enduml
