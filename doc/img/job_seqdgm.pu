@@ -9,7 +9,7 @@ Schedular -> Queue : Enqueue Job Instance
 
 == Process Job ==
 
-Worker -> Queue : Dequeue Job Instance
+Queue --> Worker : Dequeue Job Instance
 Worker -> History : Update Job State
 Worker -> Worker : Execute Job Instance
 Worker -> History : Update Job State
