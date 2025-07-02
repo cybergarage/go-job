@@ -34,7 +34,7 @@ type manager struct {
 type ManagerOption func(*manager)
 
 // WithManagerStore sets the store for the job manager.
-func WithManagerNumWorkers(num int) ManagerOption {
+func WithNumWorkers(num int) ManagerOption {
 	return func(m *manager) {
 		m.workers = make([]Worker, num)
 		for i := range num {
@@ -43,15 +43,15 @@ func WithManagerNumWorkers(num int) ManagerOption {
 	}
 }
 
-// WithManagerLogger sets the logger for the job manager.
-func WithManagerLogger(logger Logger) ManagerOption {
+// WithLogger sets the logger for the job manager.
+func WithLogger(logger Logger) ManagerOption {
 	return func(m *manager) {
 		m.logger = logger
 	}
 }
 
 // WithManagerQueue sets the queue for the job manager.
-func WithManagerStore(store Store) ManagerOption {
+func WithStore(store Store) ManagerOption {
 	return func(m *manager) {
 		m.store = store
 	}
