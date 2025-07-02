@@ -22,6 +22,7 @@ type Scheduler interface {
 // SchedulerOption is a function that configures a job scheduler.
 type SchedulerOption func(*scheduler)
 
+// WithSchedulerQueue sets the job queue for the scheduler.
 func WithSchedulerQueue(queue Queue) SchedulerOption {
 	return func(s *scheduler) {
 		s.Queue = queue
@@ -33,10 +34,14 @@ type scheduler struct {
 }
 
 // NewScheduler creates a new instance of Scheduler.
-func NewScheduler() *scheduler {
-	return &scheduler{
+func NewScheduler(opts ...SchedulerOption) *scheduler {
+	s := &scheduler{
 		Queue: nil, // Initialize with a default queue or nil
 	}
+	for _, opt := range opts {
+		opt(s)
+	}
+	return s
 }
 
 // ScheduleJob schedules a job for execution.
