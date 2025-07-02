@@ -29,6 +29,27 @@ func TestExecutor(t *testing.T) {
 		expected []any
 	}{
 		{
+			fn: func() int {
+				return 42
+			},
+			params:   []any{},
+			expected: []any{42},
+		},
+		{
+			fn: func(s string) string {
+				return "pong"
+			},
+			params:   []any{"ping"},
+			expected: []any{"pong"},
+		},
+		{
+			fn: func(s string) string {
+				return s
+			},
+			params:   []any{"hello"},
+			expected: []any{"hello"},
+		},
+		{
 			fn: func(v1 int, v2 int) int {
 				return v1 + v2
 			},
@@ -48,6 +69,46 @@ func TestExecutor(t *testing.T) {
 			},
 			params:   []any{1, "2"},
 			expected: []any{3},
+		},
+		{
+			fn: func(a string, b string) string {
+				return a + b
+			},
+			params:   []any{"foo", "bar"},
+			expected: []any{"foobar"},
+		},
+		{
+			fn: func(a string, b string) string {
+				return a + b
+			},
+			params:   []any{123, 456},
+			expected: []any{"123456"},
+		},
+		{
+			fn: func(a float64, b float64) float64 {
+				return a * b
+			},
+			params:   []any{2, 3.5},
+			expected: []any{7.0},
+		},
+		{
+			fn: func(a int) (int, int) {
+				return a, a * 2
+			},
+			params:   []any{5},
+			expected: []any{5, 10},
+		},
+		{
+			fn: func(a bool) bool {
+				return !a
+			},
+			params:   []any{false},
+			expected: []any{true},
+		},
+		{
+			fn:       func(a int) {},
+			params:   []any{1},
+			expected: []any{},
 		},
 	}
 
