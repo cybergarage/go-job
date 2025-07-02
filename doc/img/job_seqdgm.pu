@@ -1,3 +1,4 @@
 @startuml
-Client -> Manager : Schedule Job
+Client -> JobManager : Schedule Job
+JobManager -> JobSchedular : Schedule Job
 @enduml
