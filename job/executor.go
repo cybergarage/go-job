@@ -22,8 +22,8 @@ import (
 // JobExecutor is a type that represents a function that executes a job.
 type JobExecutor any
 
-// Execute calls the given function with the provided parameters.
-func Execute(fn any, params ...any) (result []reflect.Value, err error) {
+// ExecuteJob calls the given function with the provided parameters.
+func ExecuteJob(fn any, params ...any) (result []reflect.Value, err error) {
 	v := reflect.ValueOf(fn)
 	t := v.Type()
 	if t.Kind() != reflect.Func {

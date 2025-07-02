@@ -63,7 +63,7 @@ func (h *jobHandler) Execute(params ...any) error {
 	if h.executor == nil {
 		return nil // No executor set, nothing to do
 	}
-	_, err := Execute(h.executor, params...)
+	_, err := ExecuteJob(h.executor, params...)
 	if err != nil {
 		return err
 	}
