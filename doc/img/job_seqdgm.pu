@@ -1,4 +1,14 @@
 @startuml
-Client -> JobManager : Schedule Job
-JobManager -> JobSchedular : Schedule Job
+
+== Schedule Job ==
+
+Client -> Manager : Schedule Job
+Manager -> Schedular : Schedule Job
+Schedular -> Schedular : Create Job Instance
+Schedular -> Queue : Enqueue Job Instance
+
+== Process Job ==
+
+Worker -> Queue : Dequeue Job Instance
+Worker -> Worker : Execute Job Instance
 @enduml
