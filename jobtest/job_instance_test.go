@@ -28,8 +28,8 @@ func TestNewJobInstance(t *testing.T) {
 	}{
 		{
 			opts: []any{
-				job.WithExecutor(func(params ...any) error { return nil }),
-				job.WithArguments("arg1", "arg2"),
+				job.WithExecutor(func(a, b int) int { return a + b }),
+				job.WithArguments(1, 2),
 			},
 		},
 	}
