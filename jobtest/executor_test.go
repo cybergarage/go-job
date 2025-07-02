@@ -15,8 +15,44 @@
 package jobtest
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func TestExecutor(t *testing.T) {
+	tests := []struct {
+		fn       any
+		params   []any
+		expected []any
+	}{
+		{
+			fn: func(v1 int, v2 int) int {
+				return v1 + v2
+			},
+			params:   []any{1, 2},
+			expected: []any{3},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%T", tt.fn), func(t *testing.T) {
+			got, err := job.Execute(tt.fn, tt.params...)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
+			if len(got) != len(tt.expected) {
+				t.Errorf("expected %d results, got %d", len(tt.expected), len(got))
+				return
+			}
+			for i := range got {
+				if !reflect.DeepEqual(got[i], tt.expected[i]) {
+					t.Errorf("expected result[%d] to be %v, got %v", i, tt.expected[i], got[i])
+				}
+			}
+		})
+	}
 }
