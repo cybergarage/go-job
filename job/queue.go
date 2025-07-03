@@ -25,9 +25,8 @@ type Queue interface {
 	Enqueue(job Instance) error
 	// Dequeue removes and returns a job from the queue.
 	Dequeue() (Instance, error)
-	// Clear removes all jobs from the queue.
-	Clear() error
 }
+
 type jobQueue struct {
 	sync.Mutex
 	store Store
@@ -79,11 +78,4 @@ func (q *jobQueue) Dequeue() (Instance, error) {
 		return nil, err
 	}
 	return job, nil
-}
-
-// Clear removes all jobs from the queue.
-func (q *jobQueue) Clear() error {
-	q.Lock()
-	defer q.Unlock()
-	return q.store.ClearJobs(context.Background())
 }

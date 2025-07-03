@@ -35,13 +35,7 @@ func (s *memStore) StoreJob(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
-	return nil
-}
-
-func (s *memStore) UpdateJob(ctx context.Context, job Instance) error {
-	if job == nil {
-		return nil
-	}
+	s.jobs.Store(job.UUID(), job)
 	return nil
 }
 
@@ -50,6 +44,7 @@ func (s *memStore) RemoveJob(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
+	s.jobs.Delete(job.UUID())
 	return nil
 }
 
@@ -63,13 +58,4 @@ func (s *memStore) ListJobs(ctx context.Context) ([]Instance, error) {
 		return true
 	})
 	return jobs, nil
-}
-
-// ClearJobs clears all jobs from the in-memory store.
-func (s *memStore) ClearJobs(ctx context.Context) error {
-	s.jobs.Range(func(key, value interface{}) bool {
-		s.jobs.Delete(key)
-		return true
-	})
-	return nil
 }
