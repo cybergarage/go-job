@@ -16,28 +16,28 @@ package job
 
 // JobStateHistory keeps track of the state changes of a job.
 type JobStateHistory struct {
-	records []*JobStateRecord
+	records []*StateRecord
 }
 
 // NewJobStateHistory creates a new job state history.
 func NewJobStateHistory() *JobStateHistory {
 	return &JobStateHistory{
-		records: make([]*JobStateRecord, 0),
+		records: make([]*StateRecord, 0),
 	}
 }
 
 // AppendStateRecord adds a new state record to the history with the current timestamp.
 func (sh *JobStateHistory) AppendStateRecord(state JobState) {
-	sh.records = append(sh.records, NewJobStateRecord(state))
+	sh.records = append(sh.records, NewStateRecord(state))
 }
 
 // StateRecords returns the state records of the job.
-func (sh *JobStateHistory) StateRecords() []*JobStateRecord {
+func (sh *JobStateHistory) StateRecords() []*StateRecord {
 	return sh.records
 }
 
 // LastStateRecord returns the most recent state record, or nil if there are no records.
-func (sh *JobStateHistory) LastStateRecord() *JobStateRecord {
+func (sh *JobStateHistory) LastStateRecord() *StateRecord {
 	if len(sh.records) == 0 {
 		return nil
 	}
