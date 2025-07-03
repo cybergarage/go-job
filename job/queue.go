@@ -57,7 +57,7 @@ func NewQueue(opts ...QueueOption) Queue {
 
 // Enqueue adds a job to the queue.
 func (q *jobQueue) Enqueue(job Job) error {
-	ji, err := NewInstance(WithInstanceJob(job))
+	ji, err := NewInstance(WithJob(job))
 	if err != nil {
 		return err
 	}

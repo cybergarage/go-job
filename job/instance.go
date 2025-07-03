@@ -40,14 +40,14 @@ type jobInstance struct {
 	uuid uuid.UUID
 	*StateHistory
 	handler *jobHandler
-	ctx     *ctx
+	args    []any
 }
 
 // InstanceOption defines a function that configures a job instance.
 type InstanceOption func(*jobInstance) error
 
-// WithInstanceJob sets the job for the job instance.
-func WithInstanceJob(job Job) InstanceOption {
+// WithJob sets the job for the job instance.
+func WithJob(job Job) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.job = job
 		ji.handler.executor = job.Handler().Executor()
@@ -63,7 +63,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		uuid:         uuid.New(),
 		StateHistory: NewStateHistory(),
 		handler:      newHandler(),
-		ctx:          newContext(),
+		args:         []any{},
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -73,8 +73,6 @@ func NewInstance(opts ...any) (Instance, error) {
 			}
 		case HandlerOption:
 			opt(ji.handler)
-		case ContextOption:
-			opt(ji.ctx)
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
@@ -103,7 +101,7 @@ func (ji *jobInstance) Process() error {
 	if ji.handler == nil {
 		return fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
-	err := ji.handler.Execute(ji.ctx.Arguments()...)
+	err := ji.handler.Execute(ji.args...)
 	if err == nil {
 		return nil
 	}

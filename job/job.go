@@ -32,7 +32,6 @@ type job struct {
 	name    string
 	logger  Logger
 	handler *jobHandler
-	ctx     *ctx
 }
 
 // JobOption is a function that configures a job.
@@ -57,7 +56,6 @@ func NewJob(opts ...any) (Job, error) {
 	j := &job{
 		name:    "",
 		handler: newHandler(),
-		ctx:     newContext(),
 		logger:  NewNullLogger(),
 	}
 
@@ -67,8 +65,6 @@ func NewJob(opts ...any) (Job, error) {
 			opt(j)
 		case HandlerOption:
 			opt(j.handler)
-		case ContextOption:
-			opt(j.ctx)
 		default:
 			return nil, fmt.Errorf("invalid job option type: %T", opt)
 		}
