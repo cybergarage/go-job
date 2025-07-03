@@ -105,8 +105,7 @@ func (ji *jobInstance) Process() error {
 	if err == nil {
 		return nil
 	}
-
-	return err
+	return ji.handler.HandleError(ji, err)
 }
 
 // State returns the current state of the job instance.

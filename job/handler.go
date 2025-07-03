@@ -14,10 +14,12 @@
 
 package job
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // ErrorHandler is a function type that defines how to handle errors during job execution.
-type ErrorHandler = func(job Job, err error) (bool, error)
+type ErrorHandler = func(job Instance, err error) error
 
 // HandlerOption is a function type that applies options to a job handler.
 type HandlerOption func(*jobHandler)
@@ -41,7 +43,7 @@ type Handler interface {
 	// Execute runs the job with the provided parameters.
 	Execute(params ...any) error
 	// HandleError processes errors that occur during job execution.
-	HandleError(job Job, err error) (bool, error)
+	HandleError(job Instance, err error) error
 }
 
 type jobHandler struct {
@@ -72,9 +74,10 @@ func (h *jobHandler) Execute(params ...any) error {
 	return nil
 }
 
-func (h *jobHandler) HandleError(job Job, err error) (bool, error) {
+// HandleError processes errors that occur during job execution using the error handler, if set.
+func (h *jobHandler) HandleError(job Instance, err error) error {
 	if h.errorHandler == nil {
-		return false, err // No error handler set, return the error
+		return err
 	}
 	return h.errorHandler(job, err)
 }
