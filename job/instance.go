@@ -28,6 +28,8 @@ type Instance interface {
 	UUID() uuid.UUID
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState) error
+	// Process executes the job instance executor with the arguments provided in the context.
+	Process() error
 	// State returns the current state of the job instance.
 	State() JobState
 	// String returns a string representation of the job instance.
@@ -38,7 +40,7 @@ type jobInstance struct {
 	uuid uuid.UUID
 	*StateHistory
 	handler *jobHandler
-	ctx     *jobContext
+	ctx     *ctx
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -69,7 +71,7 @@ func NewInstance(opts ...any) (Instance, error) {
 			}
 		case JobHandlerOption:
 			opt(ji.handler)
-		case JobContextOption:
+		case ContextOption:
 			opt(ji.ctx)
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
@@ -91,6 +93,11 @@ func (ji *jobInstance) UUID() uuid.UUID {
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState) error {
 	ji.AppendStateRecord(state)
+	return nil
+}
+
+// Process executes the job instance executor with the arguments provided in the context.
+func (ji *jobInstance) Process() error {
 	return nil
 }
 

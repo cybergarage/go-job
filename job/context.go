@@ -14,28 +14,28 @@
 
 package job
 
-// JobContext defines the interface for a job context that holds arguments
-type JobContext interface {
+// Context defines the interface for a job context that holds arguments
+type Context interface {
 	Arguments() []any
 }
 
-// JobContextOption defines a function type that can be used to configure a job context.
-type JobContextOption func(*jobContext)
+// ContextOption defines a function type that can be used to configure a job context.
+type ContextOption func(*ctx)
 
 // WithArguments sets the arguments for the job context.
-func WithArguments(args ...any) JobContextOption {
-	return func(ctx *jobContext) {
+func WithArguments(args ...any) ContextOption {
+	return func(ctx *ctx) {
 		ctx.args = args
 	}
 }
 
-type jobContext struct {
+type ctx struct {
 	args []any
 }
 
 // NewJobContext creates a new job context with the provided options.
-func newJobContext(opts ...JobContextOption) *jobContext {
-	ctx := &jobContext{
+func newJobContext(opts ...ContextOption) *ctx {
+	ctx := &ctx{
 		args: make([]any, 0),
 	}
 	for _, opt := range opts {
@@ -45,6 +45,6 @@ func newJobContext(opts ...JobContextOption) *jobContext {
 }
 
 // Arguments returns the arguments for the job context.
-func (c *jobContext) Arguments() []any {
+func (c *ctx) Arguments() []any {
 	return c.args
 }
