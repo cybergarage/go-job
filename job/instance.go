@@ -46,16 +46,6 @@ type jobInstance struct {
 // InstanceOption defines a function that configures a job instance.
 type InstanceOption func(*jobInstance) error
 
-// WithJob sets the job for the job instance.
-func WithJob(job Job) InstanceOption {
-	return func(ji *jobInstance) error {
-		ji.job = job
-		ji.handler.executor = job.Handler().Executor()
-		ji.handler.errorHandler = job.Handler().ErrorHandler()
-		return nil
-	}
-}
-
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
@@ -75,6 +65,8 @@ func NewInstance(opts ...any) (Instance, error) {
 			opt(ji.handler)
 		case ArgumentsOption:
 			opt(ji.args)
+		case *Arguments:
+			ji.args = opt
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
