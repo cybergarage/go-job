@@ -22,9 +22,9 @@ import (
 // Queue is an interface that defines methods for managing a job queue.
 type Queue interface {
 	// Enqueue adds a job to the queue.
-	Enqueue(job Job) error
+	Enqueue(job Instance) error
 	// Dequeue removes and returns a job from the queue.
-	Dequeue() (Job, error)
+	Dequeue() (Instance, error)
 	// Clear removes all jobs from the queue.
 	Clear() error
 }
@@ -56,26 +56,29 @@ func NewQueue(opts ...QueueOption) Queue {
 }
 
 // Enqueue adds a job to the queue.
-func (q *jobQueue) Enqueue(job Job) error {
-	ji, err := NewInstance(WithJob(job))
-	if err != nil {
-		return err
-	}
+func (q *jobQueue) Enqueue(job Instance) error {
 	q.Lock()
 	defer q.Unlock()
-	return q.store.StoreJob(context.Background(), ji)
+	return q.store.StoreJob(context.Background(), job)
 }
 
 // Dequeue removes and returns a job from the queue.
-func (q *jobQueue) Dequeue() (Job, error) {
+func (q *jobQueue) Dequeue() (Instance, error) {
 	q.Lock()
 	defer q.Unlock()
 	ctx := context.Background()
-	_, err := q.store.ListJobs(ctx)
+	jobs, err := q.store.ListJobs(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	if len(jobs) == 0 {
+		return nil, nil // No jobs to dequeue
+	}
+	job := jobs[0]
+	if err := q.store.RemoveJob(ctx, job); err != nil {
+		return nil, err
+	}
+	return job, nil
 }
 
 // Clear removes all jobs from the queue.
