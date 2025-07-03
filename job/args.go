@@ -12,41 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package jobtest
+package job
 
-import (
-	"testing"
+// Arguments represents the arguments passed to a job.
+type Arguments struct {
+	args []any
+}
 
-	"github.com/cybergarage/go-job/job"
-)
+// ArgumentsOption defines a function that configures the arguments for a job.
+type ArgumentsOption func(*Arguments)
 
-func TestJob(t *testing.T) {
-	jobMgr := job.NewManager()
-
-	if err := jobMgr.Start(); err != nil {
-		t.Fatalf("Failed to start job manager: %v", err)
-	}
-
-	if err := jobMgr.Stop(); err != nil {
-		t.Fatalf("Failed to stop job manager: %v", err)
+// WithArguments sets the arguments for a job.
+func WithArguments(args ...any) ArgumentsOption {
+	return func(a *Arguments) {
+		a.args = args
 	}
 }
 
-func TestNewJob(t *testing.T) {
-	tests := []struct {
-		opts []any
-	}{
-		{
-			opts: []any{
-				job.WithExecutor(func(a, b int) int { return a + b }),
-			},
-		},
+// NewArguments creates a new Arguments instance.
+func NewArguments(opts ...ArgumentsOption) *Arguments {
+	a := &Arguments{}
+	for _, opt := range opts {
+		opt(a)
 	}
+	return a
+}
 
-	for _, tt := range tests {
-		_, err := job.NewJob(tt.opts...)
-		if err != nil {
-			t.Fatalf("Failed to create job: %v", err)
-		}
-	}
+// Args returns the underlying arguments.
+func (a *Arguments) Args() []any {
+	return a.args
 }
