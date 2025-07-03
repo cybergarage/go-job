@@ -50,8 +50,8 @@ type InstanceOption func(*jobInstance) error
 func WithInstanceJob(job Job) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.job = job
-		ji.handler.errorHandler = job.Handler().HandleError
-		ji.handler.executor = job.Handler().Execute
+		ji.handler.executor = job.Handler().Executor()
+		ji.handler.errorHandler = job.Handler().ErrorHandler()
 		return nil
 	}
 }

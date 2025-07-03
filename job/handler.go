@@ -40,7 +40,10 @@ func WithErrorHandler(errorHandler ErrorHandler) HandlerOption {
 
 // Handler is an interface that defines methods for executing jobs and handling errors.
 type Handler interface {
+	// Executor returns the executor function set for the job handler.
 	Executor() Executor
+	// ErrorHandler returns the error handler function set for the job handler.
+	ErrorHandler() ErrorHandler
 	// Execute runs the job with the provided parameters.
 	Execute(params ...any) error
 	// HandleError processes errors that occur during job execution.
@@ -66,6 +69,16 @@ func newHandler(opts ...HandlerOption) *jobHandler {
 		opt(h)
 	}
 	return h
+}
+
+// Executor returns the executor function set for the job handler.
+func (h *jobHandler) Executor() Executor {
+	return h.executor
+}
+
+// ErrorHandler returns the error handler function set for the job handler.
+func (h *jobHandler) ErrorHandler() ErrorHandler {
+	return h.errorHandler
 }
 
 // Execute runs the job using the executor function, if set.
