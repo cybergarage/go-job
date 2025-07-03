@@ -61,7 +61,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		uuid:         uuid.New(),
 		StateHistory: NewStateHistory(),
 		handler:      newJobHandler(),
-		ctx:          newJobContext(),
+		ctx:          NewContext(),
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {

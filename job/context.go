@@ -33,8 +33,8 @@ type ctx struct {
 	args []any
 }
 
-// NewJobContext creates a new job context with the provided options.
-func newJobContext(opts ...ContextOption) *ctx {
+// NewContext creates a new instance of a job context with the provided options.
+func NewContext(opts ...ContextOption) *ctx {
 	ctx := &ctx{
 		args: make([]any, 0),
 	}
