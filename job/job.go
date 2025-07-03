@@ -23,7 +23,7 @@ type Job interface {
 	// Kind returns the name of the job.
 	Kind() string
 	// Handler returns the job handler for the job.
-	Handler() JobHandler
+	Handler() Handler
 	// String returns a string representation of the job.
 	String() string
 }
@@ -65,7 +65,7 @@ func NewJob(opts ...any) (Job, error) {
 		switch opt := opt.(type) {
 		case JobOption:
 			opt(j)
-		case JobHandlerOption:
+		case HandlerOption:
 			opt(j.handler)
 		case ContextOption:
 			opt(j.ctx)
@@ -83,7 +83,7 @@ func (j *job) Kind() string {
 }
 
 // Handler returns the handler of the job.
-func (j *job) Handler() JobHandler {
+func (j *job) Handler() Handler {
 	return j.handler
 }
 

@@ -14,28 +14,28 @@
 
 package job
 
-// JobErrorHandler is a function type that defines how to handle errors during job execution.
-type JobErrorHandler = func(job Job, err error) (bool, error)
+// ErrorHandler is a function type that defines how to handle errors during job execution.
+type ErrorHandler = func(job Job, err error) (bool, error)
 
-// JobHandlerOption is a function type that applies options to a job handler.
-type JobHandlerOption func(*jobHandler)
+// HandlerOption is a function type that applies options to a job handler.
+type HandlerOption func(*jobHandler)
 
 // WithExecutor sets the executor function for the job handler.
-func WithExecutor(executor JobExecutor) JobHandlerOption {
+func WithExecutor(executor JobExecutor) HandlerOption {
 	return func(h *jobHandler) {
 		h.executor = executor
 	}
 }
 
 // WithErrorHandler sets the error handler function for the job handler.
-func WithErrorHandler(errorHandler JobErrorHandler) JobHandlerOption {
+func WithErrorHandler(errorHandler ErrorHandler) HandlerOption {
 	return func(h *jobHandler) {
 		h.errorHandler = errorHandler
 	}
 }
 
-// JobHandler is an interface that defines methods for executing jobs and handling errors.
-type JobHandler interface {
+// Handler is an interface that defines methods for executing jobs and handling errors.
+type Handler interface {
 	// Execute runs the job with the provided parameters.
 	Execute(params ...any) error
 	// HandleError processes errors that occur during job execution.
@@ -44,10 +44,10 @@ type JobHandler interface {
 
 type jobHandler struct {
 	executor     JobExecutor
-	errorHandler JobErrorHandler
+	errorHandler ErrorHandler
 }
 
-func newJobHandler(opts ...JobHandlerOption) *jobHandler {
+func newJobHandler(opts ...HandlerOption) *jobHandler {
 	h := &jobHandler{
 		executor:     nil, // Default executor is nil
 		errorHandler: nil, // Default error handler is nil

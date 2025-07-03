@@ -69,7 +69,7 @@ func NewInstance(opts ...any) (Instance, error) {
 			if err := opt(ji); err != nil {
 				return nil, err
 			}
-		case JobHandlerOption:
+		case HandlerOption:
 			opt(ji.handler)
 		case ContextOption:
 			opt(ji.ctx)
