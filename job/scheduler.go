@@ -45,7 +45,10 @@ func NewScheduler(opts ...SchedulerOption) *scheduler {
 }
 
 // ScheduleJob schedules a job for execution.
-func (s *scheduler) ScheduleJob(job Job) error {
+func (s *scheduler) ScheduleJob(job Job, opts ...any) error {
+	opts = append(opts,
+		WithExecutor(job.Handler().Execute()),
+		WithErrorHandler(job.Handler().ErrorHandler()))
 	// Implementation for scheduling the job
 	return nil
 }
