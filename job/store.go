@@ -28,13 +28,13 @@ import (
 // or concurrency control to ensure data integrity.
 type Store interface {
 	// StoreJob stores a job in the store.
-	StoreJob(ctx context.Context, job JobInstance) error
+	StoreJob(ctx context.Context, job Instance) error
 	// UpdateJob updates an existing job in the store.
-	UpdateJob(ctx context.Context, job JobInstance) error
+	UpdateJob(ctx context.Context, job Instance) error
 	// RemoveJob removes a job from the store by its unique identifier.
-	RemoveJob(ctx context.Context, job JobInstance) error
+	RemoveJob(ctx context.Context, job Instance) error
 	// ListJobs lists all jobs in the store.
-	ListJobs(ctx context.Context) ([]JobInstance, error)
+	ListJobs(ctx context.Context) ([]Instance, error)
 	// ClearJobs clears all jobs from the store.
 	ClearJobs(ctx context.Context) error
 }

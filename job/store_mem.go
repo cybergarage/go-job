@@ -31,14 +31,14 @@ func NewMemStore() Store {
 }
 
 // StoreJob stores a job in the in-memory store.
-func (s *memStore) StoreJob(ctx context.Context, job JobInstance) error {
+func (s *memStore) StoreJob(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
 	return nil
 }
 
-func (s *memStore) UpdateJob(ctx context.Context, job JobInstance) error {
+func (s *memStore) UpdateJob(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -46,7 +46,7 @@ func (s *memStore) UpdateJob(ctx context.Context, job JobInstance) error {
 }
 
 // RemoveJob removes a job from the in-memory store by its unique identifier.
-func (s *memStore) RemoveJob(ctx context.Context, job JobInstance) error {
+func (s *memStore) RemoveJob(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -54,10 +54,10 @@ func (s *memStore) RemoveJob(ctx context.Context, job JobInstance) error {
 }
 
 // ListJobs lists all jobs in the in-memory store.
-func (s *memStore) ListJobs(ctx context.Context) ([]JobInstance, error) {
-	jobs := make([]JobInstance, 0)
+func (s *memStore) ListJobs(ctx context.Context) ([]Instance, error) {
+	jobs := make([]Instance, 0)
 	s.jobs.Range(func(key, value interface{}) bool {
-		if job, ok := value.(JobInstance); ok {
+		if job, ok := value.(Instance); ok {
 			jobs = append(jobs, job)
 		}
 		return true

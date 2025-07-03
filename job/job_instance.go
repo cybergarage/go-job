@@ -15,11 +15,13 @@
 package job
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 )
 
-// JobInstance represents a specific instance of a job that has been scheduled or executed.
-type JobInstance interface {
+// Instance represents a specific instance of a job that has been scheduled or executed.
+type Instance interface {
 	// Job returns the job associated with this job instance.
 	Job() Job
 	// UUID returns the unique identifier of the job instance.
@@ -30,4 +32,78 @@ type JobInstance interface {
 	State() JobState
 	// String returns a string representation of the job instance.
 	String() string
+}
+type jobInstance struct {
+	job  Job
+	uuid uuid.UUID
+	*JobStateHistory
+	handler *jobHandler
+	ctx     *jobContext
+}
+
+// InstanceOption defines a function that configures a job instance.
+type InstanceOption func(*jobInstance) error
+
+// WithInstanceJob sets the job for the job instance.
+func WithInstanceJob(job Job) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.job = job
+		return nil
+	}
+}
+
+// NewInstance creates a new JobInstance with a unique identifier and initial state.
+func NewInstance(opts ...any) (Instance, error) {
+	ji := &jobInstance{
+		job:             nil, // Default to nil, must be set by options
+		uuid:            uuid.New(),
+		JobStateHistory: NewJobStateHistory(),
+		handler:         newJobHandler(),
+		ctx:             newJobContext(),
+	}
+	for _, opt := range opts {
+		switch opt := opt.(type) {
+		case InstanceOption:
+			if err := opt(ji); err != nil {
+				return nil, err
+			}
+		case JobHandlerOption:
+			opt(ji.handler)
+		case JobContextOption:
+			opt(ji.ctx)
+		default:
+			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
+		}
+	}
+	return ji, nil
+}
+
+// Job returns the job associated with this job instance.
+func (ji *jobInstance) Job() Job {
+	return ji.job
+}
+
+// UUID returns the unique identifier of the job instance.
+func (ji *jobInstance) UUID() uuid.UUID {
+	return ji.uuid
+}
+
+// UpdateState updates the state of the job instance and records the state change.
+func (ji *jobInstance) UpdateState(state JobState) error {
+	ji.AppendStateRecord(state)
+	return nil
+}
+
+// State returns the current state of the job instance.
+func (ji *jobInstance) State() JobState {
+	r := ji.LastStateRecord()
+	if r == nil {
+		return JobStateUnknown
+	}
+	return r.State()
+}
+
+// String returns a string representation of the job instance.
+func (ji *jobInstance) String() string {
+	return fmt.Sprintf("JobInstance{UUID: %s, Job: %v, State: %v}", ji.uuid, ji.job, ji.State())
 }

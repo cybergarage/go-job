@@ -35,7 +35,7 @@ func TestNewJobInstance(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := job.NewJobInstance(tt.opts...)
+		_, err := job.NewInstance(tt.opts...)
 		if err != nil {
 			t.Fatalf("Failed to create job instance: %v", err)
 		}
