@@ -14,6 +14,8 @@
 
 package job
 
+import "fmt"
+
 // ErrorHandler is a function type that defines how to handle errors during job execution.
 type ErrorHandler = func(job Job, err error) (bool, error)
 
@@ -61,7 +63,7 @@ func newJobHandler(opts ...HandlerOption) *jobHandler {
 // Execute runs the job using the executor function, if set.
 func (h *jobHandler) Execute(params ...any) error {
 	if h.executor == nil {
-		return nil // No executor set, nothing to do
+		return fmt.Errorf("no executor set for job handler")
 	}
 	_, err := Execute(h.executor, params...)
 	if err != nil {
