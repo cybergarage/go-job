@@ -21,3 +21,54 @@ type Worker interface {
 	// Stop stops the worker from processing jobs.
 	Stop() error
 }
+
+type worker struct {
+	jobQueue Queue
+	done     chan struct{}
+}
+
+// WorkerOption is a function that configures a job worker.
+type WorkerOption func(*worker)
+
+// WithWorkerQueue sets the job queue for the worker.
+func WithWorkerQueue(queue Queue) WorkerOption {
+	return func(w *worker) {
+		w.jobQueue = queue
+	}
+}
+
+// NewWorker creates a new instance of the job worker.
+func NewWorker(opts ...WorkerOption) Worker {
+	w := &worker{
+		jobQueue: nil,
+		done:     make(chan struct{}),
+	}
+	for _, opt := range opts {
+		opt(w)
+	}
+	return w
+}
+
+// Start starts the worker to process jobs.
+func (w *worker) Start() error {
+	go func() {
+		for {
+			select {
+			case <-w.done:
+				return
+			default:
+				_, err := w.jobQueue.Dequeue()
+				if err != nil {
+					continue
+				}
+			}
+		}
+	}()
+	return nil
+}
+
+// Stop stops the worker from processing jobs.
+func (w *worker) Stop() error {
+	close(w.done)
+	return nil
+}

@@ -24,8 +24,6 @@ type Job interface {
 	Kind() string
 	// Handler returns the job handler for the job.
 	Handler() JobHandler
-	// Process processes the job using the job handler.
-	Process() error
 	// String returns a string representation of the job.
 	String() string
 }
@@ -87,13 +85,6 @@ func (j *job) Kind() string {
 // Handler returns the handler of the job.
 func (j *job) Handler() JobHandler {
 	return j.handler
-}
-
-func (j *job) Process() error {
-	// Implement the logic to process the job
-	// For example, you might want to execute the job's command or function
-	// and update its state in the database or in-memory store.
-	return nil
 }
 
 // String returns a string representation of the job.
