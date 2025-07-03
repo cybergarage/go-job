@@ -98,7 +98,15 @@ func (ji *jobInstance) UpdateState(state JobState) error {
 
 // Process executes the job instance executor with the arguments provided in the context.
 func (ji *jobInstance) Process() error {
-	return nil
+	if ji.handler == nil {
+		return fmt.Errorf("no job handler set for job instance %s", ji.uuid)
+	}
+	err := ji.handler.Execute(ji.ctx.Arguments()...)
+	if err == nil {
+		return nil
+	}
+
+	return err
 }
 
 // State returns the current state of the job instance.
