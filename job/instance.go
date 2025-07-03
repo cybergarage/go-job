@@ -50,6 +50,8 @@ type InstanceOption func(*jobInstance) error
 func WithInstanceJob(job Job) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.job = job
+		ji.handler.errorHandler = job.Handler().HandleError
+		ji.handler.executor = job.Handler().Execute
 		return nil
 	}
 }
@@ -60,7 +62,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		job:          nil, // Default to nil, must be set by options
 		uuid:         uuid.New(),
 		StateHistory: NewStateHistory(),
-		handler:      newJobHandler(),
+		handler:      newHandler(),
 		ctx:          newContext(),
 	}
 	for _, opt := range opts {

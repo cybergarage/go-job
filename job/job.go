@@ -56,7 +56,7 @@ func WithJobLogger(logger Logger) JobOption {
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
 		name:    "",
-		handler: newJobHandler(),
+		handler: newHandler(),
 		ctx:     newContext(),
 		logger:  NewNullLogger(),
 	}

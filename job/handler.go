@@ -25,7 +25,7 @@ type ErrorHandler = func(job Instance, err error) error
 type HandlerOption func(*jobHandler)
 
 // WithExecutor sets the executor function for the job handler.
-func WithExecutor(executor JobExecutor) HandlerOption {
+func WithExecutor(executor Executor) HandlerOption {
 	return func(h *jobHandler) {
 		h.executor = executor
 	}
@@ -40,6 +40,7 @@ func WithErrorHandler(errorHandler ErrorHandler) HandlerOption {
 
 // Handler is an interface that defines methods for executing jobs and handling errors.
 type Handler interface {
+	Executor() Executor
 	// Execute runs the job with the provided parameters.
 	Execute(params ...any) error
 	// HandleError processes errors that occur during job execution.
@@ -47,11 +48,16 @@ type Handler interface {
 }
 
 type jobHandler struct {
-	executor     JobExecutor
+	executor     Executor
 	errorHandler ErrorHandler
 }
 
-func newJobHandler(opts ...HandlerOption) *jobHandler {
+// NewHandler creates a new instance of a job handler with the provided options.
+func NewHandler(opts ...HandlerOption) Handler {
+	return newHandler(opts...)
+}
+
+func newHandler(opts ...HandlerOption) *jobHandler {
 	h := &jobHandler{
 		executor:     nil, // Default executor is nil
 		errorHandler: nil, // Default error handler is nil

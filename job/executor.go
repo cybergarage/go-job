@@ -21,8 +21,8 @@ import (
 	"github.com/cybergarage/go-safecast/safecast"
 )
 
-// JobExecutor is a type that represents a function that executes a job.
-type JobExecutor any
+// Executor is a type that represents a function that executes a job.
+type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
 func Execute(fn any, args ...any) (result []any, err error) {
