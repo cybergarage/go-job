@@ -57,7 +57,7 @@ func NewJob(opts ...any) (Job, error) {
 	j := &job{
 		name:    "",
 		handler: newJobHandler(),
-		ctx:     NewContext(),
+		ctx:     newContext(),
 		logger:  NewNullLogger(),
 	}
 
