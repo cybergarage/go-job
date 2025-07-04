@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
@@ -47,12 +48,16 @@ func TestScheduleJobs(t *testing.T) {
 		}
 	}()
 
-	resHandler := func(job job.Instance, responses []any) {
-		t.Logf("Job %s executed with responses: %v", job.Kind(), responses)
-	}
-
 	for _, tt := range tests {
 		t.Run(tt.kind, func(t *testing.T) {
+			var wg sync.WaitGroup
+			wg.Add(1)
+
+			resHandler := func(job job.Instance, responses []any) {
+				t.Logf("Job %s executed with responses: %v", job.Kind(), responses)
+				wg.Done()
+			}
+
 			opts := append(
 				tt.opts,
 				job.WithKind(tt.kind),
@@ -72,6 +77,8 @@ func TestScheduleJobs(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Failed to schedule job: %v", err)
 			}
+
+			wg.Wait()
 		})
 	}
 }
