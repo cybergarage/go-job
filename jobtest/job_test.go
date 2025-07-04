@@ -20,28 +20,29 @@ import (
 	"github.com/cybergarage/go-job/job"
 )
 
-func TestJob(t *testing.T) {
-	jobMgr := job.NewManager()
-
-	if err := jobMgr.Start(); err != nil {
-		t.Fatalf("Failed to start job manager: %v", err)
-	}
-
-	if err := jobMgr.Stop(); err != nil {
-		t.Fatalf("Failed to stop job manager: %v", err)
-	}
-}
-
 func TestNewJob(t *testing.T) {
 	tests := []struct {
 		opts []any
 	}{
 		{
 			opts: []any{
+				job.WithKind("sum"),
 				job.WithExecutor(func(a, b int) int { return a + b }),
 			},
 		},
 	}
+
+	jobMgr := job.NewManager()
+
+	if err := jobMgr.Start(); err != nil {
+		t.Fatalf("Failed to start job manager: %v", err)
+	}
+
+	defer func() {
+		if err := jobMgr.Stop(); err != nil {
+			t.Errorf("Failed to stop job manager: %v", err)
+		}
+	}()
 
 	for _, tt := range tests {
 		_, err := job.NewJob(tt.opts...)
