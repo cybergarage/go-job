@@ -25,7 +25,7 @@ import (
 type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
-func Execute(fn any, args ...any) (result []any, err error) {
+func Execute(fn any, args ...any) (results []any, err error) {
 	fnObj := reflect.ValueOf(fn)
 	fnType := fnObj.Type()
 	if fnType.Kind() != reflect.Func {
@@ -51,9 +51,9 @@ func Execute(fn any, args ...any) (result []any, err error) {
 		return nil, fmt.Errorf("argument[%d] type mismatch: want %v, got %v (%v)", i, fnParamType, argValue.Type(), arg)
 	}
 	reflectResults := fnObj.Call(fnArgs)
-	result = make([]any, len(reflectResults))
+	results = make([]any, len(reflectResults))
 	for i, r := range reflectResults {
-		result[i] = r.Interface()
+		results[i] = r.Interface()
 	}
-	return result, nil
+	return results, nil
 }
