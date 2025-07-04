@@ -17,6 +17,7 @@ package job
 import (
 	"context"
 	"sync"
+	"time"
 )
 
 // Queue is an interface that defines methods for managing a job queue.
@@ -27,24 +28,24 @@ type Queue interface {
 	Dequeue() (Instance, error)
 }
 
-type jobQueue struct {
+type queue struct {
 	sync.Mutex
 	store Store
 }
 
 // QueueOption is a function that configures a job queue.
-type QueueOption func(*jobQueue)
+type QueueOption func(*queue)
 
 // WithQueueStore sets the store for the job queue.
 func WithQueueStore(store Store) QueueOption {
-	return func(q *jobQueue) {
+	return func(q *queue) {
 		q.store = store
 	}
 }
 
 // NewQueue creates a new instance of the job queue.
 func NewQueue(opts ...QueueOption) Queue {
-	queue := &jobQueue{
+	queue := &queue{
 		Mutex: sync.Mutex{},
 		store: nil,
 	}
@@ -55,27 +56,31 @@ func NewQueue(opts ...QueueOption) Queue {
 }
 
 // Enqueue adds a job to the queue.
-func (q *jobQueue) Enqueue(job Instance) error {
+func (q *queue) Enqueue(job Instance) error {
 	q.Lock()
 	defer q.Unlock()
 	return q.store.StoreJob(context.Background(), job)
 }
 
 // Dequeue removes and returns a job from the queue.
-func (q *jobQueue) Dequeue() (Instance, error) {
+func (q *queue) Dequeue() (Instance, error) {
 	q.Lock()
 	defer q.Unlock()
-	ctx := context.Background()
-	jobs, err := q.store.ListJobs(ctx)
-	if err != nil {
-		return nil, err
+
+	for {
+		ctx := context.Background()
+		jobs, err := q.store.ListJobs(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if 0 < len(jobs) {
+			job := jobs[0]
+			err := q.store.RemoveJob(ctx, job)
+			if err != nil {
+				return nil, err
+			}
+			return job, nil
+		}
+		time.Sleep(1 * time.Second)
 	}
-	if len(jobs) == 0 {
-		return nil, nil // No jobs to dequeue
-	}
-	job := jobs[0]
-	if err := q.store.RemoveJob(ctx, job); err != nil {
-		return nil, err
-	}
-	return job, nil
 }
