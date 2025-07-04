@@ -16,7 +16,9 @@ package job
 
 // Scheduler is responsible for scheduling jobs.
 type Scheduler interface {
-	ScheduleJob(job Job) error
+	// ScheduleJob schedules a job instance with the given job and options.
+	// It creates a new job instance and enqueues it in the job queue.
+	ScheduleJob(job Job, opts ...any) error
 }
 
 // SchedulerOption is a function that configures a job scheduler.
@@ -44,7 +46,8 @@ func NewScheduler(opts ...SchedulerOption) *scheduler {
 	return s
 }
 
-// ScheduleJob schedules a job for execution.
+// ScheduleJob schedules a job instance with the given job and options.
+// It creates a new job instance and enqueues it in the job queue.
 func (s *scheduler) ScheduleJob(job Job, opts ...any) error {
 	opts = append(opts,
 		WithExecutor(job.Handler().Execute()),
