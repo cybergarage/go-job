@@ -23,8 +23,8 @@ type Worker interface {
 }
 
 type worker struct {
-	jobQueue Queue
-	done     chan struct{}
+	queue Queue
+	done  chan struct{}
 }
 
 // WorkerOption is a function that configures a job worker.
@@ -33,15 +33,15 @@ type WorkerOption func(*worker)
 // WithWorkerQueue sets the job queue for the worker.
 func WithWorkerQueue(queue Queue) WorkerOption {
 	return func(w *worker) {
-		w.jobQueue = queue
+		w.queue = queue
 	}
 }
 
 // NewWorker creates a new instance of the job worker.
 func NewWorker(opts ...WorkerOption) Worker {
 	w := &worker{
-		jobQueue: nil,
-		done:     make(chan struct{}),
+		queue: nil,
+		done:  make(chan struct{}),
 	}
 	for _, opt := range opts {
 		opt(w)
@@ -57,7 +57,11 @@ func (w *worker) Start() error {
 			case <-w.done:
 				return
 			default:
-				_, err := w.jobQueue.Dequeue()
+				ji, err := w.queue.Dequeue()
+				if err != nil {
+					continue
+				}
+				err = ji.Process()
 				if err != nil {
 					continue
 				}
