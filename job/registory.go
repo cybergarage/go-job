@@ -14,10 +14,14 @@
 
 package job
 
-// JobRegistry is an interface that defines methods for managing job instances.
-type JobRegistry interface {
+import (
+	"fmt"
+)
+
+// Registry is an interface that defines methods for managing job instances.
+type Registry interface {
 	// RegisterJob registers a job in the registry.
-	RegisterJob(job Job)
+	RegisterJob(job Job) error
 	// UnregisterJob removes a job from the registry by its kind.
 	UnregisterJob(kind Kind)
 	// RegisteredJobs returns a slice of all registered jobs.
@@ -26,30 +30,34 @@ type JobRegistry interface {
 	LookupJob(kind Kind) (Job, bool)
 }
 
-// jobRegistry is responsible for managing job instances.
-type jobRegistry struct {
+// registry is responsible for managing job instances.
+type registry struct {
 	jobs map[string]Job
 }
 
 // NewJobRegistry creates a new instance of JobRegistry.
-func NewJobRegistry() JobRegistry {
-	return &jobRegistry{
+func NewJobRegistry() Registry {
+	return &registry{
 		jobs: make(map[string]Job),
 	}
 }
 
 // RegisterJob registers a job in the registry.
-func (r *jobRegistry) RegisterJob(job Job) {
+func (r *registry) RegisterJob(job Job) error {
+	if _, exists := r.jobs[job.Kind()]; exists {
+		return fmt.Errorf("job with kind %q is already registered", job.Kind())
+	}
 	r.jobs[job.Kind()] = job
+	return nil
 }
 
 // UnregisterJob removes a job from the registry by its kind.
-func (r *jobRegistry) UnregisterJob(kind Kind) {
+func (r *registry) UnregisterJob(kind Kind) {
 	delete(r.jobs, kind)
 }
 
 // RegisteredJobs returns a slice of all registered jobs.
-func (r *jobRegistry) RegisteredJobs() []Job {
+func (r *registry) RegisteredJobs() []Job {
 	jobs := make([]Job, 0, len(r.jobs))
 	for _, job := range r.jobs {
 		jobs = append(jobs, job)
@@ -58,7 +66,7 @@ func (r *jobRegistry) RegisteredJobs() []Job {
 }
 
 // LookupJob looks up a job by its kind in the registry.
-func (r *jobRegistry) LookupJob(kind Kind) (Job, bool) {
+func (r *registry) LookupJob(kind Kind) (Job, bool) {
 	job, exists := r.jobs[kind]
 	return job, exists
 }

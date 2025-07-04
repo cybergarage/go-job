@@ -16,5 +16,5 @@ package job
 
 type Repository interface {
 	// JobRegistry is an interface that defines methods for managing job instances.
-	JobRegistry
+	Registry
 }

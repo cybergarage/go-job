@@ -23,7 +23,7 @@ import (
 // Manager is an interface that defines methods for managing jobs.
 type Manager interface {
 	// JobRegistry provides access to the job registry.
-	JobRegistry
+	Registry
 	// JobScheduler provides access to the job scheduler.
 	Scheduler
 	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
@@ -40,7 +40,7 @@ type manager struct {
 	queue   Queue
 	workers []Worker
 	*scheduler
-	JobRegistry
+	Registry
 }
 
 // ManagerOption is a function that configures a job manager.
@@ -70,13 +70,13 @@ func WithStore(store Store) ManagerOption {
 // NewManager creates a new instance of the job manager.
 func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
-		Mutex:       sync.Mutex{},
-		logger:      NewNullLogger(),
-		store:       NewMemStore(),
-		scheduler:   nil,
-		JobRegistry: NewJobRegistry(),
-		queue:       nil,
-		workers:     make([]Worker, 1),
+		Mutex:     sync.Mutex{},
+		logger:    NewNullLogger(),
+		store:     NewMemStore(),
+		scheduler: nil,
+		Registry:  NewJobRegistry(),
+		queue:     nil,
+		workers:   make([]Worker, 1),
 	}
 	for _, opt := range opts {
 		opt(mgr)

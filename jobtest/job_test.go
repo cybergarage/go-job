@@ -20,13 +20,14 @@ import (
 	"github.com/cybergarage/go-job/job"
 )
 
-func TestNewJob(t *testing.T) {
+func TestScheduleJobs(t *testing.T) {
 	tests := []struct {
+		kind string
 		opts []any
 	}{
 		{
+			kind: "sum",
 			opts: []any{
-				job.WithKind("sum"),
 				job.WithExecutor(func(a, b int) int { return a + b }),
 			},
 		},
@@ -45,9 +46,16 @@ func TestNewJob(t *testing.T) {
 	}()
 
 	for _, tt := range tests {
-		_, err := job.NewJob(tt.opts...)
-		if err != nil {
-			t.Fatalf("Failed to create job: %v", err)
-		}
+		t.Run(tt.kind, func(t *testing.T) {
+			opts := append(tt.opts, job.WithKind(tt.kind))
+			job, err := job.NewJob(opts...)
+			if err != nil {
+				t.Fatalf("Failed to create job: %v", err)
+			}
+			err = jobMgr.RegisterJob(job)
+			if err != nil {
+				t.Fatalf("Failed to register job: %v", err)
+			}
+		})
 	}
 }
