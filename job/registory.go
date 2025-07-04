@@ -19,11 +19,11 @@ type JobRegistry interface {
 	// RegisterJob registers a job in the registry.
 	RegisterJob(job Job)
 	// UnregisterJob removes a job from the registry by its kind.
-	UnregisterJob(kind JobKind)
+	UnregisterJob(kind Kind)
 	// RegisteredJobs returns a slice of all registered jobs.
 	RegisteredJobs() []Job
 	// LookupJob looks up a job by its kind in the registry.
-	LookupJob(kind JobKind) (Job, bool)
+	LookupJob(kind Kind) (Job, bool)
 }
 
 // jobRegistry is responsible for managing job instances.
@@ -44,7 +44,7 @@ func (r *jobRegistry) RegisterJob(job Job) {
 }
 
 // UnregisterJob removes a job from the registry by its kind.
-func (r *jobRegistry) UnregisterJob(kind JobKind) {
+func (r *jobRegistry) UnregisterJob(kind Kind) {
 	delete(r.jobs, kind)
 }
 
@@ -58,7 +58,7 @@ func (r *jobRegistry) RegisteredJobs() []Job {
 }
 
 // LookupJob looks up a job by its kind in the registry.
-func (r *jobRegistry) LookupJob(kind JobKind) (Job, bool) {
+func (r *jobRegistry) LookupJob(kind Kind) (Job, bool) {
 	job, exists := r.jobs[kind]
 	return job, exists
 }

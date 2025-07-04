@@ -14,5 +14,5 @@
 
 package job
 
-// JobKind is a type that represents the kind of a job.
-type JobKind = string
+// Kind is a type that represents the kind of a job.
+type Kind = string
