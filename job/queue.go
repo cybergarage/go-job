@@ -64,13 +64,12 @@ func (q *queue) Enqueue(job Instance) error {
 
 // Dequeue removes and returns a job from the queue.
 func (q *queue) Dequeue() (Instance, error) {
-	q.Lock()
-	defer q.Unlock()
-
 	for {
+		q.Lock()
 		ctx := context.Background()
 		jobs, err := q.store.ListJobs(ctx)
 		if err != nil {
+			q.Unlock()
 			return nil, err
 		}
 		if 0 < len(jobs) {
@@ -79,8 +78,10 @@ func (q *queue) Dequeue() (Instance, error) {
 			if err != nil {
 				return nil, err
 			}
+			q.Unlock()
 			return job, nil
 		}
+		q.Unlock()
 		time.Sleep(1 * time.Second)
 	}
 }
