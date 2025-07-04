@@ -36,7 +36,7 @@ type scheduler struct {
 // NewScheduler creates a new instance of Scheduler.
 func NewScheduler(opts ...SchedulerOption) *scheduler {
 	s := &scheduler{
-		Queue: nil, // Initialize with a default queue or nil
+		Queue: NewQueue(WithQueueStore(NewMemStore())),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -49,6 +49,12 @@ func (s *scheduler) ScheduleJob(job Job, opts ...any) error {
 	opts = append(opts,
 		WithExecutor(job.Handler().Execute()),
 		WithErrorHandler(job.Handler().ErrorHandler()))
-	// Implementation for scheduling the job
+	ji, err := NewInstance(opts...)
+	if err != nil {
+		return err
+	}
+	if err := s.Queue.Enqueue(ji); err != nil {
+		return err
+	}
 	return nil
 }
