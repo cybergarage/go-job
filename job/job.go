@@ -31,7 +31,7 @@ type Job interface {
 type job struct {
 	kind    string
 	logger  Logger
-	handler *jobHandler
+	handler *handler
 }
 
 // JobOption is a function that configures a job.

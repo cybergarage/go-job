@@ -47,9 +47,17 @@ func TestScheduleJobs(t *testing.T) {
 		}
 	}()
 
+	resHandler := func(job job.Instance, responses []any) {
+		t.Logf("Job %s executed with responses: %v", job.Kind(), responses)
+	}
+
 	for _, tt := range tests {
 		t.Run(tt.kind, func(t *testing.T) {
-			opts := append(tt.opts, job.WithKind(tt.kind))
+			opts := append(
+				tt.opts,
+				job.WithKind(tt.kind),
+				job.WithResponseHandler(resHandler),
+			)
 			j, err := job.NewJob(opts...)
 			if err != nil {
 				t.Fatalf("Failed to create job: %v", err)

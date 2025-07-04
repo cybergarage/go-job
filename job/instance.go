@@ -24,6 +24,8 @@ import (
 type Instance interface {
 	// Job returns the job associated with this job instance.
 	Job() Job
+	// Kind returns the kind of job this instance represents.
+	Kind() Kind
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
 	// UpdateState updates the state of the job instance and records the state change.
@@ -39,7 +41,7 @@ type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
 	*StateHistory
-	handler *jobHandler
+	handler *handler
 	args    *Arguments
 }
 
@@ -77,6 +79,14 @@ func NewInstance(opts ...any) (Instance, error) {
 // Job returns the job associated with this job instance.
 func (ji *jobInstance) Job() Job {
 	return ji.job
+}
+
+// Kind returns the kind of job this instance represents.
+func (ji *jobInstance) Kind() Kind {
+	if ji.job == nil {
+		return ""
+	}
+	return ji.job.Kind()
 }
 
 // UUID returns the unique identifier of the job instance.

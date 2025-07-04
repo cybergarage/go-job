@@ -51,7 +51,9 @@ func NewScheduler(opts ...SchedulerOption) *scheduler {
 func (s *scheduler) ScheduleJob(job Job, opts ...any) error {
 	opts = append(opts,
 		WithExecutor(job.Handler().Execute()),
-		WithErrorHandler(job.Handler().ErrorHandler()))
+		WithErrorHandler(job.Handler().ErrorHandler()),
+		WithResponseHandler(job.Handler().ResponseHandler()),
+	)
 	ji, err := NewInstance(opts...)
 	if err != nil {
 		return err
