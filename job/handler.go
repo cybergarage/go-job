@@ -57,7 +57,7 @@ type Handler interface {
 	// ResponseHandler returns the response handler function set for the job handler.
 	ResponseHandler() ResponseHandler
 	// Execute runs the job with the provided parameters.
-	Execute(params ...any) error
+	Execute(params ...any) ([]any, error)
 	// HandleError processes errors that occur during job execution.
 	HandleError(job Instance, err error) error
 	// HandleResponse processes the responses from a job execution.
@@ -103,15 +103,15 @@ func (h *handler) ResponseHandler() ResponseHandler {
 }
 
 // Execute runs the job using the executor function, if set.
-func (h *handler) Execute(params ...any) error {
+func (h *handler) Execute(params ...any) ([]any, error) {
 	if h.executor == nil {
-		return fmt.Errorf("no executor set for job handler")
+		return nil, fmt.Errorf("no executor set for job handler")
 	}
-	_, err := Execute(h.executor, params...)
+	res, err := Execute(h.executor, params...)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return res, nil
 }
 
 // HandleError processes errors that occur during job execution using the error handler, if set.

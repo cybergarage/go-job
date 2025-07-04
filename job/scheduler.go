@@ -50,7 +50,7 @@ func NewScheduler(opts ...SchedulerOption) *scheduler {
 // It creates a new job instance and enqueues it in the job queue.
 func (s *scheduler) ScheduleJob(job Job, opts ...any) error {
 	opts = append(opts,
-		WithExecutor(job.Handler().Execute()),
+		WithExecutor(job.Handler().Executor()),
 		WithErrorHandler(job.Handler().ErrorHandler()),
 		WithResponseHandler(job.Handler().ResponseHandler()),
 	)

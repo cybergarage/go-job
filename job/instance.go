@@ -105,8 +105,9 @@ func (ji *jobInstance) Process() error {
 	if ji.handler == nil {
 		return fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
-	err := ji.handler.Execute(ji.args.Args()...)
+	res, err := ji.handler.Execute(ji.args.Args()...)
 	if err == nil {
+		ji.handler.HandleResponse(ji, res)
 		return nil
 	}
 	return ji.handler.HandleError(ji, err)
