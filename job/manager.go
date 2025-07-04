@@ -15,17 +15,19 @@
 package job
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"sync"
 )
 
-// JobManager is an interface that defines methods for managing jobs.
-type JobManager interface {
+// Manager is an interface that defines methods for managing jobs.
+type Manager interface {
 	// JobRegistry provides access to the job registry.
 	JobRegistry
 	// JobScheduler provides access to the job scheduler.
 	Scheduler
+	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
+	ScheduleRegisteredJob(kind Kind, opts ...any) error
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
@@ -91,46 +93,13 @@ func NewManager(opts ...ManagerOption) *manager {
 	return mgr
 }
 
-// ProcessJob processes a job by executing it and updating its state.
-func (mgr *manager) ProcessJob(ctx context.Context, job Job) error {
-	if job == nil {
-		return nil
+// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
+func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) error {
+	job, ok := mgr.LookupJob(kind)
+	if !ok {
+		return fmt.Errorf("job not found: %s", kind)
 	}
-	// Implement the logic to process the job
-	// For example, you might want to execute the job's command or function
-	// and update its state in the database or in-memory store.
-	return nil
-}
-
-// ScheduleJob schedules a job to run at a specific time or interval.
-func (mgr *manager) ScheduleJob(ctx context.Context, job Job) error {
-	// Implement the logic to schedule the job
-	// For example, you might want to add the job to a queue or a scheduler
-	// that will execute it at the specified time or interval.
-	return nil
-}
-
-// CancelJob cancels a scheduled job.
-func (mgr *manager) CancelJob(ctx context.Context, job Job) error {
-	// Implement the logic to cancel the job
-	// For example, you might want to remove the job from the queue or scheduler
-	// and update its state to "canceled" in the database or in-memory store.
-	return nil
-}
-
-// ListJobs lists all jobs with the specified state.
-func (mgr *manager) ListJobs(ctx context.Context, state JobState) ([]Instance, error) {
-	storeJobs, err := mgr.store.ListJobs(ctx)
-	if err != nil {
-		return nil, err
-	}
-	jobs := make([]Instance, 0)
-	for _, job := range storeJobs {
-		if job.State() == state {
-			jobs = append(jobs, job)
-		}
-	}
-	return jobs, nil
+	return mgr.ScheduleJob(job, opts...)
 }
 
 // Start starts the job manager.
