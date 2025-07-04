@@ -29,7 +29,7 @@ type Job interface {
 }
 
 type job struct {
-	name    string
+	kind    string
 	logger  Logger
 	handler *jobHandler
 }
@@ -37,10 +37,10 @@ type job struct {
 // JobOption is a function that configures a job.
 type JobOption func(*job)
 
-// WithJobName sets the name of the job.
-func WithJobName(name string) JobOption {
+// WithKind sets the name of the job.
+func WithKind(name string) JobOption {
 	return func(j *job) {
-		j.name = name
+		j.kind = name
 	}
 }
 
@@ -54,7 +54,7 @@ func WithJobLogger(logger Logger) JobOption {
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
-		name:    "",
+		kind:    "",
 		handler: newHandler(),
 		logger:  NewNullLogger(),
 	}
@@ -75,7 +75,7 @@ func NewJob(opts ...any) (Job, error) {
 
 // Kind returns the name of the job.
 func (j *job) Kind() string {
-	return j.name
+	return j.kind
 }
 
 // Handler returns the handler of the job.
@@ -85,5 +85,5 @@ func (j *job) Handler() Handler {
 
 // String returns a string representation of the job.
 func (j *job) String() string {
-	return j.name
+	return j.kind
 }
