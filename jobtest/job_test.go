@@ -24,12 +24,14 @@ func TestScheduleJobs(t *testing.T) {
 	tests := []struct {
 		kind string
 		opts []any
+		args []any
 	}{
 		{
 			kind: "sum",
 			opts: []any{
 				job.WithExecutor(func(a, b int) int { return a + b }),
 			},
+			args: []any{1, 2},
 		},
 	}
 
@@ -48,13 +50,19 @@ func TestScheduleJobs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.kind, func(t *testing.T) {
 			opts := append(tt.opts, job.WithKind(tt.kind))
-			job, err := job.NewJob(opts...)
+			j, err := job.NewJob(opts...)
 			if err != nil {
 				t.Fatalf("Failed to create job: %v", err)
 			}
-			err = jobMgr.RegisterJob(job)
+			err = jobMgr.RegisterJob(j)
 			if err != nil {
 				t.Fatalf("Failed to register job: %v", err)
+			}
+			err = jobMgr.ScheduleRegisteredJob(
+				tt.kind,
+				job.WithArguments(tt.args...))
+			if err != nil {
+				t.Fatalf("Failed to schedule job: %v", err)
 			}
 		})
 	}
