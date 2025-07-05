@@ -29,9 +29,10 @@ type Job interface {
 }
 
 type job struct {
-	kind    string
-	logger  Logger
-	handler *handler
+	kind     string
+	logger   Logger
+	schedule *schedule
+	handler  *handler
 }
 
 // JobOption is a function that configures a job.
@@ -54,9 +55,10 @@ func WithJobLogger(logger Logger) JobOption {
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
-		kind:    "",
-		handler: newHandler(),
-		logger:  NewNullLogger(),
+		kind:     "",
+		schedule: newSchedule(),
+		handler:  newHandler(),
+		logger:   NewNullLogger(),
 	}
 
 	for _, opt := range opts {
@@ -65,6 +67,8 @@ func NewJob(opts ...any) (Job, error) {
 			opt(j)
 		case HandlerOption:
 			opt(j.handler)
+		case ScheduleOption:
+			opt(j.schedule)
 		default:
 			return nil, fmt.Errorf("invalid job option type: %T", opt)
 		}

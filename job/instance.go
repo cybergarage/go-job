@@ -41,8 +41,9 @@ type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
 	*StateHistory
-	handler *handler
-	args    *Arguments
+	handler  *handler
+	schedule *schedule
+	args     *Arguments
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -55,6 +56,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		uuid:         uuid.New(),
 		StateHistory: NewStateHistory(),
 		handler:      newHandler(),
+		schedule:     newSchedule(),
 		args:         NewArguments(),
 	}
 	for _, opt := range opts {
@@ -65,6 +67,8 @@ func NewInstance(opts ...any) (Instance, error) {
 			}
 		case HandlerOption:
 			opt(ji.handler)
+		case ScheduleOption:
+			opt(ji.schedule)
 		case ArgumentsOption:
 			opt(ji.args)
 		case *Arguments:
