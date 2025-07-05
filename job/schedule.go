@@ -35,6 +35,7 @@ type JobScheduleOption func(*jobSchedule) error
 type jobSchedule struct {
 	crontabSpec string
 	schedule    cron.Schedule
+	scheduleAt  *time.Time
 }
 
 // WithCrontabSpec sets the crontab spec string for the job schedule.
@@ -50,11 +51,20 @@ func WithCrontabSpec(spec string) JobScheduleOption {
 	}
 }
 
+// WithSchedule sets the cron.Schedule for the job schedule.
+func WithScheduleAt(t time.Time) JobScheduleOption {
+	return func(js *jobSchedule) error {
+		js.scheduleAt = &t
+		return nil
+	}
+}
+
 // NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
 func NewJobSchedule(opts ...JobScheduleOption) (*jobSchedule, error) {
 	js := &jobSchedule{
 		crontabSpec: "",
 		schedule:    nil, // Default to nil, must be set by options
+		scheduleAt:  nil,
 	}
 	for _, opt := range opts {
 		if err := opt(js); err != nil {
