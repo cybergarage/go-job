@@ -81,8 +81,11 @@ func (js *jobSchedule) Spec() string {
 
 // Next returns the next scheduled time.
 func (js *jobSchedule) Next() time.Time {
-	if js.schedule == nil {
-		return time.Now() // If no schedule is set, return the current time
+	if js.schedule != nil {
+		return js.schedule.Next(time.Now())
 	}
-	return js.schedule.Next(time.Now())
+	if js.scheduleAt != nil {
+		return *js.scheduleAt
+	}
+	return time.Now()
 }
