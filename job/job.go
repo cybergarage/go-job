@@ -24,6 +24,8 @@ type Job interface {
 	Kind() string
 	// Handler returns the job handler for the job.
 	Handler() Handler
+	// Schedule returns the schedule for the job.
+	Schedule() Schedule
 	// String returns a string representation of the job.
 	String() string
 }
@@ -56,9 +58,9 @@ func WithJobLogger(logger Logger) JobOption {
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
 		kind:     "",
-		schedule: newSchedule(),
-		handler:  newHandler(),
 		logger:   NewNullLogger(),
+		handler:  newHandler(),
+		schedule: newSchedule(),
 	}
 
 	for _, opt := range opts {
@@ -85,6 +87,11 @@ func (j *job) Kind() string {
 // Handler returns the handler of the job.
 func (j *job) Handler() Handler {
 	return j.handler
+}
+
+// Schedule returns the schedule of the job.
+func (j *job) Schedule() Schedule {
+	return j.schedule
 }
 
 // String returns a string representation of the job.

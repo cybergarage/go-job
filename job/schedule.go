@@ -22,8 +22,8 @@ import (
 
 // Schedule defines the interface for job scheduling, supporting crontab expressions.
 type Schedule interface {
-	// Spec returns the crontab spec string.
-	Spec() string
+	// CrontabSpec returns the crontab spec string.
+	CrontabSpec() string
 	// Next returns the next scheduled time.
 	Next() time.Time
 }
@@ -82,8 +82,8 @@ func NewSchedule(opts ...ScheduleOption) (*schedule, error) {
 	return js, nil
 }
 
-// Spec returns the crontab spec string for the job schedule.
-func (js *schedule) Spec() string {
+// CrontabSpec returns the crontab spec string for the job schedule.
+func (js *schedule) CrontabSpec() string {
 	return js.crontabSpec
 }
 

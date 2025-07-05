@@ -53,6 +53,7 @@ func (s *scheduler) ScheduleJob(job Job, opts ...any) error {
 		WithExecutor(job.Handler().Executor()),
 		WithErrorHandler(job.Handler().ErrorHandler()),
 		WithResponseHandler(job.Handler().ResponseHandler()),
+		WithCrontabSpec(job.Schedule().CrontabSpec()),
 	)
 	ji, err := NewInstance(opts...)
 	if err != nil {
