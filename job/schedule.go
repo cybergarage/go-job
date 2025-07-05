@@ -71,8 +71,8 @@ func newSchedule() *schedule {
 	}
 }
 
-// NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
-func NewJobSchedule(opts ...ScheduleOption) (*schedule, error) {
+// NewSchedule creates a new JobSchedule instance from a crontab spec string.
+func NewSchedule(opts ...ScheduleOption) (*schedule, error) {
 	js := newSchedule()
 	for _, opt := range opts {
 		if err := opt(js); err != nil {
