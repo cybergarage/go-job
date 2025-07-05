@@ -33,17 +33,21 @@ type ScheduleOption func(*schedule) error
 
 // schedule implements the JobSchedule interface using a crontab spec string.
 type schedule struct {
-	crontabSpec string
-	schedule    cron.Schedule
-	scheduleAt  time.Time
+	crontabSpec  string
+	cronSchedule cron.Schedule
+	scheduleAt   time.Time
 }
 
 // WithCrontabSpec sets the crontab spec string for the job schedule.
 func WithCrontabSpec(spec string) ScheduleOption {
 	return func(js *schedule) error {
+		if len(spec) == 0 {
+			js.cronSchedule = nil
+			return nil
+		}
 		js.crontabSpec = spec
 		var err error
-		js.schedule, err = cron.ParseStandard(spec)
+		js.cronSchedule, err = cron.ParseStandard(spec)
 		if err != nil {
 			return err
 		}
@@ -59,13 +63,17 @@ func WithScheduleAt(t time.Time) ScheduleOption {
 	}
 }
 
+func newSchedule() *schedule {
+	return &schedule{
+		crontabSpec:  "",
+		cronSchedule: nil,
+		scheduleAt:   time.Now(),
+	}
+}
+
 // NewJobSchedule creates a new JobSchedule instance from a crontab spec string.
 func NewJobSchedule(opts ...ScheduleOption) (*schedule, error) {
-	js := &schedule{
-		crontabSpec: "",
-		schedule:    nil, // Default to nil, must be set by options
-		scheduleAt:  time.Now(),
-	}
+	js := newSchedule()
 	for _, opt := range opts {
 		if err := opt(js); err != nil {
 			return nil, err
@@ -81,8 +89,8 @@ func (js *schedule) Spec() string {
 
 // Next returns the next scheduled time.
 func (js *schedule) Next() time.Time {
-	if js.schedule != nil {
-		return js.schedule.Next(time.Now())
+	if js.cronSchedule != nil {
+		return js.cronSchedule.Next(time.Now())
 	}
 	return js.scheduleAt
 }
