@@ -72,14 +72,14 @@ func (q *queue) Dequeue() (Instance, error) {
 			q.Unlock()
 			return nil, err
 		}
-		if 0 < len(jobs) {
-			job := jobs[0]
-			err := q.store.RemoveJob(ctx, job)
-			if err != nil {
-				return nil, err
+		for _, job := range jobs {
+			if job.ScheduledAt().After(time.Now()) {
+				err := q.store.RemoveJob(ctx, job)
+				if err == nil {
+					q.Unlock()
+					return job, nil
+				}
 			}
-			q.Unlock()
-			return job, nil
 		}
 		q.Unlock()
 		time.Sleep(1 * time.Second)
