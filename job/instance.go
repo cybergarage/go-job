@@ -16,6 +16,7 @@ package job
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -28,6 +29,8 @@ type Instance interface {
 	Kind() Kind
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
+	// ScheduledAt returns the time when the job instance was scheduled.
+	ScheduledAt() time.Time
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState) error
 	// Process executes the job instance executor with the arguments provided in the context.
@@ -96,6 +99,11 @@ func (ji *jobInstance) Kind() Kind {
 // UUID returns the unique identifier of the job instance.
 func (ji *jobInstance) UUID() uuid.UUID {
 	return ji.uuid
+}
+
+// ScheduledAt returns the time when the job instance was scheduled.
+func (ji *jobInstance) ScheduledAt() time.Time {
+	return ji.schedule.Next()
 }
 
 // UpdateState updates the state of the job instance and records the state change.
