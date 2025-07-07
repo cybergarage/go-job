@@ -1,14 +1,14 @@
 @startuml
 
-object Job{
+object Job {
   +Kind: String
 }
 
-object JobInstance {
-  History: JobStateHistory -- JobStateHistory
+object Instance {
+  History: StateHistory -- StateHistory
 }
 
-History -> JobStateHistory
+History -> StateHistory
 
 object Manager {
 }
@@ -16,11 +16,11 @@ object Manager {
 object Scheduler {
 }
 
-object JobStateHistory {
-  +Records(): []JobStateRecord -- JobStateRecord
+object StateHistory {
+  +Records(): []StateRecord -- StateRecord
 }
 
-object JobStateRecord {
+object StateRecord {
   +Timestamp(): time.Time
   +State(): JobState
 }
