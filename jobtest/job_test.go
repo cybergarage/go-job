@@ -36,14 +36,14 @@ func TestScheduleJobs(t *testing.T) {
 		},
 	}
 
-	jobMgr := job.NewManager()
+	mgr := job.NewManager()
 
-	if err := jobMgr.Start(); err != nil {
+	if err := mgr.Start(); err != nil {
 		t.Fatalf("Failed to start job manager: %v", err)
 	}
 
 	defer func() {
-		if err := jobMgr.Stop(); err != nil {
+		if err := mgr.Stop(); err != nil {
 			t.Errorf("Failed to stop job manager: %v", err)
 		}
 	}()
@@ -67,11 +67,11 @@ func TestScheduleJobs(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Failed to create job: %v", err)
 			}
-			err = jobMgr.RegisterJob(j)
+			err = mgr.RegisterJob(j)
 			if err != nil {
 				t.Fatalf("Failed to register job: %v", err)
 			}
-			err = jobMgr.ScheduleRegisteredJob(
+			err = mgr.ScheduleRegisteredJob(
 				tt.kind,
 				job.WithArguments(tt.args...))
 			if err != nil {
