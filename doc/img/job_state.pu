@@ -1,9 +1,7 @@
 @startuml
-[*] --> Queued : Job created
 [*] --> Scheduled : Job created
 
-Scheduled --> Queued : Job scheduled
-Queued --> Running : Job started
+Scheduled --> Running : Job started
 Running --> Succeeded : Job completed successfully
 Running --> Failed : Job encountered an error
 Running --> Cancelled : Job was cancelled
