@@ -72,8 +72,10 @@ func (q *queue) Dequeue() (Instance, error) {
 			q.Unlock()
 			return nil, err
 		}
+		now := time.Now()
 		for _, job := range jobs {
-			if job.ScheduledAt().After(time.Now()) {
+			scheduledAt := job.ScheduledAt()
+			if scheduledAt.After(now) || scheduledAt.Equal(now) {
 				err := q.store.RemoveJob(ctx, job)
 				if err == nil {
 					q.Unlock()
