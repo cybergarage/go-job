@@ -22,6 +22,11 @@ import (
 )
 
 func TestScheduleJobs(t *testing.T) {
+	type sumOpt struct {
+		a int
+		b int
+	}
+
 	tests := []struct {
 		kind string
 		opts []any
@@ -33,6 +38,20 @@ func TestScheduleJobs(t *testing.T) {
 				job.WithExecutor(func(a, b int) int { return a + b }),
 			},
 			args: []any{1, 2},
+		},
+		{
+			kind: "sum (struct)",
+			opts: []any{
+				job.WithExecutor(func(opt sumOpt) int { return opt.a + opt.b }),
+			},
+			args: []any{sumOpt{1, 2}},
+		},
+		{
+			kind: "sum (*struct)",
+			opts: []any{
+				job.WithExecutor(func(opt *sumOpt) int { return opt.a + opt.b }),
+			},
+			args: []any{&sumOpt{1, 2}},
 		},
 	}
 
