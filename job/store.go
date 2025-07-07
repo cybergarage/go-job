@@ -33,4 +33,6 @@ type Store interface {
 	RemoveJob(ctx context.Context, job Instance) error
 	// ListJobs lists all jobs in the store.
 	ListJobs(ctx context.Context) ([]Instance, error)
+	// ListJobsByKind lists all jobs in the store by their kind.
+	ListJobsByState(ctx context.Context, state JobState) ([]Instance, error)
 }

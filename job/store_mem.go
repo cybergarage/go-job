@@ -59,3 +59,15 @@ func (s *memStore) ListJobs(ctx context.Context) ([]Instance, error) {
 	})
 	return jobs, nil
 }
+
+// ListJobsByState lists all jobs in the in-memory store by their state.
+func (s *memStore) ListJobsByState(ctx context.Context, state JobState) ([]Instance, error) {
+	jobs := make([]Instance, 0)
+	s.jobs.Range(func(key, value interface{}) bool {
+		if job, ok := value.(Instance); ok && job.State() == state {
+			jobs = append(jobs, job)
+		}
+		return true
+	})
+	return jobs, nil
+}
