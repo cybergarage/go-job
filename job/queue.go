@@ -59,7 +59,7 @@ func NewQueue(opts ...QueueOption) Queue {
 func (q *queue) Enqueue(job Instance) error {
 	q.Lock()
 	defer q.Unlock()
-	return q.store.StoreJob(context.Background(), job)
+	return q.store.AddInstance(context.Background(), job)
 }
 
 // Dequeue removes and returns a job from the queue.
@@ -67,7 +67,7 @@ func (q *queue) Dequeue() (Instance, error) {
 	for {
 		q.Lock()
 		ctx := context.Background()
-		jobs, err := q.store.ListJobs(ctx)
+		jobs, err := q.store.ListInstances(ctx)
 		if err != nil {
 			q.Unlock()
 			return nil, err
@@ -76,7 +76,7 @@ func (q *queue) Dequeue() (Instance, error) {
 		for _, job := range jobs {
 			scheduledAt := job.ScheduledAt()
 			if scheduledAt.Before(now) {
-				err := q.store.RemoveJob(ctx, job)
+				err := q.store.RemoveInstance(ctx, job)
 				if err == nil {
 					q.Unlock()
 					return job, nil

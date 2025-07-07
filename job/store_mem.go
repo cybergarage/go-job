@@ -30,8 +30,8 @@ func NewMemStore() Store {
 	}
 }
 
-// StoreJob stores a job in the in-memory store.
-func (s *memStore) StoreJob(ctx context.Context, job Instance) error {
+// AddInstance stores a job instance in the store.
+func (s *memStore) AddInstance(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -39,8 +39,8 @@ func (s *memStore) StoreJob(ctx context.Context, job Instance) error {
 	return nil
 }
 
-// RemoveJob removes a job from the in-memory store by its unique identifier.
-func (s *memStore) RemoveJob(ctx context.Context, job Instance) error {
+// RemoveInstance removes a job instance from the store by its unique identifier.
+func (s *memStore) RemoveInstance(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -48,8 +48,8 @@ func (s *memStore) RemoveJob(ctx context.Context, job Instance) error {
 	return nil
 }
 
-// ListJobs lists all jobs in the in-memory store.
-func (s *memStore) ListJobs(ctx context.Context) ([]Instance, error) {
+// ListInstances lists all job instances in the store.
+func (s *memStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	jobs := make([]Instance, 0)
 	s.jobs.Range(func(key, value interface{}) bool {
 		if job, ok := value.(Instance); ok {
@@ -60,8 +60,8 @@ func (s *memStore) ListJobs(ctx context.Context) ([]Instance, error) {
 	return jobs, nil
 }
 
-// ListJobsByState lists all jobs in the in-memory store by their state.
-func (s *memStore) ListJobsByState(ctx context.Context, state JobState) ([]Instance, error) {
+// ListInstancesByState lists all job instances in the store by their state.
+func (s *memStore) ListInstancesByState(ctx context.Context, state JobState) ([]Instance, error) {
 	jobs := make([]Instance, 0)
 	s.jobs.Range(func(key, value interface{}) bool {
 		if job, ok := value.(Instance); ok && job.State() == state {

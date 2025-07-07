@@ -27,12 +27,12 @@ import (
 // and deserialization of job data, as well as any necessary locking
 // or concurrency control to ensure data integrity.
 type Store interface {
-	// StoreJob stores a job in the store.
-	StoreJob(ctx context.Context, job Instance) error
-	// RemoveJob removes a job from the store by its unique identifier.
-	RemoveJob(ctx context.Context, job Instance) error
-	// ListJobs lists all jobs in the store.
-	ListJobs(ctx context.Context) ([]Instance, error)
-	// ListJobsByKind lists all jobs in the store by their kind.
-	ListJobsByState(ctx context.Context, state JobState) ([]Instance, error)
+	// AddInstance stores a job instance in the store.
+	AddInstance(ctx context.Context, job Instance) error
+	// RemoveInstance removes a job instance from the store by its unique identifier.
+	RemoveInstance(ctx context.Context, job Instance) error
+	// ListInstances lists all job instances in the store.
+	ListInstances(ctx context.Context) ([]Instance, error)
+	// ListInstancesByState lists all job instances in the store by their state.
+	ListInstancesByState(ctx context.Context, state JobState) ([]Instance, error)
 }
