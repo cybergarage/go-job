@@ -19,25 +19,31 @@ import (
 )
 
 // InstanceRecord keeps track of the state changes of a job.
-type InstanceRecord struct {
+type InstanceRecord interface {
+	Timestamp() time.Time
+	State() JobState
+}
+
+// instanceRecord keeps track of the state changes of a job.
+type instanceRecord struct {
 	ts    time.Time
 	state JobState
 }
 
-// NewInstanceRecord creates a new job state record with the current timestamp and the given state.
-func NewInstanceRecord(state JobState) *InstanceRecord {
-	return &InstanceRecord{
+// newInstanceRecord creates a new job state record with the current timestamp and the given state.
+func newInstanceRecord(state JobState) InstanceRecord {
+	return &instanceRecord{
 		ts:    time.Now(),
 		state: state,
 	}
 }
 
 // Timestamp returns the timestamp of when the state history was created.
-func (sh *InstanceRecord) Timestamp() time.Time {
+func (sh *instanceRecord) Timestamp() time.Time {
 	return sh.ts
 }
 
 // State returns the state of the job history.
-func (sh *InstanceRecord) State() JobState {
+func (sh *instanceRecord) State() JobState {
 	return sh.state
 }
