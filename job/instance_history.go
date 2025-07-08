@@ -37,8 +37,8 @@ func NewInstanceHistory() *instanceHistory {
 }
 
 // AppendRecord adds a new state record to the history with the current timestamp.
-func (sh *instanceHistory) AppendRecord(state JobState) {
-	sh.records = append(sh.records, newInstanceRecord(state))
+func (sh *instanceHistory) AppendRecord(job Instance, state JobState) {
+	sh.records = append(sh.records, newInstanceRecord(job.UUID(), state))
 }
 
 // Records returns the all instance records of the job.

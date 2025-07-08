@@ -108,7 +108,7 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState) error {
-	ji.AppendRecord(state)
+	ji.AppendRecord(ji, state)
 	return nil
 }
 

@@ -16,26 +16,36 @@ package job
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // InstanceRecord keeps track of the state changes of a job.
 type InstanceRecord interface {
+	UUID() uuid.UUID
 	Timestamp() time.Time
 	State() JobState
 }
 
 // instanceRecord keeps track of the state changes of a job.
 type instanceRecord struct {
+	id    uuid.UUID
 	ts    time.Time
 	state JobState
 }
 
 // newInstanceRecord creates a new job state record with the current timestamp and the given state.
-func newInstanceRecord(state JobState) InstanceRecord {
+func newInstanceRecord(id uuid.UUID, state JobState) InstanceRecord {
 	return &instanceRecord{
+		id:    id,
 		ts:    time.Now(),
 		state: state,
 	}
+}
+
+// UUID returns the unique identifier of the job instance.
+func (sh *instanceRecord) UUID() uuid.UUID {
+	return sh.id
 }
 
 // Timestamp returns the timestamp of when the state history was created.
