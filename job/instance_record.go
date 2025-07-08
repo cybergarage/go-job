@@ -25,6 +25,7 @@ type InstanceRecord interface {
 	UUID() uuid.UUID
 	Timestamp() time.Time
 	State() JobState
+	Options() map[string]any
 }
 
 type instanceRecordOption func(*instanceRecord)
@@ -72,4 +73,9 @@ func (record *instanceRecord) Timestamp() time.Time {
 // State returns the state of the job history.
 func (record *instanceRecord) State() JobState {
 	return record.state
+}
+
+// Options returns the additional options associated with the instance record.
+func (record *instanceRecord) Options() map[string]any {
+	return record.opts
 }
