@@ -35,7 +35,7 @@ func WithQueryJobState(state JobState) QueryOption {
 // NewQuery creates a new instance of the job query.
 func NewQuery(opts ...QueryOption) *query {
 	q := &query{
-		jobState: JobPending,
+		jobState: JobCreated, // Default state is Created
 	}
 	for _, opt := range opts {
 		opt(q)

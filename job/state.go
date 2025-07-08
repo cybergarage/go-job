@@ -22,18 +22,18 @@ const (
 	JobStateUnknown JobState = iota - 1 // -1 indicates an unknown state
 	// JobCreated indicates the job has been created but not yet started.
 	JobCreated
-	// JobPending indicates the job is created but not yet started.
-	JobPending
+	// JobScheduled indicates the job has been scheduled for execution.
+	JobScheduled
 	// JobRunning indicates the job is currently executing.
-	JobRunning // 1
+	JobRunning
 	// JobSucceeded indicates the job has completed successfully.
-	JobSucceeded // 2
+	JobSucceeded
 	// JobFailed indicates the job has completed with an error.
-	JobFailed // 3
+	JobFailed
 	// JobCancelled indicates the job was cancelled before completion.
-	JobCancelled // 4
+	JobCancelled
 	// JobTimedOut indicates the job has exceeded its allowed execution time.
-	JobTimedOut // 5
+	JobTimedOut
 )
 
 // Is checks if the current JobState is equal to the provided state.
@@ -44,8 +44,10 @@ func (s JobState) Is(state JobState) bool {
 // String returns the string representation of the JobState.
 func (s JobState) String() string {
 	switch s {
-	case JobPending:
-		return "Pending"
+	case JobCreated:
+		return "Created"
+	case JobScheduled:
+		return "Scheduled"
 	case JobRunning:
 		return "Running"
 	case JobSucceeded:
