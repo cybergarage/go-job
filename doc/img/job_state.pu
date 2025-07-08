@@ -8,12 +8,12 @@ Running --> Failed : Job encountered an error
 Running --> Cancelled : Job was cancelled
 Running --> TimedOut : Job exceeded time limit
 
-Failed --> Retrying : Retry logic (if applicable)
-Retrying --> Running : Retry started
-Retrying --> Failed : Retry failed
+Failed --> Scheduled : [if retriable] Reschedule
+Failed --> [*] : [if not retriable] End
 
 Cancelled --> [*] : End
 Succeeded --> [*] : End
-TimedOut --> [*] : End
-Failed --> [*] : End
+TimedOut --> Scheduled : [if retriable] Reschedule
+TimedOut --> [*] : [if not retriable] End
+
 @enduml
