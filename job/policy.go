@@ -1,17 +1,3 @@
-// Copyright (C) 2025 The go-job Authors. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package job
 
 const (
@@ -19,12 +5,21 @@ const (
 	NoRetry = 0
 	// RetryForever is a constant indicating that a job should retry indefinitely.
 	RetryForever = -1
+
+	// DefaultPriority is the default priority for jobs.
+	DefaultPriority = 0
+	// HighPriority represents high priority jobs.
+	HighPriority = 10
+	// LowPriority represents low priority jobs.
+	LowPriority = -10
 )
 
 // Policy defines the interface for job scheduling, supporting crontab expressions.
 type Policy interface {
 	// MaxRetries returns the maximum number of retries allowed for the job.
 	MaxRetries() int
+	// Priority returns the priority of the job.
+	Priority() int
 }
 
 // PolicyOption defines a function that configures a job policy.
@@ -33,12 +28,37 @@ type PolicyOption func(*policy) error
 // policy implements the JobPolicy interface using a crontab spec string.
 type policy struct {
 	maxRetries int
+	priority   int
 }
 
 // WithMaxRetries sets the maximum number of retries for the job policy.
 func WithMaxRetries(count int) PolicyOption {
 	return func(s *policy) error {
 		s.maxRetries = count
+		return nil
+	}
+}
+
+// WithPriority sets the priority for the job policy.
+func WithPriority(priority int) PolicyOption {
+	return func(s *policy) error {
+		s.priority = priority
+		return nil
+	}
+}
+
+// WithHighPriority sets the job policy to high priority.
+func WithHighPriority() PolicyOption {
+	return func(s *policy) error {
+		s.priority = HighPriority
+		return nil
+	}
+}
+
+// WithLowPriority sets the job policy to low priority.
+func WithLowPriority() PolicyOption {
+	return func(s *policy) error {
+		s.priority = LowPriority
 		return nil
 	}
 }
@@ -53,7 +73,8 @@ func WithInfiniteRetries() PolicyOption {
 
 func newPolicy() *policy {
 	return &policy{
-		maxRetries: NoRetry, // Default to no retries
+		maxRetries: NoRetry,         // Default to no retries
+		priority:   DefaultPriority, // Default priority
 	}
 }
 
@@ -71,4 +92,9 @@ func NewPolicy(opts ...PolicyOption) (*policy, error) {
 // MaxRetries returns the maximum number of retries allowed for the job.
 func (p *policy) MaxRetries() int {
 	return p.maxRetries
+}
+
+// Priority returns the priority of the job.
+func (p *policy) Priority() int {
+	return p.priority
 }
