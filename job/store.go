@@ -31,13 +31,12 @@ type InstanceStore interface {
 	RemoveInstance(ctx context.Context, job Instance) error
 	// ListInstances lists all job instances in the store.
 	ListInstances(ctx context.Context) ([]Instance, error)
-	// ListInstancesByState lists all job instances in the store by their state.
-	ListInstancesByState(ctx context.Context, state JobState) ([]Instance, error)
 }
 
 // HistoryStore is an interface that defines methods for managing job instance state history.
 type HistoryStore interface {
-	AddInstanceHistory(ctx context.Context, job Instance, state JobState) error
-	// ListInstanceHistory lists all state history records for a job instance.
-	ListInstanceHistory(ctx context.Context, job Instance) ([]JobState, error)
+	// AddInstanceRecord adds a new state record for a job instance.
+	AddInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error
+	// ListInstanceRecords lists all state records for a job instance.
+	ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceRecord, error)
 }

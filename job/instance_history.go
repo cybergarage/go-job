@@ -14,8 +14,14 @@
 
 package job
 
+import (
+	"sort"
+)
+
+// InstanceHistory is an interface that defines methods for managing the history of job instance state changes.
 type InstanceHistory interface {
-	Records() []*instanceRecord
+	Records() []InstanceRecord
+	LastRecord() InstanceRecord
 }
 
 // instanceHistory keeps track of the state changes of a job.
@@ -37,7 +43,11 @@ func (sh *instanceHistory) AppendRecord(state JobState) {
 
 // Records returns the all instance records of the job.
 func (sh *instanceHistory) Records() []InstanceRecord {
-	return sh.records
+	records := sh.records
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].Timestamp().Before(records[j].Timestamp())
+	})
+	return records
 }
 
 // LastRecord returns the most recent instance record, or nil if there are no records.
