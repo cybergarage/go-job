@@ -43,7 +43,7 @@ type Instance interface {
 type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
-	*StateHistory
+	*InstanceHistory
 	handler  *handler
 	schedule *schedule
 	args     *Arguments
@@ -55,12 +55,12 @@ type InstanceOption func(*jobInstance) error
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
-		job:          nil, // Default to nil, must be set by options
-		uuid:         uuid.New(),
-		StateHistory: NewStateHistory(),
-		handler:      newHandler(),
-		schedule:     newSchedule(),
-		args:         NewArguments(),
+		job:             nil, // Default to nil, must be set by options
+		uuid:            uuid.New(),
+		InstanceHistory: NewInstanceHistory(),
+		handler:         newHandler(),
+		schedule:        newSchedule(),
+		args:            NewArguments(),
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
