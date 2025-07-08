@@ -27,33 +27,49 @@ type InstanceRecord interface {
 	State() JobState
 }
 
-// instanceRecord keeps track of the state changes of a job.
+type instanceRecordOption func(*instanceRecord)
+
+// WithRecordOption is a functional option to set additional options for the instance record.
+func WithRecordOption(opts map[string]any) func(*instanceRecord) {
+	return func(record *instanceRecord) {
+		for k, v := range opts {
+			record.opts[k] = v
+		}
+	}
+}
+
 type instanceRecord struct {
 	id    uuid.UUID
 	ts    time.Time
 	state JobState
+	opts  map[string]any
 }
 
 // newInstanceRecord creates a new job state record with the current timestamp and the given state.
-func newInstanceRecord(id uuid.UUID, state JobState) InstanceRecord {
-	return &instanceRecord{
+func newInstanceRecord(id uuid.UUID, state JobState, opts ...instanceRecordOption) InstanceRecord {
+	ir := &instanceRecord{
 		id:    id,
 		ts:    time.Now(),
 		state: state,
+		opts:  make(map[string]any),
 	}
+	for _, opt := range opts {
+		opt(ir)
+	}
+	return ir
 }
 
 // UUID returns the unique identifier of the job instance.
-func (sh *instanceRecord) UUID() uuid.UUID {
-	return sh.id
+func (record *instanceRecord) UUID() uuid.UUID {
+	return record.id
 }
 
 // Timestamp returns the timestamp of when the state history was created.
-func (sh *instanceRecord) Timestamp() time.Time {
-	return sh.ts
+func (record *instanceRecord) Timestamp() time.Time {
+	return record.ts
 }
 
 // State returns the state of the job history.
-func (sh *instanceRecord) State() JobState {
-	return sh.state
+func (record *instanceRecord) State() JobState {
+	return record.state
 }
