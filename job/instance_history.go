@@ -14,30 +14,34 @@
 
 package job
 
-// InstanceHistory keeps track of the state changes of a job.
-type InstanceHistory struct {
+type InstanceHistory interface {
+	Records() []*InstanceRecord
+}
+
+// instanceHistory keeps track of the state changes of a job.
+type instanceHistory struct {
 	records []*InstanceRecord
 }
 
 // NewInstanceHistory creates a new job state history.
-func NewInstanceHistory() *InstanceHistory {
-	return &InstanceHistory{
+func NewInstanceHistory() *instanceHistory {
+	return &instanceHistory{
 		records: make([]*InstanceRecord, 0),
 	}
 }
 
-// AppendStateRecord adds a new state record to the history with the current timestamp.
-func (sh *InstanceHistory) AppendStateRecord(state JobState) {
+// AppendRecord adds a new state record to the history with the current timestamp.
+func (sh *instanceHistory) AppendRecord(state JobState) {
 	sh.records = append(sh.records, NewInstanceRecord(state))
 }
 
-// StateRecords returns the state records of the job.
-func (sh *InstanceHistory) StateRecords() []*InstanceRecord {
+// Records returns the all instance records of the job.
+func (sh *instanceHistory) Records() []*InstanceRecord {
 	return sh.records
 }
 
-// LastStateRecord returns the most recent state record, or nil if there are no records.
-func (sh *InstanceHistory) LastStateRecord() *InstanceRecord {
+// LastRecord returns the most recent instance record, or nil if there are no records.
+func (sh *instanceHistory) LastRecord() *InstanceRecord {
 	if len(sh.records) == 0 {
 		return nil
 	}

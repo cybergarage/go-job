@@ -43,7 +43,7 @@ type Instance interface {
 type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
-	*InstanceHistory
+	*instanceHistory
 	handler  *handler
 	schedule *schedule
 	args     *Arguments
@@ -57,7 +57,7 @@ func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
 		job:             nil, // Default to nil, must be set by options
 		uuid:            uuid.New(),
-		InstanceHistory: NewInstanceHistory(),
+		instanceHistory: NewInstanceHistory(),
 		handler:         newHandler(),
 		schedule:        newSchedule(),
 		args:            NewArguments(),
@@ -108,7 +108,7 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState) error {
-	ji.AppendStateRecord(state)
+	ji.AppendRecord(state)
 	return nil
 }
 
@@ -127,7 +127,7 @@ func (ji *jobInstance) Process() error {
 
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	r := ji.LastStateRecord()
+	r := ji.LastRecord()
 	if r == nil {
 		return JobStateUnknown
 	}
