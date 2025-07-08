@@ -18,6 +18,7 @@ package job
 type Quey interface {
 	JobState() JobState
 }
+
 type query struct {
 	jobState JobState
 }
