@@ -15,6 +15,8 @@
 package job
 
 const (
+	// NoRetry is a constant indicating that a job should not be retried.
+	NoRetry = 0
 	// RetryForever is a constant indicating that a job should retry indefinitely.
 	RetryForever = -1
 )
@@ -49,7 +51,7 @@ func WithInfiniteRetries() PolicyOption {
 
 func newPolicy() *policy {
 	return &policy{
-		maxRetries: 0, // Default to no retries
+		maxRetries: NoRetry, // Default to no retries
 	}
 }
 
