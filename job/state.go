@@ -19,9 +19,9 @@ type JobState int
 
 const (
 	// JobStateUnknown indicates an unknown state, typically used for uninitialized jobs.
-	JobStateUnknown JobState = iota - 1 // -1 indicates an unknown state
+	JobStateUnknown JobState = 0 // 0 indicates an unknown state
 	// JobCreated indicates the job has been created but not yet started.
-	JobCreated
+	JobCreated JobState = 1 << iota
 	// JobScheduled indicates the job has been scheduled for execution.
 	JobScheduled
 	// JobRunning indicates the job is currently executing.
