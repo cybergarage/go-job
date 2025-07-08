@@ -23,6 +23,8 @@ const (
 
 // Policy defines the interface for job scheduling, supporting crontab expressions.
 type Policy interface {
+	// MaxRetries returns the maximum number of retries allowed for the job.
+	MaxRetries() int
 }
 
 // PolicyOption defines a function that configures a job policy.
@@ -64,4 +66,9 @@ func NewPolicy(opts ...PolicyOption) (*policy, error) {
 		}
 	}
 	return js, nil
+}
+
+// MaxRetries returns the maximum number of retries allowed for the job.
+func (p *policy) MaxRetries() int {
+	return p.maxRetries
 }
