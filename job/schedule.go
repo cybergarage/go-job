@@ -20,6 +20,11 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+const (
+	// RetryForever is a constant indicating that a job should retry indefinitely.
+	RetryForever = -1
+)
+
 // Schedule defines the interface for job scheduling, supporting crontab expressions.
 type Schedule interface {
 	// CrontabSpec returns the crontab spec string.
@@ -36,6 +41,8 @@ type schedule struct {
 	crontabSpec  string
 	cronSchedule cron.Schedule
 	scheduleAt   time.Time
+	maxRetries   int
+	retryCount   int // Number of retries attempted
 }
 
 // WithCrontabSpec sets the crontab spec string for the job schedule.
@@ -63,11 +70,29 @@ func WithScheduleAt(t time.Time) ScheduleOption {
 	}
 }
 
+// WithMaxRetries sets the maximum number of retries for the job schedule.
+func WithMaxRetries(count int) ScheduleOption {
+	return func(s *schedule) error {
+		s.maxRetries = count
+		return nil
+	}
+}
+
+// WithInfiniteRetries sets the job schedule to retry indefinitely.
+func WithInfiniteRetries() ScheduleOption {
+	return func(s *schedule) error {
+		s.maxRetries = RetryForever
+		return nil
+	}
+}
+
 func newSchedule() *schedule {
 	return &schedule{
 		crontabSpec:  "",
 		cronSchedule: nil,
 		scheduleAt:   time.Now(),
+		maxRetries:   0, // Default to no retries
+		retryCount:   0,
 	}
 }
 
