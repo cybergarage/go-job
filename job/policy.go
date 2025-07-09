@@ -22,7 +22,7 @@ const (
 )
 
 // RetryDelay is a function type that defines how long to wait before retrying a job.
-type RetryDelay func(retryCount int) time.Duration
+type RetryDelay func() time.Duration
 
 // Policy defines the interface for job scheduling, supporting crontab expressions.
 type Policy interface {
@@ -106,7 +106,7 @@ func WithRetryDelay(fn RetryDelay) PolicyOption {
 // WithRetryDelayDuration sets a fixed delay duration before retrying a job.
 func WithRetryDelayDuration(duration time.Duration) PolicyOption {
 	return func(s *policy) {
-		s.retryDelayFn = func(retryCount int) time.Duration {
+		s.retryDelayFn = func() time.Duration {
 			return duration
 		}
 	}
@@ -117,7 +117,7 @@ func newPolicy() *policy {
 		maxRetries: NoRetry,         // Default to no retries
 		priority:   DefaultPriority, // Default priority
 		timeout:    DefaultTimeout,  // Default timeout
-		retryDelayFn: func(retryCount int) time.Duration {
+		retryDelayFn: func() time.Duration {
 			return time.Duration(0)
 		},
 	}
@@ -149,8 +149,8 @@ func (p *policy) Timeout() time.Duration {
 
 // RetryDelay returns the delay time before retrying a job.
 func (p *policy) RetryDelay() time.Duration {
-	if p.retryDelayFn != nil {
-		return p.retryDelayFn(1)
+	if p.retryDelayFn == nil {
+		return 0
 	}
-	return 0
+	return p.retryDelayFn()
 }
