@@ -1,6 +1,9 @@
 package job
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 const (
 	// NoRetry is a constant indicating that a job should not be retried.
@@ -34,6 +37,10 @@ type Policy interface {
 	Timeout() time.Duration
 	// RetryDelay returns the delay time before retrying a job.
 	RetryDelay() time.Duration
+	// Map returns a map representation of the job instance.
+	Map() map[string]any
+	// String returns a string representation of the job instance.
+	String() string
 }
 
 // PolicyOption defines a function that configures a job policy.
@@ -153,4 +160,19 @@ func (p *policy) RetryDelay() time.Duration {
 		return 0
 	}
 	return p.retryDelayFn()
+}
+
+// Map returns a map representation of the job instance.
+func (p *policy) Map() map[string]any {
+	m := map[string]any{
+		"max_retries": p.MaxRetries(),
+		"priority":    p.Priority(),
+		"timeout":     p.Timeout().String(),
+	}
+	return m
+}
+
+// String returns a string representation of the job instance.
+func (p *policy) String() string {
+	return fmt.Sprintf("%v", p.Map())
 }
