@@ -23,8 +23,29 @@ import (
 func QueueStoreTest(t *testing.T, store job.Store) {
 	t.Helper()
 
+	jobs := []job.Instance{}
+
 	q := job.NewQueue(job.WithQueueStore(store))
 
+	for _, job := range jobs {
+		if err := q.Enqueue(job); err != nil {
+			t.Errorf("Failed to enqueue job: %v", err)
+			return
+		}
+	}
+
+	var lastJob job.Instance
+	for i := 0; i < len(jobs); i++ {
+		job, err := q.Dequeue()
+		if err != nil {
+			t.Errorf("Failed to dequeue job: %v", err)
+			return
+		}
+		if lastJob == nil {
+			lastJob = job
+			continue
+		}
+	}
 }
 
 func TestQueue(t *testing.T) {
