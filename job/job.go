@@ -26,6 +26,8 @@ type Job interface {
 	Handler() Handler
 	// Schedule returns the schedule for the job.
 	Schedule() Schedule
+	// Map returns a map representation of the job.
+	Map() map[string]any
 	// String returns a string representation of the job.
 	String() string
 }
@@ -94,7 +96,14 @@ func (j *job) Schedule() Schedule {
 	return j.schedule
 }
 
+// Map returns a map representation of the job.
+func (j *job) Map() map[string]any {
+	return map[string]any{
+		"kind": j.kind,
+	}
+}
+
 // String returns a string representation of the job.
 func (j *job) String() string {
-	return j.kind
+	return fmt.Sprintf("%v", j.Map())
 }
