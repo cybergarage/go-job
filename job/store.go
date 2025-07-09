@@ -20,10 +20,13 @@ import (
 
 // Store is the interface for job instance storage.
 type Store interface {
+	// PendingStore provides methods for managing job instances.
 	PendingStore
+	// HistoryStore provides methods for managing job instance state history.
+	HistoryStore
 }
 
-// PendingStore is an interface that defines methods for managing job instances.
+// PendingStore is an interface that defines methods for managing job instances in a pending state.
 type PendingStore interface {
 	// EnqueueInstance stores a job instance in the store.
 	EnqueueInstance(ctx context.Context, job Instance) error

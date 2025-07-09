@@ -20,13 +20,15 @@ import (
 )
 
 type memStore struct {
-	jobs sync.Map
+	jobs    sync.Map
+	history []InstanceRecord
 }
 
 // NewMemStore creates a new in-memory job store.
 func NewMemStore() Store {
 	return &memStore{
-		jobs: sync.Map{},
+		jobs:    sync.Map{},
+		history: []InstanceRecord{},
 	}
 }
 
@@ -58,4 +60,27 @@ func (s *memStore) ListInstances(ctx context.Context) ([]Instance, error) {
 		return true
 	})
 	return jobs, nil
+}
+
+// LogInstanceRecord adds a new state record for a job instance.
+func (s *memStore) LogInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error {
+	if job == nil {
+		return nil
+	}
+	s.history = append(s.history, record)
+	return nil
+}
+
+// ListInstanceRecords lists all state records for a job instance.
+func (s *memStore) ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceRecord, error) {
+	if job == nil {
+		return nil, nil
+	}
+	var records []InstanceRecord
+	for _, record := range s.history {
+		if record.UUID() == job.UUID() {
+			records = append(records, record)
+		}
+	}
+	return records, nil
 }
