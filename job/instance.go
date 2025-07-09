@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/google/uuid"
 )
 
@@ -41,6 +42,8 @@ type Instance interface {
 	Process() error
 	// State returns the current state of the job instance.
 	State() JobState
+	// Map returns a map representation of the job instance.
+	Map() map[string]any
 	// String returns a string representation of the job instance.
 	String() string
 }
@@ -156,7 +159,26 @@ func (ji *jobInstance) State() JobState {
 	return r.State()
 }
 
+// Map returns a map representation of the job instance.
+func (ji *jobInstance) Map() map[string]any {
+	mergedMap := map[string]any{
+		"uuid":  ji.uuid.String(),
+		"state": ji.State().String(),
+	}
+	maps := []map[string]any{
+		ji.job.Map(),
+		ji.arguments.Map(),
+		ji.schedule.Map(),
+		ji.Policy().Map(),
+	}
+	for _, m := range maps {
+		mergedMap = encoding.MergeMaps(mergedMap, m)
+
+	}
+	return mergedMap
+}
+
 // String returns a string representation of the job instance.
 func (ji *jobInstance) String() string {
-	return fmt.Sprintf("JobInstance{UUID: %s, Job: %v, State: %v}", ji.uuid, ji.job, ji.State())
+	return fmt.Sprintf("%v", ji.Map())
 }
