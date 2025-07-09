@@ -23,6 +23,13 @@ import (
 
 // Instance represents a specific instance of a job that has been scheduled or executed.
 type Instance interface {
+	// Handler defines the job handler for the job instance.
+	Handler
+	// Schedule defines the scheduling policy for the job instance.
+	Schedule
+	// Policy defines the policy for the job instance.
+	Policy
+
 	// Job returns the job associated with this job instance.
 	Job() Job
 	// Kind returns the kind of job this instance represents.
@@ -37,12 +44,6 @@ type Instance interface {
 	Process() error
 	// State returns the current state of the job instance.
 	State() JobState
-	// Handler returns the handler for the job instance.
-	Handler
-	// Schedule returns the schedule for the job instance.
-	Schedule
-	// Policy returns the policy for the job instance.
-	Policy
 	// String returns a string representation of the job instance.
 	String() string
 }
