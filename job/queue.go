@@ -16,6 +16,7 @@ package job
 
 import (
 	"context"
+	"sort"
 	"sync"
 	"time"
 )
@@ -67,11 +68,22 @@ func (q *queue) Dequeue() (Instance, error) {
 	for {
 		q.Lock()
 		ctx := context.Background()
+
 		jobs, err := q.store.ListInstances(ctx)
 		if err != nil {
 			q.Unlock()
 			return nil, err
 		}
+
+		// Sort jobs by priority (higher priority first), then by scheduled time (earlier first)
+		sort.Slice(jobs, func(i, j int) bool {
+			pi, pj := jobs[i].Policy().Priority(), jobs[j].Policy().Priority()
+			if pi != pj {
+				return pi > pj
+			}
+			return jobs[i].ScheduledAt().Before(jobs[j].ScheduledAt())
+		})
+
 		now := time.Now()
 		for _, job := range jobs {
 			scheduledAt := job.ScheduledAt()
