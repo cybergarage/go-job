@@ -32,73 +32,73 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(10 * time.Microsecond)),
+				job.WithScheduleAt(now.Add(-10 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.HighPriority),
-				job.WithScheduleAt(now.Add(10 * time.Microsecond)),
+				job.WithScheduleAt(now.Add(-10 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(5 * time.Millisecond)),
+				job.WithScheduleAt(now.Add(-5 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(1 * time.Second)),
+				job.WithScheduleAt(now.Add(-1 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.DefaultPriority),
-				job.WithScheduleAt(now.Add(1 * time.Second)),
+				job.WithScheduleAt(now.Add(-1 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(500 * time.Microsecond)),
+				job.WithScheduleAt(now.Add(-500 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.HighPriority),
-				job.WithScheduleAt(now.Add(500 * time.Microsecond)),
+				job.WithScheduleAt(now.Add(-500 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(2 * time.Second)),
+				job.WithScheduleAt(now.Add(-2 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.DefaultPriority),
-				job.WithScheduleAt(now.Add(2 * time.Second)),
+				job.WithScheduleAt(now.Add(-2 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(100 * time.Millisecond)),
+				job.WithScheduleAt(now.Add(-100 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.HighPriority),
-				job.WithScheduleAt(now.Add(3 * time.Millisecond)),
+				job.WithScheduleAt(now.Add(-3 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
 				job.WithPriority(job.LowPriority),
-				job.WithScheduleAt(now.Add(700 * time.Microsecond)),
+				job.WithScheduleAt(now.Add(-700 * time.Hour)),
 			},
 		},
 	}
@@ -134,15 +134,20 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 			lastJob = job
 			continue
 		}
-		if job.Policy().Priority() > lastJob.Policy().Priority() {
+
+		switch {
+		case job.Policy().Priority() > lastJob.Policy().Priority():
+			t.Fatalf("Job dequeued out of order: %d before %d", job.Policy().Priority(), lastJob.Policy().Priority())
+		case job.Policy().Priority() == lastJob.Policy().Priority():
+			if job.ScheduledAt().Before(lastJob.ScheduledAt()) {
+				t.Fatalf("Job dequeued out of order: %s before %s", job.ScheduledAt().String(), lastJob.ScheduledAt().String())
+			}
+		}
+
+		if job.Before(lastJob) {
 			t.Fatalf("Job dequeued out of order: %v before %v", job.ScheduledAt(), lastJob.ScheduledAt())
 		}
-		if job.ScheduledAt().Before(lastJob.ScheduledAt()) {
-			t.Fatalf("Job dequeued out of order: %v before %v", job.ScheduledAt(), lastJob.ScheduledAt())
-		}
-		if job.ScheduledAt().Before(lastJob.ScheduledAt()) {
-			t.Fatalf("Job dequeued out of order: %v before %v", job.ScheduledAt(), lastJob.ScheduledAt())
-		}
+
 		lastJob = job
 	}
 }
