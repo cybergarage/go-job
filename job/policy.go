@@ -33,7 +33,7 @@ type Policy interface {
 	// Timeout returns the timeout duration for the job.
 	Timeout() time.Duration
 	// RetryDelay returns the delay time before retrying a job.
-	RetrayDelay() time.Duration
+	RetryDelay() time.Duration
 }
 
 // PolicyOption defines a function that configures a job policy.

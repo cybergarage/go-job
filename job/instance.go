@@ -37,6 +37,12 @@ type Instance interface {
 	Process() error
 	// State returns the current state of the job instance.
 	State() JobState
+	// Handler returns the handler for the job instance.
+	Handler
+	// Schedule returns the schedule for the job instance.
+	Schedule
+	// Policy returns the policy for the job instance.
+	Policy
 	// String returns a string representation of the job instance.
 	String() string
 }
@@ -44,10 +50,10 @@ type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
 	*instanceHistory
-	handler  *handler
-	schedule *schedule
-	policy   *policy
-	args     *Arguments
+	*handler
+	*schedule
+	*policy
+	args *arguments
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -62,7 +68,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		handler:         newHandler(),
 		schedule:        newSchedule(),
 		policy:          newPolicy(),
-		args:            NewArguments(),
+		args:            newArguments(),
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -78,7 +84,7 @@ func NewInstance(opts ...any) (Instance, error) {
 			opt(ji.policy)
 		case ArgumentsOption:
 			opt(ji.args)
-		case *Arguments:
+		case *arguments:
 			ji.args = opt
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
@@ -121,7 +127,7 @@ func (ji *jobInstance) Process() error {
 	if ji.handler == nil {
 		return fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
-	res, err := ji.handler.Execute(ji.args.Args()...)
+	res, err := ji.handler.Execute(ji.args.Arguments()...)
 	if err == nil {
 		ji.handler.HandleResponse(ji, res)
 		return nil
