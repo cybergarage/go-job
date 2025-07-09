@@ -35,8 +35,8 @@ type PendingStore interface {
 
 // HistoryStore is an interface that defines methods for managing job instance state history.
 type HistoryStore interface {
-	// AddInstanceRecord adds a new state record for a job instance.
-	AddInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error
+	// LogInstanceRecord adds a new state record for a job instance.
+	LogInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error
 	// ListInstanceRecords lists all state records for a job instance.
 	ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceRecord, error)
 }
