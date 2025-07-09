@@ -15,6 +15,7 @@
 package job
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/robfig/cron/v3"
@@ -26,6 +27,10 @@ type Schedule interface {
 	CrontabSpec() string
 	// Next returns the next scheduled time.
 	Next() time.Time
+	// Map returns a map representation of the job.
+	Map() map[string]any
+	// String returns a string representation of the job.
+	String() string
 }
 
 // ScheduleOption defines a function that configures a job schedule.
@@ -93,4 +98,18 @@ func (js *schedule) Next() time.Time {
 		return js.cronSchedule.Next(time.Now())
 	}
 	return js.scheduleAt
+}
+
+// Map returns a map representation of the job schedule.
+func (js *schedule) Map() map[string]any {
+	m := map[string]any{}
+	if 0 < len(js.crontabSpec) {
+		m["crontab"] = js.crontabSpec
+	}
+	return m
+}
+
+// String returns a string representation of the job schedule.
+func (js *schedule) String() string {
+	return fmt.Sprintf("%v", js.Map())
 }
