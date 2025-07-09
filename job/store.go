@@ -20,13 +20,13 @@ import (
 
 // Store is the interface for job instance storage.
 type Store interface {
-	InstanceStore
+	PendingStore
 }
 
-// InstanceStore is an interface that defines methods for managing job instances.
-type InstanceStore interface {
-	// AddInstance stores a job instance in the store.
-	AddInstance(ctx context.Context, job Instance) error
+// PendingStore is an interface that defines methods for managing job instances.
+type PendingStore interface {
+	// EnqueueInstance stores a job instance in the store.
+	EnqueueInstance(ctx context.Context, job Instance) error
 	// RemoveInstance removes a job instance from the store by its unique identifier.
 	RemoveInstance(ctx context.Context, job Instance) error
 	// ListInstances lists all job instances in the store.

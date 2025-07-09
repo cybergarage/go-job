@@ -30,8 +30,8 @@ func NewMemStore() Store {
 	}
 }
 
-// AddInstance stores a job instance in the store.
-func (s *memStore) AddInstance(ctx context.Context, job Instance) error {
+// EnqueueInstance stores a job instance in the store.
+func (s *memStore) EnqueueInstance(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
