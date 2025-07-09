@@ -14,31 +14,34 @@
 
 package job
 
-// Arguments represents the arguments passed to a job.
-type Arguments struct {
+type Arguments interface {
+	// Arguments returns the underlying arguments.
+	Arguments() []any
+}
+
+type arguments struct {
 	args []any
 }
 
 // ArgumentsOption defines a function that configures the arguments for a job.
-type ArgumentsOption func(*Arguments)
+type ArgumentsOption func(*arguments)
 
 // WithArguments sets the arguments for a job.
 func WithArguments(args ...any) ArgumentsOption {
-	return func(a *Arguments) {
+	return func(a *arguments) {
 		a.args = args
 	}
 }
 
-// NewArguments creates a new Arguments instance.
-func NewArguments(opts ...ArgumentsOption) *Arguments {
-	a := &Arguments{}
+func newArguments(opts ...ArgumentsOption) *arguments {
+	a := &arguments{}
 	for _, opt := range opts {
 		opt(a)
 	}
 	return a
 }
 
-// Args returns the underlying arguments.
-func (a *Arguments) Args() []any {
+// Arguments returns the underlying arguments.
+func (a *arguments) Arguments() []any {
 	return a.args
 }
