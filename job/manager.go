@@ -72,7 +72,7 @@ func NewManager(opts ...ManagerOption) *manager {
 	mgr := &manager{
 		Mutex:     sync.Mutex{},
 		logger:    NewNullLogger(),
-		store:     NewMemStore(),
+		store:     NewLocalStore(),
 		scheduler: nil,
 		Registry:  NewJobRegistry(),
 		queue:     nil,

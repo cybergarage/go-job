@@ -38,7 +38,7 @@ type scheduler struct {
 // NewScheduler creates a new instance of Scheduler.
 func NewScheduler(opts ...SchedulerOption) *scheduler {
 	s := &scheduler{
-		Queue: NewQueue(WithQueueStore(NewMemStore())),
+		Queue: NewQueue(WithQueueStore(NewLocalStore())),
 	}
 	for _, opt := range opts {
 		opt(s)

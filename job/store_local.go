@@ -19,26 +19,26 @@ import (
 	"sync"
 )
 
-type memStore struct {
+type localStore struct {
 	jobs    sync.Map
 	history []InstanceRecord
 }
 
-// NewMemStore creates a new in-memory job store.
-func NewMemStore() Store {
-	return &memStore{
+// NewLocalStore creates a new in-memory job store.
+func NewLocalStore() Store {
+	return &localStore{
 		jobs:    sync.Map{},
 		history: []InstanceRecord{},
 	}
 }
 
 // Name returns the name of the store.
-func (s *memStore) Name() string {
+func (s *localStore) Name() string {
 	return "local"
 }
 
 // EnqueueInstance stores a job instance in the store.
-func (s *memStore) EnqueueInstance(ctx context.Context, job Instance) error {
+func (s *localStore) EnqueueInstance(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -47,7 +47,7 @@ func (s *memStore) EnqueueInstance(ctx context.Context, job Instance) error {
 }
 
 // RemoveInstance removes a job instance from the store by its unique identifier.
-func (s *memStore) RemoveInstance(ctx context.Context, job Instance) error {
+func (s *localStore) RemoveInstance(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -56,7 +56,7 @@ func (s *memStore) RemoveInstance(ctx context.Context, job Instance) error {
 }
 
 // ListInstances lists all job instances in the store.
-func (s *memStore) ListInstances(ctx context.Context) ([]Instance, error) {
+func (s *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	jobs := make([]Instance, 0)
 	s.jobs.Range(func(key, value interface{}) bool {
 		if job, ok := value.(Instance); ok {
@@ -68,7 +68,7 @@ func (s *memStore) ListInstances(ctx context.Context) ([]Instance, error) {
 }
 
 // LogInstanceRecord adds a new state record for a job instance.
-func (s *memStore) LogInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error {
+func (s *localStore) LogInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error {
 	if job == nil {
 		return nil
 	}
@@ -77,7 +77,7 @@ func (s *memStore) LogInstanceRecord(ctx context.Context, job Instance, record I
 }
 
 // ListInstanceRecords lists all state records for a job instance.
-func (s *memStore) ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceRecord, error) {
+func (s *localStore) ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceRecord, error) {
 	if job == nil {
 		return nil, nil
 	}
