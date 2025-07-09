@@ -29,6 +29,8 @@ type Instance interface {
 	Schedule
 	// Policy defines the policy for the job instance.
 	Policy
+	// Arguments returns the arguments for the job instance.
+	Arguments
 
 	// Job returns the job associated with this job instance.
 	Job() Job
@@ -54,7 +56,7 @@ type jobInstance struct {
 	*handler
 	*schedule
 	*policy
-	args *arguments
+	*arguments
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -69,7 +71,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		handler:         newHandler(),
 		schedule:        newSchedule(),
 		policy:          newPolicy(),
-		args:            newArguments(),
+		arguments:       newArguments(),
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -84,9 +86,9 @@ func NewInstance(opts ...any) (Instance, error) {
 		case PolicyOption:
 			opt(ji.policy)
 		case ArgumentsOption:
-			opt(ji.args)
+			opt(ji.arguments)
 		case *arguments:
-			ji.args = opt
+			ji.arguments = opt
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
@@ -128,7 +130,7 @@ func (ji *jobInstance) Process() error {
 	if ji.handler == nil {
 		return fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
-	res, err := ji.handler.Execute(ji.args.Arguments()...)
+	res, err := ji.handler.Execute(ji.Arguments()...)
 	if err == nil {
 		ji.handler.HandleResponse(ji, res)
 		return nil
