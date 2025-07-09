@@ -46,6 +46,8 @@ type Instance interface {
 	Map() map[string]any
 	// String returns a string representation of the job instance.
 	String() string
+	// InstanceHelper provides methods to check if the job instance should be processed before or after another instance.
+	InstanceHelper
 }
 
 type jobInstance struct {

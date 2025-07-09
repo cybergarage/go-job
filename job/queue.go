@@ -75,13 +75,8 @@ func (q *queue) Dequeue() (Instance, error) {
 			return nil, err
 		}
 
-		// Sort jobs by priority (higher priority first), then by scheduled time (earlier first)
 		sort.Slice(jobs, func(i, j int) bool {
-			pi, pj := jobs[i].Policy().Priority(), jobs[j].Policy().Priority()
-			if pi != pj {
-				return pi > pj
-			}
-			return jobs[i].ScheduledAt().Before(jobs[j].ScheduledAt())
+			return jobs[i].Before(jobs[j])
 		})
 
 		now := time.Now()
