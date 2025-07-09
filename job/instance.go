@@ -46,6 +46,7 @@ type jobInstance struct {
 	*instanceHistory
 	handler  *handler
 	schedule *schedule
+	policy   *policy
 	args     *Arguments
 }
 
@@ -60,6 +61,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		instanceHistory: NewInstanceHistory(),
 		handler:         newHandler(),
 		schedule:        newSchedule(),
+		policy:          newPolicy(),
 		args:            NewArguments(),
 	}
 	for _, opt := range opts {
@@ -72,6 +74,8 @@ func NewInstance(opts ...any) (Instance, error) {
 			opt(ji.handler)
 		case ScheduleOption:
 			opt(ji.schedule)
+		case PolicyOption:
+			opt(ji.policy)
 		case ArgumentsOption:
 			opt(ji.args)
 		case *Arguments:

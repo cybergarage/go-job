@@ -32,6 +32,8 @@ type Policy interface {
 	Priority() int
 	// Timeout returns the timeout duration for the job.
 	Timeout() time.Duration
+	// RetryDelay returns the delay time before retrying a job.
+	RetrayDelay() time.Duration
 }
 
 // PolicyOption defines a function that configures a job policy.
@@ -143,4 +145,12 @@ func (p *policy) Priority() int {
 // Timeout returns the timeout duration for the job.
 func (p *policy) Timeout() time.Duration {
 	return p.timeout
+}
+
+// RetryDelay returns the delay time before retrying a job.
+func (p *policy) RetryDelay() time.Duration {
+	if p.retryDelayFn != nil {
+		return p.retryDelayFn(1)
+	}
+	return 0
 }
