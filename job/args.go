@@ -14,13 +14,19 @@
 
 package job
 
+import (
+	"github.com/cybergarage/go-job/job/encoding"
+)
+
 type Arguments interface {
 	// Arguments returns the underlying arguments.
 	Arguments() []any
+	// Map returns the arguments as a map.
+	Map() map[string]any
 }
 
 type arguments struct {
-	args []any
+	Args []any `json:"args"`
 }
 
 // ArgumentsOption defines a function that configures the arguments for a job.
@@ -29,19 +35,24 @@ type ArgumentsOption func(*arguments)
 // WithArguments sets the arguments for a job.
 func WithArguments(args ...any) ArgumentsOption {
 	return func(a *arguments) {
-		a.args = args
+		a.Args = args
 	}
 }
 
 func newArguments(opts ...ArgumentsOption) *arguments {
-	a := &arguments{}
+	args := &arguments{}
 	for _, opt := range opts {
-		opt(a)
+		opt(args)
 	}
-	return a
+	return args
 }
 
 // Arguments returns the underlying arguments.
-func (a *arguments) Arguments() []any {
-	return a.args
+func (args *arguments) Arguments() []any {
+	return args.Args
+}
+
+// Map returns the arguments as a map.
+func (args *arguments) Map() map[string]any {
+	return encoding.UnmarshalToMap(args)
 }
