@@ -32,6 +32,11 @@ func NewMemStore() Store {
 	}
 }
 
+// Name returns the name of the store.
+func (s *memStore) Name() string {
+	return "local"
+}
+
 // EnqueueInstance stores a job instance in the store.
 func (s *memStore) EnqueueInstance(ctx context.Context, job Instance) error {
 	if job == nil {

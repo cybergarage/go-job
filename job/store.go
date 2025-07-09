@@ -20,6 +20,8 @@ import (
 
 // Store is the interface for job instance storage.
 type Store interface {
+	// Name returns the name of the store.
+	Name() string
 	// PendingStore provides methods for managing job instances.
 	PendingStore
 	// HistoryStore provides methods for managing job instance state history.
