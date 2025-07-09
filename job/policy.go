@@ -21,6 +21,9 @@ const (
 	DefaultTimeout = 30 * time.Minute
 )
 
+// RetryDelay is a function type that defines how long to wait before retrying a job.
+type RetryDelay func(retryCount int) time.Duration
+
 // Policy defines the interface for job scheduling, supporting crontab expressions.
 type Policy interface {
 	// MaxRetries returns the maximum number of retries allowed for the job.
@@ -36,9 +39,10 @@ type PolicyOption func(*policy)
 
 // policy implements the JobPolicy interface using a crontab spec string.
 type policy struct {
-	maxRetries int
-	priority   int
-	timeout    time.Duration
+	maxRetries   int
+	priority     int
+	timeout      time.Duration
+	retryDelayFn RetryDelay
 }
 
 // WithMaxRetries sets the maximum number of retries for the job policy.
@@ -90,11 +94,30 @@ func WithInfiniteRetries() PolicyOption {
 	}
 }
 
+// WithRetryDelay sets the function to determine the delay before retrying a job.
+func WithRetryDelay(fn RetryDelay) PolicyOption {
+	return func(s *policy) {
+		s.retryDelayFn = fn
+	}
+}
+
+// WithRetryDelayDuration sets a fixed delay duration before retrying a job.
+func WithRetryDelayDuration(duration time.Duration) PolicyOption {
+	return func(s *policy) {
+		s.retryDelayFn = func(retryCount int) time.Duration {
+			return duration
+		}
+	}
+}
+
 func newPolicy() *policy {
 	return &policy{
 		maxRetries: NoRetry,         // Default to no retries
 		priority:   DefaultPriority, // Default priority
 		timeout:    DefaultTimeout,  // Default timeout
+		retryDelayFn: func(retryCount int) time.Duration {
+			return time.Duration(0)
+		},
 	}
 }
 
