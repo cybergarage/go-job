@@ -23,15 +23,6 @@ import (
 
 // Instance represents a specific instance of a job that has been scheduled or executed.
 type Instance interface {
-	// Handler defines the job handler for the job instance.
-	Handler
-	// Schedule defines the scheduling policy for the job instance.
-	Schedule
-	// Policy defines the policy for the job instance.
-	Policy
-	// Arguments returns the arguments for the job instance.
-	Arguments
-
 	// Job returns the job associated with this job instance.
 	Job() Job
 	// Kind returns the kind of job this instance represents.
@@ -40,6 +31,10 @@ type Instance interface {
 	UUID() uuid.UUID
 	// ScheduledAt returns the time when the job instance was scheduled.
 	ScheduledAt() time.Time
+	// Arguments returns the arguments for the job instance.
+	Arguments() []any
+	// Policy returns the policy associated with the job instance.
+	Policy() Policy
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState) error
 	// Process executes the job instance executor with the arguments provided in the context.
@@ -112,6 +107,19 @@ func (ji *jobInstance) Kind() Kind {
 // UUID returns the unique identifier of the job instance.
 func (ji *jobInstance) UUID() uuid.UUID {
 	return ji.uuid
+}
+
+// Arguments returns the arguments for the job instance.
+func (ji *jobInstance) Arguments() []any {
+	if ji.arguments == nil {
+		return nil
+	}
+	return ji.arguments.Arguments()
+}
+
+// Policy returns the policy associated with the job instance.
+func (ji *jobInstance) Policy() Policy {
+	return ji.policy
 }
 
 // ScheduledAt returns the time when the job instance was scheduled.
