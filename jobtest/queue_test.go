@@ -16,6 +16,7 @@ package jobtest
 
 import (
 	"testing"
+	"time"
 
 	"github.com/cybergarage/go-job/job"
 )
@@ -23,7 +24,94 @@ import (
 func QueueStoreTest(t *testing.T, store job.Store) {
 	t.Helper()
 
+	now := time.Now()
+
+	tests := []struct {
+		opts []any
+	}{
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(10 * time.Microsecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.HighPriority),
+				job.WithScheduleAt(now.Add(10 * time.Microsecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(5 * time.Millisecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(1 * time.Second)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.DefaultPriority),
+				job.WithScheduleAt(now.Add(1 * time.Second)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(500 * time.Microsecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.HighPriority),
+				job.WithScheduleAt(now.Add(500 * time.Microsecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(2 * time.Second)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.DefaultPriority),
+				job.WithScheduleAt(now.Add(2 * time.Second)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(100 * time.Millisecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.HighPriority),
+				job.WithScheduleAt(now.Add(3 * time.Millisecond)),
+			},
+		},
+		{
+			opts: []any{
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(700 * time.Microsecond)),
+			},
+		},
+	}
+
 	jobs := []job.Instance{}
+	for _, tt := range tests {
+		job, err := job.NewInstance(tt.opts...)
+		if err != nil {
+			t.Errorf("Failed to create job: %v", err)
+			return
+		}
+		jobs = append(jobs, job)
+	}
 
 	q := job.NewQueue(job.WithQueueStore(store))
 
@@ -38,13 +126,24 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 	for i := 0; i < len(jobs); i++ {
 		job, err := q.Dequeue()
 		if err != nil {
-			t.Errorf("Failed to dequeue job: %v", err)
+			t.Fatalf("Failed to dequeue job: %v", err)
 			return
 		}
+		t.Logf("Dequeued job: %d, scheduled at: %s", job.Policy().Priority(), job.ScheduledAt().String())
 		if lastJob == nil {
 			lastJob = job
 			continue
 		}
+		if job.Policy().Priority() > lastJob.Policy().Priority() {
+			t.Fatalf("Job dequeued out of order: %v before %v", job.ScheduledAt(), lastJob.ScheduledAt())
+		}
+		if job.ScheduledAt().Before(lastJob.ScheduledAt()) {
+			t.Fatalf("Job dequeued out of order: %v before %v", job.ScheduledAt(), lastJob.ScheduledAt())
+		}
+		if job.ScheduledAt().Before(lastJob.ScheduledAt()) {
+			t.Fatalf("Job dequeued out of order: %v before %v", job.ScheduledAt(), lastJob.ScheduledAt())
+		}
+		lastJob = job
 	}
 }
 
