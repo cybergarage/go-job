@@ -44,6 +44,7 @@ type Instance interface {
 	// String returns a string representation of the job instance.
 	String() string
 }
+
 type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
