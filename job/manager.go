@@ -76,7 +76,6 @@ func NewManager(opts ...ManagerOption) *manager {
 		store:     NewLocalStore(),
 		scheduler: nil,
 		Registry:  NewJobRegistry(),
-		queue:     nil,
 		workers:   make([]Worker, 1),
 	}
 	for _, opt := range opts {
@@ -101,6 +100,25 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) error {
 		return fmt.Errorf("job not found: %s", kind)
 	}
 	return mgr.ScheduleJob(job, opts...)
+}
+
+// ScheduleJob schedules a job instance with the given job and options.
+// It creates a new job instance and enqueues it in the job queue.
+func (mgr *manager) ScheduleJob(job Job, opts ...any) error {
+	opts = append(opts,
+		WithExecutor(job.Handler().Executor()),
+		WithErrorHandler(job.Handler().ErrorHandler()),
+		WithResponseHandler(job.Handler().ResponseHandler()),
+		WithCrontabSpec(job.Schedule().CrontabSpec()),
+	)
+	ji, err := NewInstance(opts...)
+	if err != nil {
+		return err
+	}
+	if err := mgr.ScheduleJobInstance(ji); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Start starts the job manager.
