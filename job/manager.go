@@ -33,6 +33,7 @@ type Manager interface {
 	// Stop stops the job manager.
 	Stop() error
 }
+
 type manager struct {
 	sync.Mutex
 	logger  Logger
