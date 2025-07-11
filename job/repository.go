@@ -20,6 +20,8 @@ type Repository interface {
 	Registry
 	// Scheduler defines the methods for scheduling jobs.
 	Scheduler
+	// History defines the methods for managing job history.
+	History
 }
 
 // RepositoryOption is a function that configures a job repository.
@@ -34,8 +36,9 @@ func WithRepositoryStore(store Store) RepositoryOption {
 
 type repository struct {
 	store Store
-	Scheduler
 	Registry
+	Scheduler
+	History
 }
 
 func NewRepository(opts ...RepositoryOption) *repository {
@@ -47,10 +50,13 @@ func NewRepository(opts ...RepositoryOption) *repository {
 	for _, opt := range opts {
 		opt(repo)
 	}
+
+	repo.Registry = NewRegistry()
+
 	queue := NewQueue(WithQueueStore(repo.store))
 	repo.Scheduler = NewScheduler(WithSchedulerQueue(queue))
 
-	repo.Registry = NewRegistry()
+	repo.History = newHistory(WithHistoryStore(repo.store))
 
 	return repo
 }
