@@ -23,7 +23,7 @@ type Registry interface {
 	// RegisterJob registers a job in the registry.
 	RegisterJob(job Job) error
 	// UnregisterJob removes a job from the registry by its kind.
-	UnregisterJob(kind Kind)
+	UnregisterJob(kind Kind) error
 	// RegisteredJobs returns a slice of all registered jobs.
 	RegisteredJobs() []Job
 	// LookupJob looks up a job by its kind in the registry.
@@ -52,8 +52,12 @@ func (r *registry) RegisterJob(job Job) error {
 }
 
 // UnregisterJob removes a job from the registry by its kind.
-func (r *registry) UnregisterJob(kind Kind) {
+func (r *registry) UnregisterJob(kind Kind) error {
+	if _, exists := r.jobs[kind]; !exists {
+		return fmt.Errorf("job with kind %q is not registered", kind)
+	}
 	delete(r.jobs, kind)
+	return nil
 }
 
 // RegisteredJobs returns a slice of all registered jobs.
