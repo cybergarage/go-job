@@ -35,8 +35,8 @@ type registry struct {
 	jobs map[string]Job
 }
 
-// NewJobRegistry creates a new instance of JobRegistry.
-func NewJobRegistry() Registry {
+// NewRegistry creates a new instance of Registry.
+func NewRegistry() Registry {
 	return &registry{
 		jobs: make(map[string]Job),
 	}

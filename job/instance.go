@@ -53,7 +53,7 @@ type Instance interface {
 type jobInstance struct {
 	job  Job
 	uuid uuid.UUID
-	*instanceHistory
+	*history
 	*handler
 	*schedule
 	*policy
@@ -66,13 +66,13 @@ type InstanceOption func(*jobInstance) error
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
-		job:             nil, // Default to nil, must be set by options
-		uuid:            uuid.New(),
-		instanceHistory: NewInstanceHistory(),
-		handler:         newHandler(),
-		schedule:        newSchedule(),
-		policy:          newPolicy(),
-		arguments:       newArguments(),
+		job:       nil, // Default to nil, must be set by options
+		uuid:      uuid.New(),
+		history:   newHistory(),
+		handler:   newHandler(),
+		schedule:  newSchedule(),
+		policy:    newPolicy(),
+		arguments: newArguments(),
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -84,6 +84,8 @@ func NewInstance(opts ...any) (Instance, error) {
 			opt(ji.handler)
 		case ScheduleOption:
 			opt(ji.schedule)
+		case HistoryOption:
+			opt(ji.history)
 		case PolicyOption:
 			opt(ji.policy)
 		case ArgumentsOption:
@@ -135,7 +137,7 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState) error {
-	ji.AppendRecord(ji, state)
+	ji.LogInstanceRecord(ji, state)
 	return nil
 }
 
@@ -154,7 +156,7 @@ func (ji *jobInstance) Process() error {
 
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	r := ji.LastRecord()
+	r := ji.LastInstanceRecord(ji)
 	if r == nil {
 		return JobStateUnknown
 	}

@@ -16,6 +16,8 @@ package job
 
 // Scheduler is responsible for scheduling jobs.
 type Scheduler interface {
+	// Queue returns the job queue used by the scheduler.
+	Queue() Queue
 	// ScheduleJobInstance schedules a job instance with the given options.
 	ScheduleJobInstance(job Instance, opts ...any) error
 }
@@ -26,18 +28,18 @@ type SchedulerOption func(*scheduler)
 // WithSchedulerQueue sets the job queue for the scheduler.
 func WithSchedulerQueue(queue Queue) SchedulerOption {
 	return func(s *scheduler) {
-		s.Queue = queue
+		s.queue = queue
 	}
 }
 
 type scheduler struct {
-	Queue
+	queue Queue
 }
 
 // NewScheduler creates a new instance of Scheduler.
 func NewScheduler(opts ...SchedulerOption) *scheduler {
 	s := &scheduler{
-		Queue: NewQueue(WithQueueStore(NewLocalStore())),
+		queue: NewQueue(WithQueueStore(NewLocalStore())),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -45,9 +47,14 @@ func NewScheduler(opts ...SchedulerOption) *scheduler {
 	return s
 }
 
+// Queue returns the job queue used by the scheduler.
+func (s *scheduler) Queue() Queue {
+	return s.queue
+}
+
 // ScheduleJobInstance schedules a job instance by adding it to the queue.
 func (s *scheduler) ScheduleJobInstance(job Instance, opts ...any) error {
-	if err := s.Queue.Enqueue(job); err != nil {
+	if err := s.queue.Enqueue(job); err != nil {
 		return err
 	}
 	return nil

@@ -14,7 +14,43 @@
 
 package job
 
+// Repository is an interface that defines methods for managing job registrations and scheduling.
 type Repository interface {
-	// JobRegistry is an interface that defines methods for managing job instances.
+	// Registry defines the methods for managing job registrations.
 	Registry
+	// Scheduler defines the methods for scheduling jobs.
+	Scheduler
+}
+
+// RepositoryOption is a function that configures a job repository.
+type RepositoryOption func(*repository)
+
+// WithRepositoryStore sets the store for the job repository.
+func WithRepositoryStore(store Store) RepositoryOption {
+	return func(r *repository) {
+		r.store = store
+	}
+}
+
+type repository struct {
+	store Store
+	Scheduler
+	Registry
+}
+
+func NewRepository(opts ...RepositoryOption) *repository {
+	repo := &repository{
+		store:     NewLocalStore(),
+		Scheduler: nil,
+		Registry:  nil,
+	}
+	for _, opt := range opts {
+		opt(repo)
+	}
+	queue := NewQueue(WithQueueStore(repo.store))
+	repo.Scheduler = NewScheduler(WithSchedulerQueue(queue))
+
+	repo.Registry = NewRegistry()
+
+	return repo
 }
