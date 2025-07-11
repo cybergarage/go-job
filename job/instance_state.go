@@ -22,8 +22,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// InstanceRecord keeps track of the state changes of a job.
-type InstanceRecord interface {
+// InstanceState represents the state of a job instance at a specific point in time.
+type InstanceState interface {
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
 	// Timestamp returns the timestamp of when the state history was created.
@@ -38,70 +38,70 @@ type InstanceRecord interface {
 	String() string
 }
 
-// InstanceRecordOption is a function that configures the job instance record.
-type InstanceRecordOption func(*instanceRecord)
+// InstanceStateOption is a function that configures the job instance state.
+type InstanceStateOption func(*instanceState)
 
-// WithRecordOption is a functional option to set additional options for the instance record.
-func WithRecordOption(opts map[string]any) func(*instanceRecord) {
-	return func(record *instanceRecord) {
+// WithStateOption is a functional option to set additional options for the instance state.
+func WithStateOption(opts map[string]any) func(*instanceState) {
+	return func(state *instanceState) {
 		for k, v := range opts {
-			record.opts[k] = v
+			state.opts[k] = v
 		}
 	}
 }
 
-type instanceRecord struct {
+type instanceState struct {
 	id    uuid.UUID
 	ts    time.Time
 	state JobState
 	opts  map[string]any
 }
 
-// newInstanceRecord creates a new job state record with the current timestamp and the given state.
-func newInstanceRecord(id uuid.UUID, state JobState, opts ...InstanceRecordOption) InstanceRecord {
-	ir := &instanceRecord{
+// newInstanceState creates a new job state record with the current timestamp and the given state.
+func newInstanceState(id uuid.UUID, state JobState, opts ...InstanceStateOption) InstanceState {
+	is := &instanceState{
 		id:    id,
 		ts:    time.Now(),
 		state: state,
 		opts:  make(map[string]any),
 	}
 	for _, opt := range opts {
-		opt(ir)
+		opt(is)
 	}
-	return ir
+	return is
 }
 
 // UUID returns the unique identifier of the job instance.
-func (record *instanceRecord) UUID() uuid.UUID {
-	return record.id
+func (state *instanceState) UUID() uuid.UUID {
+	return state.id
 }
 
 // Timestamp returns the timestamp of when the state history was created.
-func (record *instanceRecord) Timestamp() time.Time {
-	return record.ts
+func (state *instanceState) Timestamp() time.Time {
+	return state.ts
 }
 
 // State returns the state of the job history.
-func (record *instanceRecord) State() JobState {
-	return record.state
+func (state *instanceState) State() JobState {
+	return state.state
 }
 
-// Options returns the additional options associated with the instance record.
-func (record *instanceRecord) Options() map[string]any {
-	return record.opts
+// Options returns the additional options associated with the instance state.
+func (state *instanceState) Options() map[string]any {
+	return state.opts
 }
 
-// Map returns a map representation of the instance record.
-func (record *instanceRecord) Map() map[string]any {
+// Map returns a map representation of the instance state.
+func (state *instanceState) Map() map[string]any {
 	m := make(map[string]any)
-	m["id"] = record.id.String()
-	m["timestamp"] = record.ts
-	m["state"] = record.state.String()
-	m = encoding.MergeMaps(m, record.opts)
+	m["id"] = state.id.String()
+	m["timestamp"] = state.ts
+	m["state"] = state.state.String()
+	m = encoding.MergeMaps(m, state.opts)
 	return m
 }
 
-// String returns a string representation of the instance record.
-func (record *instanceRecord) String() string {
-	return encoding.MapToJSON(record.Map())
+// String returns a string representation of the instance state.
+func (state *instanceState) String() string {
+	return encoding.MapToJSON(state.Map())
 }

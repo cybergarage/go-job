@@ -15,4 +15,4 @@
 package job
 
 // InstanceHistory represents a history of job instance executions.
-type InstanceHistory []InstanceRecord
+type InstanceHistory []InstanceState

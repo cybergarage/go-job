@@ -21,14 +21,14 @@ import (
 
 type localStore struct {
 	jobs    sync.Map
-	history []InstanceRecord
+	history []InstanceState
 }
 
 // NewLocalStore creates a new in-memory job store.
 func NewLocalStore() Store {
 	return &localStore{
 		jobs:    sync.Map{},
-		history: []InstanceRecord{},
+		history: []InstanceState{},
 	}
 }
 
@@ -68,7 +68,7 @@ func (s *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 }
 
 // LogInstanceRecord adds a new state record for a job instance.
-func (s *localStore) LogInstanceRecord(ctx context.Context, job Instance, record InstanceRecord) error {
+func (s *localStore) LogInstanceRecord(ctx context.Context, job Instance, record InstanceState) error {
 	if job == nil {
 		return nil
 	}
@@ -77,11 +77,11 @@ func (s *localStore) LogInstanceRecord(ctx context.Context, job Instance, record
 }
 
 // ListInstanceRecords lists all state records for a job instance.
-func (s *localStore) ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceRecord, error) {
+func (s *localStore) ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceState, error) {
 	if job == nil {
 		return nil, nil
 	}
-	var records []InstanceRecord
+	var records []InstanceState
 	for _, record := range s.history {
 		if record.UUID() == job.UUID() {
 			records = append(records, record)
