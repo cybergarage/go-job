@@ -32,17 +32,29 @@ func WithSchedulerQueue(queue Queue) SchedulerOption {
 	}
 }
 
+// WithSchedulerStore sets the store for the scheduler.
+func WithSchedulerStore(store Store) SchedulerOption {
+	return func(s *scheduler) {
+		s.store = store
+	}
+}
+
 type scheduler struct {
+	store Store
 	queue Queue
 }
 
 // NewScheduler creates a new instance of Scheduler.
 func NewScheduler(opts ...SchedulerOption) *scheduler {
 	s := &scheduler{
-		queue: NewQueue(WithQueueStore(NewLocalStore())),
+		store: NewLocalStore(),
+		queue: nil,
 	}
 	for _, opt := range opts {
 		opt(s)
+	}
+	if s.queue == nil {
+		s.queue = NewQueue(WithQueueStore(s.store))
 	}
 	return s
 }

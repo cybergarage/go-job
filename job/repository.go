@@ -47,16 +47,14 @@ func NewRepository(opts ...RepositoryOption) *repository {
 		Scheduler: nil,
 		Registry:  nil,
 	}
+
 	for _, opt := range opts {
 		opt(repo)
 	}
 
 	repo.Registry = NewRegistry()
-
-	queue := NewQueue(WithQueueStore(repo.store))
-	repo.Scheduler = NewScheduler(WithSchedulerQueue(queue))
-
-	repo.History = newHistory(WithHistoryStore(repo.store))
+	repo.Scheduler = NewScheduler(WithSchedulerStore(repo.store))
+	repo.History = NewHistory(WithHistoryStore(repo.store))
 
 	return repo
 }
