@@ -1,0 +1,311 @@
+@startuml
+!define RECTANGLE class
+
+' Main Interfaces
+interface Manager {
+  +Registry
+  +Scheduler
+  +ScheduleRegisteredJob(kind: Kind, opts: ...any): error
+  +ScheduleJob(job: Job, opts: ...any): error
+  +Start(): error
+  +Stop(): error
+  +ScaleWorkers(num: int): error
+}
+
+interface Registry {
+  +RegisterJob(job: Job): error
+  +LookupJob(kind: Kind): (Job, bool)
+}
+
+interface Scheduler {
+  +ScheduleJob(job: Job, opts: ...any): error
+  +ScheduleJobInstance(ji: Instance): error
+}
+
+interface Store {
+  +Name(): string
+  +PendingStore
+  +HistoryStore
+}
+
+interface PendingStore {
+  +EnqueueInstance(ctx: Context, job: Instance): error
+  +RemoveInstance(ctx: Context, job: Instance): error
+  +ListInstances(ctx: Context): ([]Instance, error)
+}
+
+interface HistoryStore {
+  +LogInstanceRecord(ctx: Context, job: Instance, record: InstanceRecord): error
+  +ListInstanceRecords(ctx: Context, job: Instance): ([]InstanceRecord, error)
+}
+
+interface Queue {
+  +JobState(): JobState
+}
+
+interface Worker {
+  +Start(): error
+  +Stop(): error
+}
+
+' Core Domain Interfaces
+interface Job {
+  +Kind(): Kind
+  +Handler(): Handler
+  +Schedule(): Schedule
+  +Map(): map[string]any
+  +String(): string
+}
+
+interface Instance {
+  +Job(): Job
+  +Kind(): Kind
+  +UUID(): uuid.UUID
+  +ScheduledAt(): time.Time
+  +Arguments(): []any
+  +Policy(): Policy
+  +UpdateState(state: JobState): error
+  +Process(): error
+  +State(): JobState
+  +Map(): map[string]any
+  +String(): string
+  +InstanceHelper
+}
+
+interface Handler {
+  +Executor(): Executor
+  +ErrorHandler(): ErrorHandler
+  +ResponseHandler(): ResponseHandler
+  +Execute(args: ...any): (any, error)
+  +HandleError(instance: Instance, err: error): error
+  +HandleResponse(instance: Instance, response: any): error
+}
+
+interface Policy {
+  +MaxRetries(): int
+  +Priority(): int
+  +Timeout(): time.Duration
+  +RetryDelay(): time.Duration
+  +Map(): map[string]any
+  +String(): string
+}
+
+interface Schedule {
+  +CrontabSpec(): string
+  +Next(): time.Time
+  +Map(): map[string]any
+  +String(): string
+}
+
+interface Arguments {
+  +Arguments(): []any
+  +Map(): map[string]any
+}
+
+interface InstanceHelper {
+  +Compare(other: Instance): int
+  +Before(other: Instance): bool
+  +After(other: Instance): bool
+}
+
+interface History {
+  +LogInstanceRecord(instance: Instance, state: JobState): error
+  +LastInstanceRecord(instance: Instance): InstanceRecord
+  +Records(): []InstanceRecord
+}
+
+interface InstanceRecord {
+  +UUID(): uuid.UUID
+  +Timestamp(): time.Time
+  +State(): JobState
+  +Options(): map[string]any
+}
+
+' Function Types
+interface Executor {
+  +Execute(args: ...any): (any, error)
+}
+
+interface ErrorHandler {
+  +HandleError(instance: Instance, err: error): error
+}
+
+interface ResponseHandler {
+  +HandleResponse(instance: Instance, response: any): error
+}
+
+' Enums
+enum JobState {
+  JobStateUnknown
+  JobCreated
+  JobScheduled
+  JobRunning
+  JobSucceeded
+  JobFailed
+  JobCancelled
+  JobTimedOut
+}
+
+enum Kind {
+  (string type)
+}
+
+' Implementation Classes
+class manager {
+  -logger: Logger
+  -store: Store
+  -queue: Queue
+  -workers: []Worker
+  -scheduler: *scheduler
+  -Registry: Registry
+  +mutex: sync.RWMutex
+}
+
+class scheduler {
+  -queue: Queue
+}
+
+class jobRegistry {
+  -jobs: map[Kind]Job
+  -mutex: sync.RWMutex
+}
+
+class queue {
+  -jobState: JobState
+}
+
+class worker {
+  -queue: Queue
+  -running: bool
+  -mutex: sync.RWMutex
+}
+
+class job {
+  -kind: Kind
+  -handler: *handler
+  -schedule: *schedule
+}
+
+class jobInstance {
+  -job: Job
+  -uuid: uuid.UUID
+  -*history
+  -*handler
+  -*schedule
+  -*policy
+  -*arguments
+}
+
+class handler {
+  -executor: Executor
+  -errorHandler: ErrorHandler
+  -responseHandler: ResponseHandler
+}
+
+class policy {
+  -maxRetries: int
+  -priority: int
+  -timeout: time.Duration
+  -retryDelayFn: RetryDelay
+}
+
+class schedule {
+  -crontabSpec: string
+  -cronSchedule: cron.Schedule
+}
+
+class arguments {
+  -Args: []any
+}
+
+class history {
+  -records: []InstanceRecord
+  -mutex: sync.RWMutex
+}
+
+class instanceRecord {
+  -uuid: uuid.UUID
+  -timestamp: time.Time
+  -state: JobState
+  -options: map[string]any
+}
+
+' Option Types
+class ManagerOption <<function>>
+class InstanceOption <<function>>
+class HandlerOption <<function>>
+class ScheduleOption <<function>>
+class PolicyOption <<function>>
+class ArgumentsOption <<function>>
+class HistoryOption <<function>>
+
+' Relationships - Interface Implementations
+Manager <|.. manager
+Registry <|.. jobRegistry
+Scheduler <|.. scheduler
+Queue <|.. queue
+Worker <|.. worker
+Job <|.. job
+Instance <|.. jobInstance
+Handler <|.. handler
+Policy <|.. policy
+Schedule <|.. schedule
+Arguments <|.. arguments
+History <|.. history
+InstanceRecord <|.. instanceRecord
+
+' Composition Relationships
+manager *-- Registry : embeds
+manager *-- scheduler : contains
+manager *-- Store : uses
+manager *-- Queue : uses
+manager o-- Worker : manages[]
+
+scheduler --> Queue : uses
+queue --> JobState : filters by
+worker --> Queue : processes from
+
+' jobInstance Composition (embedded structs)
+jobInstance *-- Job : references
+jobInstance *-- history : embeds
+jobInstance *-- handler : embeds
+jobInstance *-- schedule : embeds
+jobInstance *-- policy : embeds
+jobInstance *-- arguments : embeds
+
+' Job Composition
+job *-- handler : contains
+job *-- schedule : contains
+
+' Handler Composition
+handler o-- Executor : uses
+handler o-- ErrorHandler : uses
+handler o-- ResponseHandler : uses
+
+' History Composition
+history o-- InstanceRecord : contains[]
+
+' Interface Inheritance
+Instance --|> InstanceHelper : extends
+
+' Dependencies
+Instance --> JobState : has state
+InstanceRecord --> JobState : records
+jobInstance --> uuid.UUID : has
+
+' Store Inheritance
+Store --|> PendingStore : extends
+Store --|> HistoryStore : extends
+
+' Constants
+class Constants {
+  +RetryForever: int = -1
+  +NoRetry: int = 0
+  +DefaultPriority: int = 0
+  +HighPriority: int = 10
+  +LowPriority: int = -10
+  +NoTimeout: time.Duration = 0
+  +DefaultTimeout: time.Duration = 30min
+}
+
+@enduml
