@@ -15,8 +15,6 @@
 package job
 
 import (
-	"fmt"
-	"maps"
 	"time"
 
 	"github.com/cybergarage/go-job/job/encoding"
@@ -105,19 +103,5 @@ func (record *instanceRecord) Map() map[string]any {
 
 // String returns a string representation of the instance record.
 func (record *instanceRecord) String() string {
-	str := record.id.String() + " - " + record.state.String() + " at " + record.ts.String()
-	if 0 < len(record.opts) {
-		str += "{"
-		keys := maps.Keys(record.opts)
-		n := 0
-		for key := range keys {
-			if 0 < n {
-				str += ", "
-			}
-			str += key + ":" + fmt.Sprintf("%v", record.opts[key])
-			n++
-		}
-		str += "}"
-	}
-	return str
+	return encoding.MapToJSON(record.Map())
 }

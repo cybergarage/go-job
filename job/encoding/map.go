@@ -64,3 +64,12 @@ func MergeMaps(m1, m2 map[string]any) map[string]any {
 	}
 	return m
 }
+
+// MapToJSON converts a map[string]any to a JSON string.
+func MapToJSON(m map[string]any) string {
+	jsonData, err := json.Marshal(m)
+	if err != nil {
+		return fmt.Sprintf("JSON marshal error: %v", err)
+	}
+	return string(jsonData)
+}
