@@ -22,7 +22,7 @@ import (
 // History is an interface that defines methods for managing the history of job instance state changes.
 type History interface {
 	LogInstanceRecord(job Instance, state JobState, opts ...InstanceRecordOption) error
-	InstanceRecords(job Instance) []InstanceRecord
+	InstanceHistory(job Instance) InstanceHistory
 	LastInstanceRecord(job Instance) InstanceRecord
 }
 
@@ -63,8 +63,8 @@ func (h *history) LogInstanceRecord(job Instance, state JobState, opts ...Instan
 	return h.store.LogInstanceRecord(context.Background(), job, record)
 }
 
-// InstanceRecords retrieves all state records for a job instance, sorted by timestamp.
-func (h *history) InstanceRecords(job Instance) []InstanceRecord {
+// InstanceHistory retrieves all state records for a job instance, sorted by timestamp.
+func (h *history) InstanceHistory(job Instance) InstanceHistory {
 	records, err := h.store.ListInstanceRecords(context.Background(), job)
 	if err != nil {
 		return nil
@@ -77,7 +77,7 @@ func (h *history) InstanceRecords(job Instance) []InstanceRecord {
 
 // LastInstanceRecord retrieves the most recent state record for a job instance.
 func (h *history) LastInstanceRecord(job Instance) InstanceRecord {
-	records := h.InstanceRecords(job)
+	records := h.InstanceHistory(job)
 	if len(records) == 0 {
 		return nil
 	}
