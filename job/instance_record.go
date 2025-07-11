@@ -19,15 +19,24 @@ import (
 	"maps"
 	"time"
 
+	"github.com/cybergarage/go-job/job/encoding"
+
 	"github.com/google/uuid"
 )
 
 // InstanceRecord keeps track of the state changes of a job.
 type InstanceRecord interface {
+	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
+	// Timestamp returns the timestamp of when the state history was created.
 	Timestamp() time.Time
+	// State returns the state of the job instance.
 	State() JobState
+	// Options returns the additional options associated with the instance record.
 	Options() map[string]any
+	// Map returns a map representation of the instance record.
+	Map() map[string]any
+	// String returns a string representation of the instance record.
 	String() string
 }
 
@@ -82,6 +91,16 @@ func (record *instanceRecord) State() JobState {
 // Options returns the additional options associated with the instance record.
 func (record *instanceRecord) Options() map[string]any {
 	return record.opts
+}
+
+// Map returns a map representation of the instance record.
+func (record *instanceRecord) Map() map[string]any {
+	m := make(map[string]any)
+	m["id"] = record.id.String()
+	m["timestamp"] = record.ts
+	m["state"] = record.state.String()
+	m = encoding.MergeMaps(m, record.opts)
+	return m
 }
 
 // String returns a string representation of the instance record.
