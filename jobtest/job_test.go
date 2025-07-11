@@ -72,6 +72,8 @@ func TestScheduleJobs(t *testing.T) {
 			var wg sync.WaitGroup
 			wg.Add(1)
 
+			// Register a test job
+
 			resHandler := func(job job.Instance, responses []any) {
 				t.Logf("Job %s executed with responses: %v", job.Kind(), responses)
 				wg.Done()
@@ -82,15 +84,20 @@ func TestScheduleJobs(t *testing.T) {
 				job.WithKind(tt.kind),
 				job.WithResponseHandler(resHandler),
 			)
+
 			j, err := job.NewJob(opts...)
 			if err != nil {
 				t.Fatalf("Failed to create job: %v", err)
 			}
+
 			err = mgr.RegisterJob(j)
 			if err != nil {
 				t.Fatalf("Failed to register job: %v", err)
 			}
-			err = mgr.ScheduleRegisteredJob(
+
+			// Schedule the job with arguments
+
+			ji, err := mgr.ScheduleRegisteredJob(
 				tt.kind,
 				job.WithArguments(tt.args...))
 			if err != nil {
@@ -98,6 +105,19 @@ func TestScheduleJobs(t *testing.T) {
 			}
 
 			wg.Wait()
+
+			// Check instance records record
+
+			records := mgr.InstanceRecords(ji)
+			if len(records) == 0 {
+				t.Errorf("Expected at least one history record for job instance")
+			}
+
+			// Unregister the job after test completion
+
+			if err := mgr.UnregisterJob(tt.kind); err != nil {
+				t.Errorf("Failed to unregister job: %v", err)
+			}
 		})
 	}
 }

@@ -15,6 +15,8 @@
 package job
 
 import (
+	"fmt"
+	"maps"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,9 +28,11 @@ type InstanceRecord interface {
 	Timestamp() time.Time
 	State() JobState
 	Options() map[string]any
+	String() string
 }
 
-type instanceRecordOption func(*instanceRecord)
+// InstanceRecordOption is a function that configures the job instance record.
+type InstanceRecordOption func(*instanceRecord)
 
 // WithRecordOption is a functional option to set additional options for the instance record.
 func WithRecordOption(opts map[string]any) func(*instanceRecord) {
@@ -47,7 +51,7 @@ type instanceRecord struct {
 }
 
 // newInstanceRecord creates a new job state record with the current timestamp and the given state.
-func newInstanceRecord(id uuid.UUID, state JobState, opts ...instanceRecordOption) InstanceRecord {
+func newInstanceRecord(id uuid.UUID, state JobState, opts ...InstanceRecordOption) InstanceRecord {
 	ir := &instanceRecord{
 		id:    id,
 		ts:    time.Now(),
@@ -78,4 +82,23 @@ func (record *instanceRecord) State() JobState {
 // Options returns the additional options associated with the instance record.
 func (record *instanceRecord) Options() map[string]any {
 	return record.opts
+}
+
+// String returns a string representation of the instance record.
+func (record *instanceRecord) String() string {
+	str := record.id.String() + " - " + record.state.String() + " at " + record.ts.String()
+	if 0 < len(record.opts) {
+		str += "{"
+		keys := maps.Keys(record.opts)
+		n := 0
+		for key := range keys {
+			if 0 < n {
+				str += ", "
+			}
+			str += key + ":" + fmt.Sprintf("%v", record.opts[key])
+			n++
+		}
+		str += "}"
+	}
+	return str
 }

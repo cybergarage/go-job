@@ -25,9 +25,9 @@ type Manager interface {
 	// Repository defines the methods for managing job registrations.
 	Repository
 	// ScheduleJob schedules a job instance with the given job and options.
-	ScheduleJob(job Job, opts ...any) error
+	ScheduleJob(job Job, opts ...any) (Instance, error)
 	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
-	ScheduleRegisteredJob(kind Kind, opts ...any) error
+	ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error)
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
@@ -91,17 +91,17 @@ func NewManager(opts ...ManagerOption) *manager {
 }
 
 // ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
-func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) error {
+func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error) {
 	job, ok := mgr.LookupJob(kind)
 	if !ok {
-		return fmt.Errorf("job not found: %s", kind)
+		return nil, fmt.Errorf("registered job not found: %s", kind)
 	}
 	return mgr.ScheduleJob(job, opts...)
 }
 
 // ScheduleJob schedules a job instance with the given job and options.
 // It creates a new job instance and enqueues it in the job queue.
-func (mgr *manager) ScheduleJob(job Job, opts ...any) error {
+func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	opts = append(opts,
 		WithExecutor(job.Handler().Executor()),
 		WithErrorHandler(job.Handler().ErrorHandler()),
@@ -110,12 +110,15 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) error {
 	)
 	ji, err := NewInstance(opts...)
 	if err != nil {
-		return err
+		mgr.LogInstanceRecord(ji, JobError)
+		return nil, err
 	}
+	mgr.LogInstanceRecord(ji, JobCreated)
 	if err := mgr.ScheduleJobInstance(ji); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	mgr.LogInstanceRecord(ji, JobScheduled)
+	return ji, nil
 }
 
 // Start starts the job manager.
