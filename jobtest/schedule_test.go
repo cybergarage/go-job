@@ -31,6 +31,31 @@ func TestSchedules(t *testing.T) {
 			cronSpec:   "",
 			scheduleAt: time.Now(),
 		},
+
+		{
+			cronSpec:   "0 0 * * *", // every day at midnight
+			scheduleAt: time.Now(),
+		},
+		{
+			cronSpec:   "*/5 * * * *", // every 5 minutes
+			scheduleAt: time.Time{},
+		},
+		{
+			cronSpec:   "0 9 * * 1-5", // 9am on weekdays
+			scheduleAt: time.Time{},
+		},
+		{
+			cronSpec:   "15 14 1 * *", // 2:15pm on the first of every month
+			scheduleAt: time.Time{},
+		},
+		{
+			cronSpec:   "0 0 29 2 *", // leap day (Feb 29)
+			scheduleAt: time.Time{},
+		},
+		{
+			cronSpec:   "0 0 1 1 *", // New Year's Day
+			scheduleAt: time.Time{},
+		},
 	}
 
 	for _, tt := range tests {
