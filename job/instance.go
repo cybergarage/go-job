@@ -156,11 +156,11 @@ func (ji *jobInstance) Process() error {
 
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	r := ji.LastInstanceRecord(ji)
-	if r == nil {
+	lr := ji.InstanceHistory(ji)
+	if lr == nil {
 		return JobStateUnknown
 	}
-	return r.State()
+	return lr.LastState().State()
 }
 
 // Map returns a map representation of the job instance.

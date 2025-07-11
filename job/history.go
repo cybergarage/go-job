@@ -23,7 +23,6 @@ import (
 type History interface {
 	LogInstanceRecord(job Instance, state JobState, opts ...InstanceStateOption) error
 	InstanceHistory(job Instance) InstanceHistory
-	LastInstanceRecord(job Instance) InstanceState
 }
 
 // HistoryOption is a function that configures the job history.
@@ -73,13 +72,4 @@ func (h *history) InstanceHistory(job Instance) InstanceHistory {
 		return records[i].Timestamp().Before(records[j].Timestamp())
 	})
 	return records
-}
-
-// LastInstanceRecord retrieves the most recent state record for a job instance.
-func (h *history) LastInstanceRecord(job Instance) InstanceState {
-	records := h.InstanceHistory(job)
-	if len(records) == 0 {
-		return nil
-	}
-	return records[len(records)-1]
 }

@@ -16,3 +16,11 @@ package job
 
 // InstanceHistory represents a history of job instance executions.
 type InstanceHistory []InstanceState
+
+// LastState returns the last state of the job instance from its history.
+func (history InstanceHistory) LastState() InstanceState {
+	if len(history) == 0 {
+		return nil
+	}
+	return history[len(history)-1]
+}
