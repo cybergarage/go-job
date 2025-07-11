@@ -113,6 +113,17 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected at least one history record for job instance")
 			}
 
+			// Check that record timestamps are in non-decreasing order
+
+			for i := 1; i < len(records); i++ {
+				pts := records[i-1].Timestamp()
+				its := records[i].Timestamp()
+				if pts.After(its) {
+					t.Errorf("Record timestamps are not in non-decreasing order: record[%d]=%v, record[%d]=%v",
+						i-1, pts, i, its)
+				}
+			}
+
 			// Unregister the job after test completion
 
 			if err := mgr.UnregisterJob(tt.kind); err != nil {
