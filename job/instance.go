@@ -40,6 +40,8 @@ type Instance interface {
 	UpdateState(state JobState) error
 	// Process executes the job instance executor with the arguments provided in the context.
 	Process() error
+	// History returns the history of state changes for the job instance.
+	History() InstanceHistory
 	// State returns the current state of the job instance.
 	State() JobState
 	// Map returns a map representation of the job instance.
@@ -51,9 +53,9 @@ type Instance interface {
 }
 
 type jobInstance struct {
-	job  Job
-	uuid uuid.UUID
-	*history
+	job     Job
+	uuid    uuid.UUID
+	history History
 	*handler
 	*schedule
 	*policy
@@ -84,8 +86,6 @@ func NewInstance(opts ...any) (Instance, error) {
 			opt(ji.handler)
 		case ScheduleOption:
 			opt(ji.schedule)
-		case HistoryOption:
-			opt(ji.history)
 		case PolicyOption:
 			opt(ji.policy)
 		case ArgumentsOption:
@@ -137,7 +137,7 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState) error {
-	ji.LogInstanceRecord(ji, state)
+	ji.history.LogInstanceRecord(ji, state)
 	return nil
 }
 
@@ -154,9 +154,14 @@ func (ji *jobInstance) Process() error {
 	return ji.handler.HandleError(ji, err)
 }
 
+// History returns the history of state changes for the job instance.
+func (ji *jobInstance) History() InstanceHistory {
+	return ji.history.InstanceHistory(ji)
+}
+
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	lr := ji.InstanceHistory(ji)
+	lr := ji.history.InstanceHistory(ji)
 	if lr == nil {
 		return JobStateUnknown
 	}
