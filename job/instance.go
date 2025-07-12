@@ -37,7 +37,7 @@ type Instance interface {
 	// Policy returns the policy associated with the job instance.
 	Policy() Policy
 	// UpdateState updates the state of the job instance and records the state change.
-	UpdateState(state JobState) error
+	UpdateState(state JobState, opts ...any) error
 	// Process executes the job instance executor with the arguments provided in the context.
 	Process() error
 	// History returns the history of state changes for the job instance.
@@ -159,7 +159,7 @@ func (ji *jobInstance) Process() error {
 }
 
 // UpdateState updates the state of the job instance and records the state change.
-func (ji *jobInstance) UpdateState(state JobState) error {
+func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	ji.state = state
 	ji.history.LogInstanceRecord(ji, state)
 	return nil
@@ -177,10 +177,17 @@ func (ji *jobInstance) State() JobState {
 
 // Map returns a map representation of the job instance.
 func (ji *jobInstance) Map() map[string]any {
-	mergedMap := map[string]any{
-		"uuid":  ji.uuid.String(),
-		"state": ji.State().String(),
-	}
+	return encoding.MergeMaps(
+		map[string]any{
+			"uuid":  ji.uuid.String(),
+			"state": ji.State().String(),
+		},
+		ji.OptionMap())
+}
+
+// OptionMap returns a map of options for the job instance, merging job, arguments, schedule, and policy options.
+func (ji *jobInstance) OptionMap() map[string]any {
+	mergedMap := map[string]any{}
 	maps := []map[string]any{
 		ji.job.Map(),
 		ji.arguments.Map(),
@@ -189,7 +196,6 @@ func (ji *jobInstance) Map() map[string]any {
 	}
 	for _, m := range maps {
 		mergedMap = encoding.MergeMaps(mergedMap, m)
-
 	}
 	return mergedMap
 }
