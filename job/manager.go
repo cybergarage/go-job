@@ -107,17 +107,18 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 		WithErrorHandler(job.Handler().ErrorHandler()),
 		WithResponseHandler(job.Handler().ResponseHandler()),
 		WithCrontabSpec(job.Schedule().CrontabSpec()),
+		WithInstanceHistory(mgr.Repository),
 	)
 	ji, err := NewInstance(opts...)
 	if err != nil {
-		mgr.LogInstanceRecord(ji, JobError)
 		return nil, err
 	}
-	mgr.LogInstanceRecord(ji, JobCreated)
 	if err := mgr.ScheduleJobInstance(ji); err != nil {
 		return nil, err
 	}
-	mgr.LogInstanceRecord(ji, JobScheduled)
+	if err := ji.UpdateState(JobScheduled); err != nil {
+		return nil, err
+	}
 	return ji, nil
 }
 

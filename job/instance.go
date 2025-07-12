@@ -55,6 +55,7 @@ type Instance interface {
 type jobInstance struct {
 	job     Job
 	uuid    uuid.UUID
+	state   JobState
 	history History
 	*handler
 	*schedule
@@ -65,11 +66,20 @@ type jobInstance struct {
 // InstanceOption defines a function that configures a job instance.
 type InstanceOption func(*jobInstance) error
 
+// WithInstanceHistory sets the history for the job instance.
+func WithInstanceHistory(history History) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.history = history
+		return nil
+	}
+}
+
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
 		job:       nil, // Default to nil, must be set by options
 		uuid:      uuid.New(),
+		state:     JobCreated,
 		history:   newHistory(),
 		handler:   newHandler(),
 		schedule:  newSchedule(),
@@ -96,7 +106,7 @@ func NewInstance(opts ...any) (Instance, error) {
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
 	}
-	return ji, nil
+	return ji, ji.UpdateState(JobCreated)
 }
 
 // Job returns the job associated with this job instance.
@@ -137,6 +147,7 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState) error {
+	ji.state = state
 	ji.history.LogInstanceRecord(ji, state)
 	return nil
 }
@@ -161,11 +172,7 @@ func (ji *jobInstance) History() InstanceHistory {
 
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
-	lr := ji.history.InstanceHistory(ji)
-	if lr == nil {
-		return JobStateUnknown
-	}
-	return lr.LastState().State()
+	return ji.state
 }
 
 // Map returns a map representation of the job instance.
