@@ -145,13 +145,6 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 	return ji.schedule.Next()
 }
 
-// UpdateState updates the state of the job instance and records the state change.
-func (ji *jobInstance) UpdateState(state JobState) error {
-	ji.state = state
-	ji.history.LogInstanceRecord(ji, state)
-	return nil
-}
-
 // Process executes the job instance executor with the arguments provided in the context.
 func (ji *jobInstance) Process() error {
 	if ji.handler == nil {
@@ -163,6 +156,13 @@ func (ji *jobInstance) Process() error {
 		return nil
 	}
 	return ji.handler.HandleError(ji, err)
+}
+
+// UpdateState updates the state of the job instance and records the state change.
+func (ji *jobInstance) UpdateState(state JobState) error {
+	ji.state = state
+	ji.history.LogInstanceRecord(ji, state)
+	return nil
 }
 
 // History returns the history of state changes for the job instance.

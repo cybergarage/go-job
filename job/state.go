@@ -24,8 +24,8 @@ const (
 	JobCreated JobState = 1 << iota
 	// JobScheduled indicates the job has been scheduled for execution.
 	JobScheduled
-	// JobRunning indicates the job is currently executing.
-	JobRunning
+	// JobProcessing indicates the job is currently being processed.
+	JobProcessing
 	// JobSucceeded indicates the job has completed successfully.
 	JobSucceeded
 	// JobFailed indicates the job has completed with an error.
@@ -54,8 +54,8 @@ func (s JobState) String() string {
 		return "Created"
 	case JobScheduled:
 		return "Scheduled"
-	case JobRunning:
-		return "Running"
+	case JobProcessing:
+		return "Processing"
 	case JobSucceeded:
 		return "Succeeded"
 	case JobFailed:

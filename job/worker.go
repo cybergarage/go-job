@@ -61,6 +61,10 @@ func (w *worker) Start() error {
 				if err != nil {
 					continue
 				}
+				err = ji.UpdateState(JobProcessing)
+				if err != nil {
+					continue
+				}
 				err = ji.Process()
 				if err != nil {
 					continue
