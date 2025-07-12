@@ -2,18 +2,13 @@
 [*] --> Created : Job created
 
 Created --> Scheduled : Job queued
-Scheduled --> Running : Job started
-Running --> Succeeded : Job completed successfully
-Running --> Failed : Job encountered an error
-Running --> Cancelled : Job was cancelled
-Running --> TimedOut : Job exceeded time limit
+Scheduled --> Processing : Job started
+Processing --> Completed : Job completed successfully
+Processing --> Terminated : Job encountered an error
+Processing --> Cancelled : Job was cancelled
+Processing --> TimedOut : Job exceeded time limit
+Terminated --> Scheduled : [if retriable] Reschedule
 
-Failed --> Scheduled : [if retriable] Reschedule
-Failed --> [*] : [if not retriable] Completed
-
-Cancelled --> [*] : Completed
-Succeeded --> [*] : Completed
 TimedOut --> Scheduled : [if retriable] Reschedule
-TimedOut --> [*] : [if not retriable] Completed
 
 @enduml
