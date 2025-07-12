@@ -34,6 +34,10 @@ const (
 	JobCancelled
 	// JobTimedOut indicates the job has exceeded its allowed execution time.
 	JobTimedOut
+	// JobCompleted indicates the job has completed (either successfully or unsuccessfully).
+	JobCompleted
+	// JobTerminated indicates the job has been terminated.
+	JobTerminated
 	// JobError indicates an error occurred while processing the job.
 	JobError
 )
@@ -60,6 +64,10 @@ func (s JobState) String() string {
 		return "Cancelled"
 	case JobTimedOut:
 		return "TimedOut"
+	case JobCompleted:
+		return "Completed"
+	case JobTerminated:
+		return "Terminated"
 	case JobError:
 		return "Error"
 	default:
