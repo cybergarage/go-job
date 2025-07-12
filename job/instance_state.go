@@ -51,7 +51,7 @@ func WithStateOption(opts map[string]any) func(*instanceState) {
 }
 
 type instanceState struct {
-	id    uuid.UUID
+	uuid  uuid.UUID
 	ts    time.Time
 	state JobState
 	opts  map[string]any
@@ -60,7 +60,7 @@ type instanceState struct {
 // newInstanceState creates a new job state record with the current timestamp and the given state.
 func newInstanceState(id uuid.UUID, state JobState, opts ...InstanceStateOption) InstanceState {
 	is := &instanceState{
-		id:    id,
+		uuid:  id,
 		ts:    time.Now(),
 		state: state,
 		opts:  make(map[string]any),
@@ -73,7 +73,7 @@ func newInstanceState(id uuid.UUID, state JobState, opts ...InstanceStateOption)
 
 // UUID returns the unique identifier of the job instance.
 func (state *instanceState) UUID() uuid.UUID {
-	return state.id
+	return state.uuid
 }
 
 // Timestamp returns the timestamp of when the state history was created.
@@ -93,10 +93,11 @@ func (state *instanceState) Options() map[string]any {
 
 // Map returns a map representation of the instance state.
 func (state *instanceState) Map() map[string]any {
-	m := make(map[string]any)
-	m["id"] = state.id.String()
-	m["timestamp"] = state.ts
-	m["state"] = state.state.String()
+	m := map[string]any{
+		"uuid":      state.uuid.String(),
+		"timestamp": state.ts,
+		"state":     state.state.String(),
+	}
 	m = encoding.MergeMaps(m, state.opts)
 	return m
 }
