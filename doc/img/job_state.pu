@@ -9,11 +9,11 @@ Running --> Cancelled : Job was cancelled
 Running --> TimedOut : Job exceeded time limit
 
 Failed --> Scheduled : [if retriable] Reschedule
-Failed --> [*] : [if not retriable] End
+Failed --> [*] : [if not retriable] Completed
 
-Cancelled --> [*] : End
-Succeeded --> [*] : End
+Cancelled --> [*] : Completed
+Succeeded --> [*] : Completed
 TimedOut --> Scheduled : [if retriable] Reschedule
-TimedOut --> [*] : [if not retriable] End
+TimedOut --> [*] : [if not retriable] Completed
 
 @enduml
