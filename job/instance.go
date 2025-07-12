@@ -161,8 +161,18 @@ func (ji *jobInstance) Process() error {
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	ji.state = state
-	ji.history.LogInstanceRecord(ji, state)
-	return nil
+	optMap := ji.OptionMap()
+	for _, opt := range opts {
+		switch opt := opt.(type) {
+		case error:
+			optMap["error"] = opt.Error()
+		case map[string]any:
+			optMap = encoding.MergeMaps(optMap, opt)
+		default:
+			return fmt.Errorf("invalid option type for UpdateState: %T", opt)
+		}
+	}
+	return ji.history.LogInstanceRecord(ji, state)
 }
 
 // History returns the history of state changes for the job instance.
@@ -189,10 +199,12 @@ func (ji *jobInstance) Map() map[string]any {
 func (ji *jobInstance) OptionMap() map[string]any {
 	mergedMap := map[string]any{}
 	maps := []map[string]any{
-		ji.job.Map(),
 		ji.arguments.Map(),
 		ji.schedule.Map(),
 		ji.Policy().Map(),
+	}
+	if ji.job != nil {
+		maps = append(maps, ji.job.Map())
 	}
 	for _, m := range maps {
 		mergedMap = encoding.MergeMaps(mergedMap, m)
