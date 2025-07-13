@@ -14,6 +14,10 @@
 
 package job
 
+import (
+	logger "github.com/cybergarage/go-logger/log"
+)
+
 // Worker is an interface that defines methods for processing jobs.
 type Worker interface {
 	// Start starts the worker to process jobs.
@@ -59,15 +63,25 @@ func (w *worker) Start() error {
 			default:
 				ji, err := w.queue.Dequeue()
 				if err != nil {
+					logger.Error(err)
 					continue
 				}
 				err = ji.UpdateState(JobProcessing)
 				if err != nil {
+					logger.Error(err)
 					continue
 				}
 				err = ji.Process()
-				if err != nil {
-					continue
+				if err == nil {
+					err = ji.UpdateState(JobCompleted)
+					if err != nil {
+						logger.Error(err)
+					}
+				} else {
+					err = ji.UpdateState(JobTerminated)
+					if err != nil {
+						logger.Error(err)
+					}
 				}
 			}
 		}
