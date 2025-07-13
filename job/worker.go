@@ -71,7 +71,7 @@ func (w *worker) Start() error {
 					logger.Error(err)
 					continue
 				}
-				err = ji.Process()
+				_, err = ji.Process()
 				if err == nil {
 					err = ji.UpdateState(JobCompleted)
 					if err != nil {

@@ -39,7 +39,7 @@ type Instance interface {
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState, opts ...any) error
 	// Process executes the job instance executor with the arguments provided in the context.
-	Process() error
+	Process() ([]any, error)
 	// History returns the history of state changes for the job instance.
 	History() InstanceHistory
 	// State returns the current state of the job instance.
@@ -146,16 +146,16 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 }
 
 // Process executes the job instance executor with the arguments provided in the context.
-func (ji *jobInstance) Process() error {
+func (ji *jobInstance) Process() ([]any, error) {
 	if ji.handler == nil {
-		return fmt.Errorf("no job handler set for job instance %s", ji.uuid)
+		return nil, fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
 	res, err := ji.handler.Execute(ji.Arguments()...)
 	if err == nil {
 		ji.handler.HandleResponse(ji, res)
-		return nil
+		return res, nil
 	}
-	return ji.handler.HandleError(ji, err)
+	return nil, ji.handler.HandleError(ji, err)
 }
 
 // UpdateState updates the state of the job instance and records the state change.
