@@ -108,19 +108,52 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Check instance records record
 
-			records := mgr.InstanceHistory(ji)
-			if len(records) == 0 {
+			history := mgr.InstanceHistory(ji)
+			if len(history) == 0 {
 				t.Errorf("Expected at least one history record for job instance")
+			}
+
+			lastState := history.LastState()
+			if lastState == nil {
+				t.Errorf("Expected last state to be non-nil, but it was nil")
+			} else {
+				t.Logf("Last state of job instance: %s", lastState.State())
+			}
+			if lastState.State() != job.JobCompleted {
+				t.Errorf("Expected last state to be %s, but got %s", job.JobCompleted, lastState.State())
 			}
 
 			// Check that record timestamps are in non-decreasing order
 
-			for i := 1; i < len(records); i++ {
-				pts := records[i-1].Timestamp()
-				its := records[i].Timestamp()
+			for i := 1; i < len(history); i++ {
+				pts := history[i-1].Timestamp()
+				its := history[i].Timestamp()
 				if pts.After(its) {
 					t.Errorf("Record timestamps are not in non-decreasing order: record[%d]=%v, record[%d]=%v",
 						i-1, pts, i, its)
+				}
+			}
+
+			// Check that the job instance has the expected state history
+
+			hasState := func(history job.InstanceHistory, state job.JobState) bool {
+				for _, record := range history {
+					if record.State() == state {
+						return true
+					}
+				}
+				return false
+			}
+
+			desiredStates := []job.JobState{
+				job.JobScheduled,
+				job.JobProcessing,
+				job.JobCompleted,
+			}
+
+			for _, state := range desiredStates {
+				if !hasState(history, state) {
+					t.Errorf("Expected job instance to have state %s, but it was not found in history", state)
 				}
 			}
 
