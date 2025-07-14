@@ -51,6 +51,8 @@ func main() {
 			fmt.Printf("Result: %v\n", res)
 		}),
 	)
+
+	// Register the job with the manager
 	mgr.RegisterJob(sumJob)
 
 	// Schedule the registered job
