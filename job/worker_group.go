@@ -17,7 +17,6 @@ package job
 import (
 	"errors"
 	"sync"
-	"time"
 )
 
 // WorkerGroup is an interface that defines methods for managing a group of workers.
@@ -101,13 +100,7 @@ func (g *workerGroup) Stop() error {
 // StopWithWait stops all workers in the group and waits for them to finish processing.
 func (g *workerGroup) StopWithWait() error {
 	for _, w := range g.workers {
-		for {
-			if !w.IsProcessing() {
-				break
-			}
-			time.Sleep(100 * time.Millisecond) // Wait for worker to finish processing
-		}
-		if err := w.Stop(); err != nil {
+		if err := w.StopWithWait(); err != nil {
 			return err
 		}
 	}
@@ -119,7 +112,7 @@ func (g *workerGroup) ScaleWorkers(num int) error {
 	if num < 0 {
 		return errors.New("number of workers cannot be negative")
 	}
-	if num == len(g.workers) {
+	if len(g.workers) == num {
 		return nil
 	}
 
@@ -128,9 +121,9 @@ func (g *workerGroup) ScaleWorkers(num int) error {
 	}
 	defer g.Unlock()
 
-	if num > len(g.workers) {
+	if len(g.workers) < num {
 		for i := len(g.workers); i < num; i++ {
-			worker := NewWorker()
+			worker := NewWorker(WithWorkerQueue(g.queue))
 			if err := worker.Start(); err != nil {
 				return err
 			}
@@ -138,7 +131,7 @@ func (g *workerGroup) ScaleWorkers(num int) error {
 		}
 	} else {
 		for i := num; i < len(g.workers); i++ {
-			if err := g.workers[i].Stop(); err != nil {
+			if err := g.workers[i].StopWithWait(); err != nil {
 				return err
 			}
 		}

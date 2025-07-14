@@ -15,6 +15,8 @@
 package job
 
 import (
+	"time"
+
 	logger "github.com/cybergarage/go-logger/log"
 )
 
@@ -22,10 +24,12 @@ import (
 type Worker interface {
 	// Start starts the worker to process jobs.
 	Start() error
-	// Stop stops the worker from processing jobs.
+	// Stop cancels the worker from processing jobs.
 	Stop() error
 	// IsProcessing returns true if the worker is currently processing a job.
 	IsProcessing() bool
+	// StopWithWait stops the worker and waits for it to finish processing jobs.
+	StopWithWait() error
 }
 
 type worker struct {
@@ -105,7 +109,18 @@ func (w *worker) Start() error {
 	return nil
 }
 
-// Stop stops the worker from processing jobs.
+// StopWithWait stops the worker and waits for it to finish processing jobs.
+func (w *worker) StopWithWait() error {
+	for {
+		if !w.IsProcessing() {
+			break
+		}
+		time.Sleep(1 * time.Second) // Wait for worker to finish processing
+	}
+	return w.Stop()
+}
+
+// Stop cancels the worker from processing jobs.
 func (w *worker) Stop() error {
 	close(w.done)
 	w.done = make(chan struct{})
