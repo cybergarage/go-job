@@ -109,14 +109,15 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 // ScheduleJob schedules a job instance with the given job and options.
 // It creates a new job instance and enqueues it in the job queue.
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
-	opts = append(opts,
+	jobOpts := []any{
 		WithExecutor(job.Handler().Executor()),
 		WithErrorHandler(job.Handler().ErrorHandler()),
 		WithResponseHandler(job.Handler().ResponseHandler()),
 		WithCrontabSpec(job.Schedule().CrontabSpec()),
 		WithInstanceHistory(mgr.Repository),
-	)
-	ji, err := NewInstance(opts...)
+	}
+	jobOpts = append(jobOpts, opts...)
+	ji, err := NewInstance(jobOpts...)
 	if err != nil {
 		return nil, err
 	}

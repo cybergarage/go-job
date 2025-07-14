@@ -14,6 +14,11 @@
 
 package job
 
+import (
+	"fmt"
+	"time"
+)
+
 func ExampleManager_ScheduleJob() {
 	mgr, _ := NewManager()
 	job, errors := NewJob(
@@ -25,10 +30,14 @@ func ExampleManager_ScheduleJob() {
 	}
 	mgr.ScheduleJob(
 		job,
+		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
+		WithResponseHandler(func(inst Instance, res []any) {
+			fmt.Printf("Result: %v\n", res)
+		}),
 		WithArguments(1, 2),
 	)
-	if err := mgr.Start(); err != nil {
-		return
-	}
+	mgr.Start()
 	mgr.StopWithWait()
+
+	// Output: Result: [3]
 }
