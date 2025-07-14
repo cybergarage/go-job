@@ -20,14 +20,14 @@ import (
 )
 
 func ExampleManager_ScheduleJob() {
+	// Create a job manager
 	mgr, _ := NewManager()
-	job, errors := NewJob(
+	// Create a job with a custom executor
+	job, _ := NewJob(
 		WithKind("sum"),
 		WithExecutor(func(a, b int) int { return a + b }),
 	)
-	if errors != nil {
-		return
-	}
+	// Schedule the job with the manager
 	mgr.ScheduleJob(
 		job,
 		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
@@ -36,7 +36,36 @@ func ExampleManager_ScheduleJob() {
 		}),
 		WithArguments(1, 2),
 	)
+	// Start the job manager
 	mgr.Start()
+	// Wait for the job to complete
+	mgr.StopWithWait()
+
+	// Output: Result: [3]
+}
+
+func ExampleManager_ScheduleRegisteredJob() {
+	// Create a job manager
+	mgr, _ := NewManager()
+	// Create a job with a custom executor
+	job, _ := NewJob(
+		WithKind("sum"),
+		WithExecutor(func(a, b int) int { return a + b }),
+	)
+	// Register the job with the manager
+	mgr.RegisterJob(job)
+	// Schedule the registered job
+	mgr.ScheduleRegisteredJob(
+		job.Kind(),
+		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
+		WithResponseHandler(func(inst Instance, res []any) {
+			fmt.Printf("Result: %v\n", res)
+		}),
+		WithArguments(1, 2),
+	)
+	// Start the job manager
+	mgr.Start()
+	// Wait for the job to complete
 	mgr.StopWithWait()
 
 	// Output: Result: [3]
