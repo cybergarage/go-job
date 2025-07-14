@@ -135,10 +135,12 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 			continue
 		}
 
+		lp := lastJob.Policy().Priority()
+		cp := job.Policy().Priority()
 		switch {
-		case job.Policy().Priority() > lastJob.Policy().Priority():
-			t.Fatalf("Job dequeued out of order: %d before %d", job.Policy().Priority(), lastJob.Policy().Priority())
-		case job.Policy().Priority() == lastJob.Policy().Priority():
+		case cp.Higher(lp):
+			t.Fatalf("Job dequeued out of order: %d after %d", cp, lp)
+		case cp.Equal(lp):
 			if job.ScheduledAt().Before(lastJob.ScheduledAt()) {
 				t.Fatalf("Job dequeued out of order: %s before %s", job.ScheduledAt().String(), lastJob.ScheduledAt().String())
 			}

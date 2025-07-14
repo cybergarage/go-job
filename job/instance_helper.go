@@ -24,10 +24,12 @@ type InstanceHelper interface {
 
 // Before checks if the job instance should be processed before the given instance.
 func (ji *jobInstance) Before(other Instance) bool {
-	if ji.Policy().Priority() == other.Policy().Priority() {
+	jp := ji.Policy().Priority()
+	op := other.Policy().Priority()
+	if jp.Equal(op) {
 		return ji.ScheduledAt().Before(other.ScheduledAt())
 	}
-	return ji.Policy().Priority() > other.Policy().Priority()
+	return jp.Higher(op)
 }
 
 // After checks if the job instance should be processed after the given instance.

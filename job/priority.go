@@ -37,12 +37,12 @@ func (p Priority) Equal(other Priority) bool {
 
 // Lower checks if the priority is lower than another priority.
 func (p Priority) Lower(other Priority) bool {
-	return p < other
+	return p > other
 }
 
 // Higher checks if the priority is higher than another priority.
 func (p Priority) Higher(other Priority) bool {
-	return p > other
+	return p < other
 }
 
 // String returns the string representation of the priority.
