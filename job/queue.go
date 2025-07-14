@@ -27,6 +27,16 @@ type Queue interface {
 	Enqueue(job Instance) error
 	// Dequeue removes and returns a job from the queue.
 	Dequeue() (Instance, error)
+	// HasJobs checks if there are any jobs in the queue.
+	HasJobs() (bool, error)
+	// Size returns the number of jobs in the queue.
+	Size() (int, error)
+	// Empty checks if the queue is empty.
+	Empty() (bool, error)
+	// Lock acquires a lock for the queue.
+	Lock() error
+	// Unlock releases the lock for the queue.
+	Unlock() error
 }
 
 type queue struct {
@@ -54,6 +64,18 @@ func NewQueue(opts ...QueueOption) Queue {
 		opt(queue)
 	}
 	return queue
+}
+
+// Lock acquires a lock for the queue.
+func (q *queue) Lock() error {
+	q.Mutex.Lock()
+	return nil
+}
+
+// Unlock releases the lock for the queue.
+func (q *queue) Unlock() error {
+	q.Mutex.Unlock()
+	return nil
 }
 
 // Enqueue adds a job to the queue.
@@ -93,4 +115,27 @@ func (q *queue) Dequeue() (Instance, error) {
 		q.Unlock()
 		time.Sleep(1 * time.Second)
 	}
+}
+
+// Size returns the number of jobs in the queue.
+func (q *queue) Size() (int, error) {
+	q.Lock()
+	defer q.Unlock()
+	jobs, err := q.store.ListInstances(context.Background())
+	if err != nil {
+		return 0, err
+	}
+	return len(jobs), nil
+}
+
+// HasJobs checks if there are any jobs in the queue.
+func (q *queue) HasJobs() (bool, error) {
+	size, err := q.Size()
+	return size > 0, err
+}
+
+// Empty checks if the queue is empty.
+func (q *queue) Empty() (bool, error) {
+	size, err := q.Size()
+	return size == 0, err
 }

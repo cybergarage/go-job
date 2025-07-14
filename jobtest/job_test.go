@@ -62,7 +62,7 @@ func TestScheduleJobs(t *testing.T) {
 	}
 
 	defer func() {
-		if err := mgr.Stop(); err != nil {
+		if err := mgr.StopWithWait(); err != nil {
 			t.Errorf("Failed to stop job manager: %v", err)
 		}
 	}()
@@ -146,6 +146,7 @@ func TestScheduleJobs(t *testing.T) {
 			}
 
 			desiredStates := []job.JobState{
+				job.JobCreated,
 				job.JobScheduled,
 				job.JobProcessing,
 				job.JobCompleted,

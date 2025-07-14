@@ -24,11 +24,19 @@ type Worker interface {
 	Start() error
 	// Stop stops the worker from processing jobs.
 	Stop() error
+	// IsProcessing returns true if the worker is currently processing a job.
+	IsProcessing() bool
 }
 
 type worker struct {
-	queue Queue
-	done  chan struct{}
+	queue      Queue
+	done       chan struct{}
+	processing bool
+}
+
+// IsProcessing returns true if the worker is currently processing a job.
+func (w *worker) IsProcessing() bool {
+	return w.processing
 }
 
 // WorkerOption is a function that configures a job worker.
@@ -44,8 +52,9 @@ func WithWorkerQueue(queue Queue) WorkerOption {
 // NewWorker creates a new instance of the job worker.
 func NewWorker(opts ...WorkerOption) Worker {
 	w := &worker{
-		queue: nil,
-		done:  make(chan struct{}),
+		queue:      nil,
+		done:       make(chan struct{}),
+		processing: false,
 	}
 	for _, opt := range opts {
 		opt(w)
@@ -55,10 +64,15 @@ func NewWorker(opts ...WorkerOption) Worker {
 
 // Start starts the worker to process jobs.
 func (w *worker) Start() error {
+	if err := w.Stop(); err != nil {
+		return err
+	}
+
 	go func() {
 		for {
 			select {
 			case <-w.done:
+				w.processing = false
 				return
 			default:
 				ji, err := w.queue.Dequeue()
@@ -71,6 +85,7 @@ func (w *worker) Start() error {
 					logger.Error(err)
 					continue
 				}
+				w.processing = true
 				_, err = ji.Process()
 				if err == nil {
 					err = ji.UpdateState(JobCompleted)
@@ -83,6 +98,7 @@ func (w *worker) Start() error {
 						logger.Error(err)
 					}
 				}
+				w.processing = false
 			}
 		}
 	}()
@@ -92,5 +108,6 @@ func (w *worker) Start() error {
 // Stop stops the worker from processing jobs.
 func (w *worker) Stop() error {
 	close(w.done)
+	w.done = make(chan struct{})
 	return nil
 }

@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 )
 
 // Manager is an interface that defines methods for managing jobs.
@@ -32,6 +33,8 @@ type Manager interface {
 	Start() error
 	// Stop stops the job manager.
 	Stop() error
+	// StopWithWait stops the job manager and waits for all jobs to complete.
+	StopWithWait() error
 }
 
 type manager struct {
@@ -140,6 +143,32 @@ func (mgr *manager) Stop() error {
 		}
 	}
 	return nil
+}
+
+// StopWithWait stops the job manager and waits for all jobs to complete.
+func (mgr *manager) StopWithWait() error {
+	for {
+		if hasJobs, _ := mgr.Queue().HasJobs(); !hasJobs {
+			break
+		}
+		time.Sleep(100 * time.Millisecond) // Wait for queue to empty
+	}
+
+	mgr.Queue().Lock()
+	defer mgr.Queue().Unlock()
+
+	for _, w := range mgr.workers {
+		for {
+			if !w.IsProcessing() {
+				break
+			}
+			time.Sleep(100 * time.Millisecond) // Wait for worker to finish processing
+		}
+		if err := w.Stop(); err != nil {
+			return err
+		}
+	}
+	return mgr.Stop()
 }
 
 // ScaleWorkers scales the number of workers for the job manager.

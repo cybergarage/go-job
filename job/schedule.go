@@ -76,7 +76,9 @@ func newSchedule() *schedule {
 	}
 }
 
-// NewSchedule creates a new JobSchedule instance from a crontab spec string.
+// NewSchedule creates a new schedule instance with the provided options.
+// Available options include WithCrontabSpec() for cron-based scheduling and WithScheduleAt() for one-time scheduling.
+// If no options are provided, the current time is used as the default schedule.
 func NewSchedule(opts ...ScheduleOption) (*schedule, error) {
 	js := newSchedule()
 	for _, opt := range opts {
