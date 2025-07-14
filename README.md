@@ -39,23 +39,28 @@ import (
 )
 
 func main() {
-    // Create a job manager
-    mgr := job.NewManager()
-    mgr.Start()
-    defer mgr.Stop()
+	// Create a job manager
+	mgr := NewManager()
 
-    // Register a job with a custom executor
-    sumJob, _ := job.NewJob(
-        job.WithKind("sum"),
-        job.WithExecutor(func(a, b int) int { return a + b }),
-        job.WithResponseHandler(func(inst job.Instance, res []any) {
-            fmt.Printf("Result: %v\n", res)
-        }),
-    )
-    mgr.RegisterJob(sumJob)
+	// Register a job with a custom executor
+	sumJob, _ := NewJob(
+		WithKind("sum"),
+		WithExecutor(func(a, b int) int { return a + b }),
+		WithScheduleAt(time.Now()),
+		WithResponseHandler(func(inst Instance, res []any) {
+			fmt.Printf("Result: %v\n", res)
+		}),
+	)
+	mgr.RegisterJob(sumJob)
 
-    // Schedule the registered job
-    mgr.ScheduleRegisteredJob("sum", job.WithArguments(1, 2))
+	// Schedule the registered job
+	mgr.ScheduleRegisteredJob("sum", WithArguments(1, 2))
+
+	// Start the job manager
+	mgr.Start()
+
+	// Wait for the job to complete
+	mgr.StopWithWait()
 }
 ```
 
