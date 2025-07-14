@@ -1,3 +1,17 @@
+// Copyright (C) 2025 The go-job Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package job
 
 import (
@@ -10,13 +24,6 @@ const (
 	NoRetry = 0
 	// RetryForever is a constant indicating that a job should retry indefinitely.
 	RetryForever = -1
-
-	// DefaultPriority is the default priority for jobs.
-	DefaultPriority = 0
-	// HighPriority represents high priority jobs.
-	HighPriority = 10
-	// LowPriority represents low priority jobs.
-	LowPriority = -10
 
 	// NoTimeout indicates no timeout limit.
 	NoTimeout = 0
@@ -32,7 +39,7 @@ type Policy interface {
 	// MaxRetries returns the maximum number of retries allowed for the job.
 	MaxRetries() int
 	// Priority returns the priority of the job.
-	Priority() int
+	Priority() Priority
 	// Timeout returns the timeout duration for the job.
 	Timeout() time.Duration
 	// RetryDelay returns the delay time before retrying a job.
@@ -49,7 +56,7 @@ type PolicyOption func(*policy)
 // policy implements the JobPolicy interface using a crontab spec string.
 type policy struct {
 	maxRetries   int
-	priority     int
+	priority     Priority
 	timeout      time.Duration
 	retryDelayFn RetryDelay
 }
@@ -62,7 +69,7 @@ func WithMaxRetries(count int) PolicyOption {
 }
 
 // WithPriority sets the priority for the job policy.
-func WithPriority(priority int) PolicyOption {
+func WithPriority(priority Priority) PolicyOption {
 	return func(s *policy) {
 		s.priority = priority
 	}
@@ -145,7 +152,7 @@ func (p *policy) MaxRetries() int {
 }
 
 // Priority returns the priority of the job.
-func (p *policy) Priority() int {
+func (p *policy) Priority() Priority {
 	return p.priority
 }
 
