@@ -16,7 +16,7 @@ package job
 
 import "fmt"
 
-// Priority represents the priority of a job.
+// Priority represents the priority of a job. The lower the number, the higher the priority.
 type Priority int
 
 const (
