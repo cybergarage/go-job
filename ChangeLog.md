@@ -1,4 +1,4 @@
 # ChangeLog
 
-## v1.8.0 (2025-07-XX)
+## v1.0.0 (2025-07-XX)
 - Initial release
