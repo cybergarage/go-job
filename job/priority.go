@@ -14,9 +14,11 @@
 
 package job
 
-import "fmt"
+import (
+	"strconv"
+)
 
-// Priority represents the priority of a job. The lower the number, the higher the priority.
+// Priority represents the priority of a job. A lower value means a higher priority, similar to the Unix nice value.
 type Priority int
 
 const (
@@ -55,6 +57,6 @@ func (p Priority) String() string {
 	case LowPriority:
 		return "Low"
 	default:
-		return fmt.Sprintf("%d", p)
+		return strconv.Itoa(int(p))
 	}
 }
