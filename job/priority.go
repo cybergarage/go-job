@@ -21,13 +21,13 @@ type Priority int
 
 const (
 	// HighPriority is the high priority for jobs.
-	HighPriority = 0
+	HighPriority = Priority(0)
 	// MediumPriority is the medium priority for jobs.
-	MediumPriority = 5
+	MediumPriority = Priority(5)
 	// DefaultPriority is the default priority for jobs.
 	DefaultPriority = MediumPriority
 	// LowPriority is the low priority for jobs.
-	LowPriority = 10
+	LowPriority = Priority(10)
 )
 
 // Equal checks if the priority is equal to another priority.
