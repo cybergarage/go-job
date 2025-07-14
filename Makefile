@@ -48,6 +48,10 @@ vet: format
 lint: vet
 	golangci-lint run ${PKG_SRC_DIR}/... ${TEST_PKG_DIR}/...
 
+godoc:
+	go install golang.org/x/tools/cmd/godoc@latest
+	godoc -http=:6060 -play
+
 test: lint
 	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
