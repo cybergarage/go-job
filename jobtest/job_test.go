@@ -107,7 +107,13 @@ func TestScheduleJobs(t *testing.T) {
 				t.Fatalf("Failed to schedule job: %v", err)
 			}
 
+			// Wait for the job to be processed
+
 			wg.Wait()
+
+			// Wait for the job to complete
+
+			mgr.StopWithWait()
 
 			// Check instance records record
 
