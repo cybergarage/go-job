@@ -21,7 +21,7 @@ import (
 
 func Example() {
 	// Create a job manager
-	mgr := NewManager()
+	mgr, _ := NewManager()
 
 	// Register a job with a custom executor
 	sumJob, _ := NewJob(

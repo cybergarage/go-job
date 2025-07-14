@@ -15,7 +15,7 @@
 package job
 
 func ExampleManager_ScheduleJob() {
-	mgr := NewManager()
+	mgr, _ := NewManager()
 	job, errors := NewJob(
 		WithKind("sum"),
 		WithExecutor(func(a, b int) int { return a + b }),
@@ -30,5 +30,5 @@ func ExampleManager_ScheduleJob() {
 	if err := mgr.Start(); err != nil {
 		return
 	}
-	defer mgr.Stop()
+	mgr.StopWithWait()
 }

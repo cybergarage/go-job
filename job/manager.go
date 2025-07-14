@@ -25,6 +25,8 @@ import (
 type Manager interface {
 	// Repository defines the methods for managing job registrations.
 	Repository
+	// WorkerGroup returns the worker group associated with the manager.
+	WorkerGroup
 	// ScheduleJob schedules a job instance with the given job and options.
 	ScheduleJob(job Job, opts ...any) (Instance, error)
 	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
@@ -39,21 +41,14 @@ type Manager interface {
 
 type manager struct {
 	sync.Mutex
-	logger  Logger
-	store   Store
-	workers []Worker
+	logger Logger
+	store  Store
+	*workerGroup
 	Repository
 }
 
 // ManagerOption is a function that configures a job manager.
 type ManagerOption func(*manager)
-
-// WithManagerStore sets the store for the job manager.
-func WithNumWorkers(num int) ManagerOption {
-	return func(m *manager) {
-		m.workers = make([]Worker, num)
-	}
-}
 
 // WithLogger sets the logger for the job manager.
 func WithLogger(logger Logger) ManagerOption {
@@ -70,27 +65,36 @@ func WithStore(store Store) ManagerOption {
 }
 
 // NewManager creates a new instance of the job manager.
-func NewManager(opts ...ManagerOption) *manager {
+func NewManager(opts ...any) (Manager, error) {
+	return newManager(opts...)
+}
+
+// NewManager creates a new instance of the job manager.
+func newManager(opts ...any) (*manager, error) {
 	mgr := &manager{
-		Mutex:   sync.Mutex{},
-		logger:  NewNullLogger(),
-		store:   NewLocalStore(),
-		workers: make([]Worker, 1),
+		Mutex:       sync.Mutex{},
+		logger:      NewNullLogger(),
+		store:       NewLocalStore(),
+		workerGroup: newWorkerGroup(WithNumWorkers(1)),
 	}
 
 	for _, opt := range opts {
-		opt(mgr)
+		switch opt := opt.(type) {
+		case ManagerOption:
+			opt(mgr)
+		case WorkerGroupOption:
+			opt(mgr.workerGroup)
+		default:
+			return nil, fmt.Errorf("invalid option type %T for job manager", opt)
+		}
 	}
 
 	mgr.Repository = NewRepository(
 		WithRepositoryStore(mgr.store),
 	)
+	WithWorkerGroupQueue(mgr.Repository.Queue())(mgr.workerGroup)
 
-	for i := 0; i < len(mgr.workers); i++ {
-		mgr.workers[i] = NewWorker(WithWorkerQueue(mgr.Queue()))
-	}
-
-	return mgr
+	return mgr, nil
 }
 
 // ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
@@ -127,22 +131,30 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 
 // Start starts the job manager.
 func (mgr *manager) Start() error {
-	for _, w := range mgr.workers {
-		if err := w.Start(); err != nil {
-			return errors.Join(err, mgr.Stop())
+	starters := []func() error{
+		mgr.workerGroup.Start,
+	}
+	var errs error
+	for _, starter := range starters {
+		if err := starter(); err != nil {
+			errs = errors.Join(errs, err)
 		}
 	}
-	return nil
+	return errs
 }
 
 // Stop stops the job manager.
 func (mgr *manager) Stop() error {
-	for _, w := range mgr.workers {
-		if err := w.Stop(); err != nil {
-			return err
+	stoppers := []func() error{
+		mgr.workerGroup.Stop,
+	}
+	var errs error
+	for _, stopper := range stoppers {
+		if err := stopper(); err != nil {
+			errs = errors.Join(errs, err)
 		}
 	}
-	return nil
+	return errs
 }
 
 // StopWithWait stops the job manager and waits for all jobs to complete.
@@ -157,49 +169,10 @@ func (mgr *manager) StopWithWait() error {
 	mgr.Queue().Lock()
 	defer mgr.Queue().Unlock()
 
-	for _, w := range mgr.workers {
-		for {
-			if !w.IsProcessing() {
-				break
-			}
-			time.Sleep(100 * time.Millisecond) // Wait for worker to finish processing
-		}
-		if err := w.Stop(); err != nil {
-			return err
-		}
-	}
-	return mgr.Stop()
-}
-
-// ScaleWorkers scales the number of workers for the job manager.
-func (mgr *manager) ScaleWorkers(num int) error {
-	if num < 0 {
-		return errors.New("number of workers cannot be negative")
-	}
-	if num == len(mgr.workers) {
+	err := mgr.workerGroup.StopWithWait()
+	if err != nil {
 		return nil
 	}
 
-	if !mgr.TryLock() {
-		return errors.New("manager is scaling workers")
-	}
-	defer mgr.Unlock()
-
-	if num > len(mgr.workers) {
-		for i := len(mgr.workers); i < num; i++ {
-			worker := NewWorker()
-			if err := worker.Start(); err != nil {
-				return err
-			}
-			mgr.workers = append(mgr.workers, worker)
-		}
-	} else {
-		for i := num; i < len(mgr.workers); i++ {
-			if err := mgr.workers[i].Stop(); err != nil {
-				return err
-			}
-		}
-		mgr.workers = mgr.workers[:num]
-	}
-	return nil
+	return mgr.Stop()
 }
