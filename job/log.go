@@ -16,19 +16,25 @@ package job
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Log represents a log entry associated with a job.
 type Log interface {
-	Job() Job
+	// UUID returns the unique identifier of the log entry.
+	UUID() uuid.UUID
+	// Timestamp returns the timestamp of the log entry.
 	Timestamp() time.Time
+	// Level returns the log level of the log entry.
 	Level() LogLevel
+	// Message returns the message of the log entry.
 	Message() string
 }
 
 type log struct {
+	uuid  uuid.UUID
 	ts    time.Time
-	job   Job
 	level LogLevel
 	msg   string
 }
@@ -36,10 +42,10 @@ type log struct {
 // NewLog creates a new log entry.
 type LogOption func(*log)
 
-// WithLogJob sets the job associated with the log entry.
-func WithLogJob(job Job) LogOption {
+// WithLogUUID sets the unique identifier of the log entry.
+func WithLogUUID(uuid uuid.UUID) LogOption {
 	return func(l *log) {
-		l.job = job
+		l.uuid = uuid
 	}
 }
 
@@ -67,8 +73,8 @@ func WithLogTimestamp(ts time.Time) LogOption {
 // NewLog creates a new log entry with the specified options.
 func NewLog(opts ...LogOption) Log {
 	l := &log{
+		uuid:  uuid.Nil,
 		ts:    time.Now(),
-		job:   nil,
 		level: LogInfo,
 		msg:   "",
 	}
@@ -78,9 +84,9 @@ func NewLog(opts ...LogOption) Log {
 	return l
 }
 
-// Job returns the job associated with the log entry.
-func (l *log) Job() Job {
-	return l.job
+// UUID returns the unique identifier of the log entry.
+func (l *log) UUID() uuid.UUID {
+	return l.uuid
 }
 
 // Timestamp returns the timestamp of the log entry.
