@@ -127,3 +127,31 @@ mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *")) // Runs every day at midnight
 ```
 
 This feature is useful for jobs that need to run on specific days, times, or intervals defined by a crontab specification.
+
+### Flexible Queue Priority and Worker Management
+
+`go-job` supports prioritizing jobs in the queue and managing multiple workers for concurrent job execution. You can assign priorities to jobs, ensuring that higher-priority jobs are executed before lower-priority ones.
+
+#### Job Priority
+
+When creating or scheduling a job, use `WithPriority` to set its priority. Higher values indicate higher priority:
+
+```go
+mgr.ScheduleJob(job, WithPriority(10))
+```
+
+Jobs with higher priority are dequeued and executed before those with lower priority, allowing you to control the order of job processing.
+
+#### Worker Pool Management
+
+You can configure the number of worker goroutines that process jobs concurrently. This enables efficient resource utilization and parallel job execution:
+
+```go
+mgr, _ := NewManager(
+	WithNumWorkers(5), // Set the number of workers to 5
+)
+mgr.Start()
+mgr.ResizeWorkers(10) // Dynamically resize the worker pool to 10 workers
+```
+
+This flexibility allows you to scale job processing based on your application's needs, balancing throughput and resource usage.
