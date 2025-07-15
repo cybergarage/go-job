@@ -122,6 +122,10 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected at least one history record for job instance")
 			}
 
+			for i, record := range history {
+				t.Logf("Record %d: Timestamp=%s, State=%s, %s", i, record.Timestamp().Format("2006-01-02 15:04:05.000000"), record.State(), record.String())
+			}
+
 			lastState := history.LastState()
 			if lastState == nil {
 				t.Errorf("Expected last state to be non-nil, but it was nil")
