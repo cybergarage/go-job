@@ -48,6 +48,13 @@ vet: format
 lint: vet
 	golangci-lint run ${PKG_SRC_DIR}/... ${TEST_PKG_DIR}/...
 
+%.png : %.pu
+	plantuml -tpng $<
+
+images := $(wildcard doc/img/*.png)
+doc: $(images)
+	@echo "Images generated: $(images)"
+
 godoc:
 	go install golang.org/x/tools/cmd/godoc@latest
 	godoc -http=:6060 -play
