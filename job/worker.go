@@ -90,9 +90,9 @@ func (w *worker) Start() error {
 					continue
 				}
 				w.processing = true
-				_, err = ji.Process()
+				res, err := ji.Process()
 				if err == nil {
-					err = ji.UpdateState(JobCompleted)
+					err = ji.UpdateState(JobCompleted, NewResultWith(res))
 					if err != nil {
 						logger.Error(err)
 					}

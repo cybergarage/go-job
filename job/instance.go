@@ -166,13 +166,15 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 		switch opt := opt.(type) {
 		case error:
 			optMap["error"] = opt.Error()
+		case Result:
+			optMap["result"] = NewResultWith(opt).String()
 		case map[string]any:
 			optMap = encoding.MergeMaps(optMap, opt)
 		default:
 			return fmt.Errorf("invalid option type for UpdateState: %T", opt)
 		}
 	}
-	return ji.history.LogInstanceRecord(ji, state)
+	return ji.history.LogInstanceRecord(ji, state, WithStateOption(optMap))
 }
 
 // History returns the history of state changes for the job instance.
