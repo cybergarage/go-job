@@ -63,3 +63,35 @@ func main() {
 	mgr.StopWithWait()
 }
 ```
+
+## Features
+
+### Job Execution with Arbitrary Functions
+
+`go-job` allows you to register and execute jobs with any function signature using Go's `any` type for arguments and results. This flexibility enables you to define custom executors that accept and return any data types, making it easy to integrate with various workflows.
+
+For example, you can register a job that adds two numbers, concatenates strings, or performs any custom logic:
+
+```go
+sumJob, _ := NewJob(
+	WithKind("sum"),
+	WithExecutor(func(a, b int) int { return a + b }),
+)
+type concatOpt struct {
+		a string
+		b string
+	}
+concatJob, _ := NewJob(
+	WithKind("concat"),
+	WithExecutor(func(opt concatOpt) string { return opt.a + opt.b }),
+)
+```
+
+When scheduling jobs, you can pass arguments of any type, and the executor will receive them as parameters. The results are also handled as `any`, allowing flexible response handling.
+
+```go	
+mgr.ScheduleJob(sumJob, WithArguments(1, 2))
+mgr.ScheduleJob(concatJob, WithArguments("Hello, ", "world!"))
+```
+
+This design makes `go-job` suitable for a wide range of use cases, from simple arithmetic to complex business logic.
