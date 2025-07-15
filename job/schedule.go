@@ -68,6 +68,14 @@ func WithScheduleAt(t time.Time) ScheduleOption {
 	}
 }
 
+// WithScheduleNow sets the job schedule to the current time.
+func WithScheduleAfter(d time.Duration) ScheduleOption {
+	return func(js *schedule) error {
+		js.scheduleAt = time.Now().Add(d)
+		return nil
+	}
+}
+
 func newSchedule() *schedule {
 	return &schedule{
 		crontabSpec:  "",

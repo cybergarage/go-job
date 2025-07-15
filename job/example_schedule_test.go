@@ -22,6 +22,12 @@ func ExampleNewSchedule_now() {
 	)
 }
 
+func ExampleNewSchedule_after() {
+	NewSchedule(
+		WithScheduleAfter(5 * time.Minute), // Schedule 5 minutes from now
+	)
+}
+
 func ExampleNewSchedule_crontab() {
 	NewSchedule(
 		WithCrontabSpec("*/5 * * * *"), // Every 5 minutes
