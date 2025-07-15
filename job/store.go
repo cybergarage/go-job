@@ -23,13 +23,13 @@ type Store interface {
 	// Name returns the name of the store.
 	Name() string
 	// PendingStore provides methods for managing job instances.
-	PendingStore
+	QueueStore
 	// HistoryStore provides methods for managing job instance state history.
 	HistoryStore
 }
 
-// PendingStore is an interface that defines methods for managing job instances in a pending state.
-type PendingStore interface {
+// QueueStore is an interface that defines methods for managing job instances in a pending state.
+type QueueStore interface {
 	// EnqueueInstance stores a job instance in the store.
 	EnqueueInstance(ctx context.Context, job Instance) error
 	// RemoveInstance removes a job instance from the store by its unique identifier.
