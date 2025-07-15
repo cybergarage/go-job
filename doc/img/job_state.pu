@@ -6,6 +6,9 @@ Scheduled --> Processing : Job started
 Processing --> Completed : Job completed successfully
 Processing --> Terminated : Job encountered an error
 Terminated --> Scheduled : [if retriable] Reschedule
+Completed --> Scheduled : [if recurring] Reschedule
+Terminated --> [*] : [if not retriable]
+Completed --> [*] : [if not recurring]
 
 ' Processing --> Cancelled : Job was cancelled
 ' Processing --> TimedOut : Job exceeded time limit
