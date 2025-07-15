@@ -25,6 +25,8 @@ import (
 type Schedule interface {
 	// CrontabSpec returns the crontab spec string.
 	CrontabSpec() string
+	// IsRecurring checks if the job is recurring.
+	IsRecurring() bool
 	// Next returns the next scheduled time.
 	Next() time.Time
 	// Map returns a map representation of the job.
@@ -100,6 +102,11 @@ func NewSchedule(opts ...ScheduleOption) (*schedule, error) {
 // CrontabSpec returns the crontab spec string for the job schedule.
 func (js *schedule) CrontabSpec() string {
 	return js.crontabSpec
+}
+
+// IsRecurring checks if the job is recurring based on the crontab spec.
+func (js *schedule) IsRecurring() bool {
+	return js.cronSchedule != nil
 }
 
 // Next returns the next scheduled time.

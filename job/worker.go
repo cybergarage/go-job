@@ -96,6 +96,9 @@ func (w *worker) Start() error {
 					if err != nil {
 						logger.Error(err)
 					}
+					if ji.IsRecurring() {
+						w.queue.Enqueue(ji) // Reschedule if recurring
+					}
 				} else {
 					err = ji.UpdateState(JobTerminated)
 					if err != nil {

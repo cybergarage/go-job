@@ -46,6 +46,8 @@ type Instance interface {
 	State() JobState
 	// AttemptCount returns the number of attempts made to process this job instance.
 	AttemptCount() int
+	// IsRecurring checks if the job instance is recurring.
+	IsRecurring() bool
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
 	// String returns a string representation of the job instance.
