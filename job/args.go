@@ -15,7 +15,7 @@
 package job
 
 import (
-	"github.com/cybergarage/go-job/job/encoding"
+	"fmt"
 )
 
 type Arguments interface {
@@ -23,6 +23,8 @@ type Arguments interface {
 	Arguments() []any
 	// Map returns the arguments as a map.
 	Map() map[string]any
+	// String returns a string representation of the arguments.
+	String() string
 }
 
 type arguments struct {
@@ -54,5 +56,12 @@ func (args *arguments) Arguments() []any {
 
 // Map returns the arguments as a map.
 func (args *arguments) Map() map[string]any {
-	return encoding.UnmarshalToMap(args)
+	return map[string]any{
+		"args": args.String(),
+	}
+}
+
+// String returns a string representation of the arguments.
+func (args *arguments) String() string {
+	return fmt.Sprintf("%v", args.Args)
 }
