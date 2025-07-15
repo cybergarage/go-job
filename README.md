@@ -63,39 +63,3 @@ func main() {
 	mgr.StopWithWait()
 }
 ```
-
-### Job Lifecycle
-
-- **Job**: Defines the task logic and metadata.
-- **Instance**: Represents a scheduled or running job with its own state and arguments.
-- **State**: Each instance tracks its state (e.g., Scheduled, Running, Completed, Failed, Canceled).
-- **Store**: Pluggable interface for FIFO job queue and state history persistence.
-
-### Interfaces
-
-#### Job
-
-- `WithKind`, `WithExecutor`, `WithArguments`, `WithResponseHandler` for flexible job definition.
-
-#### Manager
-
-- `RegisterJob`, `UnregisterJob`, `ScheduleRegisteredJob`, `Start`, `Stop`.
-
-#### Store
-
-- `EnqueueInstance`, `DequeueInstance`, `RemoveInstance`, `ListInstances`
-- `LogInstanceRecord`, `ListInstanceRecords`
-
-#### Instance
-
-- `Job()`, `Kind()`, `UUID()`, `ScheduledAt()`, `State()`, `UpdateState()`, `Process()`
-
-### Advanced
-
-- Custom job stores can be implemented by satisfying the `Store` interface.
-- Job state transitions and history are tracked for monitoring and debugging.
-- Supports distributed and local execution models.
-
-## License
-
-Apache License 2.0
