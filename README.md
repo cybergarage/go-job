@@ -97,3 +97,33 @@ mgr.ScheduleJob(concatJob, WithArguments(concatOpt{"Hello", "world!"}))
 ```
 
 This design makes `go-job` suitable for a wide range of use cases, from simple arithmetic to complex business logic.
+
+### Flexible Scheduling
+
+`go-job` provides flexible scheduling options to fit various job execution requirements. You can schedule jobs to run immediately, at a specific time, or after a certain delay. The library supports both one-time and recurring job executions.
+
+#### Schedule at a Specific Time
+
+You can schedule a job to run at a particular time using `WithScheduleAt`:
+
+```go
+mgr.ScheduleJob(job, WithScheduleAt(time.Now().Add(10 * time.Minute)))
+```
+
+#### Schedule with a Delay
+
+To run a job after a delay, use `WithScheduleAfter`:
+
+```go
+mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
+```
+
+#### Cron-style Scheduling
+
+You can schedule jobs using a cron expression with `WithCrontabSpec`. This allows you to define complex recurring schedules similar to Unix cron syntax:
+
+```go
+mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *")) // Runs every day at midnight
+```
+
+This feature is useful for jobs that need to run on specific days, times, or intervals defined by a crontab specification.
