@@ -104,6 +104,13 @@ func (w *worker) Start() error {
 					if err != nil {
 						logger.Error(err)
 					}
+					if ji.IsRetriable() {
+						w.queue.Enqueue(ji) // Retry the job
+					} else {
+						if ji.IsRecurring() {
+							w.queue.Enqueue(ji) // Reschedule if recurring
+						}
+					}
 				}
 				w.processing = false
 			}

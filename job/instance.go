@@ -48,6 +48,8 @@ type Instance interface {
 	AttemptCount() int
 	// IsRecurring checks if the job instance is recurring.
 	IsRecurring() bool
+	// IsRetriable checks if the job instance can be retried.
+	IsRetriable() bool
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
 	// String returns a string representation of the job instance.
@@ -197,6 +199,12 @@ func (ji *jobInstance) State() JobState {
 // AttemptCount returns the number of attempts made to process this job instance.
 func (ji *jobInstance) AttemptCount() int {
 	return ji.attempt
+}
+
+// IsRetriable checks if the job instance can be retried based on its policy.
+func (ji *jobInstance) IsRetriable() bool {
+	maxRetries := ji.policy.MaxRetries()
+	return maxRetries > 0 && ji.attempt < maxRetries
 }
 
 // Map returns a map representation of the job instance.
