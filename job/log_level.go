@@ -19,17 +19,20 @@ package job
 type LogLevel int
 
 const (
-	// LogInfo represents an informational log.
-	LogInfo LogLevel = iota
-	// LogError represents an error log.
-	LogError
-	// LogDebug represents a debug log.
-	LogDebug
-	// LogWarning represents a warning log.
-	LogWarning
-	// LogFatal represents a fatal log.
-	LogFatal
+	// LogInfo represents informational log messages.
+	LogInfo LogLevel = 1 << iota // 1
+	// LogError represents error log messages.
+	LogError // 2
+	// LogWarn represents warning log messages.
+	LogWarn // 4
+	// LogAll represents all log levels combined.
+	LogAll LogLevel = LogInfo | LogError | LogWarn // 7
 )
+
+// Contains checks if the LogLevel contains another LogLevel.
+func (l LogLevel) Contains(other LogLevel) bool {
+	return (l & other) != 0
+}
 
 // String returns the string representation of the Log.
 func (l LogLevel) String() string {
@@ -38,12 +41,8 @@ func (l LogLevel) String() string {
 		return "INFO"
 	case LogError:
 		return "ERROR"
-	case LogDebug:
-		return "DEBUG"
-	case LogWarning:
-		return "WARNING"
-	case LogFatal:
-		return "FATAL"
+	case LogWarn:
+		return "WARN"
 	default:
 		return "UNKNOWN"
 	}
