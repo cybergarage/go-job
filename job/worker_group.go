@@ -27,8 +27,10 @@ type WorkerGroup interface {
 	Stop() error
 	// StopWithWait stops all workers in the group and waits for them to finish processing.
 	StopWithWait() error
-	// ScaleWorkers scales the number of workers in the group.
-	ScaleWorkers(num int) error
+	// ResizeWorkers scales the number of workers in the group.
+	ResizeWorkers(num int) error
+	// NumWorkers returns the number of workers in the group.
+	NumWorkers() int
 }
 
 // WorkerGroupOption defines a function that configures a worker group.
@@ -107,8 +109,8 @@ func (g *workerGroup) StopWithWait() error {
 	return nil
 }
 
-// ScaleWorkers scales the number of workers for the job manager.
-func (g *workerGroup) ScaleWorkers(num int) error {
+// ResizeWorkers scales the number of workers for the job manager.
+func (g *workerGroup) ResizeWorkers(num int) error {
 	if num < 0 {
 		return errors.New("number of workers cannot be negative")
 	}
@@ -138,4 +140,11 @@ func (g *workerGroup) ScaleWorkers(num int) error {
 		g.workers = g.workers[:num]
 	}
 	return nil
+}
+
+// NumWorkers returns the number of workers in the group.
+func (g *workerGroup) NumWorkers() int {
+	g.Lock()
+	defer g.Unlock()
+	return len(g.workers)
 }
