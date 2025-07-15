@@ -5,9 +5,9 @@ Created --> Scheduled : Job queued
 Scheduled --> Processing : Job started
 Processing --> Completed : Job completed successfully
 Processing --> Terminated : Job encountered an error
-Terminated --> Scheduled : [if retriable] Reschedule
+Terminated --> Scheduled : [if recurring or recurring] Reschedule
 Completed --> Scheduled : [if recurring] Reschedule
-Terminated --> [*] : [if not retriable]
+Terminated --> [*] : [if not retriable and not recurring]
 Completed --> [*] : [if not recurring]
 
 ' Processing --> Cancelled : Job was cancelled
