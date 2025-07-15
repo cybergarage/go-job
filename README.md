@@ -83,15 +83,15 @@ type concatOpt struct {
 	}
 concatJob, _ := NewJob(
 	WithKind("concat"),
-	WithExecutor(func(opt concatOpt) string { return opt.a + opt.b }),
+	WithExecutor(func(opt concatOpt) string { return opt.a + " "+ opt.b }),
 )
 ```
 
 When scheduling jobs, you can pass arguments of any type, and the executor will receive them as parameters. The results are also handled as `any`, allowing flexible response handling.
 
-```go	
-mgr.ScheduleJob(sumJob, WithArguments(1, 2))
-mgr.ScheduleJob(concatJob, WithArguments("Hello, ", "world!"))
+```go
+mgr.ScheduleJob(sumJob, WithArguments(sumOpt{1, 2}))
+mgr.ScheduleJob(concatJob, WithArguments(concatOpt{"Hello", "world!"}))
 ```
 
 This design makes `go-job` suitable for a wide range of use cases, from simple arithmetic to complex business logic.
