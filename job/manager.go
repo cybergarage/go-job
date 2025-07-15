@@ -17,8 +17,11 @@ package job
 import (
 	"errors"
 	"fmt"
+	"os"
 	"sync"
 	"time"
+
+	logger "github.com/cybergarage/go-logger/log"
 )
 
 // Manager is an interface that defines methods for managing jobs.
@@ -132,6 +135,8 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 
 // Start starts the job manager.
 func (mgr *manager) Start() error {
+	logger.Infof("%s/%s", ProductName, Version)
+
 	starters := []func() error{
 		mgr.workerGroup.Start,
 	}
@@ -141,6 +146,9 @@ func (mgr *manager) Start() error {
 			errs = errors.Join(errs, err)
 		}
 	}
+
+	logger.Infof("%s (PID:%d) started", ProductName, os.Getpid())
+
 	return errs
 }
 
@@ -155,6 +163,9 @@ func (mgr *manager) Stop() error {
 			errs = errors.Join(errs, err)
 		}
 	}
+
+	logger.Infof("%s (PID:%d) terminated", ProductName, os.Getpid())
+
 	return errs
 }
 
