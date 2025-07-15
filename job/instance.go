@@ -44,6 +44,8 @@ type Instance interface {
 	History() InstanceHistory
 	// State returns the current state of the job instance.
 	State() JobState
+	// AttemptCount returns the number of attempts made to process this job instance.
+	AttemptCount() int
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
 	// String returns a string representation of the job instance.
@@ -56,6 +58,7 @@ type jobInstance struct {
 	job     Job
 	uuid    uuid.UUID
 	state   JobState
+	attempt int
 	history History
 	*handler
 	*schedule
@@ -80,6 +83,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		job:       nil, // Default to nil, must be set by options
 		uuid:      uuid.New(),
 		state:     JobCreated,
+		attempt:   0,
 		history:   newHistory(),
 		handler:   newHandler(),
 		schedule:  newSchedule(),
@@ -150,6 +154,7 @@ func (ji *jobInstance) Process() ([]any, error) {
 	if ji.handler == nil {
 		return nil, fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
+	ji.attempt++
 	res, err := ji.handler.Execute(ji.Arguments()...)
 	if err == nil {
 		ji.handler.HandleResponse(ji, res)
@@ -185,6 +190,11 @@ func (ji *jobInstance) History() InstanceHistory {
 // State returns the current state of the job instance.
 func (ji *jobInstance) State() JobState {
 	return ji.state
+}
+
+// AttemptCount returns the number of attempts made to process this job instance.
+func (ji *jobInstance) AttemptCount() int {
+	return ji.attempt
 }
 
 // Map returns a map representation of the job instance.
