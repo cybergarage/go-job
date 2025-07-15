@@ -26,6 +26,8 @@ type Store interface {
 	QueueStore
 	// HistoryStore provides methods for managing job instance state history.
 	HistoryStore
+	// LogStore provides methods for logging job instance messages.
+	LogStore
 }
 
 // QueueStore is an interface that defines methods for managing job instances in a pending state.
@@ -40,8 +42,16 @@ type QueueStore interface {
 
 // HistoryStore is an interface that defines methods for managing job instance state history.
 type HistoryStore interface {
-	// LogInstanceRecord adds a new state record for a job instance.
-	LogInstanceRecord(ctx context.Context, job Instance, record InstanceState) error
-	// ListInstanceRecords lists all state records for a job instance.
-	ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceState, error)
+	// LogInstanceState adds a new state record for a job instance.
+	LogInstanceState(ctx context.Context, job Instance, state InstanceState) error
+	// ListInstanceHistory lists all state records for a job instance.
+	ListInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error)
+}
+
+// LogStore is an interface that defines methods for logging job instance messages.
+type LogStore interface {
+	Infof(ctx context.Context, job Instance, format string, args ...any) error
+	Warnf(ctx context.Context, job Instance, format string, args ...any) error
+	Errorf(ctx context.Context, job Instance, format string, args ...any) error
+	ListInstanceLogs(ctx context.Context, job Instance) ([]Log, error)
 }

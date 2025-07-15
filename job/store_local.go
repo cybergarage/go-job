@@ -16,12 +16,14 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"sync"
 )
 
 type localStore struct {
 	jobs    sync.Map
 	history []InstanceState
+	logs    []Log
 }
 
 // NewLocalStore creates a new in-memory job store.
@@ -29,6 +31,7 @@ func NewLocalStore() Store {
 	return &localStore{
 		jobs:    sync.Map{},
 		history: []InstanceState{},
+		logs:    []Log{},
 	}
 }
 
@@ -67,17 +70,17 @@ func (s *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	return jobs, nil
 }
 
-// LogInstanceRecord adds a new state record for a job instance.
-func (s *localStore) LogInstanceRecord(ctx context.Context, job Instance, record InstanceState) error {
+// LogInstanceState adds a new state record for a job instance.
+func (s *localStore) LogInstanceState(ctx context.Context, job Instance, state InstanceState) error {
 	if job == nil {
 		return nil
 	}
-	s.history = append(s.history, record)
+	s.history = append(s.history, state)
 	return nil
 }
 
-// ListInstanceRecords lists all state records for a job instance.
-func (s *localStore) ListInstanceRecords(ctx context.Context, job Instance) ([]InstanceState, error) {
+// ListInstanceHistory lists all state records for a job instance.
+func (s *localStore) ListInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error) {
 	if job == nil {
 		return nil, nil
 	}
@@ -88,4 +91,41 @@ func (s *localStore) ListInstanceRecords(ctx context.Context, job Instance) ([]I
 		}
 	}
 	return records, nil
+}
+
+// Logf logs a formatted message at the specified log level.
+func (s *localStore) Logf(ctx context.Context, job Instance, logLevel LogLevel, format string, args ...any) error {
+	log := NewLog(
+		WithLogUUID(job.UUID()),
+		WithLogLevel(logLevel),
+		WithLogMessage(fmt.Sprintf(format, args...)),
+	)
+	s.logs = append(s.logs, log)
+	return nil
+}
+
+// Infof logs an informational message for a job instance.
+func (s *localStore) Infof(ctx context.Context, job Instance, format string, args ...any) error {
+	return s.Logf(ctx, job, LogInfo, format, args...)
+}
+
+// Warnf logs a warning message for a job instance.
+func (s *localStore) Warnf(ctx context.Context, job Instance, format string, args ...any) error {
+	return s.Logf(ctx, job, LogWarn, format, args...)
+}
+
+// Errorf logs an error message for a job instance.
+func (s *localStore) Errorf(ctx context.Context, job Instance, format string, args ...any) error {
+	return s.Logf(ctx, job, LogError, format, args...)
+}
+
+// ListInstanceLogs lists all log entries for a job instance.
+func (s *localStore) ListInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
+	var logs []Log
+	for _, log := range s.logs {
+		if log.UUID() == job.UUID() {
+			logs = append(logs, log)
+		}
+	}
+	return logs, nil
 }

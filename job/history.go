@@ -59,12 +59,12 @@ func newHistory(opts ...HistoryOption) *history {
 // LogInstanceRecord logs a state change for a job instance.
 func (h *history) LogInstanceRecord(job Instance, state JobState, opts ...InstanceStateOption) error {
 	record := newInstanceState(job.UUID(), state, opts...)
-	return h.store.LogInstanceRecord(context.Background(), job, record)
+	return h.store.LogInstanceState(context.Background(), job, record)
 }
 
 // InstanceHistory retrieves all state records for a job instance, sorted by timestamp.
 func (h *history) InstanceHistory(job Instance) InstanceHistory {
-	records, err := h.store.ListInstanceRecords(context.Background(), job)
+	records, err := h.store.ListInstanceHistory(context.Background(), job)
 	if err != nil {
 		return nil
 	}
