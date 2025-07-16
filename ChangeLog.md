@@ -14,5 +14,5 @@
 ## v0.9.1 (2025-07-XX)
 - Histrory and Logging cleanup
 
-## v0.9.0 (2025-07-XX)
+## v0.9.0 (2025-07-17)
 - Initial release
