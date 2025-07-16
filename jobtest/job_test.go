@@ -141,36 +141,29 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Check that record timestamps are in non-decreasing order
 
-			for i := 1; i < len(history); i++ {
-				pts := history[i-1].Timestamp()
-				its := history[i].Timestamp()
-				if pts.After(its) {
-					t.Errorf("Record timestamps are not in non-decreasing order: record[%d]=%v, record[%d]=%v",
-						i-1, pts, i, its)
-				}
-			}
-
-			// Check that the job instance has the expected state history
-
-			hasState := func(history job.InstanceHistory, state job.JobState) bool {
-				for _, record := range history {
-					if record.State() == state {
-						return true
-					}
-				}
-				return false
-			}
-
-			desiredStates := []job.JobState{
+			expectedStateOrders := []job.JobState{
 				job.JobCreated,
 				job.JobScheduled,
 				job.JobProcessing,
 				job.JobCompleted,
 			}
 
-			for _, state := range desiredStates {
-				if !hasState(history, state) {
-					t.Errorf("Expected job instance to have state %s, but it was not found in history", state)
+			if len(history) != len(expectedStateOrders) {
+				t.Errorf("Expected %d history records, but got %d", len(expectedStateOrders), len(history))
+			}
+
+			for i := 0; i < len(history); i++ {
+				if history[i].State() != expectedStateOrders[i] {
+					t.Errorf("Expected state %s at index %d, but got %s", expectedStateOrders[i], i, history[i].State())
+				}
+				if i == 0 {
+					continue
+				}
+				pts := history[i-1].Timestamp()
+				its := history[i].Timestamp()
+				if pts.After(its) {
+					t.Errorf("Record timestamps are not in non-decreasing order: record[%d]=%v, record[%d]=%v",
+						i-1, pts, i, its)
 				}
 			}
 
