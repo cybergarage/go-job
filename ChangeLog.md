@@ -19,6 +19,6 @@
 - Initial release
 ### Major Features
 - Flexible job creation and registration with custom executors and arguments
+- Priority and policy management for job execution order
 - Job execution with response and error handlers
 - Job state and history logging for monitoring and debugging
-- Priority and policy management for job execution order
