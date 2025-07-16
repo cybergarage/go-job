@@ -6,19 +6,9 @@
  [![Go Report Card](https://img.shields.io/badge/go%20report-A%2B-brightgreen)](https://goreportcard.com/report/github.com/cybergarage/go-job) 
  [![codecov](https://codecov.io/gh/cybergarage/go-job/graph/badge.svg?token=OCU5V0H3OX)](https://codecov.io/gh/cybergarage/go-job)
 
-`go-job` is a flexible and extensible job management library for Go.  
-It provides job creation, registration, scheduling, execution, monitoring, and state/history management for distributed and local systems.
+`go-job` is a flexible and extensible job scheduling and execution library for Go. It enables you to register, schedule, and manage jobs with arbitrary function signatures, supporting custom executors, priorities, and advanced scheduling options such as cron expressions and delayed execution.
 
-## Features
-
-- Job creation with custom executors and arguments
-- Job registration and deregistration
-- FIFO job queue and scheduling
-- Job instance management and state transitions
-- Job execution with response and error handlers
-- Persistent and pluggable job store interface
-- Job state history logging and querying
-- Fault tolerance and retry mechanisms
+ The library provides robust job observation features, including state and log history tracking, as well as customizable response and error handlers. With support for distributed storage backends, `go-job` is suitable for both local and distributed environments, making it ideal for building scalable, reliable job processing systems in Go applications.
 
 ## Getting Started
 
@@ -40,33 +30,49 @@ import (
 
 func main() {
 	// Create a job manager
-	mgr := NewManager()
+	mgr, _ := job.NewManager()
 
 	// Register a job with a custom executor
-	sumJob, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithScheduleAt(time.Now()),
-		WithResponseHandler(func(inst Instance, res []any) {
-			fmt.Printf("Result: %v\n", res)
+	sumJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithScheduleAt(time.Now()),
+		job.WithResponseHandler(func(ji job.Instance, res []any) {
+			ji.Infof("Result: %v", res)
+		}),
+		job.WithErrorHandler(func(ji job.Instance, err error) error {
+			ji.Errorf("Error executing job: %v", err)
+			return err
 		}),
 	)
-
-	// Register the job with the manager
 	mgr.RegisterJob(sumJob)
 
 	// Schedule the registered job
-	mgr.ScheduleRegisteredJob("sum", WithArguments(1, 2))
+	ji, _ := mgr.ScheduleRegisteredJob("sum", WithArguments(1, 2))
 
 	// Start the job manager
 	mgr.Start()
 
 	// Wait for the job to complete
 	mgr.StopWithWait()
+
+	// Retrieve and print the job instance state history
+	history, _ := mgr.ProcessHistory(ji)
+	for _, record := range history {
+		fmt.Println(record.State())
+	}
+
+	// Retrieve and print the job instance logs
+	logs, _ := mgr.ProcessLogs(ji)
+	for _, log := range logs {
+		fmt.Println(log.Message())
+	}
 }
 ```
 
 ## Features
+
+This section provides an overview of the key features and functionalities of `go-job`.
 
 ### Job Execution with Arbitrary Functions
 
@@ -204,3 +210,18 @@ for _, log := range logs {
 }
 ```
 
+### Distributed Support via Store Virtualization
+
+`go-job` features a virtualized job store interface, enabling seamless integration with various storage backends. This abstraction allows you to use in-memory, file-based, or distributed stores such as databases or cloud storage, making it suitable for both local and distributed environments.
+
+By implementing the `Store` interface, you can persist job definitions, states, and histories across multiple nodes or services. This flexibility ensures reliable job management and coordination in distributed systems, supporting scalability and fault tolerance.
+
+Example: Using a custom distributed store
+
+```go
+mgr, _ := NewManager(
+	WithStore(NewDistributedStore(...)), // Plug in your distributed store implementation
+)
+```
+
+This design makes `go-job` adaptable for microservices, cloud-native applications, and any scenario requiring distributed job processing and state management.
