@@ -23,6 +23,8 @@ import (
 type History interface {
 	// StateHistory provides methods for managing the state history of job instances.
 	StateHistory
+	// LogHistory provides methods for logging messages related to job instances.
+	LogHistory
 }
 
 // StateHistory is an interface that defines methods for managing the state history of job instances.

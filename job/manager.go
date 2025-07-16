@@ -108,7 +108,7 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 		WithErrorHandler(job.Handler().ErrorHandler()),
 		WithResponseHandler(job.Handler().ResponseHandler()),
 		WithCrontabSpec(job.Schedule().CrontabSpec()),
-		WithInstanceStore(mgr.Repository),
+		WithInstanceHistory(mgr.Repository),
 	}
 	jobOpts = append(jobOpts, opts...)
 	ji, err := NewInstance(jobOpts...)

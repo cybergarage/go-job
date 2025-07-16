@@ -73,8 +73,8 @@ type jobInstance struct {
 // InstanceOption defines a function that configures a job instance.
 type InstanceOption func(*jobInstance) error
 
-// WithInstanceStore sets the history for the job instance.
-func WithInstanceStore(history History) InstanceOption {
+// WithInstanceHistory sets the history for the job instance.
+func WithInstanceHistory(history History) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.history = history
 		return nil
