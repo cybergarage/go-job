@@ -155,3 +155,52 @@ mgr.ResizeWorkers(10) // Dynamically resize the worker pool to 10 workers
 ```
 
 This flexibility allows you to scale job processing based on your application's needs, balancing throughput and resource usage.
+
+### Job Observation with Handler, LogHistory, and StateHistory
+
+`go-job` provides robust job observation capabilities through its Handler, LogHistory, and StateHistory features. These mechanisms enable you to monitor job execution, track state transitions, and audit job activities for debugging and analytics.
+
+#### Handler for Custom Observation
+
+Handlers allow you to define custom logic that executes in response to job events, such as completion, failure, or state changes. By attaching response and error handlers, you can log results, trigger notifications, or perform cleanup tasks:
+
+```go
+job, _ := NewJob(
+	WithKind("observe"),
+	WithExecutor(func(a int) int { return a * 2 }),
+	WithResponseHandler(func(ji Instance, res []any) {
+		ji.Infof("Job completed: %v\n", res)
+	}),
+	WithErrorHandler(func(ji Instance, err error) {
+		ji.Errorf("Job failed: %v\n", err)
+	}),
+)
+
+// Schedule the registered job
+ji, _ := mgr.ScheduleJob(job, WithArguments(1, 2))
+```
+
+#### Tracking State Transitions
+
+StateHistory tracks the lifecycle of each job instance, recording every state change (e.g., pending, running, completed, failed). This feature provides visibility into job progress and helps identify bottlenecks or failures:
+
+```go
+states := mgr.ProcessHistory(ji)
+for _, state := range states {
+	fmt.Printf("State: %s, ChangedAt: %v\n", state.State(), state.Timestamp())
+}
+```
+
+These observation tools make `go-job` suitable for production environments where monitoring, auditing, and debugging are essential for reliable job management.
+
+#### Tracking Logs
+
+`go-job` maintains a log history for each job instance, recording significant events such as scheduling, execution, completion, and errors. You can query these logs to audit job activities and diagnose issues:
+
+```go
+logs := mgr.ProcessLogs(ji)
+for _, log := range logs {
+	fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
+}
+```
+
