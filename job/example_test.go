@@ -47,6 +47,12 @@ func Example() {
 	// Wait for the job to complete
 	mgr.StopWithWait()
 
+	// Retrieve and print the job instance state history
+	history, _ := mgr.ProcessHistory(ji)
+	for _, record := range history {
+		fmt.Println(record.State())
+	}
+
 	// Retrieve and print the job instance logs
 	logs, _ := mgr.ProcessLogs(ji)
 	for _, log := range logs {
@@ -54,5 +60,9 @@ func Example() {
 	}
 
 	// Output:
+	// Created
+	// Scheduled
+	// Processing
+	// Completed
 	// Result: [3]
 }
