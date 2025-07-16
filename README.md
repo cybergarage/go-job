@@ -197,8 +197,6 @@ for _, state := range states {
 }
 ```
 
-These observation tools make `go-job` suitable for production environments where monitoring, auditing, and debugging are essential for reliable job management.
-
 #### Tracking Logs
 
 `go-job` maintains a log history for each job instance, recording significant events such as scheduling, execution, completion, and errors. You can query these logs to audit job activities and diagnose issues:
@@ -210,7 +208,9 @@ for _, log := range logs {
 }
 ```
 
-### Distributed Support via Store Virtualization
+These observation tools make `go-job` suitable for production environments where monitoring, auditing, and debugging are essential for reliable job management.
+
+### Distributed Support via Store Interface
 
 `go-job` features a virtualized job store interface, enabling seamless integration with various storage backends. This abstraction allows you to use in-memory, file-based, or distributed stores such as databases or cloud storage, making it suitable for both local and distributed environments.
 
