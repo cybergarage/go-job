@@ -12,6 +12,7 @@
   - etcd plugin added
 
 ## v0.9.1 (2025-07-XX)
+- Logging more errors 
 - Histrory and Logging cleanup
 
 ## v0.9.0 (2025-07-17)
