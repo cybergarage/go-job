@@ -213,6 +213,7 @@ func (ji *jobInstance) IsRetriable() bool {
 func (ji *jobInstance) Map() map[string]any {
 	return encoding.MergeMaps(
 		map[string]any{
+			"kind":  ji.Kind(),
 			"uuid":  ji.uuid.String(),
 			"state": ji.State().String(),
 		},
