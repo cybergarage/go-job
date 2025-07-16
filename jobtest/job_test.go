@@ -117,7 +117,10 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Check instance records record
 
-			history := mgr.InstanceHistory(ji)
+			history, err := mgr.InstanceHistory(ji)
+			if err != nil {
+				t.Fatalf("Failed to retrieve instance history: %v", err)
+			}
 			if len(history) == 0 {
 				t.Errorf("Expected at least one history record for job instance")
 			}

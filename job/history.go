@@ -21,8 +21,22 @@ import (
 
 // History is an interface that defines methods for managing the history of job instance state changes.
 type History interface {
+	// StateHistory provides methods for managing the state history of job instances.
+	StateHistory
+}
+
+// StateHistory is an interface that defines methods for managing the state history of job instances.
+type StateHistory interface {
 	LogInstanceRecord(job Instance, state JobState, opts ...InstanceStateOption) error
-	InstanceHistory(job Instance) InstanceHistory
+	InstanceHistory(job Instance) (InstanceHistory, error)
+}
+
+// LogHistory is an interface that defines methods for logging messages related to job instances.
+type LogHistory interface {
+	Infof(job Instance, format string, args ...any) error
+	Warnf(job Instance, format string, args ...any) error
+	Errorf(job Instance, format string, args ...any) error
+	InstanceLogs(job Instance) ([]Log, error)
 }
 
 // HistoryOption is a function that configures the job history.
@@ -63,13 +77,33 @@ func (h *history) LogInstanceRecord(job Instance, state JobState, opts ...Instan
 }
 
 // InstanceHistory retrieves all state records for a job instance, sorted by timestamp.
-func (h *history) InstanceHistory(job Instance) InstanceHistory {
+func (h *history) InstanceHistory(job Instance) (InstanceHistory, error) {
 	records, err := h.store.ListInstanceHistory(context.Background(), job)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	sort.Slice(records, func(i, j int) bool {
 		return records[i].Timestamp().Before(records[j].Timestamp())
 	})
-	return records
+	return records, nil
+}
+
+// Infof logs an informational message for a job instance.
+func (h *history) Infof(job Instance, format string, args ...any) error {
+	return h.store.Infof(context.Background(), job, format, args...)
+}
+
+// Warnf logs a warning message for a job instance.
+func (h *history) Warnf(job Instance, format string, args ...any) error {
+	return h.store.Warnf(context.Background(), job, format, args...)
+}
+
+// Errorf logs an error message for a job instance.
+func (h *history) Errorf(job Instance, format string, args ...any) error {
+	return h.store.Errorf(context.Background(), job, format, args...)
+}
+
+// InstanceLogs retrieves all logs for a job instance.
+func (h *history) InstanceLogs(job Instance) ([]Log, error) {
+	return h.store.ListInstanceLogs(context.Background(), job)
 }
