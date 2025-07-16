@@ -174,7 +174,7 @@ func TestScheduleJobs(t *testing.T) {
 				"[3]",
 			}
 
-			logs, err := mgr.InstanceLogs(ji)
+			logs, err := mgr.ProcessLogs(ji)
 			if err != nil {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return

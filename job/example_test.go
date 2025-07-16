@@ -48,7 +48,7 @@ func Example() {
 	mgr.StopWithWait()
 
 	// Retrieve and print the job instance logs
-	logs, _ := mgr.InstanceLogs(ji)
+	logs, _ := mgr.ProcessLogs(ji)
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}
