@@ -26,8 +26,6 @@ type Store interface {
 	QueueStore
 	// HistoryStore provides methods for managing job instance state history.
 	HistoryStore
-	// LogStore provides methods for logging job instance messages.
-	LogStore
 }
 
 // QueueStore is an interface that defines methods for managing job instances in a pending state.
@@ -42,6 +40,14 @@ type QueueStore interface {
 
 // HistoryStore is an interface that defines methods for managing job instance state history.
 type HistoryStore interface {
+	// StateStore provides methods for managing job instance state history.
+	StateStore
+	// LogStore provides methods for logging job instance messages.
+	LogStore
+}
+
+// StateStore is an interface that defines methods for managing job instance state history.
+type StateStore interface {
 	// LogInstanceState adds a new state record for a job instance.
 	LogInstanceState(ctx context.Context, job Instance, state InstanceState) error
 	// ListInstanceHistory lists all state records for a job instance.
