@@ -15,5 +15,5 @@
 package job
 
 const (
-	Version = ".."
+	Version = "v0.9.1"
 )
