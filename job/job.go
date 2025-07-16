@@ -34,7 +34,6 @@ type Job interface {
 
 type job struct {
 	kind     string
-	logger   Logger
 	schedule *schedule
 	handler  *handler
 }
@@ -49,18 +48,10 @@ func WithKind(name string) JobOption {
 	}
 }
 
-// WithJobStartedAt sets the start time of the job.
-func WithJobLogger(logger Logger) JobOption {
-	return func(j *job) {
-		j.logger = logger
-	}
-}
-
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
 		kind:     "",
-		logger:   NewNullLogger(),
 		handler:  newHandler(),
 		schedule: newSchedule(),
 	}

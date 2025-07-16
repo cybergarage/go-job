@@ -44,21 +44,13 @@ type Manager interface {
 
 type manager struct {
 	sync.Mutex
-	logger Logger
-	store  Store
+	store Store
 	*workerGroup
 	Repository
 }
 
 // ManagerOption is a function that configures a job manager.
 type ManagerOption func(*manager)
-
-// WithLogger sets the logger for the job manager.
-func WithLogger(logger Logger) ManagerOption {
-	return func(m *manager) {
-		m.logger = logger
-	}
-}
 
 // WithManagerQueue sets the queue for the job manager.
 func WithStore(store Store) ManagerOption {
@@ -76,7 +68,6 @@ func NewManager(opts ...any) (Manager, error) {
 func newManager(opts ...any) (*manager, error) {
 	mgr := &manager{
 		Mutex:       sync.Mutex{},
-		logger:      NewNullLogger(),
 		store:       NewLocalStore(),
 		workerGroup: newWorkerGroup(WithNumWorkers(1)),
 	}
