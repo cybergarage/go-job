@@ -16,3 +16,8 @@
 
 ## v0.9.0 (2025-07-17)
 - Initial release
+### Major Features
+- Flexible job creation and registration with custom executors and arguments
+- Job execution with response and error handlers
+- Job state and history logging for monitoring and debugging
+- Priority and policy management for job execution order
