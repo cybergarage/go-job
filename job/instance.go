@@ -185,12 +185,12 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 			return fmt.Errorf("invalid option type for UpdateState: %T", opt)
 		}
 	}
-	return ji.history.LogInstanceRecord(ji, state, WithStateOption(optMap))
+	return ji.history.LogProcessState(ji, state, WithStateOption(optMap))
 }
 
 // History returns the history of state changes for the job instance.
 func (ji *jobInstance) History() (InstanceHistory, error) {
-	return ji.history.InstanceHistory(ji)
+	return ji.history.ProcessHistory(ji)
 }
 
 // State returns the current state of the job instance.

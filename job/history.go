@@ -29,8 +29,10 @@ type History interface {
 
 // StateHistory is an interface that defines methods for managing the state history of job instances.
 type StateHistory interface {
-	LogInstanceRecord(job Instance, state JobState, opts ...InstanceStateOption) error
-	InstanceHistory(job Instance) (InstanceHistory, error)
+	// LogProcessState logs a state change for a job instance.
+	LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error
+	// ProcessHistory retrieves all state records for a job instance, sorted by timestamp.
+	ProcessHistory(job Instance) (InstanceHistory, error)
 }
 
 // LogHistory is an interface that defines methods for logging messages related to job instances.
@@ -72,14 +74,14 @@ func newHistory(opts ...HistoryOption) *history {
 	return history
 }
 
-// LogInstanceRecord logs a state change for a job instance.
-func (h *history) LogInstanceRecord(job Instance, state JobState, opts ...InstanceStateOption) error {
+// LogProcessState logs a state change for a job instance.
+func (h *history) LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error {
 	record := newInstanceState(job.UUID(), state, opts...)
 	return h.store.LogInstanceState(context.Background(), job, record)
 }
 
-// InstanceHistory retrieves all state records for a job instance, sorted by timestamp.
-func (h *history) InstanceHistory(job Instance) (InstanceHistory, error) {
+// ProcessHistory retrieves all state records for a job instance, sorted by timestamp.
+func (h *history) ProcessHistory(job Instance) (InstanceHistory, error) {
 	records, err := h.store.ListInstanceHistory(context.Background(), job)
 	if err != nil {
 		return nil, err
