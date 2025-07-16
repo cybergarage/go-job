@@ -54,6 +54,8 @@ type Instance interface {
 	Map() map[string]any
 	// String returns a string representation of the job instance.
 	String() string
+	// InstanceLogger provides methods for logging messages related to the job instance.
+	InstanceLogger
 	// InstanceHelper provides methods to check if the job instance should be processed before or after another instance.
 	InstanceHelper
 }
