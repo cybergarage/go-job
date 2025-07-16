@@ -65,7 +65,7 @@ func TestScheduleJobs(t *testing.T) {
 	}
 
 	defer func() {
-		if err := mgr.StopWithWait(); err != nil {
+		if err := mgr.Stop(); err != nil {
 			t.Errorf("Failed to stop job manager: %v", err)
 		}
 	}()
@@ -77,8 +77,9 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Register a test job
 
-			resHandler := func(job job.Instance, responses []any) {
-				t.Logf("Job %s executed with responses: %v", job.Kind(), responses)
+			resHandler := func(ji job.Instance, responses []any) {
+				t.Logf("Job %s executed with responses: %v", ji.Kind(), responses)
+				ji.Infof("%v", responses)
 				wg.Done()
 			}
 
@@ -139,7 +140,7 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected last state to be %s, but got %s", job.JobCompleted, lastState.State())
 			}
 
-			// Check that record timestamps are in non-decreasing order
+			// Check history
 
 			expectedStateOrders := []job.JobState{
 				job.JobCreated,
@@ -167,7 +168,27 @@ func TestScheduleJobs(t *testing.T) {
 				}
 			}
 
-			// Unregister the job after test completion
+			// Check logs
+
+			expectedLogs := []string{
+				"[3]",
+			}
+
+			logs, err := mgr.InstanceLogs(ji)
+			if err != nil {
+				t.Errorf("Failed to retrieve instance logs: %v", err)
+				return
+			}
+			if len(logs) != len(expectedLogs) {
+				t.Errorf("Expected %d logs, but got %d", len(expectedLogs), len(logs))
+			}
+			for i, log := range logs {
+				if log.Message() != expectedLogs[i] {
+					t.Errorf("Expected log %d to be %s, but got %s", i, expectedLogs[i], log.Message())
+				}
+			}
+
+			// Unregister the job
 
 			if err := mgr.UnregisterJob(tt.kind); err != nil {
 				t.Errorf("Failed to unregister job: %v", err)
