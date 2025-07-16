@@ -31,6 +31,10 @@ func Example() {
 		WithResponseHandler(func(ji Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
+		WithErrorHandler(func(ji Instance, err error) error {
+			ji.Errorf("Error executing job: %v", err)
+			return err
+		}),
 	)
 	mgr.RegisterJob(sumJob)
 
