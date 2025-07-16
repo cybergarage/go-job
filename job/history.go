@@ -37,9 +37,13 @@ type StateHistory interface {
 
 // LogHistory is an interface that defines methods for logging messages related to job instances.
 type LogHistory interface {
+	// Infof logs an informational message for a job instance.
 	Infof(job Instance, format string, args ...any) error
+	// Warnf logs a warning message for a job instance.
 	Warnf(job Instance, format string, args ...any) error
+	// Errorf logs an error message for a job instance.
 	Errorf(job Instance, format string, args ...any) error
+	// ProcessLogs retrieves all logs for a job instance.
 	ProcessLogs(job Instance) ([]Log, error)
 }
 
