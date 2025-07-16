@@ -28,20 +28,26 @@ func Example() {
 		WithKind("sum"),
 		WithExecutor(func(a, b int) int { return a + b }),
 		WithScheduleAt(time.Now()),
-		WithResponseHandler(func(inst Instance, res []any) {
-			fmt.Printf("Result: %v\n", res)
+		WithResponseHandler(func(ji Instance, res []any) {
+			ji.Infof("Result: %v", res)
 		}),
 	)
 	mgr.RegisterJob(sumJob)
 
 	// Schedule the registered job
-	mgr.ScheduleRegisteredJob("sum", WithArguments(1, 2))
+	ji, _ := mgr.ScheduleRegisteredJob("sum", WithArguments(1, 2))
 
 	// Start the job manager
 	mgr.Start()
 
 	// Wait for the job to complete
 	mgr.StopWithWait()
+
+	// Retrieve and print the job instance logs
+	logs, _ := mgr.InstanceLogs(ji)
+	for _, log := range logs {
+		fmt.Println(log.Message())
+	}
 
 	// Output:
 	// Result: [3]
