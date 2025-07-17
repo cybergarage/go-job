@@ -22,6 +22,8 @@ import (
 
 // Log represents a log entry associated with a job.
 type Log interface {
+	// Kind returns the type of the log entry.
+	Kind() string
 	// UUID returns the unique identifier of the log entry.
 	UUID() uuid.UUID
 	// Timestamp returns the timestamp of the log entry.
@@ -33,6 +35,7 @@ type Log interface {
 }
 
 type log struct {
+	kind  string
 	uuid  uuid.UUID
 	ts    time.Time
 	level LogLevel
@@ -41,6 +44,13 @@ type log struct {
 
 // NewLog creates a new log entry.
 type LogOption func(*log)
+
+// WithLogKind sets the type of the log entry.
+func WithLogKind(kind string) LogOption {
+	return func(l *log) {
+		l.kind = kind
+	}
+}
 
 // WithLogUUID sets the unique identifier of the log entry.
 func WithLogUUID(uuid uuid.UUID) LogOption {
@@ -82,6 +92,11 @@ func NewLog(opts ...LogOption) Log {
 		opt(l)
 	}
 	return l
+}
+
+// Kind returns the type of the log entry.
+func (l *log) Kind() string {
+	return l.kind
 }
 
 // UUID returns the unique identifier of the log entry.

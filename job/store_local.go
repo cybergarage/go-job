@@ -96,6 +96,7 @@ func (s *localStore) ListInstanceHistory(ctx context.Context, job Instance) (Ins
 // Logf logs a formatted message at the specified log level.
 func (s *localStore) Logf(ctx context.Context, job Instance, logLevel LogLevel, format string, args ...any) error {
 	log := NewLog(
+		WithLogKind(job.Kind()),
 		WithLogUUID(job.UUID()),
 		WithLogLevel(logLevel),
 		WithLogMessage(fmt.Sprintf(format, args...)),
