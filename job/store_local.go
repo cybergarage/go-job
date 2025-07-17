@@ -49,8 +49,8 @@ func (s *localStore) EnqueueInstance(ctx context.Context, job Instance) error {
 	return nil
 }
 
-// RemoveInstance removes a job instance from the store by its unique identifier.
-func (s *localStore) RemoveInstance(ctx context.Context, job Instance) error {
+// DequeueInstance removes a job instance from the store by its unique identifier.
+func (s *localStore) DequeueInstance(ctx context.Context, job Instance) error {
 	if job == nil {
 		return nil
 	}
@@ -129,4 +129,15 @@ func (s *localStore) ListInstanceLogs(ctx context.Context, job Instance) ([]Log,
 		}
 	}
 	return logs, nil
+}
+
+// ClearInstances clears all job instances in the store.
+func (s *localStore) ClearInstances(ctx context.Context) error {
+	s.jobs.Range(func(key, value any) bool {
+		s.jobs.Delete(key)
+		return true
+	})
+	s.history = []InstanceState{}
+	s.logs = []Log{}
+	return nil
 }
