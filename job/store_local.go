@@ -88,8 +88,8 @@ func (s *localStore) LogInstanceState(ctx context.Context, job Instance, state I
 	return nil
 }
 
-// ListInstanceHistory lists all state records for a job instance.
-func (s *localStore) ListInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error) {
+// LookupInstanceHistory lists all state records for a job instance.
+func (s *localStore) LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error) {
 	if job == nil {
 		return nil, nil
 	}

@@ -86,7 +86,7 @@ func (h *history) LogProcessState(job Instance, state JobState, opts ...Instance
 
 // ProcessHistory retrieves all state records for a job instance, sorted by timestamp.
 func (h *history) ProcessHistory(job Instance) (InstanceHistory, error) {
-	records, err := h.store.ListInstanceHistory(context.Background(), job)
+	records, err := h.store.LookupInstanceHistory(context.Background(), job)
 	if err != nil {
 		return nil, err
 	}
