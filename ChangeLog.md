@@ -18,7 +18,7 @@
   - etcd plugin added
 
 ## v0.9.1 (2025-07-XX)
-- Logging more errors 
+- Logging more system errors 
 - Histrory and Logging cleanup
 - Lookup logs and history by job ID
 
