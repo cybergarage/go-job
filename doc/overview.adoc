@@ -1,7 +1,6 @@
 = Overview
 
-:toc: macro
-toc::[]
+:toc:
 
 == Job State
 
