@@ -31,7 +31,10 @@ func TestSchedules(t *testing.T) {
 			cronSpec:   "",
 			scheduleAt: time.Now(),
 		},
-
+		{
+			cronSpec:   "",
+			scheduleAt: time.Now().Add(10 * time.Hour),
+		},
 		{
 			cronSpec:   "0 0 * * *", // every day at midnight
 			scheduleAt: time.Now(),
@@ -71,6 +74,7 @@ func TestSchedules(t *testing.T) {
 			if scheduleAt.IsZero() {
 				t.Errorf("Expected a valid next schedule time, got zero value")
 			}
+			t.Logf("Schedule created with crontab: %s, next scheduled at: %s", sched.CrontabSpec(), scheduleAt.Format(time.RFC3339))
 		})
 	}
 }
