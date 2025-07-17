@@ -1,6 +1,7 @@
 # ChangeLog
 
 ## 1.1.0 (2025-0X-XX)
+- Job client
 - Support 
   - Cancellation of job instances
   - Timeout handling for job instances
