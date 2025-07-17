@@ -38,6 +38,8 @@ type Manager interface {
 	Start() error
 	// Stop stops the job manager.
 	Stop() error
+	// Clear clears all jobs and history from the job manager without registered jobs.
+	Clear() error
 	// StopWithWait stops the job manager and waits for all jobs to complete.
 	StopWithWait() error
 }
@@ -158,6 +160,22 @@ func (mgr *manager) Stop() error {
 	logger.Infof("%s (PID:%d) terminated", ProductName, os.Getpid())
 
 	return errs
+}
+
+// Clear clears all jobs and history from the job manager without registered jobs.
+func (mgr *manager) Clear() error {
+	mgr.Lock()
+	defer mgr.Unlock()
+
+	closer := []func() error{
+		mgr.Repository.Clear,
+	}
+	for _, close := range closer {
+		if err := close(); err != nil {
+			return fmt.Errorf("failed to clear job manager: %w", err)
+		}
+	}
+	return nil
 }
 
 // StopWithWait stops the job manager and waits for all jobs to complete.

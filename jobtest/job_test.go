@@ -192,6 +192,29 @@ func TestScheduleJobs(t *testing.T) {
 				}
 			}
 
+			// Clean up
+
+			if err := mgr.Clear(); err != nil {
+				t.Errorf("Failed to clear job manager: %v", err)
+			}
+
+			history, err = mgr.ProcessHistory(ji)
+			if err != nil {
+				t.Fatalf("Failed to retrieve instance history: %v", err)
+			}
+			if len(history) != 0 {
+				t.Errorf("Expected no history records after clearing, but got %d records", len(history))
+			}
+
+			logs, err = mgr.ProcessLogs(ji)
+			if err != nil {
+				t.Errorf("Failed to retrieve instance logs: %v", err)
+				return
+			}
+			if len(logs) != 0 {
+				t.Errorf("Expected no logs after clearing, but got %d logs", len(logs))
+			}
+
 			// Unregister the job
 
 			if err := mgr.UnregisterJob(tt.kind); err != nil {
