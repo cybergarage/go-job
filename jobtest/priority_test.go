@@ -130,6 +130,9 @@ func TestPriorityCompares(t *testing.T) {
 			if got := tt.p1.Higher(tt.p2); got != tt.higherExpected {
 				t.Errorf("Priority.Higher() = %v, want %v", got, tt.higherExpected)
 			}
+			if tt.eqExpected && tt.p1.String() != tt.p2.String() {
+				t.Errorf("Priority.String() mismatch: %v != %v", tt.p1.String(), tt.p2.String())
+			}
 		})
 	}
 }
