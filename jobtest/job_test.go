@@ -17,6 +17,7 @@ package jobtest
 import (
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/cybergarage/go-job/job"
 )
@@ -103,7 +104,10 @@ func TestScheduleJobs(t *testing.T) {
 
 			ji, err := mgr.ScheduleRegisteredJob(
 				tt.kind,
-				job.WithArguments(tt.args...))
+				job.WithArguments(tt.args...),
+				job.WithBackoffDuration(0),
+				job.WithTimeout(0),
+			)
 			if err != nil {
 				t.Fatalf("Failed to schedule job: %v", err)
 			}
@@ -127,7 +131,7 @@ func TestScheduleJobs(t *testing.T) {
 			}
 
 			for i, record := range history {
-				t.Logf("Record %d: Timestamp=%s, State=%s, %s", i, record.Timestamp().Format("2006-01-02 15:04:05.000000"), record.State(), record.String())
+				t.Logf("Record %d: Timestamp=%s, State=%s, %s", i, record.Timestamp().Format(time.RFC3339), record.State(), record.String())
 			}
 
 			lastState := history.LastState()
