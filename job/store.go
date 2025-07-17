@@ -66,8 +66,8 @@ type LogStore interface {
 	Warnf(ctx context.Context, job Instance, format string, args ...any) error
 	// Errorf logs an error message for a job instance.
 	Errorf(ctx context.Context, job Instance, format string, args ...any) error
-	// ListInstanceLogs lists all log entries for a job instance.
-	ListInstanceLogs(ctx context.Context, job Instance) ([]Log, error)
+	// LookupInstanceLogs lists all log entries for a job instance.
+	LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error)
 	// ClearInstanceLogs clears all log entries for a job instance.
 	ClearInstanceLogs(ctx context.Context) error
 }

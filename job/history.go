@@ -113,5 +113,5 @@ func (h *history) Errorf(job Instance, format string, args ...any) error {
 
 // ProcessLogs retrieves all logs for a job instance.
 func (h *history) ProcessLogs(job Instance) ([]Log, error) {
-	return h.store.ListInstanceLogs(context.Background(), job)
+	return h.store.LookupInstanceLogs(context.Background(), job)
 }

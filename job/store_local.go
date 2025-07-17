@@ -135,8 +135,8 @@ func (s *localStore) Errorf(ctx context.Context, job Instance, format string, ar
 	return s.Logf(ctx, job, LogError, format, args...)
 }
 
-// ListInstanceLogs lists all log entries for a job instance.
-func (s *localStore) ListInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
+// LookupInstanceLogs lists all log entries for a job instance.
+func (s *localStore) LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
 	var logs []Log
 	for _, log := range s.logs {
 		if log.UUID() == job.UUID() {
