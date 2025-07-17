@@ -16,7 +16,7 @@
 - Logging more errors 
 - Histrory and Logging cleanup
 
-## v0.9.0 (2025-07-17)
+## v0.9.0 (2025-07-16)
 - Initial release
 ### Major Features
 - Flexible job creation and registration with custom executors and arguments
