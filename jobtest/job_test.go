@@ -56,7 +56,9 @@ func TestScheduleJobs(t *testing.T) {
 		},
 	}
 
-	mgr, err := job.NewManager()
+	mgr, err := job.NewManager(
+		job.WithNumWorkers(1),
+	)
 	if err != nil {
 		t.Fatalf("Failed to create job manager: %v", err)
 	}
