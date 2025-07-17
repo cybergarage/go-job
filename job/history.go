@@ -80,7 +80,7 @@ func newHistory(opts ...HistoryOption) *history {
 
 // LogProcessState logs a state change for a job instance.
 func (h *history) LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error {
-	record := newInstanceState(job.UUID(), state, opts...)
+	record := newInstanceState(job.Kind(), job.UUID(), state, opts...)
 	return h.store.LogInstanceState(context.Background(), job, record)
 }
 

@@ -24,6 +24,8 @@ import (
 
 // InstanceState represents the state of a job instance at a specific point in time.
 type InstanceState interface {
+	// Kind returns the kind of the job instance.
+	Kind() string
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
 	// Timestamp returns the timestamp of when the state history was created.
@@ -51,6 +53,7 @@ func WithStateOption(opts map[string]any) func(*instanceState) {
 }
 
 type instanceState struct {
+	kind  string
 	uuid  uuid.UUID
 	ts    time.Time
 	state JobState
@@ -58,9 +61,10 @@ type instanceState struct {
 }
 
 // newInstanceState creates a new job state record with the current timestamp and the given state.
-func newInstanceState(id uuid.UUID, state JobState, opts ...InstanceStateOption) InstanceState {
+func newInstanceState(kind string, uuid uuid.UUID, state JobState, opts ...InstanceStateOption) InstanceState {
 	is := &instanceState{
-		uuid:  id,
+		kind:  kind,
+		uuid:  uuid,
 		ts:    time.Now(),
 		state: state,
 		opts:  make(map[string]any),
@@ -69,6 +73,11 @@ func newInstanceState(id uuid.UUID, state JobState, opts ...InstanceStateOption)
 		opt(is)
 	}
 	return is
+}
+
+// Kind returns the kind of the job instance.
+func (state *instanceState) Kind() string {
+	return state.kind
 }
 
 // UUID returns the unique identifier of the job instance.
@@ -94,6 +103,7 @@ func (state *instanceState) Options() map[string]any {
 // Map returns a map representation of the instance state.
 func (state *instanceState) Map() map[string]any {
 	m := map[string]any{
+		"kind":      state.kind,
 		"uuid":      state.uuid.String(),
 		"timestamp": state.ts,
 		"state":     state.state.String(),
