@@ -42,6 +42,8 @@ type Instance interface {
 	Process() ([]any, error)
 	// History returns the history of state changes for the job instance.
 	History() (InstanceHistory, error)
+	// Logs returns the logs for the job instance.
+	Logs() ([]Log, error)
 	// State returns the current state of the job instance.
 	State() JobState
 	// AttemptCount returns the number of attempts made to process this job instance.
@@ -191,6 +193,11 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 // History returns the history of state changes for the job instance.
 func (ji *jobInstance) History() (InstanceHistory, error) {
 	return ji.history.ProcessHistory(ji)
+}
+
+// Logs returns the logs for the job instance.
+func (ji *jobInstance) Logs() ([]Log, error) {
+	return ji.history.ProcessLogs(ji)
 }
 
 // State returns the current state of the job instance.
