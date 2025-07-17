@@ -106,6 +106,7 @@ func TestScheduleJobs(t *testing.T) {
 
 			ji, err := mgr.ScheduleRegisteredJob(
 				tt.kind,
+				job.WithScheduleAfter(0), // immediate scheduling
 				job.WithArguments(tt.args...),
 				job.WithBackoffDuration(0),
 				job.WithTimeout(0),
