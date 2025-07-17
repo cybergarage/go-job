@@ -14,6 +14,11 @@
 
 package job
 
+import (
+	"context"
+	"fmt"
+)
+
 // Repository is an interface that defines methods for managing job registrations and scheduling.
 type Repository interface {
 	// Registry defines the methods for managing job registrations.
@@ -22,6 +27,8 @@ type Repository interface {
 	Scheduler
 	// History defines the methods for managing job history.
 	History
+	// Clear clears all job queues, history, and logs.
+	Clear() error
 }
 
 // RepositoryOption is a function that configures a job repository.
@@ -57,4 +64,19 @@ func NewRepository(opts ...RepositoryOption) *repository {
 	repo.History = NewHistory(WithHistoryStore(repo.store))
 
 	return repo
+}
+
+// Clear clears all job queues, history, and logs.
+func (r *repository) Clear() error {
+	clearners := []func(context.Context) error{
+		r.store.ClearInstanceHistory,
+		r.store.ClearInstanceLogs,
+		r.store.ClearInstances,
+	}
+	for _, clear := range clearners {
+		if err := clear(context.Background()); err != nil {
+			return fmt.Errorf("failed to clear job repository: %w", err)
+		}
+	}
+	return nil
 }
