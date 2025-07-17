@@ -19,6 +19,11 @@ import (
 	"sync"
 )
 
+const (
+	// DefaultWorkerNum is the default number of workers in the group.
+	DefaultWorkerNum = 1
+)
+
 // WorkerGroup is an interface that defines methods for managing a group of workers.
 type WorkerGroup interface {
 	// Start starts all workers in the group.
@@ -64,7 +69,7 @@ type workerGroup struct {
 func newWorkerGroup(opts ...WorkerGroupOption) *workerGroup {
 	g := &workerGroup{
 		Mutex:   sync.Mutex{},
-		workers: make([]Worker, 0),
+		workers: make([]Worker, DefaultWorkerNum),
 		queue:   nil,
 	}
 	for _, opt := range opts {
@@ -111,8 +116,8 @@ func (g *workerGroup) StopWithWait() error {
 
 // ResizeWorkers scales the number of workers for the job manager.
 func (g *workerGroup) ResizeWorkers(num int) error {
-	if num < 0 {
-		return errors.New("number of workers cannot be negative")
+	if num <= 0 {
+		return errors.New("number of workers must be positive")
 	}
 	if len(g.workers) == num {
 		return nil

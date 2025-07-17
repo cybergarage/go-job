@@ -69,7 +69,7 @@ func newManager(opts ...any) (*manager, error) {
 	mgr := &manager{
 		Mutex:       sync.Mutex{},
 		store:       NewLocalStore(),
-		workerGroup: newWorkerGroup(WithNumWorkers(1)),
+		workerGroup: newWorkerGroup(WithNumWorkers(DefaultWorkerNum)),
 	}
 
 	for _, opt := range opts {
