@@ -129,7 +129,7 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 			t.Fatalf("Failed to dequeue job: %v", err)
 			return
 		}
-		t.Logf("Dequeued job: %d, scheduled at: %s", job.Policy().Priority(), job.ScheduledAt().String())
+		t.Logf("Dequeued job: %d, scheduled at: %s", job.Policy().Priority(), job.ScheduledAt().Format(time.RFC3339))
 		if lastJob == nil {
 			lastJob = job
 			continue
