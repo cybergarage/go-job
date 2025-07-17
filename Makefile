@@ -48,13 +48,6 @@ vet: format
 lint: vet
 	golangci-lint run ${PKG_SRC_DIR}/... ${TEST_PKG_DIR}/...
 
-%.png : %.pu
-	plantuml -tpng $<
-
-images := $(wildcard doc/img/*.png)
-doc: $(images)
-	@echo "Images generated: $(images)"
-
 godoc:
 	go install golang.org/x/tools/cmd/godoc@latest
 	godoc -http=:6060 -play
@@ -65,3 +58,17 @@ test: lint
 
 clean:
 	go clean -i ${PKG}
+
+# Documentation generation
+
+%.md : %.adoc
+	asciidoctor -b docbook -a leveloffset=+1 -o - $< | pandoc -t markdown_strict --wrap=none -f docbook > $@
+
+%.png : %.pu
+	plantuml -tpng $<
+
+images := $(wildcard doc/img/*.png)
+docs := $(wildcard doc/*.md)
+doc: $(docs) $(images)
+	@echo "Generated: $(docs)"
+	@echo "Generated: $(images)"
