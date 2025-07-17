@@ -72,7 +72,7 @@ func main() {
 
 ## Features
 
-This section provides an overview of the key features and functionalities of `go-job`.
+This section provides an overview of the key features and functionalities of `go-job`. To learn more about each feature, refer to the corresponding sections in the [overview](overview.md) and [godoc](https://pkg.go.dev/github.com/cybergarage/go-job) documentation.
 
 ### Job Execution with Arbitrary Functions
 
