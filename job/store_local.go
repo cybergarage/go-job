@@ -70,6 +70,15 @@ func (s *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	return jobs, nil
 }
 
+// ClearInstances clears all job instances in the store.
+func (s *localStore) ClearInstances(ctx context.Context) error {
+	s.jobs.Range(func(key, value any) bool {
+		s.jobs.Delete(key)
+		return true
+	})
+	return nil
+}
+
 // LogInstanceState adds a new state record for a job instance.
 func (s *localStore) LogInstanceState(ctx context.Context, job Instance, state InstanceState) error {
 	if job == nil {
@@ -91,6 +100,12 @@ func (s *localStore) ListInstanceHistory(ctx context.Context, job Instance) (Ins
 		}
 	}
 	return records, nil
+}
+
+// ClearInstanceHistory clears all state records for a job instance.
+func (s *localStore) ClearInstanceHistory(ctx context.Context) error {
+	s.history = []InstanceState{}
+	return nil
 }
 
 // Logf logs a formatted message at the specified log level.
@@ -129,15 +144,4 @@ func (s *localStore) ListInstanceLogs(ctx context.Context, job Instance) ([]Log,
 		}
 	}
 	return logs, nil
-}
-
-// ClearInstances clears all job instances in the store.
-func (s *localStore) ClearInstances(ctx context.Context) error {
-	s.jobs.Range(func(key, value any) bool {
-		s.jobs.Delete(key)
-		return true
-	})
-	s.history = []InstanceState{}
-	s.logs = []Log{}
-	return nil
 }
