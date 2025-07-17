@@ -16,6 +16,7 @@ package job
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"time"
 )
 
@@ -28,11 +29,11 @@ const (
 	// NoTimeout indicates no timeout limit.
 	NoTimeout = 0
 	// DefaultTimeout is the default timeout for jobs.
-	DefaultTimeout = 30 * time.Minute
+	DefaultTimeout = 0
 )
 
-// RetryDelay is a function type that defines how long to wait before retrying a job.
-type RetryDelay func() time.Duration
+// BackoffStrategy is a function type that defines how long to wait before retrying a job.
+type BackoffStrategy func() time.Duration
 
 // Policy defines the interface for job scheduling, supporting crontab expressions.
 type Policy interface {
@@ -42,8 +43,8 @@ type Policy interface {
 	Priority() Priority
 	// Timeout returns the timeout duration for the job.
 	Timeout() time.Duration
-	// RetryDelay returns the delay time before retrying a job.
-	RetryDelay() time.Duration
+	// Backoff returns the delay time before retrying a job.
+	Backoff() time.Duration
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
 	// String returns a string representation of the job instance.
@@ -55,10 +56,10 @@ type PolicyOption func(*policy)
 
 // policy implements the JobPolicy interface using a crontab spec string.
 type policy struct {
-	maxRetries   int
-	priority     Priority
-	timeout      time.Duration
-	retryDelayFn RetryDelay
+	maxRetries int
+	priority   Priority
+	timeout    time.Duration
+	backoffFn  BackoffStrategy
 }
 
 // WithMaxRetries sets the maximum number of retries for the job policy.
@@ -110,18 +111,18 @@ func WithInfiniteRetries() PolicyOption {
 	}
 }
 
-// WithRetryDelay sets the function to determine the delay before retrying a job.
-func WithRetryDelay(fn RetryDelay) PolicyOption {
+// WithBackoffStrategy sets the function to determine the delay before retrying a job.
+func WithBackoffStrategy(fn BackoffStrategy) PolicyOption {
 	return func(s *policy) {
-		s.retryDelayFn = fn
+		s.backoffFn = fn
 	}
 }
 
-// WithRetryDelayDuration sets a fixed delay duration before retrying a job.
-func WithRetryDelayDuration(duration time.Duration) PolicyOption {
+// WithBackoffDuration sets a fixed backoff duration with random jitter for the job policy.
+func WithBackoffDuration(duration time.Duration) PolicyOption {
 	return func(s *policy) {
-		s.retryDelayFn = func() time.Duration {
-			return duration
+		s.backoffFn = func() time.Duration {
+			return time.Duration(float64(duration) * (0.8 + 0.4*(rand.Float64())))
 		}
 	}
 }
@@ -131,7 +132,7 @@ func newPolicy() *policy {
 		maxRetries: NoRetry,         // Default to no retries
 		priority:   DefaultPriority, // Default priority
 		timeout:    DefaultTimeout,  // Default timeout
-		retryDelayFn: func() time.Duration {
+		backoffFn: func() time.Duration {
 			return time.Duration(0)
 		},
 	}
@@ -161,12 +162,12 @@ func (p *policy) Timeout() time.Duration {
 	return p.timeout
 }
 
-// RetryDelay returns the delay time before retrying a job.
-func (p *policy) RetryDelay() time.Duration {
-	if p.retryDelayFn == nil {
+// Backoff returns the delay time before retrying a job.
+func (p *policy) Backoff() time.Duration {
+	if p.backoffFn == nil {
 		return 0
 	}
-	return p.retryDelayFn()
+	return p.backoffFn()
 }
 
 // Map returns a map representation of the job instance.

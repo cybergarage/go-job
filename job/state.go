@@ -26,10 +26,6 @@ const (
 	JobScheduled
 	// JobProcessing indicates the job is currently being processed.
 	JobProcessing
-	// JobSucceeded indicates the job has completed successfully.
-	JobSucceeded
-	// JobFailed indicates the job has completed with an error.
-	JobFailed
 	// JobCancelled indicates the job was cancelled before completion.
 	JobCancelled
 	// JobTimedOut indicates the job has exceeded its allowed execution time.
@@ -38,8 +34,6 @@ const (
 	JobCompleted
 	// JobTerminated indicates the job has been terminated.
 	JobTerminated
-	// JobError indicates an error occurred while processing the job.
-	JobError
 )
 
 // Is checks if the current JobState is equal to the provided state.
@@ -56,10 +50,6 @@ func (s JobState) String() string {
 		return "Scheduled"
 	case JobProcessing:
 		return "Processing"
-	case JobSucceeded:
-		return "Succeeded"
-	case JobFailed:
-		return "Failed"
 	case JobCancelled:
 		return "Cancelled"
 	case JobTimedOut:
@@ -68,8 +58,6 @@ func (s JobState) String() string {
 		return "Completed"
 	case JobTerminated:
 		return "Terminated"
-	case JobError:
-		return "Error"
 	default:
 		return "Unknown"
 	}
