@@ -71,6 +71,15 @@ func (w *worker) Start() error {
 	if err := w.Stop(); err != nil {
 		return err
 	}
+	return w.Run()
+}
+
+// Run starts the worker to process jobs in a loop.
+func (w *worker) Run() error {
+	logError := func(ji Instance, err error) {
+		logger.Error(err)
+		ji.Error(err)
+	}
 
 	go func() {
 		for {
@@ -86,7 +95,7 @@ func (w *worker) Start() error {
 				}
 				err = ji.UpdateState(JobProcessing)
 				if err != nil {
-					logger.Error(err)
+					logError(ji, err)
 					continue
 				}
 				w.processing = true
@@ -94,7 +103,7 @@ func (w *worker) Start() error {
 				if err == nil {
 					err = ji.UpdateState(JobCompleted, NewResultWith(res))
 					if err != nil {
-						logger.Error(err)
+						logError(ji, err)
 					}
 					if ji.IsRecurring() {
 						w.queue.Enqueue(ji) // Reschedule if recurring
@@ -102,7 +111,7 @@ func (w *worker) Start() error {
 				} else {
 					err = ji.UpdateState(JobTerminated)
 					if err != nil {
-						logger.Error(err)
+						logError(ji, err)
 					}
 					if ji.IsRetriable() {
 						w.queue.Enqueue(ji) // Retry the job
@@ -116,6 +125,7 @@ func (w *worker) Start() error {
 			}
 		}
 	}()
+
 	return nil
 }
 
