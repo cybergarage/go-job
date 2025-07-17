@@ -81,6 +81,18 @@ func (w *worker) Run() error {
 		ji.Error(err)
 	}
 
+	retryInstance := func(ji Instance) {
+		delay := ji.Policy().Backoff()
+		if 0 < delay {
+			time.Sleep(delay) // Wait for the retry delay
+		}
+		w.queue.Enqueue(ji) // Retry the job
+	}
+
+	rescheduleInstance := func(ji Instance) {
+		w.queue.Enqueue(ji) // Reschedule if recurring
+	}
+
 	go func() {
 		for {
 			select {
@@ -106,7 +118,7 @@ func (w *worker) Run() error {
 						logError(ji, err)
 					}
 					if ji.IsRecurring() {
-						w.queue.Enqueue(ji) // Reschedule if recurring
+						rescheduleInstance(ji)
 					}
 				} else {
 					err = ji.UpdateState(JobTerminated)
@@ -114,10 +126,10 @@ func (w *worker) Run() error {
 						logError(ji, err)
 					}
 					if ji.IsRetriable() {
-						w.queue.Enqueue(ji) // Retry the job
+						retryInstance(ji)
 					} else {
 						if ji.IsRecurring() {
-							w.queue.Enqueue(ji) // Reschedule if recurring
+							rescheduleInstance(ji)
 						}
 					}
 				}
