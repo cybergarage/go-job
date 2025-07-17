@@ -60,8 +60,14 @@ type StateStore interface {
 
 // LogStore is an interface that defines methods for logging job instance messages.
 type LogStore interface {
+	// Infof logs an informational message for a job instance.
 	Infof(ctx context.Context, job Instance, format string, args ...any) error
+	// Warnf logs a warning message for a job instance.
 	Warnf(ctx context.Context, job Instance, format string, args ...any) error
+	// Errorf logs an error message for a job instance.
 	Errorf(ctx context.Context, job Instance, format string, args ...any) error
+	// ListInstanceLogs lists all log entries for a job instance.
 	ListInstanceLogs(ctx context.Context, job Instance) ([]Log, error)
+	// ClearInstanceLogs clears all log entries for a job instance.
+	ClearInstanceLogs(ctx context.Context) error
 }

@@ -145,3 +145,9 @@ func (s *localStore) ListInstanceLogs(ctx context.Context, job Instance) ([]Log,
 	}
 	return logs, nil
 }
+
+// ClearInstanceLogs clears all log entries for a job instance.
+func (s *localStore) ClearInstanceLogs(ctx context.Context) error {
+	s.logs = []Log{}
+	return nil
+}
