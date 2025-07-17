@@ -36,7 +36,7 @@ func main() {
 	sumJob, _ := job.NewJob(
 		job.WithKind("sum"),
 		job.WithExecutor(func(a, b int) int { return a + b }),
-		job.WithScheduleAt(time.Now()),
+		job.WithScheduleAt(time.Now()),　// immediate scheduling is the default, so this option is redundant
 		job.WithResponseHandler(func(ji job.Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
