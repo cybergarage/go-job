@@ -1,0 +1,71 @@
+@startuml go-job-components
+
+component Manager
+component Job
+component Instance
+component WorkerGroup
+component Worker
+component Queue
+
+component Policy
+component Schedule
+component Priority
+
+package "Store Layer" {
+    component Store
+    component QueueStore
+    component HistoryStore
+    component StateStore
+    component LogStore
+    
+    component LocalStore
+    component DistributedStore
+}
+
+package "Observation" {
+    component StateHistory
+    component LogHistory
+    component ResponseHandler
+    component ErrorHandler
+}
+
+component Repository
+component Executor
+component BackoffStrategy
+
+Manager -- Repository
+Manager --o WorkerGroup
+Manager --o Queue
+Manager --o Store
+
+WorkerGroup --o Worker
+Worker --o Queue
+
+Job --o Executor
+Job --o Policy
+Job --o Schedule
+
+Instance --o Job
+Instance --o StateHistory
+Instance --o LogHistory
+
+Policy --o Priority
+Policy --o BackoffStrategy
+
+Queue --o QueueStore
+
+Store -- QueueStore
+Store -- HistoryStore
+HistoryStore -- StateStore
+HistoryStore -- LogStore
+
+LocalStore ..|> Store
+DistributedStore ..|> Store
+
+Instance --o ResponseHandler
+Instance --o ErrorHandler
+
+StateHistory --o StateStore
+LogHistory --o LogStore
+
+@enduml
