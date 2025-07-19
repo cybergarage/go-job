@@ -50,13 +50,13 @@ func Example() {
 	mgr.StopWithWait()
 
 	// Retrieve and print the job instance state history
-	history, _ := mgr.ProcessHistory(ji)
+	history, _ := mgr.LookupHistory(ji)
 	for _, record := range history {
 		fmt.Println(record.State())
 	}
 
 	// Retrieve and print the job instance logs
-	logs, _ := mgr.ProcessLogs(ji)
+	logs, _ := mgr.LookupLogs(ji)
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}
