@@ -16,8 +16,10 @@
 - gRPC API
 - Distributed Store
   - etcd plugin added
+- CLI command
+  - `go-jobctl` for job management
 
-## v0.9.1 (2025-07-XX)
+## v0.9.1 (2025-07-19)
 - Logging more system errors 
 - Histrory and Logging cleanup
 - Lookup logs and history by job ID
