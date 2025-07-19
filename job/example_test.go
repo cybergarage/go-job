@@ -54,7 +54,7 @@ func Example() {
 	}
 
 	// Retrieve and print the job instance logs
-	logs, _ := mgr.ProcessLogs(ji)
+	logs, _ := mgr.LookupLogs(ji)
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}

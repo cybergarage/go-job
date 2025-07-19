@@ -197,7 +197,7 @@ func (ji *jobInstance) History() (InstanceHistory, error) {
 
 // Logs returns the logs for the job instance.
 func (ji *jobInstance) Logs() ([]Log, error) {
-	return ji.history.ProcessLogs(ji)
+	return ji.history.LookupLogs(ji)
 }
 
 // State returns the current state of the job instance.

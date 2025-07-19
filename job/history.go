@@ -43,8 +43,8 @@ type LogHistory interface {
 	Warnf(job Instance, format string, args ...any) error
 	// Errorf logs an error message for a job instance.
 	Errorf(job Instance, format string, args ...any) error
-	// ProcessLogs retrieves all logs for a job instance.
-	ProcessLogs(job Instance) ([]Log, error)
+	// LookupLogs retrieves all logs for a job instance.
+	LookupLogs(job Instance) ([]Log, error)
 }
 
 // HistoryOption is a function that configures the job history.
@@ -111,7 +111,7 @@ func (h *history) Errorf(job Instance, format string, args ...any) error {
 	return h.store.Errorf(context.Background(), job, format, args...)
 }
 
-// ProcessLogs retrieves all logs for a job instance.
-func (h *history) ProcessLogs(job Instance) ([]Log, error) {
+// LookupLogs retrieves all logs for a job instance.
+func (h *history) LookupLogs(job Instance) ([]Log, error) {
 	return h.store.LookupInstanceLogs(context.Background(), job)
 }

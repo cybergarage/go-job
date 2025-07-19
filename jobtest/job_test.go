@@ -181,7 +181,7 @@ func TestScheduleJobs(t *testing.T) {
 				"[3]",
 			}
 
-			logs, err := mgr.ProcessLogs(ji)
+			logs, err := mgr.LookupLogs(ji)
 			if err != nil {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return
@@ -209,7 +209,7 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected no history records after clearing, but got %d records", len(history))
 			}
 
-			logs, err = mgr.ProcessLogs(ji)
+			logs, err = mgr.LookupLogs(ji)
 			if err != nil {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return
