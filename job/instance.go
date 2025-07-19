@@ -192,7 +192,7 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 
 // History returns the history of state changes for the job instance.
 func (ji *jobInstance) History() (InstanceHistory, error) {
-	return ji.history.ProcessHistory(ji)
+	return ji.history.LookupHistory(ji)
 }
 
 // Logs returns the logs for the job instance.
