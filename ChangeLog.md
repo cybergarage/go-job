@@ -24,18 +24,14 @@
 - Histrory and Logging cleanup
 - Lookup logs and history by job ID
 
-## v0.9.1 (2025-07-190)
+## v0.9.1 (2025-07-20)
 ### ✨ Features
-- Added `Clear()` method to `Repository`
-- Added `ClearInstanceLogs()` to `LogStore`
-- Added `ClearInstanceHistory()` to `StateStore`
-- Added `ClearInstances()` to `QueueStore` interface
+- Extended `Manager` to clear instance logs and history
 - Extended `Instance` interface with `Logs()` method
 ### 🛠 Enhancements
 - Extended `Log` interface with `Kind()` method
-- Enabled backoff strategy in `Worker::Run()`
-- Improved backoff policy interface
 - Enhanced `Worker::Run()` to log job errors
+- Enabled backoff strategy in `Worker::Run()`
 
 ## v0.9.0 (2025-07-17)
 - Initial release
