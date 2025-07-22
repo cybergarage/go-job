@@ -59,6 +59,19 @@ test: lint
 clean:
 	go clean -i ${PKG}
 
+# Protobuf generation
+
+PKG_PROTO_ROOT=${PKG_SRC_DIR}/api
+protopkg:
+	go get -u google.golang.org/protobuf
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest	
+%.pb.go : %.proto protopkg
+	protoc -I=${PKG_PROTO_ROOT}/proto/v1 --go_out=paths=source_relative:${PKG_PROTO_ROOT}/gen/go/v1 --go-grpc_out=paths=source_relative:${PKG_PROTO_ROOT}/gen/go/v1 --plugin=protoc-gen-go=${GOBIN}/protoc-gen-go --plugin=protoc-gen-go-grpc=${GOBIN}/protoc-gen-go-grpc $<
+protos=$(shell find ${PKG_PROTO_ROOT} -name '*.proto')
+pbs=$(protos:.proto=.pb.go)
+proto: protopkg $(pbs)
+
 # Documentation generation
 
 %.md : %.adoc
