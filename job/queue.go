@@ -27,8 +27,6 @@ type Queue interface {
 	Enqueue(job Instance) error
 	// Dequeue removes and returns a job from the queue.
 	Dequeue() (Instance, error)
-	// HasJobs checks if there are any jobs in the queue.
-	HasJobs() (bool, error)
 	// Size returns the number of jobs in the queue.
 	Size() (int, error)
 	// Empty checks if the queue is empty.
@@ -126,12 +124,6 @@ func (q *queue) Size() (int, error) {
 		return 0, err
 	}
 	return len(jobs), nil
-}
-
-// HasJobs checks if there are any jobs in the queue.
-func (q *queue) HasJobs() (bool, error) {
-	size, err := q.Size()
-	return size > 0, err
 }
 
 // Empty checks if the queue is empty.

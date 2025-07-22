@@ -181,7 +181,7 @@ func (mgr *manager) Clear() error {
 // StopWithWait stops the job manager and waits for all jobs to complete.
 func (mgr *manager) StopWithWait() error {
 	for {
-		if hasJobs, _ := mgr.Queue().HasJobs(); !hasJobs {
+		if noJobs, _ := mgr.Queue().Empty(); noJobs {
 			break
 		}
 		time.Sleep(100 * time.Millisecond) // Wait for queue to empty
