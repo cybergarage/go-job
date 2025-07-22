@@ -16,6 +16,7 @@ package job
 
 import (
 	"fmt"
+	"time"
 )
 
 // Job represents a job that can be scheduled to run at a specific time or interval.
@@ -26,6 +27,8 @@ type Job interface {
 	Handler() Handler
 	// Schedule returns the schedule for the job.
 	Schedule() Schedule
+	// CreatedAt returns the time when the job was created.
+	CreatedAt() time.Time
 	// Map returns a map representation of the job.
 	Map() map[string]any
 	// String returns a string representation of the job.
@@ -33,9 +36,10 @@ type Job interface {
 }
 
 type job struct {
-	kind     string
-	schedule *schedule
-	handler  *handler
+	kind      string
+	schedule  *schedule
+	handler   *handler
+	createdAt time.Time
 }
 
 // JobOption is a function that configures a job.
@@ -51,9 +55,10 @@ func WithKind(name string) JobOption {
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
-		kind:     "",
-		handler:  newHandler(),
-		schedule: newSchedule(),
+		kind:      "",
+		handler:   newHandler(),
+		schedule:  newSchedule(),
+		createdAt: time.Now(),
 	}
 
 	for _, opt := range opts {
@@ -80,6 +85,11 @@ func (j *job) Kind() string {
 // Handler returns the handler of the job.
 func (j *job) Handler() Handler {
 	return j.handler
+}
+
+// CreatedAt returns the time when the job was created.
+func (j *job) CreatedAt() time.Time {
+	return j.createdAt
 }
 
 // Schedule returns the schedule of the job.
