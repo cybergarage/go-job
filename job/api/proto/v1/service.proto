@@ -26,8 +26,8 @@ message Job {
   string kind = 1;  
   // Description of the job
   string description = 2;
-  // Creation timestamp
-  google.protobuf.Timestamp created_at = 3;
+  // Registered at timestamp
+  google.protobuf.Timestamp registered_at = 3;
 }
 
 message ScheduleJobRequest {

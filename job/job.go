@@ -23,12 +23,14 @@ import (
 type Job interface {
 	// Kind returns the name of the job.
 	Kind() string
+	// Description returns a description of the job.
+	Description() string
 	// Handler returns the job handler for the job.
 	Handler() Handler
 	// Schedule returns the schedule for the job.
 	Schedule() Schedule
-	// CreatedAt returns the time when the job was created.
-	CreatedAt() time.Time
+	// RegisteredAt returns the time when the job was registered.
+	RegisteredAt() time.Time
 	// Map returns a map representation of the job.
 	Map() map[string]any
 	// String returns a string representation of the job.
@@ -36,10 +38,11 @@ type Job interface {
 }
 
 type job struct {
-	kind      string
-	schedule  *schedule
-	handler   *handler
-	createdAt time.Time
+	kind         string
+	desc         string
+	schedule     *schedule
+	handler      *handler
+	registeredAt time.Time
 }
 
 // JobOption is a function that configures a job.
@@ -52,13 +55,21 @@ func WithKind(name string) JobOption {
 	}
 }
 
+// WithDescription sets the description of the job.
+func WithDescription(desc string) JobOption {
+	return func(j *job) {
+		j.desc = desc
+	}
+}
+
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
 	j := &job{
-		kind:      "",
-		handler:   newHandler(),
-		schedule:  newSchedule(),
-		createdAt: time.Now(),
+		kind:         "",
+		desc:         "",
+		handler:      newHandler(),
+		schedule:     newSchedule(),
+		registeredAt: time.Now(),
 	}
 
 	for _, opt := range opts {
@@ -82,14 +93,19 @@ func (j *job) Kind() string {
 	return j.kind
 }
 
+// Description returns a description of the job.
+func (j *job) Description() string {
+	return j.desc
+}
+
 // Handler returns the handler of the job.
 func (j *job) Handler() Handler {
 	return j.handler
 }
 
-// CreatedAt returns the time when the job was created.
-func (j *job) CreatedAt() time.Time {
-	return j.createdAt
+// RegisteredAt returns the time when the job was registered.
+func (j *job) RegisteredAt() time.Time {
+	return j.registeredAt
 }
 
 // Schedule returns the schedule of the job.
