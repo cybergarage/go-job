@@ -181,8 +181,8 @@ type Job struct {
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Description of the job
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Creation timestamp
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// Registered at timestamp
+	RegisteredAt  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -231,9 +231,9 @@ func (x *Job) GetDescription() string {
 	return ""
 }
 
-func (x *Job) GetCreatedAt() *timestamppb.Timestamp {
+func (x *Job) GetRegisteredAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreatedAt
+		return x.RegisteredAt
 	}
 	return nil
 }
@@ -782,7 +782,7 @@ type JobInstance struct {
 	// Unique instance identifier
 	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	// Job kind
-	JobKind string `protobuf:"bytes,2,opt,name=job_kind,json=jobKind,proto3" json:"job_kind,omitempty"`
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Current state
 	State JobState `protobuf:"varint,3,opt,name=state,proto3,enum=job.v1.JobState" json:"state,omitempty"`
 	// Job arguments
@@ -843,9 +843,9 @@ func (x *JobInstance) GetUuid() string {
 	return ""
 }
 
-func (x *JobInstance) GetJobKind() string {
+func (x *JobInstance) GetKind() string {
 	if x != nil {
-		return x.JobKind
+		return x.Kind
 	}
 	return ""
 }
@@ -941,12 +941,11 @@ const file_service_proto_rawDesc = "" +
 	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x19google/protobuf/any.proto\"\x11\n" +
 	"\x0fListJobsRequest\"3\n" +
 	"\x10ListJobsResponse\x12\x1f\n" +
-	"\x04jobs\x18\x01 \x03(\v2\v.job.v1.JobR\x04jobs\"v\n" +
+	"\x04jobs\x18\x01 \x03(\v2\v.job.v1.JobR\x04jobs\"|\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x129\n" +
-	"\n" +
-	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x91\x03\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12?\n" +
+	"\rregistered_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\fregisteredAt\"\x91\x03\n" +
 	"\x12ScheduleJobRequest\x12\x19\n" +
 	"\bjob_kind\x18\x01 \x01(\tR\ajobKind\x122\n" +
 	"\targuments\x18\x02 \x03(\v2\x14.google.protobuf.AnyR\targuments\x121\n" +
@@ -1002,10 +1001,10 @@ const file_service_proto_rawDesc = "" +
 	"_max_delay\"`\n" +
 	"\x13ScheduleJobResponse\x12/\n" +
 	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\x9a\x06\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x93\x06\n" +
 	"\vJobInstance\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x19\n" +
-	"\bjob_kind\x18\x02 \x01(\tR\ajobKind\x12&\n" +
+	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x12&\n" +
 	"\x05state\x18\x03 \x01(\x0e2\x10.job.v1.JobStateR\x05state\x122\n" +
 	"\targuments\x18\x04 \x03(\v2\x14.google.protobuf.AnyR\targuments\x12.\n" +
 	"\aresults\x18\x05 \x03(\v2\x14.google.protobuf.AnyR\aresults\x12\x19\n" +
@@ -1081,7 +1080,7 @@ var file_service_proto_goTypes = []any{
 }
 var file_service_proto_depIdxs = []int32{
 	3,  // 0: job.v1.ListJobsResponse.jobs:type_name -> job.v1.Job
-	14, // 1: job.v1.Job.created_at:type_name -> google.protobuf.Timestamp
+	14, // 1: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
 	15, // 2: job.v1.ScheduleJobRequest.arguments:type_name -> google.protobuf.Any
 	5,  // 3: job.v1.ScheduleJobRequest.schedule:type_name -> job.v1.Schedule
 	6,  // 4: job.v1.ScheduleJobRequest.policy:type_name -> job.v1.Policy

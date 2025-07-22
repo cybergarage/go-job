@@ -119,7 +119,7 @@ message JobInstance {
   string uuid = 1;
   
   // Job kind
-  string job_kind = 2;
+  string kind = 2;
   
   // Current state
   JobState state = 3;
