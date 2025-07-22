@@ -102,6 +102,16 @@ func TestScheduleJobs(t *testing.T) {
 				t.Fatalf("Failed to register job: %v", err)
 			}
 
+			regJobs, err := mgr.ListJobs()
+			if err != nil {
+				t.Fatalf("Failed to list registered jobs: %v", err)
+			}
+			if len(regJobs) != 1 {
+				t.Errorf("Expected exactly one registered job, but got %d", len(regJobs))
+			} else {
+				t.Logf("Registered jobs: %v", regJobs)
+			}
+
 			// Schedule the job with arguments
 
 			ji, err := mgr.ScheduleRegisteredJob(
