@@ -27,6 +27,8 @@ type Queue interface {
 	Enqueue(job Instance) error
 	// Dequeue removes and returns a job from the queue.
 	Dequeue() (Instance, error)
+	// List returns a list of all jobs in the queue.
+	List() ([]Instance, error)
 	// Size returns the number of jobs in the queue.
 	Size() (int, error)
 	// Empty checks if the queue is empty.
@@ -113,6 +115,20 @@ func (q *queue) Dequeue() (Instance, error) {
 		q.Unlock()
 		time.Sleep(1 * time.Second)
 	}
+}
+
+// List returns a list of all jobs in the queue.
+func (q *queue) List() ([]Instance, error) {
+	q.Lock()
+	defer q.Unlock()
+	jobs, err := q.store.ListInstances(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(jobs, func(i, j int) bool {
+		return jobs[i].Before(jobs[j])
+	})
+	return jobs, nil
 }
 
 // Size returns the number of jobs in the queue.
