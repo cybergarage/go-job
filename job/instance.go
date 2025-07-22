@@ -30,8 +30,14 @@ type Instance interface {
 	Kind() Kind
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
+	// CreatedAt returns the time when the job instance was created.
+	CreatedAt() time.Time
 	// ScheduledAt returns the time when the job instance was scheduled.
 	ScheduledAt() time.Time
+	// CompletedAt returns the time when the job instance was completed.
+	CompletedAt() time.Time
+	// TerminatedAt returns the time when the job instance was terminated.
+	TerminatedAt() time.Time
 	// Arguments returns the arguments for the job instance.
 	Arguments() []any
 	// Policy returns the policy associated with the job instance.
@@ -72,6 +78,9 @@ type jobInstance struct {
 	*schedule
 	*policy
 	*arguments
+	createdAt    time.Time
+	completedAt  time.Time
+	terminatedAt time.Time
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -85,18 +94,45 @@ func WithInstanceHistory(history History) InstanceOption {
 	}
 }
 
+// WithCreatedAt sets the time when the job instance was created.
+func WithCreatedAt(t time.Time) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.createdAt = t
+		return nil
+	}
+}
+
+// WithCompletedAt sets the time when the job instance was completed.
+func WithCompletedAt(t time.Time) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.completedAt = t
+		return nil
+	}
+}
+
+// WithTerminatedAt sets the time when the job instance was terminated.
+func WithTerminatedAt(t time.Time) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.terminatedAt = t
+		return nil
+	}
+}
+
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
-		job:       nil, // Default to nil, must be set by options
-		uuid:      uuid.New(),
-		state:     JobCreated,
-		attempt:   0,
-		history:   newHistory(),
-		handler:   newHandler(),
-		schedule:  newSchedule(),
-		policy:    newPolicy(),
-		arguments: newArguments(),
+		job:          nil, // Default to nil, must be set by options
+		uuid:         uuid.New(),
+		state:        JobCreated,
+		attempt:      0,
+		history:      newHistory(),
+		handler:      newHandler(),
+		schedule:     newSchedule(),
+		policy:       newPolicy(),
+		arguments:    newArguments(),
+		createdAt:    time.Now(),
+		completedAt:  time.Time{},
+		terminatedAt: time.Time{},
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -152,9 +188,24 @@ func (ji *jobInstance) Policy() Policy {
 	return ji.policy
 }
 
+// CreatedAt returns the time when the job instance was created.
+func (ji *jobInstance) CreatedAt() time.Time {
+	return ji.createdAt
+}
+
 // ScheduledAt returns the time when the job instance was scheduled.
 func (ji *jobInstance) ScheduledAt() time.Time {
 	return ji.schedule.Next()
+}
+
+// CompletedAt returns the time when the job instance was completed.
+func (ji *jobInstance) CompletedAt() time.Time {
+	return ji.completedAt
+}
+
+// TerminatedAt returns the time when the job instance was terminated.
+func (ji *jobInstance) TerminatedAt() time.Time {
+	return ji.terminatedAt
 }
 
 // Process executes the job instance executor with the arguments provided in the context.
