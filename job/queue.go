@@ -33,6 +33,8 @@ type Queue interface {
 	Size() (int, error)
 	// Empty checks if the queue is empty.
 	Empty() (bool, error)
+	// Clear clears all jobs in the queue.
+	Clear() error
 	// Lock acquires a lock for the queue.
 	Lock() error
 	// Unlock releases the lock for the queue.
@@ -146,4 +148,11 @@ func (q *queue) Size() (int, error) {
 func (q *queue) Empty() (bool, error) {
 	size, err := q.Size()
 	return size == 0, err
+}
+
+// Clear clears all jobs in the queue.
+func (q *queue) Clear() error {
+	q.Lock()
+	defer q.Unlock()
+	return q.store.ClearInstances(context.Background())
 }
