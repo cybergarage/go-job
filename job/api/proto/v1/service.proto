@@ -1,0 +1,32 @@
+// proto/job/v1/job_service.proto
+syntax = "proto3";
+
+package job.v1;
+option go_package = "github.com/cybergarage/go-job/api/job/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/any.proto";
+
+service JobService {
+  // Job Management
+  rpc CreateJob(CreateJobRequest) returns (CreateJobResponse);
+  rpc GetJob(GetJobRequest) returns (GetJobResponse);
+  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+  rpc UpdateJob(UpdateJobRequest) returns (UpdateJobResponse);
+  rpc DeleteJob(DeleteJobRequest) returns (DeleteJobResponse);
+  
+  // Instance Management
+  rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
+  rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse);
+  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse);
+  rpc CancelInstance(CancelInstanceRequest) returns (CancelInstanceResponse);
+  
+  // Manager Operations
+  rpc GetManagerStatus(GetManagerStatusRequest) returns (GetManagerStatusResponse);
+  rpc SetWorkerCount(SetWorkerCountRequest) returns (SetWorkerCountResponse);
+  
+  // History & Logs
+  rpc GetInstanceHistory(GetInstanceHistoryRequest) returns (GetInstanceHistoryResponse);
+  rpc GetInstanceLogs(GetInstanceLogsRequest) returns (GetInstanceLogsResponse);
+}
