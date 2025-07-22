@@ -10,6 +10,24 @@ import "google/protobuf/any.proto";
 
 service JobService {
   rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
+  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+}
+
+message ListJobsRequest {
+}
+
+message ListJobsResponse {
+  // List of registered job instances
+  repeated Job jobs = 1;
+}
+
+message Job {
+  // Kind of the job (e.g., "email", "data_processing")
+  string kind = 1;  
+  // Description of the job
+  string description = 2;
+  // Creation timestamp
+  google.protobuf.Timestamp created_at = 3;
 }
 
 message ScheduleJobRequest {
