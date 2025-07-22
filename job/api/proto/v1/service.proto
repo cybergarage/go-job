@@ -9,24 +9,136 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/any.proto";
 
 service JobService {
-  // Job Management
-  rpc CreateJob(CreateJobRequest) returns (CreateJobResponse);
-  rpc GetJob(GetJobRequest) returns (GetJobResponse);
-  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
-  rpc UpdateJob(UpdateJobRequest) returns (UpdateJobResponse);
-  rpc DeleteJob(DeleteJobRequest) returns (DeleteJobResponse);
-  
-  // Instance Management
   rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
-  rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse);
-  rpc ListInstances(ListInstancesRequest) returns (ListInstancesResponse);
-  rpc CancelInstance(CancelInstanceRequest) returns (CancelInstanceResponse);
+}
+
+message ScheduleJobRequest {
+  // Job kind to schedule (must be pre-registered)
+  string job_kind = 1;
   
-  // Manager Operations
-  rpc GetManagerStatus(GetManagerStatusRequest) returns (GetManagerStatusResponse);
-  rpc SetWorkerCount(SetWorkerCountRequest) returns (SetWorkerCountResponse);
+  // Arguments to pass to the job executor
+  repeated google.protobuf.Any arguments = 2;
   
-  // History & Logs
-  rpc GetInstanceHistory(GetInstanceHistoryRequest) returns (GetInstanceHistoryResponse);
-  rpc GetInstanceLogs(GetInstanceLogsRequest) returns (GetInstanceLogsResponse);
+  // Optional scheduling configuration
+  optional Schedule schedule = 3;
+  
+  // Optional policy overrides
+  optional Policy policy = 4;
+  
+  // Optional metadata for the job instance
+  map<string, string> metadata = 5;
+  
+  // Optional request ID for idempotency
+  optional string request_id = 6;
+}
+
+// Schedule configuration for when to run the job
+message Schedule {
+  oneof schedule_type {
+    // Schedule at a specific time
+    google.protobuf.Timestamp schedule_at = 1;
+    // Schedule using cron expression
+    string cron_spec = 2;
+    // Schedule immediately (default)
+    bool immediate = 3;
+  }
+}
+
+// Policy configuration for job execution
+message Policy {
+  // Maximum number of retry attempts
+  optional int32 max_retries = 1;
+  
+  // Job priority (higher values = higher priority)
+  optional int32 priority = 2;
+  
+  // Execution timeout
+  optional google.protobuf.Duration timeout = 3;
+  
+  // Backoff strategy for retries
+  optional BackoffStrategy backoff = 4;
+}
+
+// Backoff strategy for retry delays
+message BackoffStrategy {
+  oneof strategy_type {
+    // Fixed delay between retries
+    google.protobuf.Duration fixed_delay = 1;
+    // Exponential backoff configuration
+    ExponentialBackoff exponential = 2;
+    // Linear backoff configuration
+    LinearBackoff linear = 3;
+  }
+}
+
+message ExponentialBackoff {
+  // Base delay duration
+  google.protobuf.Duration base_delay = 1;
+  // Maximum delay duration
+  optional google.protobuf.Duration max_delay = 2;
+  // Multiplier for each retry (default: 2.0)
+  optional double multiplier = 3;
+}
+
+message LinearBackoff {
+  // Increment delay for each retry
+  google.protobuf.Duration increment = 1;
+  // Maximum delay duration
+  optional google.protobuf.Duration max_delay = 2;
+}
+
+message ScheduleJobResponse {
+  // Scheduled job instance
+  JobInstance instance = 1;
+  
+  // Status message
+  string message = 2;
+}
+
+// Job instance representation
+message JobInstance {
+  // Unique instance identifier
+  string uuid = 1;
+  
+  // Job kind
+  string job_kind = 2;
+  
+  // Current state
+  JobState state = 3;
+  
+  // Job arguments
+  repeated google.protobuf.Any arguments = 4;
+  
+  // Execution results (if completed)
+  repeated google.protobuf.Any results = 5;
+  
+  // Error information (if failed)
+  optional string error = 6;
+  
+  // Instance metadata
+  map<string, string> metadata = 7;
+  
+  // Timestamps
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  optional google.protobuf.Timestamp scheduled_at = 10;
+  optional google.protobuf.Timestamp started_at = 11;
+  optional google.protobuf.Timestamp completed_at = 12;
+  
+  // Retry information
+  int32 retry_count = 13;
+  int32 max_retries = 14;
+}
+
+// Job state enumeration
+enum JobState {
+  JOB_STATE_UNSPECIFIED = 0;
+  JOB_STATE_CREATED = 1;
+  JOB_STATE_SCHEDULED = 2;
+  JOB_STATE_PROCESSING = 4;
+  JOB_STATE_CANCELLED = 8;
+  JOB_STATE_TIMED_OUT = 16;
+  JOB_STATE_COMPLETED = 32;
+  JOB_STATE_TERMINATED = 64;
+  JOB_STATE_FAILED = 128;
 }
