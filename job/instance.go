@@ -225,6 +225,13 @@ func (ji *jobInstance) Process() ([]any, error) {
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	ji.state = state
+	switch state {
+	case JobCompleted:
+		ji.completedAt = time.Now()
+	case JobTerminated:
+		ji.terminatedAt = time.Now()
+	}
+
 	optMap := ji.OptionMap()
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -238,7 +245,13 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 			return fmt.Errorf("invalid option type for UpdateState: %T", opt)
 		}
 	}
-	return ji.history.LogProcessState(ji, state, WithStateOption(optMap))
+
+	err := ji.history.LogProcessState(ji, state, WithStateOption(optMap))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // History returns the history of state changes for the job instance.
