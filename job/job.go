@@ -64,6 +64,10 @@ func WithDescription(desc string) JobOption {
 
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
+	return newJob(opts...)
+}
+
+func newJob(opts ...any) (*job, error) {
 	j := &job{
 		kind:         "",
 		desc:         "",

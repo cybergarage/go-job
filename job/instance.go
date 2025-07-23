@@ -72,7 +72,7 @@ type Instance interface {
 }
 
 type jobInstance struct {
-	job     Job
+	job     *job
 	uuid    uuid.UUID
 	state   JobState
 	attempt int
@@ -149,8 +149,12 @@ func WithResultError(err error) InstanceOption {
 
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
+	job, err := newJob()
+	if err != nil {
+		return nil, err
+	}
 	ji := &jobInstance{
-		job:          nil, // Default to nil, must be set by options
+		job:          job,
 		uuid:         uuid.New(),
 		state:        JobCreated,
 		attempt:      0,
@@ -171,6 +175,8 @@ func NewInstance(opts ...any) (Instance, error) {
 			if err := opt(ji); err != nil {
 				return nil, err
 			}
+		case JobOption:
+			opt(ji.job)
 		case HandlerOption:
 			opt(ji.handler)
 		case ScheduleOption:
