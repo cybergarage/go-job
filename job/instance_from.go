@@ -31,7 +31,8 @@ func NewInstancesFromQueue(queue Queue) ([]Instance, error) {
 func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 	jiOptsMap := make(map[uuid.UUID][]any)
 	for _, state := range history {
-		jiOpts, ok := jiOptsMap[state.UUID()]
+		uuid := state.UUID()
+		jiOpts, ok := jiOptsMap[uuid]
 		if !ok {
 			jiOpts = make([]any, 0)
 			jiOpts = append(jiOpts, WithUUID(state.UUID()))
@@ -55,7 +56,7 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 				jiOpts = append(jiOpts, WithResultError(err))
 			}
 		}
-		jiOptsMap[state.UUID()] = jiOpts
+		jiOptsMap[uuid] = jiOpts
 	}
 	jiList := make([]Instance, 0, len(jiOptsMap))
 	for _, instanceOpts := range jiOptsMap {
