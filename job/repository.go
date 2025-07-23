@@ -48,6 +48,7 @@ type repository struct {
 	History
 }
 
+// NewRepository creates a new instance of Repository with the given options.
 func NewRepository(opts ...RepositoryOption) *repository {
 	repo := &repository{
 		store:     NewLocalStore(),
