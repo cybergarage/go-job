@@ -26,3 +26,8 @@ func NewInstanceMap() InstanceMap {
 func NewInstanceMapWith(m map[string]any) InstanceMap {
 	return InstanceMap(m)
 }
+
+// Map returns a map representation of the instance map.
+func (im InstanceMap) Map() map[string]any {
+	return map[string]any(im)
+}
