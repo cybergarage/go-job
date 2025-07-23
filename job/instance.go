@@ -91,6 +91,14 @@ type jobInstance struct {
 // InstanceOption defines a function that configures a job instance.
 type InstanceOption func(*jobInstance) error
 
+// WithUUID sets the unique identifier for the job instance.
+func WithUUID(uuid uuid.UUID) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.uuid = uuid
+		return nil
+	}
+}
+
 // WithInstanceHistory sets the history for the job instance.
 func WithInstanceHistory(history History) InstanceOption {
 	return func(ji *jobInstance) error {
