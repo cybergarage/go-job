@@ -14,6 +14,10 @@
 
 package job
 
+import (
+	"fmt"
+)
+
 const (
 	uuidKey       = "uuid"
 	kindKey       = "kind"
@@ -38,6 +42,29 @@ func NewInstanceMap() InstanceMap {
 // NewInstanceMap creates a new instance with the provideed map.
 func NewInstanceMapWith(m map[string]any) InstanceMap {
 	return InstanceMap(m)
+}
+
+// ResultSet returns the result set from the instance map if it exists.
+func (im InstanceMap) ResultSet() (ResultSet, bool) {
+	if rs, ok := im[resultSetKey]; ok {
+		if resultSet, ok := rs.(ResultSet); ok {
+			return resultSet, true
+		}
+	}
+	return nil, false
+}
+
+// Error returns the error from the instance map if it exists.
+func (im InstanceMap) Error() (error, bool) {
+	if err, ok := im[errorKey]; ok {
+		if errVal, ok := err.(error); ok {
+			return errVal, true
+		}
+		if errStr, ok := err.(string); ok {
+			return fmt.Errorf("%s", errStr), true
+		}
+	}
+	return nil, false
 }
 
 // Map returns a map representation of the instance map.
