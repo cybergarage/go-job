@@ -102,6 +102,14 @@ func (s *localStore) LookupInstanceHistory(ctx context.Context, job Instance) (I
 	return records, nil
 }
 
+// ListInstanceHistory lists all state records for all job instances.
+func (s *localStore) ListInstanceHistory(ctx context.Context) (InstanceHistory, error) {
+	if len(s.history) == 0 {
+		return nil, nil
+	}
+	return s.history, nil
+}
+
 // ClearInstanceHistory clears all state records for a job instance.
 func (s *localStore) ClearInstanceHistory(ctx context.Context) error {
 	s.history = []InstanceState{}
