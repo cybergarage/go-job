@@ -20,15 +20,6 @@ enum JobState {
   JOB_STATE_TERMINATED = 64;
 }
 
-service JobService {
-  rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
-  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (stream Job);
-  rpc LookupInstances(Query) returns (stream JobInstance);
-}
-
-message ListRegisteredJobsRequest {
-}
-
 message Job {
   // Kind of the job (e.g., "email", "data_processing")
   string kind = 1;  
@@ -38,12 +29,46 @@ message Job {
   google.protobuf.Timestamp registered_at = 3;
 }
 
+// Job instance representation
+message JobInstance {
+  // Unique instance identifier
+  string uuid = 1;
+  // Job kind
+  string kind = 2;
+  // Current state
+  JobState state = 3;  
+  // Job arguments
+  repeated google.protobuf.Any arguments = 4;
+  // Execution results (if completed)
+  repeated google.protobuf.Any results = 5;  
+  // Error information (if failed)
+  optional string error = 6;
+  // Timestamps
+  optional google.protobuf.Timestamp created_at = 8;
+  optional google.protobuf.Timestamp scheduled_at = 10;
+  optional google.protobuf.Timestamp processed_at = 11;
+  optional google.protobuf.Timestamp completed_at = 12;
+  optional google.protobuf.Timestamp terminated_at = 13;
+  optional google.protobuf.Timestamp cancelled_at = 14;
+  optional google.protobuf.Timestamp timeouted_at = 15;
+}
+
 message Query {
   // Filter by job kind
   string kind = 1;
   // Filter by job state
   JobState state = 2;
 }
+
+service JobService {
+  rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
+  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (stream Job);
+  rpc LookupInstances(Query) returns (stream JobInstance);
+}
+
+message ListRegisteredJobsRequest {
+}
+
 
 message ScheduleJobRequest {
   // Job kind to schedule (must be pre-registered)
@@ -126,39 +151,4 @@ message ScheduleJobResponse {
   
   // Status message
   string message = 2;
-}
-
-// Job instance representation
-message JobInstance {
-  // Unique instance identifier
-  string uuid = 1;
-  // Job kind
-  string kind = 2;
-  // Current state
-  JobState state = 3;
-  
-  // Job arguments
-  repeated google.protobuf.Any arguments = 4;
-  
-  // Execution results (if completed)
-  repeated google.protobuf.Any results = 5;
-  
-  // Error information (if failed)
-  optional string error = 6;
-  
-  // Instance metadata
-  map<string, string> metadata = 7;
-  
-  // Timestamps
-  optional google.protobuf.Timestamp created_at = 8;
-  optional google.protobuf.Timestamp scheduled_at = 10;
-  optional google.protobuf.Timestamp processed_at = 11;
-  optional google.protobuf.Timestamp completed_at = 12;
-  optional google.protobuf.Timestamp terminated_at = 13;
-  optional google.protobuf.Timestamp cancelled_at = 14;
-  optional google.protobuf.Timestamp timeouted_at = 15;
-
-  // Retry information
-  int32 retry_count = 16;
-  int32 max_retries = 17;
 }
