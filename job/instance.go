@@ -277,9 +277,9 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	for _, opt := range opts {
 		switch opt := opt.(type) {
 		case error:
-			optMap["error"] = opt.Error()
+			optMap[errorKey] = opt.Error()
 		case ResultSet:
-			optMap["result"] = NewResultWith(opt).String()
+			optMap[resultSetKey] = NewResultWith(opt).String()
 		case map[string]any:
 			optMap = encoding.MergeMaps(optMap, opt)
 		default:
@@ -325,9 +325,9 @@ func (ji *jobInstance) IsRetriable() bool {
 func (ji *jobInstance) Map() map[string]any {
 	return encoding.MergeMaps(
 		map[string]any{
-			"kind":  ji.Kind(),
-			"uuid":  ji.uuid.String(),
-			"state": ji.State().String(),
+			kindKey:  ji.Kind(),
+			uuidKey:  ji.uuid.String(),
+			stateKey: ji.State().String(),
 		},
 		ji.OptionMap())
 }

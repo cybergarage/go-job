@@ -19,10 +19,14 @@ import (
 	"fmt"
 )
 
+const (
+	ErrorKey = "error"
+)
+
 // UnmarshalToMap converts any struct to map[string]any using JSON marshaling/unmarshaling.
 func UnmarshalToMap(s any) map[string]any {
 	errMap := func(err error) map[string]any {
-		return map[string]any{"error": fmt.Sprintf("%T (%v)", s, err.Error())}
+		return map[string]any{ErrorKey: fmt.Sprintf("%T (%v)", s, err.Error())}
 	}
 	jsonData, err := json.Marshal(s)
 	if err != nil {
@@ -41,7 +45,7 @@ func UnmarshalToMap(s any) map[string]any {
 // UnmarshalJSONToMap converts a JSON string to map[string]any.
 func UnmarshalJSONToMap(jsonStr string) map[string]any {
 	errMap := func(err error) map[string]any {
-		return map[string]any{"error": fmt.Sprintf("JSON parse error: %v", err.Error())}
+		return map[string]any{ErrorKey: fmt.Sprintf("JSON parse error: %v", err.Error())}
 	}
 
 	var m map[string]any

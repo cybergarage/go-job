@@ -116,7 +116,7 @@ func (j *job) Schedule() Schedule {
 // Map returns a map representation of the job.
 func (j *job) Map() map[string]any {
 	return map[string]any{
-		"kind": j.kind,
+		kindKey: j.kind,
 	}
 }
 

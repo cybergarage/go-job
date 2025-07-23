@@ -57,7 +57,7 @@ func (args *arguments) Arguments() []any {
 // Map returns the arguments as a map.
 func (args *arguments) Map() map[string]any {
 	return map[string]any{
-		"args": args.String(),
+		argsKey: args.String(),
 	}
 }
 

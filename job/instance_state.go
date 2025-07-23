@@ -103,10 +103,10 @@ func (state *instanceState) Options() map[string]any {
 // Map returns a map representation of the instance state.
 func (state *instanceState) Map() map[string]any {
 	m := map[string]any{
-		"kind":      state.kind,
-		"uuid":      state.uuid.String(),
-		"timestamp": state.ts,
-		"state":     state.state.String(),
+		kindKey:      state.kind,
+		uuidKey:      state.uuid.String(),
+		timestampKey: state.ts,
+		stateKey:     state.state.String(),
 	}
 	m = encoding.MergeMaps(m, state.opts)
 	return m

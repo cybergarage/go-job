@@ -14,6 +14,21 @@
 
 package job
 
+import "github.com/cybergarage/go-job/job/encoding"
+
+const (
+	uuidKey       = "uuid"
+	kindKey       = "kind"
+	timestampKey  = "timestamp"
+	stateKey      = "state"
+	errorKey      = encoding.ErrorKey
+	resultSetKey  = "result_set"
+	argsKey       = "args"
+	maxRetriesKey = "max_retries"
+	priorityKey   = "priority"
+	timeoutKey    = "timeout"
+)
+
 // InstanceMap is a map representation of a job instance.
 type InstanceMap map[string]any
 

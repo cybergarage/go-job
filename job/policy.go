@@ -173,7 +173,7 @@ func (p *policy) Backoff() time.Duration {
 // Map returns a map representation of the job instance.
 func (p *policy) Map() map[string]any {
 	m := map[string]any{
-		"max_retries": p.MaxRetries(),
+		maxRetriesKey: p.MaxRetries(),
 		"priority":    p.Priority(),
 		"timeout":     p.Timeout().String(),
 	}
