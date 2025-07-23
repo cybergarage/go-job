@@ -147,6 +147,14 @@ func WithResultError(err error) InstanceOption {
 	}
 }
 
+// WithState sets the state of the job instance.
+func WithState(state JobState) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.state = state
+		return nil
+	}
+}
+
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	job, err := newJob()
