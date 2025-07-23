@@ -129,7 +129,7 @@ func (w *worker) Run() error {
 						rescheduleInstance(ji)
 					}
 				} else {
-					err = ji.UpdateState(JobTerminated)
+					err = ji.UpdateState(JobTerminated, err)
 					if err != nil {
 						logError(ji, err)
 					}
