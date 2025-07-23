@@ -34,10 +34,16 @@ type Instance interface {
 	CreatedAt() time.Time
 	// ScheduledAt returns the time when the job instance was scheduled.
 	ScheduledAt() time.Time
+	// ProcessedAt returns the time when the job instance started processing.
+	ProcessedAt() time.Time
 	// CompletedAt returns the completed time when the job instance was completed.
 	CompletedAt() time.Time
 	// TerminatedAt returns the terminated time when the job instance was terminated.
 	TerminatedAt() time.Time
+	// CancelledAt returns the time when the job instance was cancelled.
+	CancelledAt() time.Time
+	// TimeoutedAt returns the time when the job instance timed out.
+	TimeoutedAt() time.Time
 	// Arguments returns the arguments for the job instance.
 	Arguments() []any
 	// Policy returns the policy associated with the job instance.
@@ -84,6 +90,9 @@ type jobInstance struct {
 	createdAt    time.Time
 	completedAt  time.Time
 	terminatedAt time.Time
+	processedAt  time.Time
+	cancelledAt  time.Time
+	timeoutedAt  time.Time
 	resultSet    ResultSet
 	resultError  error
 }
@@ -115,6 +124,14 @@ func WithCreatedAt(t time.Time) InstanceOption {
 	}
 }
 
+// WithProcessingAt sets the time when the job instance started processing.
+func WithProcessingAt(t time.Time) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.processedAt = t
+		return nil
+	}
+}
+
 // WithCompletedAt sets the time when the job instance was completed.
 func WithCompletedAt(t time.Time) InstanceOption {
 	return func(ji *jobInstance) error {
@@ -127,6 +144,22 @@ func WithCompletedAt(t time.Time) InstanceOption {
 func WithTerminatedAt(t time.Time) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.terminatedAt = t
+		return nil
+	}
+}
+
+// WithCancelledAt sets the time when the job instance was cancelled.
+func WithCancelledAt(t time.Time) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.cancelledAt = t
+		return nil
+	}
+}
+
+// WithTimeoutedAt sets the time when the job instance timed out.
+func WithTimeoutedAt(t time.Time) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.timeoutedAt = t
 		return nil
 	}
 }
@@ -174,6 +207,9 @@ func NewInstance(opts ...any) (Instance, error) {
 		createdAt:    time.Now(),
 		completedAt:  time.Time{},
 		terminatedAt: time.Time{},
+		processedAt:  time.Time{},
+		cancelledAt:  time.Time{},
+		timeoutedAt:  time.Time{},
 		resultSet:    nil,
 		resultError:  nil,
 	}
@@ -252,6 +288,11 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 	return ji.schedule.Next()
 }
 
+// ProcessedAt returns the time when the job instance started processing.
+func (ji *jobInstance) ProcessedAt() time.Time {
+	return ji.processedAt
+}
+
 // CompletedAt returns the completed time when the job instance was completed.
 func (ji *jobInstance) CompletedAt() time.Time {
 	return ji.completedAt
@@ -260,6 +301,16 @@ func (ji *jobInstance) CompletedAt() time.Time {
 // TerminatedAt returns the terminated time when the job instance was terminated.
 func (ji *jobInstance) TerminatedAt() time.Time {
 	return ji.terminatedAt
+}
+
+// CancelledAt returns the time when the job instance was cancelled.
+func (ji *jobInstance) CancelledAt() time.Time {
+	return ji.cancelledAt
+}
+
+// TimeoutedAt returns the time when the job instance timed out.
+func (ji *jobInstance) TimeoutedAt() time.Time {
+	return ji.timeoutedAt
 }
 
 // Process executes the job instance executor with the arguments provided in the context.
