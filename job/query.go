@@ -62,7 +62,7 @@ func NewQuery(opts ...QueryOption) Query {
 	q := &query{
 		uuid:  uuid.Nil,
 		kind:  "",
-		state: JobStateUnknown,
+		state: JobStateUnset,
 	}
 	for _, opt := range opts {
 		opt(q)
@@ -88,8 +88,8 @@ func (q *query) Kind() (string, bool) {
 
 // State returns the state of the job instance.
 func (q *query) State() (JobState, bool) {
-	if q.state == JobStateUnknown {
-		return JobStateUnknown, false
+	if q.state == JobStateUnset {
+		return JobStateUnset, false
 	}
 	return q.state, true
 }

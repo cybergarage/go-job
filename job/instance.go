@@ -164,7 +164,7 @@ func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
 		job:          job,
 		uuid:         uuid.New(),
-		state:        JobStateUnknown,
+		state:        JobStateUnset,
 		attempt:      0,
 		history:      newHistory(),
 		handler:      newHandler(),
@@ -201,7 +201,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		}
 	}
 
-	if ji.state == JobStateUnknown {
+	if ji.state == JobStateUnset {
 		err = ji.UpdateState(JobCreated)
 		if err != nil {
 			return nil, err
