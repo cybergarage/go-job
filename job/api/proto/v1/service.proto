@@ -150,13 +150,15 @@ message JobInstance {
   map<string, string> metadata = 7;
   
   // Timestamps
-  google.protobuf.Timestamp created_at = 8;
-  google.protobuf.Timestamp updated_at = 9;
+  optional google.protobuf.Timestamp created_at = 8;
   optional google.protobuf.Timestamp scheduled_at = 10;
-  optional google.protobuf.Timestamp started_at = 11;
+  optional google.protobuf.Timestamp processed_at = 11;
   optional google.protobuf.Timestamp completed_at = 12;
-  
+  optional google.protobuf.Timestamp terminated_at = 13;
+  optional google.protobuf.Timestamp cancelled_at = 14;
+  optional google.protobuf.Timestamp timeouted_at = 15;
+
   // Retry information
-  int32 retry_count = 13;
-  int32 max_retries = 14;
+  int32 retry_count = 16;
+  int32 max_retries = 17;
 }

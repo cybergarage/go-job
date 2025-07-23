@@ -800,14 +800,16 @@ type JobInstance struct {
 	// Instance metadata
 	Metadata map[string]string `protobuf:"bytes,7,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Timestamps
-	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	ScheduledAt *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=scheduled_at,json=scheduledAt,proto3,oneof" json:"scheduled_at,omitempty"`
-	StartedAt   *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=started_at,json=startedAt,proto3,oneof" json:"started_at,omitempty"`
-	CompletedAt *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	CreatedAt    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	ScheduledAt  *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=scheduled_at,json=scheduledAt,proto3,oneof" json:"scheduled_at,omitempty"`
+	ProcessedAt  *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=processed_at,json=processedAt,proto3,oneof" json:"processed_at,omitempty"`
+	CompletedAt  *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	TerminatedAt *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=terminated_at,json=terminatedAt,proto3,oneof" json:"terminated_at,omitempty"`
+	CancelledAt  *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
+	TimeoutedAt  *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=timeouted_at,json=timeoutedAt,proto3,oneof" json:"timeouted_at,omitempty"`
 	// Retry information
-	RetryCount    int32 `protobuf:"varint,13,opt,name=retry_count,json=retryCount,proto3" json:"retry_count,omitempty"`
-	MaxRetries    int32 `protobuf:"varint,14,opt,name=max_retries,json=maxRetries,proto3" json:"max_retries,omitempty"`
+	RetryCount    int32 `protobuf:"varint,16,opt,name=retry_count,json=retryCount,proto3" json:"retry_count,omitempty"`
+	MaxRetries    int32 `protobuf:"varint,17,opt,name=max_retries,json=maxRetries,proto3" json:"max_retries,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -898,13 +900,6 @@ func (x *JobInstance) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *JobInstance) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
 func (x *JobInstance) GetScheduledAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.ScheduledAt
@@ -912,9 +907,9 @@ func (x *JobInstance) GetScheduledAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *JobInstance) GetStartedAt() *timestamppb.Timestamp {
+func (x *JobInstance) GetProcessedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.StartedAt
+		return x.ProcessedAt
 	}
 	return nil
 }
@@ -922,6 +917,27 @@ func (x *JobInstance) GetStartedAt() *timestamppb.Timestamp {
 func (x *JobInstance) GetCompletedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CompletedAt
+	}
+	return nil
+}
+
+func (x *JobInstance) GetTerminatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.TerminatedAt
+	}
+	return nil
+}
+
+func (x *JobInstance) GetCancelledAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CancelledAt
+	}
+	return nil
+}
+
+func (x *JobInstance) GetTimeoutedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.TimeoutedAt
 	}
 	return nil
 }
@@ -1008,7 +1024,7 @@ const file_service_proto_rawDesc = "" +
 	"_max_delay\"`\n" +
 	"\x13ScheduleJobResponse\x12/\n" +
 	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\x93\x06\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xf4\a\n" +
 	"\vJobInstance\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12&\n" +
@@ -1016,27 +1032,31 @@ const file_service_proto_rawDesc = "" +
 	"\targuments\x18\x04 \x03(\v2\x14.google.protobuf.AnyR\targuments\x12.\n" +
 	"\aresults\x18\x05 \x03(\v2\x14.google.protobuf.AnyR\aresults\x12\x19\n" +
 	"\x05error\x18\x06 \x01(\tH\x00R\x05error\x88\x01\x01\x12=\n" +
-	"\bmetadata\x18\a \x03(\v2!.job.v1.JobInstance.MetadataEntryR\bmetadata\x129\n" +
+	"\bmetadata\x18\a \x03(\v2!.job.v1.JobInstance.MetadataEntryR\bmetadata\x12>\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
-	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12B\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x01R\tcreatedAt\x88\x01\x01\x12B\n" +
 	"\fscheduled_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampH\x01R\vscheduledAt\x88\x01\x01\x12>\n" +
-	"\n" +
-	"started_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampH\x02R\tstartedAt\x88\x01\x01\x12B\n" +
-	"\fcompleted_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x03R\vcompletedAt\x88\x01\x01\x12\x1f\n" +
-	"\vretry_count\x18\r \x01(\x05R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampH\x02R\vscheduledAt\x88\x01\x01\x12B\n" +
+	"\fprocessed_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampH\x03R\vprocessedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x04R\vcompletedAt\x88\x01\x01\x12D\n" +
+	"\rterminated_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampH\x05R\fterminatedAt\x88\x01\x01\x12B\n" +
+	"\fcancelled_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampH\x06R\vcancelledAt\x88\x01\x01\x12B\n" +
+	"\ftimeouted_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampH\aR\vtimeoutedAt\x88\x01\x01\x12\x1f\n" +
+	"\vretry_count\x18\x10 \x01(\x05R\n" +
 	"retryCount\x12\x1f\n" +
-	"\vmax_retries\x18\x0e \x01(\x05R\n" +
+	"\vmax_retries\x18\x11 \x01(\x05R\n" +
 	"maxRetries\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
-	"\x06_errorB\x0f\n" +
-	"\r_scheduled_atB\r\n" +
-	"\v_started_atB\x0f\n" +
-	"\r_completed_at*\xce\x01\n" +
+	"\x06_errorB\r\n" +
+	"\v_created_atB\x0f\n" +
+	"\r_scheduled_atB\x0f\n" +
+	"\r_processed_atB\x0f\n" +
+	"\r_completed_atB\x10\n" +
+	"\x0e_terminated_atB\x0f\n" +
+	"\r_cancelled_atB\x0f\n" +
+	"\r_timeouted_at*\xce\x01\n" +
 	"\bJobState\x12\x13\n" +
 	"\x0fJOB_STATE_UNSET\x10\x00\x12\x15\n" +
 	"\x11JOB_STATE_CREATED\x10\x01\x12\x17\n" +
@@ -1108,21 +1128,23 @@ var file_service_proto_depIdxs = []int32{
 	15, // 19: job.v1.JobInstance.results:type_name -> google.protobuf.Any
 	13, // 20: job.v1.JobInstance.metadata:type_name -> job.v1.JobInstance.MetadataEntry
 	14, // 21: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
-	14, // 22: job.v1.JobInstance.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 23: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
-	14, // 24: job.v1.JobInstance.started_at:type_name -> google.protobuf.Timestamp
-	14, // 25: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
-	4,  // 26: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
-	1,  // 27: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
-	3,  // 28: job.v1.JobService.LookupInstances:input_type -> job.v1.Query
-	10, // 29: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
-	2,  // 30: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.Job
-	11, // 31: job.v1.JobService.LookupInstances:output_type -> job.v1.JobInstance
-	29, // [29:32] is the sub-list for method output_type
-	26, // [26:29] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	14, // 22: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
+	14, // 23: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
+	14, // 24: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
+	14, // 25: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
+	14, // 26: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
+	14, // 27: job.v1.JobInstance.timeouted_at:type_name -> google.protobuf.Timestamp
+	4,  // 28: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
+	1,  // 29: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
+	3,  // 30: job.v1.JobService.LookupInstances:input_type -> job.v1.Query
+	10, // 31: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
+	2,  // 32: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.Job
+	11, // 33: job.v1.JobService.LookupInstances:output_type -> job.v1.JobInstance
+	31, // [31:34] is the sub-list for method output_type
+	28, // [28:31] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_service_proto_init() }
