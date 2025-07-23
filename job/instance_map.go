@@ -14,14 +14,12 @@
 
 package job
 
-import "github.com/cybergarage/go-job/job/encoding"
-
 const (
 	uuidKey       = "uuid"
 	kindKey       = "kind"
 	timestampKey  = "timestamp"
 	stateKey      = "state"
-	errorKey      = encoding.ErrorKey
+	errorKey      = "error"
 	resultSetKey  = "result_set"
 	argsKey       = "args"
 	maxRetriesKey = "max_retries"

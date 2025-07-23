@@ -19,42 +19,30 @@ import (
 	"fmt"
 )
 
-const (
-	ErrorKey = "error"
-)
-
 // UnmarshalToMap converts any struct to map[string]any using JSON marshaling/unmarshaling.
-func UnmarshalToMap(s any) map[string]any {
-	errMap := func(err error) map[string]any {
-		return map[string]any{ErrorKey: fmt.Sprintf("%T (%v)", s, err.Error())}
-	}
+func UnmarshalToMap(s any) (map[string]any, error) {
 	jsonData, err := json.Marshal(s)
 	if err != nil {
-		return errMap(err)
+		return nil, fmt.Errorf("JSON marshal error: %v", err)
 	}
 
 	var m map[string]any
 	err = json.Unmarshal(jsonData, &m)
 	if err != nil {
-		return errMap(err)
+		return nil, err
 	}
 
-	return m
+	return m, nil
 }
 
 // UnmarshalJSONToMap converts a JSON string to map[string]any.
-func UnmarshalJSONToMap(jsonStr string) map[string]any {
-	errMap := func(err error) map[string]any {
-		return map[string]any{ErrorKey: fmt.Sprintf("JSON parse error: %v", err.Error())}
-	}
-
+func UnmarshalJSONToMap(jsonStr string) (map[string]any, error) {
 	var m map[string]any
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {
-		return errMap(err)
+		return nil, fmt.Errorf("JSON parse error: %v", err.Error())
 	}
-
-	return m
+	return m, nil
 }
 
 // MergeMaps merges two maps into one, with values from m2 overwriting those in m1.
