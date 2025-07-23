@@ -150,7 +150,12 @@ func TestScheduleJobs(t *testing.T) {
 			if err != nil {
 				t.Errorf("Failed to lookup job instance: %v", err)
 			}
-			if len(instances) != 1 {
+			if len(instances) == 1 {
+				_, err := instances[0].ResultSet()
+				if err != nil {
+					t.Errorf("Expected job instance to have a result set, but got error: %v", err)
+				}
+			} else {
 				t.Errorf("Expected exactly one job instance, but got %d", len(instances))
 			}
 
