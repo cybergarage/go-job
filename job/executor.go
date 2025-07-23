@@ -25,7 +25,7 @@ import (
 type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
-func Execute(fn any, args ...any) (results []any, err error) {
+func Execute(fn any, args ...any) (results ResultSet, err error) {
 	fnObj := reflect.ValueOf(fn)
 	fnType := fnObj.Type()
 	if fnType.Kind() != reflect.Func {

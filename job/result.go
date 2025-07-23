@@ -18,16 +18,16 @@ import (
 	"fmt"
 )
 
-// Result represents the result of a job execution.
-type Result []any
+// ResultSet represents the result of a job execution.
+type ResultSet []any
 
 // NewResultWith creates a new Result instance with the provided values.
-func NewResultWith(values []any) Result {
-	return Result(values)
+func NewResultWith(values []any) ResultSet {
+	return ResultSet(values)
 }
 
 // String returns a string representation of the Result.
-func (r Result) String() string {
+func (r ResultSet) String() string {
 	if len(r) == 0 {
 		return "[]"
 	}
