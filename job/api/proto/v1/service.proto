@@ -8,17 +8,25 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/any.proto";
 
+// Job state enumeration
+enum JobState {
+  JOB_STATE_UNSET = 0;
+  JOB_STATE_CREATED = 1;
+  JOB_STATE_SCHEDULED = 2;
+  JOB_STATE_PROCESSING = 4;
+  JOB_STATE_CANCELLED = 8;
+  JOB_STATE_TIMED_OUT = 16;
+  JOB_STATE_COMPLETED = 32;
+  JOB_STATE_TERMINATED = 64;
+}
+
 service JobService {
   rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
-  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (stream Job);
+  rpc LookupInstances(Query) returns (stream JobInstance);
 }
 
-message ListJobsRequest {
-}
-
-message ListJobsResponse {
-  // List of registered job instances
-  repeated Job jobs = 1;
+message ListRegisteredJobsRequest {
 }
 
 message Job {
@@ -28,6 +36,13 @@ message Job {
   string description = 2;
   // Registered at timestamp
   google.protobuf.Timestamp registered_at = 3;
+}
+
+message Query {
+  // Filter by job kind
+  string kind = 1;
+  // Filter by job state
+  JobState state = 2;
 }
 
 message ScheduleJobRequest {
@@ -117,10 +132,8 @@ message ScheduleJobResponse {
 message JobInstance {
   // Unique instance identifier
   string uuid = 1;
-  
   // Job kind
   string kind = 2;
-  
   // Current state
   JobState state = 3;
   
@@ -146,17 +159,4 @@ message JobInstance {
   // Retry information
   int32 retry_count = 13;
   int32 max_retries = 14;
-}
-
-// Job state enumeration
-enum JobState {
-  JOB_STATE_UNSPECIFIED = 0;
-  JOB_STATE_CREATED = 1;
-  JOB_STATE_SCHEDULED = 2;
-  JOB_STATE_PROCESSING = 4;
-  JOB_STATE_CANCELLED = 8;
-  JOB_STATE_TIMED_OUT = 16;
-  JOB_STATE_COMPLETED = 32;
-  JOB_STATE_TERMINATED = 64;
-  JOB_STATE_FAILED = 128;
 }

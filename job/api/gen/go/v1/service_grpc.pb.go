@@ -21,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	JobService_ScheduleJob_FullMethodName = "/job.v1.JobService/ScheduleJob"
-	JobService_ListJobs_FullMethodName    = "/job.v1.JobService/ListJobs"
+	JobService_ScheduleJob_FullMethodName        = "/job.v1.JobService/ScheduleJob"
+	JobService_ListRegisteredJobs_FullMethodName = "/job.v1.JobService/ListRegisteredJobs"
+	JobService_LookupInstances_FullMethodName    = "/job.v1.JobService/LookupInstances"
 )
 
 // JobServiceClient is the client API for JobService service.
@@ -30,7 +31,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JobServiceClient interface {
 	ScheduleJob(ctx context.Context, in *ScheduleJobRequest, opts ...grpc.CallOption) (*ScheduleJobResponse, error)
-	ListJobs(ctx context.Context, in *ListJobsRequest, opts ...grpc.CallOption) (*ListJobsResponse, error)
+	ListRegisteredJobs(ctx context.Context, in *ListRegisteredJobsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Job], error)
+	LookupInstances(ctx context.Context, in *Query, opts ...grpc.CallOption) (grpc.ServerStreamingClient[JobInstance], error)
 }
 
 type jobServiceClient struct {
@@ -51,22 +53,51 @@ func (c *jobServiceClient) ScheduleJob(ctx context.Context, in *ScheduleJobReque
 	return out, nil
 }
 
-func (c *jobServiceClient) ListJobs(ctx context.Context, in *ListJobsRequest, opts ...grpc.CallOption) (*ListJobsResponse, error) {
+func (c *jobServiceClient) ListRegisteredJobs(ctx context.Context, in *ListRegisteredJobsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Job], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListJobsResponse)
-	err := c.cc.Invoke(ctx, JobService_ListJobs_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &JobService_ServiceDesc.Streams[0], JobService_ListRegisteredJobs_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[ListRegisteredJobsRequest, Job]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type JobService_ListRegisteredJobsClient = grpc.ServerStreamingClient[Job]
+
+func (c *jobServiceClient) LookupInstances(ctx context.Context, in *Query, opts ...grpc.CallOption) (grpc.ServerStreamingClient[JobInstance], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &JobService_ServiceDesc.Streams[1], JobService_LookupInstances_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[Query, JobInstance]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type JobService_LookupInstancesClient = grpc.ServerStreamingClient[JobInstance]
 
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility.
 type JobServiceServer interface {
 	ScheduleJob(context.Context, *ScheduleJobRequest) (*ScheduleJobResponse, error)
-	ListJobs(context.Context, *ListJobsRequest) (*ListJobsResponse, error)
+	ListRegisteredJobs(*ListRegisteredJobsRequest, grpc.ServerStreamingServer[Job]) error
+	LookupInstances(*Query, grpc.ServerStreamingServer[JobInstance]) error
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -80,8 +111,11 @@ type UnimplementedJobServiceServer struct{}
 func (UnimplementedJobServiceServer) ScheduleJob(context.Context, *ScheduleJobRequest) (*ScheduleJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScheduleJob not implemented")
 }
-func (UnimplementedJobServiceServer) ListJobs(context.Context, *ListJobsRequest) (*ListJobsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListJobs not implemented")
+func (UnimplementedJobServiceServer) ListRegisteredJobs(*ListRegisteredJobsRequest, grpc.ServerStreamingServer[Job]) error {
+	return status.Errorf(codes.Unimplemented, "method ListRegisteredJobs not implemented")
+}
+func (UnimplementedJobServiceServer) LookupInstances(*Query, grpc.ServerStreamingServer[JobInstance]) error {
+	return status.Errorf(codes.Unimplemented, "method LookupInstances not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 func (UnimplementedJobServiceServer) testEmbeddedByValue()                    {}
@@ -122,23 +156,27 @@ func _JobService_ScheduleJob_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _JobService_ListJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListJobsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _JobService_ListRegisteredJobs_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListRegisteredJobsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(JobServiceServer).ListJobs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: JobService_ListJobs_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JobServiceServer).ListJobs(ctx, req.(*ListJobsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(JobServiceServer).ListRegisteredJobs(m, &grpc.GenericServerStream[ListRegisteredJobsRequest, Job]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type JobService_ListRegisteredJobsServer = grpc.ServerStreamingServer[Job]
+
+func _JobService_LookupInstances_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Query)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(JobServiceServer).LookupInstances(m, &grpc.GenericServerStream[Query, JobInstance]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type JobService_LookupInstancesServer = grpc.ServerStreamingServer[JobInstance]
 
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -151,11 +189,18 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ScheduleJob",
 			Handler:    _JobService_ScheduleJob_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "ListJobs",
-			Handler:    _JobService_ListJobs_Handler,
+			StreamName:    "ListRegisteredJobs",
+			Handler:       _JobService_ListRegisteredJobs_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "LookupInstances",
+			Handler:       _JobService_LookupInstances_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "service.proto",
 }
