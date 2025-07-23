@@ -17,7 +17,6 @@ package jobtest
 import (
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/cybergarage/go-job/job"
 )
@@ -81,7 +80,6 @@ func TestScheduleJobs(t *testing.T) {
 			// Register a test job
 
 			resHandler := func(ji job.Instance, responses []any) {
-				t.Logf("Job %s executed with responses: %v", ji.Kind(), responses)
 				ji.Infof("%v", responses)
 				wg.Done()
 			}
@@ -108,8 +106,6 @@ func TestScheduleJobs(t *testing.T) {
 			}
 			if len(regJobs) != 1 {
 				t.Errorf("Expected exactly one registered job, but got %d", len(regJobs))
-			} else {
-				t.Logf("Registered jobs: %v", regJobs)
 			}
 
 			// Schedule the job with arguments
@@ -169,15 +165,9 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected at least one history record for job instance")
 			}
 
-			for i, record := range history {
-				t.Logf("Record %d: Timestamp=%s, State=%s, %s", i, record.Timestamp().Format(time.RFC3339), record.State(), record.String())
-			}
-
 			lastState := history.LastState()
 			if lastState == nil {
 				t.Errorf("Expected last state to be non-nil, but it was nil")
-			} else {
-				t.Logf("Last state of job instance: %s", lastState.State())
 			}
 			if lastState.State() != job.JobCompleted {
 				t.Errorf("Expected last state to be %s, but got %s", job.JobCompleted, lastState.State())
