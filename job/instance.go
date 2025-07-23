@@ -92,7 +92,7 @@ type jobInstance struct {
 	terminatedAt time.Time
 	processedAt  time.Time
 	cancelledAt  time.Time
-	timeoutedAt  time.Time
+	timedoutAt   time.Time
 	resultSet    ResultSet
 	resultError  error
 }
@@ -156,10 +156,10 @@ func WithCancelledAt(t time.Time) InstanceOption {
 	}
 }
 
-// WithTimeoutedAt sets the time when the job instance timed out.
-func WithTimeoutedAt(t time.Time) InstanceOption {
+// WithTimedOutAt sets the time when the job instance timed out.
+func WithTimedOutAt(t time.Time) InstanceOption {
 	return func(ji *jobInstance) error {
-		ji.timeoutedAt = t
+		ji.timedoutAt = t
 		return nil
 	}
 }
@@ -209,7 +209,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		terminatedAt: time.Time{},
 		processedAt:  time.Time{},
 		cancelledAt:  time.Time{},
-		timeoutedAt:  time.Time{},
+		timedoutAt:   time.Time{},
 		resultSet:    nil,
 		resultError:  nil,
 	}
@@ -310,7 +310,7 @@ func (ji *jobInstance) CancelledAt() time.Time {
 
 // TimeoutedAt returns the time when the job instance timed out.
 func (ji *jobInstance) TimeoutedAt() time.Time {
-	return ji.timeoutedAt
+	return ji.timedoutAt
 }
 
 // Process executes the job instance executor with the arguments provided in the context.
