@@ -133,6 +133,17 @@ func TestScheduleJobs(t *testing.T) {
 
 			mgr.StopWithWait()
 
+			// Check instance state
+
+			if ji.State() != job.JobCompleted {
+				t.Errorf("Expected job instance %s to be completed, but got %s", ji.UUID(), ji.State())
+			}
+
+			_, err = ji.ResultSet()
+			if err != nil {
+				t.Errorf("Expected job instance %s to have a result set, but got error: %v", ji.UUID(), err)
+			}
+
 			// Check instance records record
 
 			history, err := mgr.LookupHistory(ji)

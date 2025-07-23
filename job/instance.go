@@ -34,9 +34,9 @@ type Instance interface {
 	CreatedAt() time.Time
 	// ScheduledAt returns the time when the job instance was scheduled.
 	ScheduledAt() time.Time
-	// CompletedAt returns the time when the job instance was completed.
+	// CompletedAt returns the completed time when the job instance was completed.
 	CompletedAt() time.Time
-	// TerminatedAt returns the time when the job instance was terminated.
+	// TerminatedAt returns the terminated time when the job instance was terminated.
 	TerminatedAt() time.Time
 	// Arguments returns the arguments for the job instance.
 	Arguments() []any
@@ -46,6 +46,9 @@ type Instance interface {
 	UpdateState(state JobState, opts ...any) error
 	// Process executes the job instance executor with the arguments provided in the context.
 	Process() ([]any, error)
+	// Result returns the processed result set of the executor when the job instance is completed or terminated.
+	// If the job instance is not completed or terminated, it returns an error.
+	ResultSet() (ResultSet, error)
 	// History returns the history of state changes for the job instance.
 	History() (InstanceHistory, error)
 	// Logs returns the logs for the job instance.
@@ -81,6 +84,8 @@ type jobInstance struct {
 	createdAt    time.Time
 	completedAt  time.Time
 	terminatedAt time.Time
+	resultSet    ResultSet
+	resultError  error
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -118,6 +123,22 @@ func WithTerminatedAt(t time.Time) InstanceOption {
 	}
 }
 
+// WithResultSet sets the result set for the job instance.
+func WithResultSet(rs ResultSet) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.resultSet = rs
+		return nil
+	}
+}
+
+// WithResultError sets the error for the job instance result.
+func WithResultError(err error) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.resultError = err
+		return nil
+	}
+}
+
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
@@ -133,6 +154,8 @@ func NewInstance(opts ...any) (Instance, error) {
 		createdAt:    time.Now(),
 		completedAt:  time.Time{},
 		terminatedAt: time.Time{},
+		resultSet:    nil,
+		resultError:  nil,
 	}
 	for _, opt := range opts {
 		switch opt := opt.(type) {
@@ -198,12 +221,12 @@ func (ji *jobInstance) ScheduledAt() time.Time {
 	return ji.schedule.Next()
 }
 
-// CompletedAt returns the time when the job instance was completed.
+// CompletedAt returns the completed time when the job instance was completed.
 func (ji *jobInstance) CompletedAt() time.Time {
 	return ji.completedAt
 }
 
-// TerminatedAt returns the time when the job instance was terminated.
+// TerminatedAt returns the terminated time when the job instance was terminated.
 func (ji *jobInstance) TerminatedAt() time.Time {
 	return ji.terminatedAt
 }
@@ -214,12 +237,22 @@ func (ji *jobInstance) Process() ([]any, error) {
 		return nil, fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
 	ji.attempt++
-	res, err := ji.handler.Execute(ji.Arguments()...)
-	if err == nil {
-		ji.handler.HandleResponse(ji, res)
-		return res, nil
+	ji.resultSet, ji.resultError = ji.handler.Execute(ji.Arguments()...)
+	if ji.resultError == nil {
+		ji.handler.HandleResponse(ji, ji.resultSet)
+		return ji.resultSet, nil
 	}
-	return nil, ji.handler.HandleError(ji, err)
+	ji.resultError = ji.handler.HandleError(ji, ji.resultError)
+	return nil, ji.resultError
+}
+
+// Result returns the processed result set of the executor when the job instance is completed or terminated.
+// If the job instance is not completed or terminated, it returns an error.
+func (ji *jobInstance) ResultSet() (ResultSet, error) {
+	if ji.state != JobCompleted && ji.state != JobTerminated {
+		return nil, fmt.Errorf("job instance %s is not completed or terminated, current state: %s", ji.uuid, ji.state)
+	}
+	return ji.resultSet, ji.resultError
 }
 
 // UpdateState updates the state of the job instance and records the state change.
@@ -237,7 +270,7 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 		switch opt := opt.(type) {
 		case error:
 			optMap["error"] = opt.Error()
-		case Result:
+		case ResultSet:
 			optMap["result"] = NewResultWith(opt).String()
 		case map[string]any:
 			optMap = encoding.MergeMaps(optMap, opt)
