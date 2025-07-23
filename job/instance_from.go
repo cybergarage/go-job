@@ -37,13 +37,22 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 			jiOpts = append(jiOpts, WithUUID(state.UUID()))
 			jiOpts = append(jiOpts, WithKind(state.Kind()))
 		}
+		stateMap := NewInstanceMapWith(state.Map())
 		switch state.State() {
 		case JobCreated:
 			jiOpts = append(jiOpts, WithCreatedAt(state.Timestamp()))
 		case JobCompleted:
 			jiOpts = append(jiOpts, WithCompletedAt(state.Timestamp()))
+			resultSet, ok := stateMap.ResultSet()
+			if ok {
+				jiOpts = append(jiOpts, WithResultSet(resultSet))
+			}
 		case JobTerminated:
 			jiOpts = append(jiOpts, WithTerminatedAt(state.Timestamp()))
+			err, ok := stateMap.Error()
+			if ok {
+				jiOpts = append(jiOpts, WithResultError(err))
+			}
 		}
 		jiOptsMap[state.UUID()] = jiOpts
 	}
