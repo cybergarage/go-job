@@ -62,7 +62,7 @@ func NewQuery(opts ...QueryOption) Query {
 	q := &query{
 		uuid:  uuid.Nil,
 		kind:  "",
-		state: JobState	Unknown,
+		state: JobStateUnknown,
 	}
 	for _, opt := range opts {
 		opt(q)
