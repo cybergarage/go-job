@@ -1,6 +1,16 @@
 @startuml
 [*] --> Created : Job created
 
+state Cancelled #LightGray
+note right of Cancelled
+  This state is planned for future release.
+end note
+
+state TimedOut #LightGray
+note right of TimedOut
+  This state is planned for future release.
+end note
+
 Created --> Scheduled : Job queued
 Scheduled --> Processing : Job started
 Processing --> Completed : Job completed successfully
@@ -10,8 +20,10 @@ Completed --> Scheduled : [if recurring] Reschedule
 Terminated --> [*] : [if not retriable and not recurring]
 Completed --> [*] : [if not recurring]
 
-' Processing --> Cancelled : Job was cancelled
-' Processing --> TimedOut : Job exceeded time limit
-' TimedOut --> Scheduled : [if retriable] Reschedule
+Processing --> Cancelled : Job was cancelled
+Cancelled --> [*]
+Processing --> TimedOut : Job exceeded time limit
+TimedOut --> Scheduled : [if retriable] Reschedule
+TimedOut --> [*] : [if not retriable and not recurring]
 
 @enduml
