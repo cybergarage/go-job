@@ -177,6 +177,12 @@ func NewInstance(opts ...any) (Instance, error) {
 		resultSet:    nil,
 		resultError:  nil,
 	}
+
+	err = ji.UpdateState(JobCreated)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, opt := range opts {
 		switch opt := opt.(type) {
 		case InstanceOption:
@@ -199,7 +205,8 @@ func NewInstance(opts ...any) (Instance, error) {
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
 	}
-	return ji, ji.UpdateState(JobCreated)
+
+	return ji, nil
 }
 
 // Job returns the job associated with this job instance.
