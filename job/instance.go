@@ -164,7 +164,7 @@ func NewInstance(opts ...any) (Instance, error) {
 	ji := &jobInstance{
 		job:          job,
 		uuid:         uuid.New(),
-		state:        JobCreated,
+		state:        JobStateUnknown,
 		attempt:      0,
 		history:      newHistory(),
 		handler:      newHandler(),
@@ -176,11 +176,6 @@ func NewInstance(opts ...any) (Instance, error) {
 		terminatedAt: time.Time{},
 		resultSet:    nil,
 		resultError:  nil,
-	}
-
-	err = ji.UpdateState(JobCreated)
-	if err != nil {
-		return nil, err
 	}
 
 	for _, opt := range opts {
@@ -203,6 +198,13 @@ func NewInstance(opts ...any) (Instance, error) {
 			ji.arguments = opt
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
+		}
+	}
+
+	if ji.state == JobStateUnknown {
+		err = ji.UpdateState(JobCreated)
+		if err != nil {
+			return nil, err
 		}
 	}
 
