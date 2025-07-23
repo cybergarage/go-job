@@ -18,6 +18,8 @@
 - Distributed Store
   - etcd plugin added
 
+## v0.9.2 (2025-07-XX)
+
 ## v0.9.1 (2025-07-20)
 ### ✨ Features
 - Extended `Manager` to clear instance logs and history
