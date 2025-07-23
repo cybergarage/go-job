@@ -144,6 +144,16 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected job instance %s to have a result set, but got error: %v", ji.UUID(), err)
 			}
 
+			// Lookup job instance
+
+			instances, err := mgr.LookupInstances(job.NewQuery(job.WithQueryUUID(ji.UUID())))
+			if err != nil {
+				t.Errorf("Failed to lookup job instance: %v", err)
+			}
+			if len(instances) != 1 {
+				t.Errorf("Expected exactly one job instance, but got %d", len(instances))
+			}
+
 			// Check instance records record
 
 			history, err := mgr.LookupHistory(ji)
