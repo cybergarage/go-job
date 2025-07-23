@@ -34,6 +34,10 @@ type Manager interface {
 	ScheduleJob(job Job, opts ...any) (Instance, error)
 	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
 	ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error)
+	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
+	ListInstances() ([]Instance, error)
+	// LookupInstances looks up all job instances which match the specified query.
+	LookupInstances(query Query) ([]Instance, error)
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
@@ -126,23 +130,67 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	return ji, nil
 }
 
-// Start starts the job manager.
-func (mgr *manager) Start() error {
-	logger.Infof("%s/%s", ProductName, Version)
+// ListInstance returns a list of all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
+func (mgr *manager) ListInstance() ([]Instance, error) {
+	return mgr.LookupInstances(NewQuery())
+}
 
-	starters := []func() error{
-		mgr.workerGroup.Start,
+// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
+func (mgr *manager) ListInstances() ([]Instance, error) {
+	return mgr.LookupInstances(NewQuery())
+}
+
+// LookupInstances looks up all job instances which match the specified query.
+func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
+	mgr.Lock()
+	defer mgr.Unlock()
+
+	matchQuery := func(instance Instance, query Query) bool {
+		if query == nil {
+			return true // No query means match all
+		}
+		uuid, ok := query.UUID()
+		if ok && (instance.UUID() != uuid) {
+			return false
+		}
+		kind, ok := query.Kind()
+		if ok && (instance.Kind() != kind) {
+			return false
+		}
+		state, ok := query.State()
+		if ok && (instance.State() != state) {
+			return false
+		}
+		return true
 	}
-	var errs error
-	for _, starter := range starters {
-		if err := starter(); err != nil {
-			errs = errors.Join(errs, err)
+
+	var instances []Instance
+
+	queueInstances, err := NewInstancesFromQueue(mgr.Queue())
+	if err != nil {
+		return nil, err
+	}
+	for _, instance := range queueInstances {
+		if matchQuery(instance, query) {
+			instances = append(instances, instance)
 		}
 	}
 
-	logger.Infof("%s (PID:%d) started", ProductName, os.Getpid())
+	history, err := mgr.ListHistory()
+	if err != nil {
+		return nil, err
+	}
+	historyInstances, err := NewInstancesFromHistory(history)
+	if err != nil {
+		return nil, err
+	}
+	for _, instance := range historyInstances {
+		if matchQuery(instance, query) {
+			instances = append(instances, instance)
+		}
+	}
 
-	return errs
+	return instances, nil
 }
 
 // Stop stops the job manager.
