@@ -36,9 +36,22 @@ const (
 	JobTerminated
 )
 
+const (
+	// JobStateActive represents the active states of a job (scheduled or processing).
+	JobStateActive = JobScheduled | JobProcessing
+	// JobStateFinal represents the final states of a job (cancelled, timed out, completed, or terminated).
+	JobStateFinal = JobCancelled | JobTimedOut | JobCompleted | JobTerminated
+	// JobStateError represents the error states of a job (cancelled, timed out, or terminated).
+	JobStateError = JobCancelled | JobTimedOut | JobTerminated
+	// JobStateSuccess represents the successful completion of a job.
+	JobStateSuccess = JobCompleted
+	// JobStateAll represents all possible states of a job.
+	JobStateAll = JobCreated | JobScheduled | JobProcessing | JobCancelled | JobTimedOut | JobCompleted | JobTerminated
+)
+
 // Is checks if the current JobState is equal to the provided state.
 func (s JobState) Is(state JobState) bool {
-	return s == state
+	return (s & state) != 0
 }
 
 // String returns the string representation of the JobState.
@@ -59,6 +72,6 @@ func (s JobState) String() string {
 	case JobTerminated:
 		return "Terminated"
 	default:
-		return "Unknown"
+		return "Unset"
 	}
 }
