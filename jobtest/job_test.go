@@ -147,7 +147,14 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Failed to lookup job instance: %v", err)
 			}
 			if len(instances) == 1 {
-				_, err := instances[0].ResultSet()
+				if instances[0].UUID() != ji.UUID() {
+					t.Errorf("Expected job instance UUID %s, but got %s", ji.UUID(), instances[0].UUID())
+				}
+				args := instances[0].Arguments()
+				if len(args) != len(tt.args) {
+					t.Errorf("Expected %d arguments, but got %d", len(tt.args), len(args))
+				}
+				_, err = instances[0].ResultSet()
 				if err != nil {
 					t.Errorf("Expected job instance to have a result set, but got error: %v", err)
 				}
