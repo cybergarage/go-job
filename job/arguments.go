@@ -113,7 +113,20 @@ func (args *arguments) Map() map[string]any {
 	}
 }
 
+// JSONString returns the arguments as a JSON string.
+func (args *arguments) JSONString() (string, error) {
+	b, err := json.Marshal(args.Args)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal arguments to JSON: %w", err)
+	}
+	return string(b), nil
+}
+
 // String returns a string representation of the arguments.
 func (args *arguments) String() string {
+	jsonStr, err := args.JSONString()
+	if err == nil {
+		return jsonStr
+	}
 	return fmt.Sprintf("%v", args.Args)
 }
