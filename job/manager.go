@@ -121,12 +121,17 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := ji.UpdateState(JobCreated, opts...); err != nil {
+		return nil, err
+	}
+
 	if err := mgr.ScheduleJobInstance(ji); err != nil {
 		return nil, err
 	}
-	if err := ji.UpdateState(JobScheduled); err != nil {
+	if err := ji.UpdateState(JobScheduled, opts...); err != nil {
 		return nil, err
 	}
+
 	return ji, nil
 }
 

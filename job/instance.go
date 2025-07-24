@@ -237,13 +237,6 @@ func NewInstance(opts ...any) (Instance, error) {
 		}
 	}
 
-	if ji.state == JobStateUnset {
-		err = ji.UpdateState(JobCreated)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return ji, nil
 }
 
@@ -356,8 +349,6 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 			optMap[resultSetKey] = NewResultWith(opt).String()
 		case map[string]any:
 			optMap = encoding.MergeMaps(optMap, opt)
-		default:
-			return fmt.Errorf("invalid option type for UpdateState: %T", opt)
 		}
 	}
 
