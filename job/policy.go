@@ -174,8 +174,8 @@ func (p *policy) Backoff() time.Duration {
 func (p *policy) Map() map[string]any {
 	m := map[string]any{
 		maxRetriesKey: p.MaxRetries(),
-		"priority":    p.Priority(),
-		"timeout":     p.Timeout().String(),
+		priorityKey:   p.Priority(),
+		timeoutKey:    p.Timeout().String(),
 	}
 	return m
 }
