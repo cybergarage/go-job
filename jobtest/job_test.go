@@ -140,7 +140,7 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected job instance %s to have a result set, but got error: %v", ji.UUID(), err)
 			}
 
-			// Lookup job instance
+			// Lookup job instance (from history)
 
 			instances, err := mgr.LookupInstances(job.NewQuery(job.WithQueryUUID(ji.UUID())))
 			if err != nil {
@@ -158,11 +158,15 @@ func TestScheduleJobs(t *testing.T) {
 				if err != nil {
 					t.Errorf("Expected job instance to have a result set, but got error: %v", err)
 				}
+				attempt := instances[0].AttemptCount()
+				if attempt != 1 {
+					t.Errorf("Expected job instance to have 1 attempt, but got %d", attempt)
+				}
 			} else {
 				t.Errorf("Expected exactly one job instance, but got %d", len(instances))
 			}
 
-			// Check instance records record
+			// Check instance history
 
 			history, err := mgr.LookupHistory(ji)
 			if err != nil {
