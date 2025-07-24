@@ -25,7 +25,7 @@ const (
 	stateKey      = "state"
 	errorKey      = "error"
 	resultSetKey  = "result_set"
-	argsKey       = "args"
+	argumentsKey  = "arguments"
 	maxRetriesKey = "max_retries"
 	priorityKey   = "priority"
 	timeoutKey    = "timeout"
@@ -42,6 +42,18 @@ func NewInstanceMap() InstanceMap {
 // NewInstanceMap creates a new instance with the provideed map.
 func NewInstanceMapWith(m map[string]any) InstanceMap {
 	return InstanceMap(m)
+}
+
+// Arguments returns the arguments from the instance map if they exist.
+func (im InstanceMap) Arguments() (Arguments, bool) {
+	if args, ok := im[argumentsKey]; ok {
+		v, err := NewArgumentsFrom(args)
+		if err != nil {
+			return nil, false
+		}
+		return v, true
+	}
+	return nil, false
 }
 
 // ResultSet returns the result set from the instance map if it exists.
