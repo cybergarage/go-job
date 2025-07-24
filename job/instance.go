@@ -116,6 +116,14 @@ func WithInstanceHistory(history History) InstanceOption {
 	}
 }
 
+// WithAttemptCount sets the number of attempts made to process the job instance.
+func WithAttemptCount(attempt int) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.attempt = attempt
+		return nil
+	}
+}
+
 // WithCreatedAt sets the time when the job instance was created.
 func WithCreatedAt(t time.Time) InstanceOption {
 	return func(ji *jobInstance) error {

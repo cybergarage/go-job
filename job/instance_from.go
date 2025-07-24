@@ -29,6 +29,7 @@ func NewInstancesFromQueue(queue Queue) ([]Instance, error) {
 
 // NewInstancesFromStore creates a list of job instances from the provided store.
 func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
+	attempt := 0
 	jiOptsMap := make(map[uuid.UUID][]any)
 	for _, state := range history {
 		uuid := state.UUID()
@@ -50,7 +51,9 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 		case JobScheduled:
 			jiOpts = append(jiOpts, WithScheduleAt(state.Timestamp()))
 		case JobProcessing:
+			attempt++
 			jiOpts = append(jiOpts, WithProcessingAt(state.Timestamp()))
+			jiOpts = append(jiOpts, WithAttemptCount(attempt))
 		case JobCompleted:
 			jiOpts = append(jiOpts, WithCompletedAt(state.Timestamp()))
 			resultSet, ok := stateMap.ResultSet()
@@ -70,6 +73,7 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 		}
 		jiOptsMap[uuid] = jiOpts
 	}
+
 	jiList := make([]Instance, 0, len(jiOptsMap))
 	for _, instanceOpts := range jiOptsMap {
 		ji, err := NewInstance(instanceOpts...)
@@ -78,5 +82,6 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 		}
 		jiList = append(jiList, ji)
 	}
+
 	return jiList, nil
 }
