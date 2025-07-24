@@ -12,7 +12,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
-	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -26,7 +25,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Job state enumeration
 type JobState int32
 
 const (
@@ -98,7 +96,11 @@ type Job struct {
 	// Description of the job
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Registered at timestamp
-	RegisteredAt  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
+	RegisteredAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
+	// Schedule using cron expression
+	CronSpec *string `protobuf:"bytes,11,opt,name=cron_spec,json=cronSpec,proto3,oneof" json:"cron_spec,omitempty"`
+	// Schedule at a specific time
+	ScheduleAt    *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=schedule_at,json=scheduleAt,proto3,oneof" json:"schedule_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -154,29 +156,42 @@ func (x *Job) GetRegisteredAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// Job instance representation
+func (x *Job) GetCronSpec() string {
+	if x != nil && x.CronSpec != nil {
+		return *x.CronSpec
+	}
+	return ""
+}
+
+func (x *Job) GetScheduleAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ScheduleAt
+	}
+	return nil
+}
+
 type JobInstance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique instance identifier
 	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	// Job kind
+	// Kind
 	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Current state
-	State JobState `protobuf:"varint,3,opt,name=state,proto3,enum=job.v1.JobState" json:"state,omitempty"`
+	State JobState `protobuf:"varint,11,opt,name=state,proto3,enum=job.v1.JobState" json:"state,omitempty"`
 	// Job arguments
-	Arguments []*anypb.Any `protobuf:"bytes,4,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	Arguments []*anypb.Any `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
 	// Execution results (if completed)
-	Results []*anypb.Any `protobuf:"bytes,5,rep,name=results,proto3" json:"results,omitempty"`
+	Results []*anypb.Any `protobuf:"bytes,13,rep,name=results,proto3" json:"results,omitempty"`
 	// Error information (if failed)
-	Error *string `protobuf:"bytes,6,opt,name=error,proto3,oneof" json:"error,omitempty"`
-	// Timestamps
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
-	ScheduledAt   *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=scheduled_at,json=scheduledAt,proto3,oneof" json:"scheduled_at,omitempty"`
-	ProcessedAt   *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=processed_at,json=processedAt,proto3,oneof" json:"processed_at,omitempty"`
-	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
-	TerminatedAt  *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=terminated_at,json=terminatedAt,proto3,oneof" json:"terminated_at,omitempty"`
-	CancelledAt   *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
-	TimeoutedAt   *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=timeouted_at,json=timeoutedAt,proto3,oneof" json:"timeouted_at,omitempty"`
+	Error         *string                `protobuf:"bytes,14,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,21,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	ScheduledAt   *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=scheduled_at,json=scheduledAt,proto3,oneof" json:"scheduled_at,omitempty"`
+	ProcessedAt   *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=processed_at,json=processedAt,proto3,oneof" json:"processed_at,omitempty"`
+	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	TerminatedAt  *timestamppb.Timestamp `protobuf:"bytes,25,opt,name=terminated_at,json=terminatedAt,proto3,oneof" json:"terminated_at,omitempty"`
+	CancelledAt   *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
+	TimedOutAt    *timestamppb.Timestamp `protobuf:"bytes,27,opt,name=timed_out_at,json=timedOutAt,proto3,oneof" json:"timed_out_at,omitempty"`
+	AttemptCount  int32                  `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3" json:"attempt_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -295,124 +310,35 @@ func (x *JobInstance) GetCancelledAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *JobInstance) GetTimeoutedAt() *timestamppb.Timestamp {
+func (x *JobInstance) GetTimedOutAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.TimeoutedAt
+		return x.TimedOutAt
 	}
 	return nil
 }
 
-type Query struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Filter by job kind
-	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	// Filter by job state
-	State         JobState `protobuf:"varint,2,opt,name=state,proto3,enum=job.v1.JobState" json:"state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Query) Reset() {
-	*x = Query{}
-	mi := &file_service_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Query) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Query) ProtoMessage() {}
-
-func (x *Query) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[2]
+func (x *JobInstance) GetAttemptCount() int32 {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.AttemptCount
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Query.ProtoReflect.Descriptor instead.
-func (*Query) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Query) GetKind() string {
-	if x != nil {
-		return x.Kind
-	}
-	return ""
-}
-
-func (x *Query) GetState() JobState {
-	if x != nil {
-		return x.State
-	}
-	return JobState_JOB_STATE_UNSET
-}
-
-type ListRegisteredJobsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListRegisteredJobsRequest) Reset() {
-	*x = ListRegisteredJobsRequest{}
-	mi := &file_service_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListRegisteredJobsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListRegisteredJobsRequest) ProtoMessage() {}
-
-func (x *ListRegisteredJobsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListRegisteredJobsRequest.ProtoReflect.Descriptor instead.
-func (*ListRegisteredJobsRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{3}
+	return 0
 }
 
 type ScheduleJobRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Job kind to schedule (must be pre-registered)
-	JobKind string `protobuf:"bytes,1,opt,name=job_kind,json=jobKind,proto3" json:"job_kind,omitempty"`
+	// Kind to schedule (must be pre-registered)
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// Priority (lower values = higher priority)
+	Priority *int32 `protobuf:"varint,11,opt,name=priority,proto3,oneof" json:"priority,omitempty"`
 	// Arguments to pass to the job executor
-	Arguments []*anypb.Any `protobuf:"bytes,2,rep,name=arguments,proto3" json:"arguments,omitempty"`
-	// Optional scheduling configuration
-	Schedule *Schedule `protobuf:"bytes,3,opt,name=schedule,proto3,oneof" json:"schedule,omitempty"`
-	// Optional policy overrides
-	Policy *Policy `protobuf:"bytes,4,opt,name=policy,proto3,oneof" json:"policy,omitempty"`
-	// Optional metadata for the job instance
-	Metadata map[string]string `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Optional request ID for idempotency
-	RequestId     *string `protobuf:"bytes,6,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`
+	Arguments     []*anypb.Any `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ScheduleJobRequest) Reset() {
 	*x = ScheduleJobRequest{}
-	mi := &file_service_proto_msgTypes[4]
+	mi := &file_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -424,7 +350,7 @@ func (x *ScheduleJobRequest) String() string {
 func (*ScheduleJobRequest) ProtoMessage() {}
 
 func (x *ScheduleJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[4]
+	mi := &file_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -437,14 +363,21 @@ func (x *ScheduleJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScheduleJobRequest.ProtoReflect.Descriptor instead.
 func (*ScheduleJobRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{4}
+	return file_service_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *ScheduleJobRequest) GetJobKind() string {
+func (x *ScheduleJobRequest) GetKind() string {
 	if x != nil {
-		return x.JobKind
+		return x.Kind
 	}
 	return ""
+}
+
+func (x *ScheduleJobRequest) GetPriority() int32 {
+	if x != nil && x.Priority != nil {
+		return *x.Priority
+	}
+	return 0
 }
 
 func (x *ScheduleJobRequest) GetArguments() []*anypb.Any {
@@ -454,441 +387,17 @@ func (x *ScheduleJobRequest) GetArguments() []*anypb.Any {
 	return nil
 }
 
-func (x *ScheduleJobRequest) GetSchedule() *Schedule {
-	if x != nil {
-		return x.Schedule
-	}
-	return nil
-}
-
-func (x *ScheduleJobRequest) GetPolicy() *Policy {
-	if x != nil {
-		return x.Policy
-	}
-	return nil
-}
-
-func (x *ScheduleJobRequest) GetMetadata() map[string]string {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
-func (x *ScheduleJobRequest) GetRequestId() string {
-	if x != nil && x.RequestId != nil {
-		return *x.RequestId
-	}
-	return ""
-}
-
-// Schedule configuration for when to run the job
-type Schedule struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to ScheduleType:
-	//
-	//	*Schedule_ScheduleAt
-	//	*Schedule_CronSpec
-	//	*Schedule_Immediate
-	ScheduleType  isSchedule_ScheduleType `protobuf_oneof:"schedule_type"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Schedule) Reset() {
-	*x = Schedule{}
-	mi := &file_service_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Schedule) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Schedule) ProtoMessage() {}
-
-func (x *Schedule) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Schedule.ProtoReflect.Descriptor instead.
-func (*Schedule) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *Schedule) GetScheduleType() isSchedule_ScheduleType {
-	if x != nil {
-		return x.ScheduleType
-	}
-	return nil
-}
-
-func (x *Schedule) GetScheduleAt() *timestamppb.Timestamp {
-	if x != nil {
-		if x, ok := x.ScheduleType.(*Schedule_ScheduleAt); ok {
-			return x.ScheduleAt
-		}
-	}
-	return nil
-}
-
-func (x *Schedule) GetCronSpec() string {
-	if x != nil {
-		if x, ok := x.ScheduleType.(*Schedule_CronSpec); ok {
-			return x.CronSpec
-		}
-	}
-	return ""
-}
-
-func (x *Schedule) GetImmediate() bool {
-	if x != nil {
-		if x, ok := x.ScheduleType.(*Schedule_Immediate); ok {
-			return x.Immediate
-		}
-	}
-	return false
-}
-
-type isSchedule_ScheduleType interface {
-	isSchedule_ScheduleType()
-}
-
-type Schedule_ScheduleAt struct {
-	// Schedule at a specific time
-	ScheduleAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=schedule_at,json=scheduleAt,proto3,oneof"`
-}
-
-type Schedule_CronSpec struct {
-	// Schedule using cron expression
-	CronSpec string `protobuf:"bytes,2,opt,name=cron_spec,json=cronSpec,proto3,oneof"`
-}
-
-type Schedule_Immediate struct {
-	// Schedule immediately (default)
-	Immediate bool `protobuf:"varint,3,opt,name=immediate,proto3,oneof"`
-}
-
-func (*Schedule_ScheduleAt) isSchedule_ScheduleType() {}
-
-func (*Schedule_CronSpec) isSchedule_ScheduleType() {}
-
-func (*Schedule_Immediate) isSchedule_ScheduleType() {}
-
-// Policy configuration for job execution
-type Policy struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Maximum number of retry attempts
-	MaxRetries *int32 `protobuf:"varint,1,opt,name=max_retries,json=maxRetries,proto3,oneof" json:"max_retries,omitempty"`
-	// Job priority (higher values = higher priority)
-	Priority *int32 `protobuf:"varint,2,opt,name=priority,proto3,oneof" json:"priority,omitempty"`
-	// Execution timeout
-	Timeout *durationpb.Duration `protobuf:"bytes,3,opt,name=timeout,proto3,oneof" json:"timeout,omitempty"`
-	// Backoff strategy for retries
-	Backoff       *BackoffStrategy `protobuf:"bytes,4,opt,name=backoff,proto3,oneof" json:"backoff,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Policy) Reset() {
-	*x = Policy{}
-	mi := &file_service_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Policy) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Policy) ProtoMessage() {}
-
-func (x *Policy) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Policy.ProtoReflect.Descriptor instead.
-func (*Policy) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *Policy) GetMaxRetries() int32 {
-	if x != nil && x.MaxRetries != nil {
-		return *x.MaxRetries
-	}
-	return 0
-}
-
-func (x *Policy) GetPriority() int32 {
-	if x != nil && x.Priority != nil {
-		return *x.Priority
-	}
-	return 0
-}
-
-func (x *Policy) GetTimeout() *durationpb.Duration {
-	if x != nil {
-		return x.Timeout
-	}
-	return nil
-}
-
-func (x *Policy) GetBackoff() *BackoffStrategy {
-	if x != nil {
-		return x.Backoff
-	}
-	return nil
-}
-
-// Backoff strategy for retry delays
-type BackoffStrategy struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to StrategyType:
-	//
-	//	*BackoffStrategy_FixedDelay
-	//	*BackoffStrategy_Exponential
-	//	*BackoffStrategy_Linear
-	StrategyType  isBackoffStrategy_StrategyType `protobuf_oneof:"strategy_type"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *BackoffStrategy) Reset() {
-	*x = BackoffStrategy{}
-	mi := &file_service_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *BackoffStrategy) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BackoffStrategy) ProtoMessage() {}
-
-func (x *BackoffStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BackoffStrategy.ProtoReflect.Descriptor instead.
-func (*BackoffStrategy) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *BackoffStrategy) GetStrategyType() isBackoffStrategy_StrategyType {
-	if x != nil {
-		return x.StrategyType
-	}
-	return nil
-}
-
-func (x *BackoffStrategy) GetFixedDelay() *durationpb.Duration {
-	if x != nil {
-		if x, ok := x.StrategyType.(*BackoffStrategy_FixedDelay); ok {
-			return x.FixedDelay
-		}
-	}
-	return nil
-}
-
-func (x *BackoffStrategy) GetExponential() *ExponentialBackoff {
-	if x != nil {
-		if x, ok := x.StrategyType.(*BackoffStrategy_Exponential); ok {
-			return x.Exponential
-		}
-	}
-	return nil
-}
-
-func (x *BackoffStrategy) GetLinear() *LinearBackoff {
-	if x != nil {
-		if x, ok := x.StrategyType.(*BackoffStrategy_Linear); ok {
-			return x.Linear
-		}
-	}
-	return nil
-}
-
-type isBackoffStrategy_StrategyType interface {
-	isBackoffStrategy_StrategyType()
-}
-
-type BackoffStrategy_FixedDelay struct {
-	// Fixed delay between retries
-	FixedDelay *durationpb.Duration `protobuf:"bytes,1,opt,name=fixed_delay,json=fixedDelay,proto3,oneof"`
-}
-
-type BackoffStrategy_Exponential struct {
-	// Exponential backoff configuration
-	Exponential *ExponentialBackoff `protobuf:"bytes,2,opt,name=exponential,proto3,oneof"`
-}
-
-type BackoffStrategy_Linear struct {
-	// Linear backoff configuration
-	Linear *LinearBackoff `protobuf:"bytes,3,opt,name=linear,proto3,oneof"`
-}
-
-func (*BackoffStrategy_FixedDelay) isBackoffStrategy_StrategyType() {}
-
-func (*BackoffStrategy_Exponential) isBackoffStrategy_StrategyType() {}
-
-func (*BackoffStrategy_Linear) isBackoffStrategy_StrategyType() {}
-
-type ExponentialBackoff struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Base delay duration
-	BaseDelay *durationpb.Duration `protobuf:"bytes,1,opt,name=base_delay,json=baseDelay,proto3" json:"base_delay,omitempty"`
-	// Maximum delay duration
-	MaxDelay *durationpb.Duration `protobuf:"bytes,2,opt,name=max_delay,json=maxDelay,proto3,oneof" json:"max_delay,omitempty"`
-	// Multiplier for each retry (default: 2.0)
-	Multiplier    *float64 `protobuf:"fixed64,3,opt,name=multiplier,proto3,oneof" json:"multiplier,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ExponentialBackoff) Reset() {
-	*x = ExponentialBackoff{}
-	mi := &file_service_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ExponentialBackoff) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ExponentialBackoff) ProtoMessage() {}
-
-func (x *ExponentialBackoff) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ExponentialBackoff.ProtoReflect.Descriptor instead.
-func (*ExponentialBackoff) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *ExponentialBackoff) GetBaseDelay() *durationpb.Duration {
-	if x != nil {
-		return x.BaseDelay
-	}
-	return nil
-}
-
-func (x *ExponentialBackoff) GetMaxDelay() *durationpb.Duration {
-	if x != nil {
-		return x.MaxDelay
-	}
-	return nil
-}
-
-func (x *ExponentialBackoff) GetMultiplier() float64 {
-	if x != nil && x.Multiplier != nil {
-		return *x.Multiplier
-	}
-	return 0
-}
-
-type LinearBackoff struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Increment delay for each retry
-	Increment *durationpb.Duration `protobuf:"bytes,1,opt,name=increment,proto3" json:"increment,omitempty"`
-	// Maximum delay duration
-	MaxDelay      *durationpb.Duration `protobuf:"bytes,2,opt,name=max_delay,json=maxDelay,proto3,oneof" json:"max_delay,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LinearBackoff) Reset() {
-	*x = LinearBackoff{}
-	mi := &file_service_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LinearBackoff) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LinearBackoff) ProtoMessage() {}
-
-func (x *LinearBackoff) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LinearBackoff.ProtoReflect.Descriptor instead.
-func (*LinearBackoff) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *LinearBackoff) GetIncrement() *durationpb.Duration {
-	if x != nil {
-		return x.Increment
-	}
-	return nil
-}
-
-func (x *LinearBackoff) GetMaxDelay() *durationpb.Duration {
-	if x != nil {
-		return x.MaxDelay
-	}
-	return nil
-}
-
 type ScheduleJobResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Scheduled job instance
-	Instance *JobInstance `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
-	// Status message
-	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Instance      *JobInstance `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ScheduleJobResponse) Reset() {
 	*x = ScheduleJobResponse{}
-	mi := &file_service_proto_msgTypes[10]
+	mi := &file_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -900,7 +409,7 @@ func (x *ScheduleJobResponse) String() string {
 func (*ScheduleJobResponse) ProtoMessage() {}
 
 func (x *ScheduleJobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[10]
+	mi := &file_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -913,7 +422,7 @@ func (x *ScheduleJobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScheduleJobResponse.ProtoReflect.Descriptor instead.
 func (*ScheduleJobResponse) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{10}
+	return file_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ScheduleJobResponse) GetInstance() *JobInstance {
@@ -923,38 +432,263 @@ func (x *ScheduleJobResponse) GetInstance() *JobInstance {
 	return nil
 }
 
-func (x *ScheduleJobResponse) GetMessage() string {
+type ListRegisteredJobsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRegisteredJobsRequest) Reset() {
+	*x = ListRegisteredJobsRequest{}
+	mi := &file_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRegisteredJobsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRegisteredJobsRequest) ProtoMessage() {}
+
+func (x *ListRegisteredJobsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[4]
 	if x != nil {
-		return x.Message
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRegisteredJobsRequest.ProtoReflect.Descriptor instead.
+func (*ListRegisteredJobsRequest) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{4}
+}
+
+type ListRegisteredJobsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of registered jobs
+	Jobs          []*Job `protobuf:"bytes,1,rep,name=jobs,proto3" json:"jobs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRegisteredJobsResponse) Reset() {
+	*x = ListRegisteredJobsResponse{}
+	mi := &file_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRegisteredJobsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRegisteredJobsResponse) ProtoMessage() {}
+
+func (x *ListRegisteredJobsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRegisteredJobsResponse.ProtoReflect.Descriptor instead.
+func (*ListRegisteredJobsResponse) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListRegisteredJobsResponse) GetJobs() []*Job {
+	if x != nil {
+		return x.Jobs
+	}
+	return nil
+}
+
+type Query struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Filter by job kind
+	Kind *string `protobuf:"bytes,1,opt,name=kind,proto3,oneof" json:"kind,omitempty"`
+	// Filter by job state
+	State         *JobState `protobuf:"varint,2,opt,name=state,proto3,enum=job.v1.JobState,oneof" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Query) Reset() {
+	*x = Query{}
+	mi := &file_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Query) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Query) ProtoMessage() {}
+
+func (x *Query) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Query.ProtoReflect.Descriptor instead.
+func (*Query) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Query) GetKind() string {
+	if x != nil && x.Kind != nil {
+		return *x.Kind
 	}
 	return ""
+}
+
+func (x *Query) GetState() JobState {
+	if x != nil && x.State != nil {
+		return *x.State
+	}
+	return JobState_JOB_STATE_UNSET
+}
+
+type LookupInstancesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Lookup query
+	Query         *Query `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LookupInstancesRequest) Reset() {
+	*x = LookupInstancesRequest{}
+	mi := &file_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LookupInstancesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LookupInstancesRequest) ProtoMessage() {}
+
+func (x *LookupInstancesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LookupInstancesRequest.ProtoReflect.Descriptor instead.
+func (*LookupInstancesRequest) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *LookupInstancesRequest) GetQuery() *Query {
+	if x != nil {
+		return x.Query
+	}
+	return nil
+}
+
+type LookupInstancesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of job instances
+	Instances     []*JobInstance `protobuf:"bytes,1,rep,name=instances,proto3" json:"instances,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LookupInstancesResponse) Reset() {
+	*x = LookupInstancesResponse{}
+	mi := &file_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LookupInstancesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LookupInstancesResponse) ProtoMessage() {}
+
+func (x *LookupInstancesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LookupInstancesResponse.ProtoReflect.Descriptor instead.
+func (*LookupInstancesResponse) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LookupInstancesResponse) GetInstances() []*JobInstance {
+	if x != nil {
+		return x.Instances
+	}
+	return nil
 }
 
 var File_service_proto protoreflect.FileDescriptor
 
 const file_service_proto_rawDesc = "" +
 	"\n" +
-	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x19google/protobuf/any.proto\"|\n" +
+	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\"\xfe\x01\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12?\n" +
-	"\rregistered_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\fregisteredAt\"\xb6\x06\n" +
+	"\rregistered_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\fregisteredAt\x12 \n" +
+	"\tcron_spec\x18\v \x01(\tH\x00R\bcronSpec\x88\x01\x01\x12@\n" +
+	"\vschedule_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x01R\n" +
+	"scheduleAt\x88\x01\x01B\f\n" +
+	"\n" +
+	"_cron_specB\x0e\n" +
+	"\f_schedule_at\"\xda\x06\n" +
 	"\vJobInstance\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12&\n" +
-	"\x05state\x18\x03 \x01(\x0e2\x10.job.v1.JobStateR\x05state\x122\n" +
-	"\targuments\x18\x04 \x03(\v2\x14.google.protobuf.AnyR\targuments\x12.\n" +
-	"\aresults\x18\x05 \x03(\v2\x14.google.protobuf.AnyR\aresults\x12\x19\n" +
-	"\x05error\x18\x06 \x01(\tH\x00R\x05error\x88\x01\x01\x12>\n" +
+	"\x05state\x18\v \x01(\x0e2\x10.job.v1.JobStateR\x05state\x122\n" +
+	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targuments\x12.\n" +
+	"\aresults\x18\r \x03(\v2\x14.google.protobuf.AnyR\aresults\x12\x19\n" +
+	"\x05error\x18\x0e \x01(\tH\x00R\x05error\x88\x01\x01\x12>\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x01R\tcreatedAt\x88\x01\x01\x12B\n" +
-	"\fscheduled_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampH\x02R\vscheduledAt\x88\x01\x01\x12B\n" +
-	"\fprocessed_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampH\x03R\vprocessedAt\x88\x01\x01\x12B\n" +
-	"\fcompleted_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\x04R\vcompletedAt\x88\x01\x01\x12D\n" +
-	"\rterminated_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampH\x05R\fterminatedAt\x88\x01\x01\x12B\n" +
-	"\fcancelled_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampH\x06R\vcancelledAt\x88\x01\x01\x12B\n" +
-	"\ftimeouted_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampH\aR\vtimeoutedAt\x88\x01\x01B\b\n" +
+	"created_at\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\tcreatedAt\x88\x01\x01\x12B\n" +
+	"\fscheduled_at\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampH\x02R\vscheduledAt\x88\x01\x01\x12B\n" +
+	"\fprocessed_at\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampH\x03R\vprocessedAt\x88\x01\x01\x12B\n" +
+	"\fcompleted_at\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampH\x04R\vcompletedAt\x88\x01\x01\x12D\n" +
+	"\rterminated_at\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampH\x05R\fterminatedAt\x88\x01\x01\x12B\n" +
+	"\fcancelled_at\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampH\x06R\vcancelledAt\x88\x01\x01\x12A\n" +
+	"\ftimed_out_at\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampH\aR\n" +
+	"timedOutAt\x88\x01\x01\x12#\n" +
+	"\rattempt_count\x18\x1f \x01(\x05R\fattemptCountB\b\n" +
 	"\x06_errorB\r\n" +
 	"\v_created_atB\x0f\n" +
 	"\r_scheduled_atB\x0f\n" +
@@ -962,67 +696,26 @@ const file_service_proto_rawDesc = "" +
 	"\r_completed_atB\x10\n" +
 	"\x0e_terminated_atB\x0f\n" +
 	"\r_cancelled_atB\x0f\n" +
-	"\r_timeouted_at\"C\n" +
-	"\x05Query\x12\x12\n" +
-	"\x04kind\x18\x01 \x01(\tR\x04kind\x12&\n" +
-	"\x05state\x18\x02 \x01(\x0e2\x10.job.v1.JobStateR\x05state\"\x1b\n" +
-	"\x19ListRegisteredJobsRequest\"\x91\x03\n" +
-	"\x12ScheduleJobRequest\x12\x19\n" +
-	"\bjob_kind\x18\x01 \x01(\tR\ajobKind\x122\n" +
-	"\targuments\x18\x02 \x03(\v2\x14.google.protobuf.AnyR\targuments\x121\n" +
-	"\bschedule\x18\x03 \x01(\v2\x10.job.v1.ScheduleH\x00R\bschedule\x88\x01\x01\x12+\n" +
-	"\x06policy\x18\x04 \x01(\v2\x0e.job.v1.PolicyH\x01R\x06policy\x88\x01\x01\x12D\n" +
-	"\bmetadata\x18\x05 \x03(\v2(.job.v1.ScheduleJobRequest.MetadataEntryR\bmetadata\x12\"\n" +
-	"\n" +
-	"request_id\x18\x06 \x01(\tH\x02R\trequestId\x88\x01\x01\x1a;\n" +
-	"\rMetadataEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\v\n" +
-	"\t_scheduleB\t\n" +
-	"\a_policyB\r\n" +
-	"\v_request_id\"\x99\x01\n" +
-	"\bSchedule\x12=\n" +
-	"\vschedule_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
-	"scheduleAt\x12\x1d\n" +
-	"\tcron_spec\x18\x02 \x01(\tH\x00R\bcronSpec\x12\x1e\n" +
-	"\timmediate\x18\x03 \x01(\bH\x00R\timmediateB\x0f\n" +
-	"\rschedule_type\"\xf6\x01\n" +
-	"\x06Policy\x12$\n" +
-	"\vmax_retries\x18\x01 \x01(\x05H\x00R\n" +
-	"maxRetries\x88\x01\x01\x12\x1f\n" +
-	"\bpriority\x18\x02 \x01(\x05H\x01R\bpriority\x88\x01\x01\x128\n" +
-	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\atimeout\x88\x01\x01\x126\n" +
-	"\abackoff\x18\x04 \x01(\v2\x17.job.v1.BackoffStrategyH\x03R\abackoff\x88\x01\x01B\x0e\n" +
-	"\f_max_retriesB\v\n" +
-	"\t_priorityB\n" +
-	"\n" +
-	"\b_timeoutB\n" +
-	"\n" +
-	"\b_backoff\"\xd1\x01\n" +
-	"\x0fBackoffStrategy\x12<\n" +
-	"\vfixed_delay\x18\x01 \x01(\v2\x19.google.protobuf.DurationH\x00R\n" +
-	"fixedDelay\x12>\n" +
-	"\vexponential\x18\x02 \x01(\v2\x1a.job.v1.ExponentialBackoffH\x00R\vexponential\x12/\n" +
-	"\x06linear\x18\x03 \x01(\v2\x15.job.v1.LinearBackoffH\x00R\x06linearB\x0f\n" +
-	"\rstrategy_type\"\xcd\x01\n" +
-	"\x12ExponentialBackoff\x128\n" +
-	"\n" +
-	"base_delay\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\tbaseDelay\x12;\n" +
-	"\tmax_delay\x18\x02 \x01(\v2\x19.google.protobuf.DurationH\x00R\bmaxDelay\x88\x01\x01\x12#\n" +
-	"\n" +
-	"multiplier\x18\x03 \x01(\x01H\x01R\n" +
-	"multiplier\x88\x01\x01B\f\n" +
-	"\n" +
-	"_max_delayB\r\n" +
-	"\v_multiplier\"\x93\x01\n" +
-	"\rLinearBackoff\x127\n" +
-	"\tincrement\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\tincrement\x12;\n" +
-	"\tmax_delay\x18\x02 \x01(\v2\x19.google.protobuf.DurationH\x00R\bmaxDelay\x88\x01\x01B\f\n" +
-	"\n" +
-	"_max_delay\"`\n" +
+	"\r_timed_out_at\"\x8a\x01\n" +
+	"\x12ScheduleJobRequest\x12\x12\n" +
+	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1f\n" +
+	"\bpriority\x18\v \x01(\x05H\x00R\bpriority\x88\x01\x01\x122\n" +
+	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targumentsB\v\n" +
+	"\t_priority\"F\n" +
 	"\x13ScheduleJobResponse\x12/\n" +
-	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage*\xce\x01\n" +
+	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\"\x1b\n" +
+	"\x19ListRegisteredJobsRequest\"=\n" +
+	"\x1aListRegisteredJobsResponse\x12\x1f\n" +
+	"\x04jobs\x18\x01 \x03(\v2\v.job.v1.JobR\x04jobs\"`\n" +
+	"\x05Query\x12\x17\n" +
+	"\x04kind\x18\x01 \x01(\tH\x00R\x04kind\x88\x01\x01\x12+\n" +
+	"\x05state\x18\x02 \x01(\x0e2\x10.job.v1.JobStateH\x01R\x05state\x88\x01\x01B\a\n" +
+	"\x05_kindB\b\n" +
+	"\x06_state\"=\n" +
+	"\x16LookupInstancesRequest\x12#\n" +
+	"\x05query\x18\x01 \x01(\v2\r.job.v1.QueryR\x05query\"L\n" +
+	"\x17LookupInstancesResponse\x121\n" +
+	"\tinstances\x18\x01 \x03(\v2\x13.job.v1.JobInstanceR\tinstances*\xce\x01\n" +
 	"\bJobState\x12\x13\n" +
 	"\x0fJOB_STATE_UNSET\x10\x00\x12\x15\n" +
 	"\x11JOB_STATE_CREATED\x10\x01\x12\x17\n" +
@@ -1031,12 +724,12 @@ const file_service_proto_rawDesc = "" +
 	"\x13JOB_STATE_CANCELLED\x10\b\x12\x17\n" +
 	"\x13JOB_STATE_TIMED_OUT\x10\x10\x12\x17\n" +
 	"\x13JOB_STATE_COMPLETED\x10 \x12\x18\n" +
-	"\x14JOB_STATE_TERMINATED\x10@2\xd5\x01\n" +
+	"\x14JOB_STATE_TERMINATED\x10@2\x85\x02\n" +
 	"\n" +
 	"JobService\x12F\n" +
-	"\vScheduleJob\x12\x1a.job.v1.ScheduleJobRequest\x1a\x1b.job.v1.ScheduleJobResponse\x12F\n" +
-	"\x12ListRegisteredJobs\x12!.job.v1.ListRegisteredJobsRequest\x1a\v.job.v1.Job0\x01\x127\n" +
-	"\x0fLookupInstances\x12\r.job.v1.Query\x1a\x13.job.v1.JobInstance0\x01B*Z(github.com/cybergarage/go-job/api/job/v1b\x06proto3"
+	"\vScheduleJob\x12\x1a.job.v1.ScheduleJobRequest\x1a\x1b.job.v1.ScheduleJobResponse\x12[\n" +
+	"\x12ListRegisteredJobs\x12!.job.v1.ListRegisteredJobsRequest\x1a\".job.v1.ListRegisteredJobsResponse\x12R\n" +
+	"\x0fLookupInstances\x12\x1e.job.v1.LookupInstancesRequest\x1a\x1f.job.v1.LookupInstancesResponseB*Z(github.com/cybergarage/go-job/api/job/v1b\x06proto3"
 
 var (
 	file_service_proto_rawDescOnce sync.Once
@@ -1051,64 +744,51 @@ func file_service_proto_rawDescGZIP() []byte {
 }
 
 var file_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_service_proto_goTypes = []any{
-	(JobState)(0),                     // 0: job.v1.JobState
-	(*Job)(nil),                       // 1: job.v1.Job
-	(*JobInstance)(nil),               // 2: job.v1.JobInstance
-	(*Query)(nil),                     // 3: job.v1.Query
-	(*ListRegisteredJobsRequest)(nil), // 4: job.v1.ListRegisteredJobsRequest
-	(*ScheduleJobRequest)(nil),        // 5: job.v1.ScheduleJobRequest
-	(*Schedule)(nil),                  // 6: job.v1.Schedule
-	(*Policy)(nil),                    // 7: job.v1.Policy
-	(*BackoffStrategy)(nil),           // 8: job.v1.BackoffStrategy
-	(*ExponentialBackoff)(nil),        // 9: job.v1.ExponentialBackoff
-	(*LinearBackoff)(nil),             // 10: job.v1.LinearBackoff
-	(*ScheduleJobResponse)(nil),       // 11: job.v1.ScheduleJobResponse
-	nil,                               // 12: job.v1.ScheduleJobRequest.MetadataEntry
-	(*timestamppb.Timestamp)(nil),     // 13: google.protobuf.Timestamp
-	(*anypb.Any)(nil),                 // 14: google.protobuf.Any
-	(*durationpb.Duration)(nil),       // 15: google.protobuf.Duration
+	(JobState)(0),                      // 0: job.v1.JobState
+	(*Job)(nil),                        // 1: job.v1.Job
+	(*JobInstance)(nil),                // 2: job.v1.JobInstance
+	(*ScheduleJobRequest)(nil),         // 3: job.v1.ScheduleJobRequest
+	(*ScheduleJobResponse)(nil),        // 4: job.v1.ScheduleJobResponse
+	(*ListRegisteredJobsRequest)(nil),  // 5: job.v1.ListRegisteredJobsRequest
+	(*ListRegisteredJobsResponse)(nil), // 6: job.v1.ListRegisteredJobsResponse
+	(*Query)(nil),                      // 7: job.v1.Query
+	(*LookupInstancesRequest)(nil),     // 8: job.v1.LookupInstancesRequest
+	(*LookupInstancesResponse)(nil),    // 9: job.v1.LookupInstancesResponse
+	(*timestamppb.Timestamp)(nil),      // 10: google.protobuf.Timestamp
+	(*anypb.Any)(nil),                  // 11: google.protobuf.Any
 }
 var file_service_proto_depIdxs = []int32{
-	13, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
-	0,  // 1: job.v1.JobInstance.state:type_name -> job.v1.JobState
-	14, // 2: job.v1.JobInstance.arguments:type_name -> google.protobuf.Any
-	14, // 3: job.v1.JobInstance.results:type_name -> google.protobuf.Any
-	13, // 4: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
-	13, // 5: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
-	13, // 6: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
-	13, // 7: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
-	13, // 8: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
-	13, // 9: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
-	13, // 10: job.v1.JobInstance.timeouted_at:type_name -> google.protobuf.Timestamp
-	0,  // 11: job.v1.Query.state:type_name -> job.v1.JobState
-	14, // 12: job.v1.ScheduleJobRequest.arguments:type_name -> google.protobuf.Any
-	6,  // 13: job.v1.ScheduleJobRequest.schedule:type_name -> job.v1.Schedule
-	7,  // 14: job.v1.ScheduleJobRequest.policy:type_name -> job.v1.Policy
-	12, // 15: job.v1.ScheduleJobRequest.metadata:type_name -> job.v1.ScheduleJobRequest.MetadataEntry
-	13, // 16: job.v1.Schedule.schedule_at:type_name -> google.protobuf.Timestamp
-	15, // 17: job.v1.Policy.timeout:type_name -> google.protobuf.Duration
-	8,  // 18: job.v1.Policy.backoff:type_name -> job.v1.BackoffStrategy
-	15, // 19: job.v1.BackoffStrategy.fixed_delay:type_name -> google.protobuf.Duration
-	9,  // 20: job.v1.BackoffStrategy.exponential:type_name -> job.v1.ExponentialBackoff
-	10, // 21: job.v1.BackoffStrategy.linear:type_name -> job.v1.LinearBackoff
-	15, // 22: job.v1.ExponentialBackoff.base_delay:type_name -> google.protobuf.Duration
-	15, // 23: job.v1.ExponentialBackoff.max_delay:type_name -> google.protobuf.Duration
-	15, // 24: job.v1.LinearBackoff.increment:type_name -> google.protobuf.Duration
-	15, // 25: job.v1.LinearBackoff.max_delay:type_name -> google.protobuf.Duration
-	2,  // 26: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
-	5,  // 27: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
-	4,  // 28: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
-	3,  // 29: job.v1.JobService.LookupInstances:input_type -> job.v1.Query
-	11, // 30: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
-	1,  // 31: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.Job
-	2,  // 32: job.v1.JobService.LookupInstances:output_type -> job.v1.JobInstance
-	30, // [30:33] is the sub-list for method output_type
-	27, // [27:30] is the sub-list for method input_type
-	27, // [27:27] is the sub-list for extension type_name
-	27, // [27:27] is the sub-list for extension extendee
-	0,  // [0:27] is the sub-list for field type_name
+	10, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
+	10, // 1: job.v1.Job.schedule_at:type_name -> google.protobuf.Timestamp
+	0,  // 2: job.v1.JobInstance.state:type_name -> job.v1.JobState
+	11, // 3: job.v1.JobInstance.arguments:type_name -> google.protobuf.Any
+	11, // 4: job.v1.JobInstance.results:type_name -> google.protobuf.Any
+	10, // 5: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
+	10, // 6: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
+	10, // 7: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
+	10, // 8: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
+	10, // 9: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
+	10, // 10: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
+	10, // 11: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
+	11, // 12: job.v1.ScheduleJobRequest.arguments:type_name -> google.protobuf.Any
+	2,  // 13: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
+	1,  // 14: job.v1.ListRegisteredJobsResponse.jobs:type_name -> job.v1.Job
+	0,  // 15: job.v1.Query.state:type_name -> job.v1.JobState
+	7,  // 16: job.v1.LookupInstancesRequest.query:type_name -> job.v1.Query
+	2,  // 17: job.v1.LookupInstancesResponse.instances:type_name -> job.v1.JobInstance
+	3,  // 18: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
+	5,  // 19: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
+	8,  // 20: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
+	4,  // 21: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
+	6,  // 22: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
+	9,  // 23: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
+	21, // [21:24] is the sub-list for method output_type
+	18, // [18:21] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_service_proto_init() }
@@ -1116,28 +796,17 @@ func file_service_proto_init() {
 	if File_service_proto != nil {
 		return
 	}
+	file_service_proto_msgTypes[0].OneofWrappers = []any{}
 	file_service_proto_msgTypes[1].OneofWrappers = []any{}
-	file_service_proto_msgTypes[4].OneofWrappers = []any{}
-	file_service_proto_msgTypes[5].OneofWrappers = []any{
-		(*Schedule_ScheduleAt)(nil),
-		(*Schedule_CronSpec)(nil),
-		(*Schedule_Immediate)(nil),
-	}
+	file_service_proto_msgTypes[2].OneofWrappers = []any{}
 	file_service_proto_msgTypes[6].OneofWrappers = []any{}
-	file_service_proto_msgTypes[7].OneofWrappers = []any{
-		(*BackoffStrategy_FixedDelay)(nil),
-		(*BackoffStrategy_Exponential)(nil),
-		(*BackoffStrategy_Linear)(nil),
-	}
-	file_service_proto_msgTypes[8].OneofWrappers = []any{}
-	file_service_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_service_proto_rawDesc), len(file_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

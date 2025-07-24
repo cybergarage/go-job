@@ -5,10 +5,12 @@ package job.v1;
 option go_package = "github.com/cybergarage/go-job/api/job/v1";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/duration.proto";
 import "google/protobuf/any.proto";
 
+//////////////////////////////
 // Job state enumeration
+//////////////////////////////
+
 enum JobState {
   JOB_STATE_UNSET = 0;
   JOB_STATE_CREATED = 1;
@@ -20,135 +22,144 @@ enum JobState {
   JOB_STATE_TERMINATED = 64;
 }
 
+//////////////////////////////
+// Job representation
+//////////////////////////////
+
 message Job {
+  //////////////////////////////
+  // Basic information: 1-10
+  //////////////////////////////
+
   // Kind of the job (e.g., "email", "data_processing")
   string kind = 1;  
   // Description of the job
   string description = 2;
   // Registered at timestamp
   google.protobuf.Timestamp registered_at = 3;
+
+  //////////////////////////////
+  // Execution information: 11-20
+  //////////////////////////////
+
+  // Schedule using cron expression
+  optional string cron_spec = 11;
+  // Schedule at a specific time
+  optional google.protobuf.Timestamp schedule_at = 12;
 }
 
+//////////////////////////////
 // Job instance representation
+//////////////////////////////
+
 message JobInstance {
+  //////////////////////////////
+  // Basic information: 1-10
+  //////////////////////////////
+
   // Unique instance identifier
   string uuid = 1;
-  // Job kind
+  // Kind
   string kind = 2;
+
+  //////////////////////////////
+  // Execution information: 11-20
+  //////////////////////////////
+
   // Current state
-  JobState state = 3;  
+  JobState state =11;  
   // Job arguments
-  repeated google.protobuf.Any arguments = 4;
+  repeated google.protobuf.Any arguments = 12;
   // Execution results (if completed)
-  repeated google.protobuf.Any results = 5;  
+  repeated google.protobuf.Any results = 13;  
   // Error information (if failed)
-  optional string error = 6;
-  // Timestamps
-  optional google.protobuf.Timestamp created_at = 8;
-  optional google.protobuf.Timestamp scheduled_at = 10;
-  optional google.protobuf.Timestamp processed_at = 11;
-  optional google.protobuf.Timestamp completed_at = 12;
-  optional google.protobuf.Timestamp terminated_at = 13;
-  optional google.protobuf.Timestamp cancelled_at = 14;
-  optional google.protobuf.Timestamp timeouted_at = 15;
+  optional string error = 14;
+
+  //////////////////////////////
+  // Timestamps: 21-30
+  //////////////////////////////
+
+  optional google.protobuf.Timestamp created_at = 21;
+  optional google.protobuf.Timestamp scheduled_at = 22;
+  optional google.protobuf.Timestamp processed_at = 23;
+  optional google.protobuf.Timestamp completed_at = 24;
+  optional google.protobuf.Timestamp terminated_at = 25;
+  optional google.protobuf.Timestamp cancelled_at = 26;
+  optional google.protobuf.Timestamp timed_out_at = 27;
+
+  //////////////////////////////
+  // Runtime information: 31-40
+  //////////////////////////////
+
+  int32 attempt_count = 31;
 }
 
-message Query {
-  // Filter by job kind
-  string kind = 1;
-  // Filter by job state
-  JobState state = 2;
-}
+//////////////////////////////
+// JobService representation
+//////////////////////////////
 
 service JobService {
   rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
-  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (stream Job);
-  rpc LookupInstances(Query) returns (stream JobInstance);
+  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (ListRegisteredJobsResponse);
+  rpc LookupInstances(LookupInstancesRequest) returns (LookupInstancesResponse);
 }
 
-message ListRegisteredJobsRequest {
-}
-
+//////////////////////////////
+// ScheduleJobRequest/Response
+//////////////////////////////
 
 message ScheduleJobRequest {
-  // Job kind to schedule (must be pre-registered)
-  string job_kind = 1;
+  //////////////////////////////
+  // Basic information: 1-10
+  //////////////////////////////
   
+  // Kind to schedule (must be pre-registered)
+  string kind = 1;  
+
+  //////////////////////////////
+  // Execution options: 11-20
+  //////////////////////////////
+  
+  // Priority (lower values = higher priority)
+  optional int32 priority = 11;
   // Arguments to pass to the job executor
-  repeated google.protobuf.Any arguments = 2;
-  
-  // Optional scheduling configuration
-  optional Schedule schedule = 3;
-  
-  // Optional policy overrides
-  optional Policy policy = 4;
-  
-  // Optional metadata for the job instance
-  map<string, string> metadata = 5;
-  
-  // Optional request ID for idempotency
-  optional string request_id = 6;
-}
-
-// Schedule configuration for when to run the job
-message Schedule {
-  oneof schedule_type {
-    // Schedule at a specific time
-    google.protobuf.Timestamp schedule_at = 1;
-    // Schedule using cron expression
-    string cron_spec = 2;
-    // Schedule immediately (default)
-    bool immediate = 3;
-  }
-}
-
-// Policy configuration for job execution
-message Policy {
-  // Maximum number of retry attempts
-  optional int32 max_retries = 1;
-  
-  // Job priority (higher values = higher priority)
-  optional int32 priority = 2;
-  
-  // Execution timeout
-  optional google.protobuf.Duration timeout = 3;
-  
-  // Backoff strategy for retries
-  optional BackoffStrategy backoff = 4;
-}
-
-// Backoff strategy for retry delays
-message BackoffStrategy {
-  oneof strategy_type {
-    // Fixed delay between retries
-    google.protobuf.Duration fixed_delay = 1;
-    // Exponential backoff configuration
-    ExponentialBackoff exponential = 2;
-    // Linear backoff configuration
-    LinearBackoff linear = 3;
-  }
-}
-
-message ExponentialBackoff {
-  // Base delay duration
-  google.protobuf.Duration base_delay = 1;
-  // Maximum delay duration
-  optional google.protobuf.Duration max_delay = 2;
-  // Multiplier for each retry (default: 2.0)
-  optional double multiplier = 3;
-}
-
-message LinearBackoff {
-  // Increment delay for each retry
-  google.protobuf.Duration increment = 1;
-  // Maximum delay duration
-  optional google.protobuf.Duration max_delay = 2;
+  repeated google.protobuf.Any arguments = 12;
 }
 
 message ScheduleJobResponse {
   // Scheduled job instance
   JobInstance instance = 1;
-  
-  // Status message
-  string message = 2;
+}
+
+//////////////////////////////
+// ListRegisteredJobsRequest/Response
+//////////////////////////////
+
+message ListRegisteredJobsRequest {
+}
+
+message ListRegisteredJobsResponse {
+  // List of registered jobs
+  repeated Job jobs = 1;
+}
+
+//////////////////////////////
+// LookupInstancesRequest/Response
+//////////////////////////////
+
+message Query {
+  // Filter by job kind
+  optional string kind = 1;
+  // Filter by job state
+  optional JobState state = 2;
+}
+
+message LookupInstancesRequest {
+  // Lookup query
+  Query query = 1;
+}
+
+message LookupInstancesResponse {
+  // List of job instances
+  repeated JobInstance instances = 1;
 }
