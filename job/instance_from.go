@@ -43,6 +43,10 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 		switch state.State() {
 		case JobCreated:
 			jiOpts = append(jiOpts, WithCreatedAt(state.Timestamp()))
+			args, ok := stateMap.Arguments()
+			if ok {
+				jiOpts = append(jiOpts, WithArguments(args))
+			}
 		case JobScheduled:
 			jiOpts = append(jiOpts, WithScheduleAt(state.Timestamp()))
 		case JobProcessing:
