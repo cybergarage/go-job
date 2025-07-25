@@ -4,7 +4,7 @@
 [![test](https://github.com/cybergarage/go-job/actions/workflows/make.yml/badge.svg)](https://github.com/cybergarage/go-job/actions/workflows/make.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
  [![Go Report Card](https://img.shields.io/badge/go%20report-A%2B-brightgreen)](https://goreportcard.com/report/github.com/cybergarage/go-job) 
- [![codecov](https://codecov.io/gh/cybergarage/go-job/graph/badge.svg?token=OCU5V0H3OX)](https://codecov.io/gh/cybergarage/go-job)
+[![codecov](https://codecov.io/gh/cybergarage/go-job/graph/badge.svg?token=NVG8DWJX3Y)](https://codecov.io/gh/cybergarage/go-job)
 
 `go-job` is a flexible and extensible job scheduling and execution library for Go. It enables you to register, schedule, and manage jobs with arbitrary function signatures, supporting custom executors, priorities, and advanced scheduling options such as cron expressions and delayed execution.
 
@@ -59,13 +59,13 @@ func main() {
 	mgr.StopWithWait()
 
 	// Retrieve and print the job instance state history
-	history, _ := mgr.LookupHistory(ji)
+	history, _ := mgr.LookupInstanceHistory(ji)
 	for _, record := range history {
 		fmt.Println(record.State())
 	}
 
 	// Retrieve and print the job instance logs
-	logs, _ := mgr.LookupLogs(ji)
+	logs, _ := mgr.LookupInstanceLogs(ji)
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}
