@@ -26,10 +26,18 @@ import (
 
 // Manager is an interface that defines methods for managing jobs.
 type Manager interface {
-	// Repository defines the methods for managing job registrations.
-	Repository
-	// WorkerGroup returns the worker group associated with the manager.
-	WorkerGroup
+	// RegisterJob registers a job in the registry. If a job with the same kind is already registered,
+	// it will be overwritten with the new job.
+	// If the registered job has a schedule configuration, it will be automatically scheduled and
+	// the resulting job instance will be returned.
+	// If the job has no schedule configuration, nil will be returned for the instance.
+	RegisterJob(job Job) (Instance, error)
+	// UnregisterJob removes a job from the registry by its kind.
+	UnregisterJob(kind Kind) error
+	// ListJobs returns a slice of all registered jobs.
+	ListJobs() ([]Job, error)
+	// LookupJob looks up a job by its kind in the registry.
+	LookupJob(kind Kind) (Job, bool)
 	// ScheduleJob schedules a job instance with the given job and options.
 	ScheduleJob(job Job, opts ...any) (Instance, error)
 	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
@@ -46,6 +54,10 @@ type Manager interface {
 	Clear() error
 	// StopWithWait stops the job manager and waits for all jobs to complete.
 	StopWithWait() error
+	// History defines the methods for managing job history.
+	History
+	// WorkerGroup defines the methods for managing worker groups.
+	WorkerGroup
 }
 
 type manager struct {
@@ -97,17 +109,20 @@ func newManager(opts ...any) (*manager, error) {
 	return mgr, nil
 }
 
-// RegisterJob registers a job in the registry.
-func (mgr *manager) RegisterJob(job Job) error {
+// RegisterJob registers a job in the registry. If a job with the same kind is already registered,
+// it will be overwritten with the new job.
+// If the registered job has a schedule configuration, it will be automatically scheduled and
+// the resulting job instance will be returned.
+// If the job has no schedule configuration, nil will be returned for the instance.
+func (mgr *manager) RegisterJob(job Job) (Instance, error) {
 	err := mgr.Repository.RegisterJob(job)
 	if err != nil {
-		return fmt.Errorf("failed to register job: %w", err)
+		return nil, fmt.Errorf("failed to register job: %w", err)
 	}
 	if !job.Schedule().IsScheduled() {
-		return nil
+		return nil, nil
 	}
-	_, err = mgr.ScheduleJob(job)
-	return err
+	return mgr.ScheduleJob(job)
 }
 
 // ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
