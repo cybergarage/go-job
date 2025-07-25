@@ -69,6 +69,8 @@ type Instance interface {
 	IsRetriable() bool
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
+	// JSONString returns a JSON string representation of the job instance.
+	JSONString() (string, error)
 	// String returns a string representation of the job instance.
 	String() string
 	// InstanceLogger provides methods for logging messages related to the job instance.
@@ -426,6 +428,15 @@ func (ji *jobInstance) OptionMap() map[string]any {
 		mergedMap = encoding.MergeMaps(mergedMap, m)
 	}
 	return mergedMap
+}
+
+// JSONString returns a JSON string representation of the job instance.
+func (ji *jobInstance) JSONString() (string, error) {
+	data, err := encoding.MapToJSON(ji.Map())
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal job instance to JSON: %w", err)
+	}
+	return string(data), nil
 }
 
 // String returns a string representation of the job instance.
