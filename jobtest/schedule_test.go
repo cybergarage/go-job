@@ -22,6 +22,22 @@ import (
 	"github.com/cybergarage/go-job/job"
 )
 
+func TestNewSchedule(t *testing.T) {
+	sched, err := job.NewSchedule()
+	if err != nil {
+		t.Fatalf("Failed to create schedule: %v", err)
+	}
+	if sched.IsRecurring() {
+		t.Error("Expected non-recurring schedule, got recurring")
+	}
+	if sched.IsScheduled() {
+		t.Error("Expected unscheduled, got scheduled")
+	}
+	if !sched.Next().IsZero() {
+		t.Error("Expected a valid next schedule time, got zero value")
+	}
+}
+
 func TestSchedules(t *testing.T) {
 	tests := []struct {
 		cronSpec   string
