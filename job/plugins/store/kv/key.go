@@ -25,3 +25,8 @@ type Key string
 func NewKeyFromUUID(uuid uuid.UUID) Key {
 	return Key(uuid.String())
 }
+
+// UUID returns the UUID representation of the key.
+func (k Key) UUID() (uuid.UUID, error) {
+	return uuid.Parse(string(k))
+}
