@@ -68,11 +68,16 @@ func NewJob(opts ...any) (Job, error) {
 }
 
 func newJob(opts ...any) (*job, error) {
+	schedule, err := newSchedule()
+	if err != nil {
+		return nil, err
+	}
+
 	j := &job{
 		kind:         "",
 		desc:         "",
 		handler:      newHandler(),
-		schedule:     newSchedule(),
+		schedule:     schedule,
 		registeredAt: time.Now(),
 	}
 

@@ -202,6 +202,12 @@ func NewInstance(opts ...any) (Instance, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	schedule, err := newSchedule(WithScheduleAt(time.Now()))
+	if err != nil {
+		return nil, err
+	}
+
 	ji := &jobInstance{
 		job:          job,
 		uuid:         uuid.New(),
@@ -209,7 +215,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		attempt:      0,
 		history:      newHistory(),
 		handler:      newHandler(),
-		schedule:     newSchedule(),
+		schedule:     schedule,
 		policy:       newPolicy(),
 		arguments:    newArguments(),
 		createdAt:    time.Now(),

@@ -79,25 +79,25 @@ func WithScheduleAfter(d time.Duration) ScheduleOption {
 	}
 }
 
-func newSchedule() *schedule {
-	return &schedule{
+func newSchedule(opts ...ScheduleOption) (*schedule, error) {
+	js := &schedule{
 		crontabSpec:  "",
 		cronSchedule: nil,
 		scheduleAt:   time.Time{},
 	}
-}
-
-// NewSchedule creates a new schedule instance with the provided options.
-// Available options include WithCrontabSpec() for cron-based scheduling and WithScheduleAt() for one-time scheduling.
-// If no options are provided, the current time is used as the default schedule.
-func NewSchedule(opts ...ScheduleOption) (*schedule, error) {
-	js := newSchedule()
 	for _, opt := range opts {
 		if err := opt(js); err != nil {
 			return nil, err
 		}
 	}
 	return js, nil
+}
+
+// NewSchedule creates a new schedule instance with the provided options.
+// Available options include WithCrontabSpec() for cron-based scheduling and WithScheduleAt() for one-time scheduling.
+// If no options are provided, the current time is used as the default schedule.
+func NewSchedule(opts ...ScheduleOption) (Schedule, error) {
+	return newSchedule(opts...)
 }
 
 // CrontabSpec returns the crontab spec string for the job schedule.
