@@ -15,6 +15,7 @@
 package job
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/cybergarage/go-job/job/encoding"
@@ -36,6 +37,8 @@ type InstanceState interface {
 	Options() map[string]any
 	// Map returns a map representation of the instance record.
 	Map() map[string]any
+	// JSONString returns a JSON string representation of the instance record.
+	JSONString() (string, error)
 	// String returns a string representation of the instance record.
 	String() string
 }
@@ -112,7 +115,16 @@ func (state *instanceState) Map() map[string]any {
 	return m
 }
 
+// JSONString returns a JSON string representation of the instance state.
+func (state *instanceState) JSONString() (string, error) {
+	data, err := encoding.MapToJSON(state.Map())
+	if err != nil {
+		return "", err
+	}
+	return data, nil
+}
+
 // String returns a string representation of the instance state.
 func (state *instanceState) String() string {
-	return encoding.MapToJSON(state.Map())
+	return fmt.Sprintf("%s", state.Map())
 }
