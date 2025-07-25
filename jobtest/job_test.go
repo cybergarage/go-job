@@ -95,9 +95,12 @@ func TestScheduleJobs(t *testing.T) {
 				t.Fatalf("Failed to create job: %v", err)
 			}
 
-			err = mgr.RegisterJob(j)
+			ji, err := mgr.RegisterJob(j)
 			if err != nil {
 				t.Fatalf("Failed to register job: %v", err)
+			}
+			if ji != nil {
+				t.Fatalf("Expected job instance to be nil, but got %v", ji)
 			}
 
 			regJobs, err := mgr.ListJobs()
@@ -110,7 +113,7 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Schedule the job with arguments
 
-			ji, err := mgr.ScheduleRegisteredJob(
+			ji, err = mgr.ScheduleRegisteredJob(
 				tt.kind,
 				job.WithScheduleAfter(0), // immediate scheduling
 				job.WithArguments(tt.args...),
