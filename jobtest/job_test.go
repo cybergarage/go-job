@@ -171,7 +171,7 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Check instance history
 
-			history, err := mgr.LookupHistory(ji)
+			history, err := mgr.LookupInstanceHistory(ji)
 			if err != nil {
 				t.Fatalf("Failed to retrieve instance history: %v", err)
 			}
@@ -221,7 +221,7 @@ func TestScheduleJobs(t *testing.T) {
 				"[3]",
 			}
 
-			logs, err := mgr.LookupLogs(ji)
+			logs, err := mgr.LookupInstanceLogs(ji)
 			if err != nil {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return
@@ -241,7 +241,7 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Failed to clear job manager: %v", err)
 			}
 
-			history, err = mgr.LookupHistory(ji)
+			history, err = mgr.LookupInstanceHistory(ji)
 			if err != nil {
 				t.Fatalf("Failed to retrieve instance history: %v", err)
 			}
@@ -249,7 +249,7 @@ func TestScheduleJobs(t *testing.T) {
 				t.Errorf("Expected no history records after clearing, but got %d records", len(history))
 			}
 
-			logs, err = mgr.LookupLogs(ji)
+			logs, err = mgr.LookupInstanceLogs(ji)
 			if err != nil {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return

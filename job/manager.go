@@ -39,13 +39,22 @@ type Manager interface {
 	// LookupJob looks up a job by its kind in the registry.
 	LookupJob(kind Kind) (Job, bool)
 	// ScheduleJob schedules a job instance with the given job and options.
+	// It creates a new job instance and enqueues it in the job queue.
+	// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 	ScheduleJob(job Job, opts ...any) (Instance, error)
-	// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
+	// ScheduleRegisteredJob schedules a registered job by its kind with the given options.
+	// If the job is not registered, an error will be returned.
+	// It creates a new job instance and enqueues it in the job queue.
+	// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 	ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error)
 	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
 	ListInstances() ([]Instance, error)
 	// LookupInstances looks up all job instances which match the specified query.
 	LookupInstances(query Query) ([]Instance, error)
+	// LookupHistory retrieves all state records for a job instance, sorted by timestamp.
+	LookupInstanceHistory(job Instance) (InstanceHistory, error)
+	// LookupLogs retrieves all logs for a job instance.
+	LookupInstanceLogs(job Instance) ([]Log, error)
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
@@ -54,10 +63,10 @@ type Manager interface {
 	Clear() error
 	// StopWithWait stops the job manager and waits for all jobs to complete.
 	StopWithWait() error
-	// History defines the methods for managing job history.
-	History
-	// WorkerGroup defines the methods for managing worker groups.
-	WorkerGroup
+	// ResizeWorkers scales the number of workers in the group.
+	ResizeWorkers(num int) error
+	// NumWorkers returns the number of workers in the group.
+	NumWorkers() int
 }
 
 type manager struct {
@@ -125,7 +134,10 @@ func (mgr *manager) RegisterJob(job Job) (Instance, error) {
 	return mgr.ScheduleJob(job)
 }
 
-// ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
+// ScheduleRegisteredJob schedules a registered job by its kind with the given options.
+// If the job is not registered, an error will be returned.
+// It creates a new job instance and enqueues it in the job queue.
+// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error) {
 	job, ok := mgr.LookupJob(kind)
 	if !ok {
@@ -136,6 +148,7 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 
 // ScheduleJob schedules a job instance with the given job and options.
 // It creates a new job instance and enqueues it in the job queue.
+// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	jobOpts := []any{
 		WithExecutor(job.Handler().Executor()),
@@ -224,6 +237,22 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 	}
 
 	return instances, nil
+}
+
+// LookupHistory retrieves all state records for a job instance, sorted by timestamp.
+func (mgr *manager) LookupInstanceHistory(job Instance) (InstanceHistory, error) {
+	mgr.Lock()
+	defer mgr.Unlock()
+
+	return mgr.Repository.LookupHistory(job)
+}
+
+// LookupLogs retrieves all logs for a job instance.
+func (mgr *manager) LookupInstanceLogs(job Instance) ([]Log, error) {
+	mgr.Lock()
+	defer mgr.Unlock()
+
+	return mgr.Repository.LookupLogs(job)
 }
 
 // Stop stops the job manager.
