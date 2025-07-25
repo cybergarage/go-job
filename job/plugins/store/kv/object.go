@@ -15,6 +15,8 @@
 package kv
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/go-job/job"
 )
 
@@ -32,11 +34,16 @@ type object struct {
 }
 
 // NewObjectFromInstance creates a new Object from a job instance.
-func NewObjectFromInstance(instance job.Instance) Object {
-	return &object{
-		key:   Key(instance.UUID().String()),
-		value: instance,
+func NewObjectFromInstance(ji job.Instance) (Object, error) {
+	data, err := ji.JSONString()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get JSON string from job instance: %w", err)
 	}
+
+	return &object{
+		key:   Key(ji.UUID().String()),
+		value: []byte(data),
+	}, nil
 }
 
 // Key returns the key of the object.
