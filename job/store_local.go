@@ -36,32 +36,26 @@ func NewLocalStore() Store {
 }
 
 // Name returns the name of the store.
-func (s *localStore) Name() string {
+func (store *localStore) Name() string {
 	return "local"
 }
 
 // EnqueueInstance stores a job instance in the store.
-func (s *localStore) EnqueueInstance(ctx context.Context, job Instance) error {
-	if job == nil {
-		return nil
-	}
-	s.jobs.Store(job.UUID(), job)
+func (store *localStore) EnqueueInstance(ctx context.Context, job Instance) error {
+	store.jobs.Store(job.UUID(), job)
 	return nil
 }
 
 // DequeueInstance removes a job instance from the store by its unique identifier.
-func (s *localStore) DequeueInstance(ctx context.Context, job Instance) error {
-	if job == nil {
-		return nil
-	}
-	s.jobs.Delete(job.UUID())
+func (store *localStore) DequeueInstance(ctx context.Context, job Instance) error {
+	store.jobs.Delete(job.UUID())
 	return nil
 }
 
 // ListInstances lists all job instances in the store.
-func (s *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
+func (store *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	jobs := make([]Instance, 0)
-	s.jobs.Range(func(key, value interface{}) bool {
+	store.jobs.Range(func(key, value interface{}) bool {
 		if job, ok := value.(Instance); ok {
 			jobs = append(jobs, job)
 		}
@@ -71,30 +65,30 @@ func (s *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 }
 
 // ClearInstances clears all job instances in the store.
-func (s *localStore) ClearInstances(ctx context.Context) error {
-	s.jobs.Range(func(key, value any) bool {
-		s.jobs.Delete(key)
+func (store *localStore) ClearInstances(ctx context.Context) error {
+	store.jobs.Range(func(key, value any) bool {
+		store.jobs.Delete(key)
 		return true
 	})
 	return nil
 }
 
 // LogInstanceState adds a new state record for a job instance.
-func (s *localStore) LogInstanceState(ctx context.Context, job Instance, state InstanceState) error {
+func (store *localStore) LogInstanceState(ctx context.Context, job Instance, state InstanceState) error {
 	if job == nil {
 		return nil
 	}
-	s.history = append(s.history, state)
+	store.history = append(store.history, state)
 	return nil
 }
 
 // LookupInstanceHistory lists all state records for a job instance.
-func (s *localStore) LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error) {
+func (store *localStore) LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error) {
 	if job == nil {
 		return nil, nil
 	}
 	var records []InstanceState
-	for _, record := range s.history {
+	for _, record := range store.history {
 		if record.UUID() == job.UUID() {
 			records = append(records, record)
 		}
@@ -103,50 +97,50 @@ func (s *localStore) LookupInstanceHistory(ctx context.Context, job Instance) (I
 }
 
 // ListInstanceHistory lists all state records for all job instances.
-func (s *localStore) ListInstanceHistory(ctx context.Context) (InstanceHistory, error) {
-	if len(s.history) == 0 {
+func (store *localStore) ListInstanceHistory(ctx context.Context) (InstanceHistory, error) {
+	if len(store.history) == 0 {
 		return nil, nil
 	}
-	return s.history, nil
+	return store.history, nil
 }
 
 // ClearInstanceHistory clears all state records for a job instance.
-func (s *localStore) ClearInstanceHistory(ctx context.Context) error {
-	s.history = []InstanceState{}
+func (store *localStore) ClearInstanceHistory(ctx context.Context) error {
+	store.history = []InstanceState{}
 	return nil
 }
 
 // Logf logs a formatted message at the specified log level.
-func (s *localStore) Logf(ctx context.Context, job Instance, logLevel LogLevel, format string, args ...any) error {
+func (store *localStore) Logf(ctx context.Context, job Instance, logLevel LogLevel, format string, args ...any) error {
 	log := NewLog(
 		WithLogKind(job.Kind()),
 		WithLogUUID(job.UUID()),
 		WithLogLevel(logLevel),
 		WithLogMessage(fmt.Sprintf(format, args...)),
 	)
-	s.logs = append(s.logs, log)
+	store.logs = append(store.logs, log)
 	return nil
 }
 
 // Infof logs an informational message for a job instance.
-func (s *localStore) Infof(ctx context.Context, job Instance, format string, args ...any) error {
-	return s.Logf(ctx, job, LogInfo, format, args...)
+func (store *localStore) Infof(ctx context.Context, job Instance, format string, args ...any) error {
+	return store.Logf(ctx, job, LogInfo, format, args...)
 }
 
 // Warnf logs a warning message for a job instance.
-func (s *localStore) Warnf(ctx context.Context, job Instance, format string, args ...any) error {
-	return s.Logf(ctx, job, LogWarn, format, args...)
+func (store *localStore) Warnf(ctx context.Context, job Instance, format string, args ...any) error {
+	return store.Logf(ctx, job, LogWarn, format, args...)
 }
 
 // Errorf logs an error message for a job instance.
-func (s *localStore) Errorf(ctx context.Context, job Instance, format string, args ...any) error {
-	return s.Logf(ctx, job, LogError, format, args...)
+func (store *localStore) Errorf(ctx context.Context, job Instance, format string, args ...any) error {
+	return store.Logf(ctx, job, LogError, format, args...)
 }
 
 // LookupInstanceLogs lists all log entries for a job instance.
-func (s *localStore) LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
+func (store *localStore) LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
 	var logs []Log
-	for _, log := range s.logs {
+	for _, log := range store.logs {
 		if log.UUID() == job.UUID() {
 			logs = append(logs, log)
 		}
@@ -155,7 +149,7 @@ func (s *localStore) LookupInstanceLogs(ctx context.Context, job Instance) ([]Lo
 }
 
 // ClearInstanceLogs clears all log entries for a job instance.
-func (s *localStore) ClearInstanceLogs(ctx context.Context) error {
-	s.logs = []Log{}
+func (store *localStore) ClearInstanceLogs(ctx context.Context) error {
+	store.logs = []Log{}
 	return nil
 }
