@@ -18,77 +18,14 @@
 - Distributed Store
   - etcd plugin added
 
-## v0.9.2 (2025-07-XX)
-### 🚀 New Features
-- **Instance Querying & Management**
-  - Added `Manager::ListInstances()` and `LookupInstances()` for comprehensive instance management
-  - Introduced `Query` system to lookup scheduled and completed instances with filtering capabilities
-  - Added `NewInstancesFromQueue()` for creating instances from queue data
-  - Enhanced `StateHistory::ListInstanceHistory()` to retrieve complete state history
-- **Enhanced Data Structures**
-  - Added `InstanceMap::Arguments()`, `ResultSet()`, and `Error()` methods for better data access
-  - Introduced `NewArgumentsFrom()` and `Arguments::JSONString()` for improved argument handling
-  - Added `NewInstanceMapWith()` for flexible map-based instance creation
-  - Implemented map key constants for consistent data access
-- **Job State Management**
-  - Added `JobStateAll` constant for comprehensive state handling
-  - Renamed `JobStateUnknown` to `JobStateUnset` for better clarity
-  - Enhanced state tracking with proper timestamp management
-### 🔧 Improvements
-- **Instance Lifecycle**
-  - Updated `NewInstance()` to handle job options more effectively
-  - Enhanced `NewInstancesFromHistory()` to:
-    - Parse and store argument options
-    - Set schedule, processed, and created timestamps correctly
-    - Handle instance result sets and errors properly
-    - Store argument options with improved data consistency
-- **Manager Enhancements**
-  - Updated `Manager::ScheduleJob()` to properly update created status
-  - Improved scheduling with better timestamp handling
-  - Enhanced job registration and lifecycle management
-- **Worker & Processing**
-  - Updated `Worker::Run()` to:
-    - Store errors when jobs are terminated
-    - Update job status during rescheduling
-    - Better handle job completion and termination states
-- **Queue Management**
-  - Updated `Queue::Clear()` functionality
-  - Added `Queue::List()` to return all queued instances
-  - Removed `Queue::HasJobs()` in favor of using `Empty()`
-### 📝 API & Protocol Updates
-- **Job Interface**
-  - Added `Job::Description()` and `WithDescription()` for job metadata
-  - Added `Job::RegisteredAt()` to track registration timestamps
-  - Updated `Registry::ListJobs()` to return proper error handling
-- **Instance Interface**
-  - Added `Instance::ProcessedAt()` for execution tracking
-  - Enhanced `Instance::CreatedAt()`, `CompletedAt()`, and `TerminatedAt()` timestamp methods
-  - Added `Instance::ResultSet()` to return processed results for completed/terminated jobs
-  - Added `WithUUID()` option to pass UUID to instances
-- **Protocol Buffers**
-  - Multiple updates to `service.proto` for better API structure
-  - Enhanced message definitions for improved client-server communication
-### 🛠️ Internal Improvements
-- **Data Handling**
-  - Updated `encoding.UnmarshalToMap()` and `UnmarshalJSONToMap()` with proper error returns
-  - Enhanced `Policy::Map()` for better policy serialization
-  - Improved `InstanceMap::Map()` functionality
-- **Testing & Quality**
-  - Updated `TestScheduleJobs()` with more comprehensive test coverage
-  - Enhanced `TestArgumentsFrom()` and `TestJobState()` for better validation
-  - Updated `TestSchedules()` for improved scheduling tests
-- **Build & Maintenance**
-  - Updated go.mod dependencies
-  - Enhanced Makefile for better build process
-  - Updated documentation images
-### 🔄 Breaking Changes
-- **State Naming**: `JobStateUnknown` has been renamed to `JobStateUnset`
-- **Result Interface**: Renamed `Result` to `ResultSet` for better clarity
-### 📋 Bug Fixes
-- Fixed timestamp handling in various instance operations
-- Improved error handling in encoding/decoding operations
-- Enhanced data consistency in instance history management
-- Better handling of job termination and completion states
+## v0.9.2 (2025-07-25)
+### 🛠 Enhancements
+- **Instance Management**: Added `Manager::ListInstances()`, `LookupInstances()`, and `Query` system for comprehensive instance filtering and retrieval
+- **Data Structures**: Enhanced `InstanceMap` with `Arguments()`, `ResultSet()`, `Error()` methods and improved argument handling with JSON support
+- **State Management**: Added `JobStateAll` constant, renamed `JobStateUnknown` to `JobStateUnset`, improved timestamp tracking
+- **API Improvements**: Extended Job/Instance interfaces with metadata support (`Description()`, `RegisteredAt()`, `ProcessedAt()`) and better lifecycle management
+- **Worker & Queue**: Enhanced error handling during termination, improved rescheduling, added `Queue::List()` method
+- **Protocol Updates**: Multiple service.proto enhancements for better client-server communication
 
 ## v0.9.1 (2025-07-20)
 ### ✨ Features
