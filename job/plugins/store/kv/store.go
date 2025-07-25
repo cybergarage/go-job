@@ -14,40 +14,29 @@
 
 package kv
 
-// KvKey represents a key in the key-value store.
-type KvKey string
+// Option represents a option.
+type Option = any
 
-// KvObject represents a key-value object.
-type KvObject interface {
-	// Key returns a key of the object.
-	Key() KvKey
-	// Value returns a value of the object.
-	Value() []byte
-}
-
-// KvOption represents a option.
-type KvOption = any
-
-// KvResultSet represents a result set which includes query execution results.
-type KvResultSet interface {
+// ResultSet represents a result set which includes query execution results.
+type ResultSet interface {
 	// Next moves the cursor forward next object from its current position.
 	Next() bool
 	// Object returns an object in the current cursor.
-	Object() (KvObject, error)
+	Object() (Object, error)
 }
 
-// KvTransaction represents a transaction interface.
-type KvTransaction interface {
+// Transaction represents a transaction interface.
+type Transaction interface {
 	// Set stores a key-value object. If the key already holds some value, it is overwritten.
-	Set(obj KvObject) error
+	Set(obj Object) error
 	// Get returns a key-value object of the specified key.
-	Get(key KvKey) (KvObject, error)
+	Get(key Key) (Object, error)
 	// GetRange returns a result set of the specified key.
-	GetRange(key KvKey, opts ...KvOption) (KvResultSet, error)
+	GetRange(key Key, opts ...Option) (ResultSet, error)
 	// Remove removes the specified key-value object.
-	Remove(key KvKey) error
+	Remove(key Key) error
 	// RemoveRange removes the specified key-value objects.
-	RemoveRange(key KvKey) error
+	RemoveRange(key Key) error
 	// Commit commits this transaction.
 	Commit() error
 	// Cancel cancels this transaction.
@@ -55,7 +44,9 @@ type KvTransaction interface {
 }
 
 // Store represents a store interface.
-type KvStore interface {
+type Store interface {
+	// Name returns the name of the store.
+	Name() string
 	// Transact begin a new transaction.
-	Transact(write bool) (KvTransaction, error)
+	Transact(write bool) (Transaction, error)
 }
