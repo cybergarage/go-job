@@ -25,6 +25,8 @@ import (
 type Schedule interface {
 	// CrontabSpec returns the crontab spec string.
 	CrontabSpec() string
+	// IsScheduled returns true if the schedule has timing configuration.
+	IsScheduled() bool
 	// IsRecurring checks if the job is recurring.
 	IsRecurring() bool
 	// Next returns the next scheduled time.
@@ -81,7 +83,7 @@ func newSchedule() *schedule {
 	return &schedule{
 		crontabSpec:  "",
 		cronSchedule: nil,
-		scheduleAt:   time.Now(),
+		scheduleAt:   time.Time{},
 	}
 }
 
@@ -106,6 +108,11 @@ func (js *schedule) CrontabSpec() string {
 // IsRecurring checks if the job is recurring based on the crontab spec.
 func (js *schedule) IsRecurring() bool {
 	return js.cronSchedule != nil
+}
+
+// IsScheduled returns true if the schedule has timing configuration.
+func (js *schedule) IsScheduled() bool {
+	return js.cronSchedule != nil || !js.scheduleAt.IsZero()
 }
 
 // Next returns the next scheduled time.

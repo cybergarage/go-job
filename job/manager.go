@@ -97,6 +97,19 @@ func newManager(opts ...any) (*manager, error) {
 	return mgr, nil
 }
 
+// RegisterJob registers a job in the registry.
+func (mgr *manager) RegisterJob(job Job) error {
+	err := mgr.Repository.RegisterJob(job)
+	if err != nil {
+		return fmt.Errorf("failed to register job: %w", err)
+	}
+	if !job.Schedule().IsScheduled() {
+		return nil
+	}
+	_, err = mgr.ScheduleJob(job)
+	return err
+}
+
 // ScheduleRegisteredJob schedules a registered job by its kind with the provided options.
 func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error) {
 	job, ok := mgr.LookupJob(kind)
