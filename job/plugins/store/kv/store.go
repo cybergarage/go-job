@@ -14,40 +14,40 @@
 
 package kv
 
-// Key represents a key in the key-value store.
-type Key string
+// KvKey represents a key in the key-value store.
+type KvKey string
 
-// Object represents a key-value object.
-type Object interface {
+// KvObject represents a key-value object.
+type KvObject interface {
 	// Key returns a key of the object.
-	Key() Key
+	Key() KvKey
 	// Value returns a value of the object.
 	Value() []byte
 }
 
-// Option represents a option.
-type Option = any
+// KvOption represents a option.
+type KvOption = any
 
-// ResultSet represents a result set which includes query execution results.
-type ResultSet interface {
+// KvResultSet represents a result set which includes query execution results.
+type KvResultSet interface {
 	// Next moves the cursor forward next object from its current position.
 	Next() bool
 	// Object returns an object in the current cursor.
-	Object() (Object, error)
+	Object() (KvObject, error)
 }
 
-// Transaction represents a transaction interface.
-type Transaction interface {
+// KvTransaction represents a transaction interface.
+type KvTransaction interface {
 	// Set stores a key-value object. If the key already holds some value, it is overwritten.
-	Set(obj Object) error
+	Set(obj KvObject) error
 	// Get returns a key-value object of the specified key.
-	Get(key Key) (Object, error)
+	Get(key KvKey) (KvObject, error)
 	// GetRange returns a result set of the specified key.
-	GetRange(key Key, opts ...Option) (ResultSet, error)
+	GetRange(key KvKey, opts ...KvOption) (KvResultSet, error)
 	// Remove removes the specified key-value object.
-	Remove(key Key) error
+	Remove(key KvKey) error
 	// RemoveRange removes the specified key-value objects.
-	RemoveRange(key Key) error
+	RemoveRange(key KvKey) error
 	// Commit commits this transaction.
 	Commit() error
 	// Cancel cancels this transaction.
@@ -57,5 +57,5 @@ type Transaction interface {
 // Store represents a store interface.
 type KvStore interface {
 	// Transact begin a new transaction.
-	Transact(write bool) (Transaction, error)
+	Transact(write bool) (KvTransaction, error)
 }
