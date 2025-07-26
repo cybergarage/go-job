@@ -46,6 +46,34 @@ type InstanceState interface {
 // InstanceStateOption is a function that configures the job instance state.
 type InstanceStateOption func(*instanceState)
 
+// WithStateKind is a functional option to set the kind of the instance state.
+func WithStateKind(kind string) InstanceStateOption {
+	return func(state *instanceState) {
+		state.kind = kind
+	}
+}
+
+// WithStateUUID is a functional option to set the UUID of the instance state.
+func WithStateUUID(uuid uuid.UUID) InstanceStateOption {
+	return func(state *instanceState) {
+		state.uuid = uuid
+	}
+}
+
+// WithStateJobState is a functional option to set the state of the instance state.
+func WithStateJobState(s JobState) InstanceStateOption {
+	return func(state *instanceState) {
+		state.state = s
+	}
+}
+
+// WithStateTimestamp is a functional option to set the timestamp of the instance state.
+func WithStateTimestamp(ts time.Time) InstanceStateOption {
+	return func(state *instanceState) {
+		state.ts = ts
+	}
+}
+
 // WithStateOption is a functional option to set additional options for the instance state.
 func WithStateOption(opts map[string]any) func(*instanceState) {
 	return func(state *instanceState) {
@@ -63,13 +91,18 @@ type instanceState struct {
 	opts  map[string]any
 }
 
+// NewInstanceState creates a new job instance state with the provided options.
+func NewInstanceState(opts ...InstanceStateOption) InstanceState {
+	return newInstanceState(opts...)
+}
+
 // newInstanceState creates a new job state record with the current timestamp and the given state.
-func newInstanceState(kind string, uuid uuid.UUID, state JobState, opts ...InstanceStateOption) InstanceState {
+func newInstanceState(opts ...InstanceStateOption) InstanceState {
 	is := &instanceState{
-		kind:  kind,
-		uuid:  uuid,
+		kind:  "",
+		uuid:  uuid.Nil,
 		ts:    time.Now(),
-		state: state,
+		state: JobStateUnset,
 		opts:  make(map[string]any),
 	}
 	for _, opt := range opts {
@@ -80,31 +113,49 @@ func newInstanceState(kind string, uuid uuid.UUID, state JobState, opts ...Insta
 
 // NewInstanceStateFromMap creates a new instance state from a map representation.
 func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
-	var kind string
-	var uuid UUID
-	var state JobState
-	opts := map[string]any{}
+	opts := make([]InstanceStateOption, 0, len(m))
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			var ok bool
-			kind, ok = value.(string)
+			kind, ok := value.(string)
 			if !ok {
 				return nil, fmt.Errorf("invalid kind value: %v", value)
 			}
+			opts = append(opts, WithStateKind(kind))
 		case uuidKey:
 			uuidStr, ok := value.(string)
 			if !ok {
 				return nil, fmt.Errorf("invalid uuid value: %v", value)
 			}
 			var err error
-			uuid, err = NewUUIDFromString(uuidStr)
+			uuid, err := NewUUIDFromString(uuidStr)
 			if err != nil {
 				return nil, fmt.Errorf("invalid uuid value: %v", value)
 			}
+			opts = append(opts, WithStateUUID(uuid))
+		case timestampKey:
+			timestampStr, ok := value.(string)
+			if !ok {
+				return nil, fmt.Errorf("invalid timestamp value: %v", value)
+			}
+			ts, err := NewTimestampFromString(timestampStr)
+			if err != nil {
+				return nil, fmt.Errorf("invalid timestamp value: %v", value)
+			}
+			opts = append(opts, WithStateTimestamp(ts.Time()))
+		case stateKey:
+			stateStr, ok := value.(string)
+			if !ok {
+				return nil, fmt.Errorf("invalid state value: %v", value)
+			}
+			state, err := NewStateFromString(stateStr)
+			if err != nil {
+				return nil, fmt.Errorf("invalid state value: %v", value)
+			}
+			opts = append(opts, WithStateJobState(state))
 		}
 	}
-	return newInstanceState(kind, uuid, state, WithStateOption(opts)), nil
+	return newInstanceState(opts...), nil
 }
 
 // Kind returns the kind of the job instance.
@@ -137,7 +188,7 @@ func (state *instanceState) Map() map[string]any {
 	m := map[string]any{
 		kindKey:      state.kind,
 		uuidKey:      state.uuid.String(),
-		timestampKey: state.ts,
+		timestampKey: NewTimestampFromTime(state.ts).String(),
 		stateKey:     state.state.String(),
 	}
 	m = encoding.MergeMaps(m, state.opts)

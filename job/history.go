@@ -81,14 +81,17 @@ func newHistory(opts ...HistoryOption) *history {
 }
 
 // LogProcessState logs a state change for a job instance.
-func (h *history) LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error {
-	record := newInstanceState(job.Kind(), job.UUID(), state, opts...)
-	return h.store.LogInstanceState(context.Background(), record)
+func (history *history) LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error {
+	opts = append(opts, WithStateKind(job.Kind()))
+	opts = append(opts, WithStateUUID(job.UUID()))
+	opts = append(opts, WithStateJobState(state))
+	record := newInstanceState(opts...)
+	return history.store.LogInstanceState(context.Background(), record)
 }
 
 // LookupHistory retrieves all state records for a job instance, sorted by timestamp.
-func (h *history) LookupHistory(job Instance) (InstanceHistory, error) {
-	records, err := h.store.LookupInstanceHistory(context.Background(), job)
+func (history *history) LookupHistory(job Instance) (InstanceHistory, error) {
+	records, err := history.store.LookupInstanceHistory(context.Background(), job)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +101,8 @@ func (h *history) LookupHistory(job Instance) (InstanceHistory, error) {
 	return records, nil
 }
 
-func (h *history) ListHistory() (InstanceHistory, error) {
-	records, err := h.store.ListInstanceHistory(context.Background())
+func (history *history) ListHistory() (InstanceHistory, error) {
+	records, err := history.store.ListInstanceHistory(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -110,21 +113,21 @@ func (h *history) ListHistory() (InstanceHistory, error) {
 }
 
 // Infof logs an informational message for a job instance.
-func (h *history) Infof(job Instance, format string, args ...any) error {
-	return h.store.Infof(context.Background(), job, format, args...)
+func (history *history) Infof(job Instance, format string, args ...any) error {
+	return history.store.Infof(context.Background(), job, format, args...)
 }
 
 // Warnf logs a warning message for a job instance.
-func (h *history) Warnf(job Instance, format string, args ...any) error {
-	return h.store.Warnf(context.Background(), job, format, args...)
+func (history *history) Warnf(job Instance, format string, args ...any) error {
+	return history.store.Warnf(context.Background(), job, format, args...)
 }
 
 // Errorf logs an error message for a job instance.
-func (h *history) Errorf(job Instance, format string, args ...any) error {
-	return h.store.Errorf(context.Background(), job, format, args...)
+func (history *history) Errorf(job Instance, format string, args ...any) error {
+	return history.store.Errorf(context.Background(), job, format, args...)
 }
 
 // LookupLogs retrieves all logs for a job instance.
-func (h *history) LookupLogs(job Instance) ([]Log, error) {
-	return h.store.LookupInstanceLogs(context.Background(), job)
+func (history *history) LookupLogs(job Instance) ([]Log, error) {
+	return history.store.LookupInstanceLogs(context.Background(), job)
 }
