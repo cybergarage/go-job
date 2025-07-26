@@ -54,7 +54,7 @@ type HistoryStore interface {
 type StateStore interface {
 	// LogInstanceState adds a new state record for a job instance.
 	LogInstanceState(ctx context.Context, state InstanceState) error
-	// LookupInstanceHistory lists all state records for a job instance.
+	// LookupInstanceHistory lists all state records for a job instance. The returned history is sorted by their timestamp.
 	LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error)
 	// ListInstanceHistory lists all state records for all job instances. The returned history is sorted by their timestamp.
 	ListInstanceHistory(ctx context.Context) (InstanceHistory, error)

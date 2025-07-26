@@ -201,6 +201,10 @@ func (store *kvStore) LookupInstanceHistory(ctx context.Context, ji job.Instance
 		states = append(states, state)
 	}
 
+	sort.Slice(states, func(i, j int) bool {
+		return states[i].Timestamp().Before(states[j].Timestamp())
+	})
+
 	return states, nil
 }
 
