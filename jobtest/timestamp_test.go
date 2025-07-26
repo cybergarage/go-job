@@ -20,7 +20,7 @@ import (
 	"github.com/cybergarage/go-job/job"
 )
 
-func TestTimestamps(t *testing.T) {
+func TestTimestampString(t *testing.T) {
 	// Test NewTimestamp
 	t1 := job.NewTimestamp()
 	if t1.String() == "" {
