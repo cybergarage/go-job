@@ -42,8 +42,23 @@ func TestJobState(t *testing.T) {
 			if !tt.state.Is(job.JobStateAll) {
 				t.Errorf("expected JobState %s to be part of JobStateAll", tt.state.String())
 			}
-			if tt.state.String() == "" {
-				t.Errorf("expected JobState %d to have a string representation", tt.state)
+			stateStr := tt.state.String()
+			if stateStr == "" {
+				t.Errorf("expected JobState %s to have a string representation", tt.state)
+			}
+			parsedState, err := job.NewStateFromString(stateStr)
+			if err != nil {
+				t.Errorf("failed to parse JobState from string: %v", err)
+			}
+			if parsedState != tt.state {
+				t.Errorf("expected JobState %s to equal parsed state %s", tt.state.String(), parsedState.String())
+			}
+			parsedStateStr := parsedState.String()
+			if parsedStateStr == "" {
+				t.Errorf("expected parsed JobState %s to have a string representation", parsedState.String())
+			}
+			if parsedStateStr != stateStr {
+				t.Errorf("expected parsed JobState string %s to equal original string %s", parsedStateStr, stateStr)
 			}
 		})
 	}

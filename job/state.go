@@ -14,6 +14,8 @@
 
 package job
 
+import "fmt"
+
 // JobState represents the state of a job as an integer.
 type JobState int
 
@@ -49,6 +51,41 @@ const (
 	JobStateAll = JobCreated | JobScheduled | JobProcessing | JobCancelled | JobTimedOut | JobCompleted | JobTerminated
 )
 
+const (
+	jobStateUnsetString      = "Unset"
+	jobStateCreatedString    = "Created"
+	jobStateScheduledString  = "Scheduled"
+	jobStateProcessingString = "Processing"
+	jobStateCancelledString  = "Cancelled"
+	jobStateTimedOutString   = "TimedOut"
+	jobStateCompletedString  = "Completed"
+	jobStateTerminatedString = "Terminated"
+)
+
+// NewStateFromString returns the JobState corresponding to the given string.
+func NewStateFromString(s string) (JobState, error) {
+	switch s {
+	case jobStateCreatedString:
+		return JobCreated, nil
+	case jobStateScheduledString:
+		return JobScheduled, nil
+	case jobStateProcessingString:
+		return JobProcessing, nil
+	case jobStateCancelledString:
+		return JobCancelled, nil
+	case jobStateTimedOutString:
+		return JobTimedOut, nil
+	case jobStateCompletedString:
+		return JobCompleted, nil
+	case jobStateTerminatedString:
+		return JobTerminated, nil
+	case jobStateUnsetString:
+		return JobStateUnset, nil
+	default:
+		return JobStateUnset, fmt.Errorf("unknown job state: %s", s)
+	}
+}
+
 // Is checks if the current JobState is equal to the provided state.
 func (s JobState) Is(state JobState) bool {
 	return (s & state) != 0
@@ -58,20 +95,20 @@ func (s JobState) Is(state JobState) bool {
 func (s JobState) String() string {
 	switch s {
 	case JobCreated:
-		return "Created"
+		return jobStateCreatedString
 	case JobScheduled:
-		return "Scheduled"
+		return jobStateScheduledString
 	case JobProcessing:
-		return "Processing"
+		return jobStateProcessingString
 	case JobCancelled:
-		return "Cancelled"
+		return jobStateCancelledString
 	case JobTimedOut:
-		return "TimedOut"
+		return jobStateTimedOutString
 	case JobCompleted:
-		return "Completed"
+		return jobStateCompletedString
 	case JobTerminated:
-		return "Terminated"
+		return jobStateTerminatedString
 	default:
-		return "Unset"
+		return jobStateUnsetString
 	}
 }
