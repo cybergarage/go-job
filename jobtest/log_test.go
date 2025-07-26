@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/encoding"
 )
 
 func TestLogLevelFilter(t *testing.T) {
@@ -68,6 +69,50 @@ func TestLogLevelStrings(t *testing.T) {
 			parsedLevelStr := parsedLevel.String()
 			if parsedLevelStr == "" {
 				t.Errorf("expected LogLevel %s to have a string representation", parsedLevel)
+			}
+		})
+	}
+}
+
+func TestLogLJSON(t *testing.T) {
+	tests := []struct {
+		uuid    job.UUID
+		level   job.LogLevel
+		message string
+	}{
+		{uuid: job.NewUUID(), level: job.LogInfo, message: "This is an info message"},
+		{uuid: job.NewUUID(), level: job.LogError, message: "This is an error message"},
+		{uuid: job.NewUUID(), level: job.LogWarn, message: "This is a warning message"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.level.String(), func(t *testing.T) {
+			log := job.NewLog(
+				job.WithLogUUID(tt.uuid),
+				job.WithLogLevel(tt.level),
+				job.WithLogMessage(tt.message),
+			)
+
+			jsonData, err := encoding.MapToJSON(log.Map())
+			if err != nil {
+				t.Errorf("failed to convert log to JSON: %v", err)
+				return
+			}
+
+			jsonMap, err := encoding.MapFromJSON(string(jsonData))
+			if err != nil {
+				t.Errorf("failed to convert JSON to map: %v", err)
+				return
+			}
+
+			parsedLog, err := job.NewLogFromMap(jsonMap)
+			if err != nil {
+				t.Errorf("failed to parse log from JSON: %v", err)
+				return
+			}
+
+			if !log.Equal(parsedLog) {
+				t.Errorf("expected log to equal parsed log, got %v, want %v", parsedLog, log)
 			}
 		})
 	}

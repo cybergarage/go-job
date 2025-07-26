@@ -32,6 +32,8 @@ type Log interface {
 	Level() LogLevel
 	// Message returns the message of the log entry.
 	Message() string
+	// Equal checks if two log entries are equal.
+	Equal(other Log) bool
 	// Map returns a map representation of the log entry.
 	Map() map[string]any
 	// String returns the string representation of the log entry.
@@ -117,6 +119,16 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 				return nil, err
 			}
 			opts = append(opts, WithLogTimestamp(ts.Time()))
+		case levelKey:
+			level, err := NewLogLevelFromString(value.(string))
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithLogLevel(level))
+		case messageKey:
+			if msg, ok := value.(string); ok {
+				opts = append(opts, WithLogMessage(msg))
+			}
 		}
 	}
 	return NewLog(opts...), nil
@@ -147,12 +159,21 @@ func (l *log) Message() string {
 	return l.msg
 }
 
+// Equal checks if two log entries are equal.
+func (l *log) Equal(other Log) bool {
+	return l.Kind() == other.Kind() &&
+		l.UUID() == other.UUID() &&
+		l.Timestamp().Equal(other.Timestamp()) &&
+		l.Level() == other.Level() &&
+		l.Message() == other.Message()
+}
+
 // Map returns a map representation of the log entry.
 func (l *log) Map() map[string]any {
 	return map[string]any{
 		kindKey:      l.kind,
 		uuidKey:      l.uuid.String(),
-		timestampKey: l.ts.Format(time.RFC3339),
+		timestampKey: NewTimestampFromTime(l.ts).String(),
 		levelKey:     l.level.String(),
 		messageKey:   l.msg,
 	}
@@ -160,5 +181,5 @@ func (l *log) Map() map[string]any {
 
 // String returns the string representation of the log entry.
 func (l *log) String() string {
-	return l.ts.Format(time.RFC3339) + " [" + l.level.String() + "] " + l.msg
+	return NewTimestampFromTime(l.ts).String() + " [" + l.level.String() + "] " + l.msg
 }
