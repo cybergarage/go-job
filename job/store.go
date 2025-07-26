@@ -56,7 +56,7 @@ type StateStore interface {
 	LogInstanceState(ctx context.Context, state InstanceState) error
 	// LookupInstanceHistory lists all state records for a job instance.
 	LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error)
-	// ListInstanceHistory lists all state records for all job instances.
+	// ListInstanceHistory lists all state records for all job instances. The returned history is sorted by their timestamp.
 	ListInstanceHistory(ctx context.Context) (InstanceHistory, error)
 	// ClearInstanceHistory clears all state records for a job instance.
 	ClearInstanceHistory(ctx context.Context) error

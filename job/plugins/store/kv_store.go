@@ -204,7 +204,7 @@ func (store *kvStore) LookupInstanceHistory(ctx context.Context, ji job.Instance
 	return states, nil
 }
 
-// ListInstanceHistory lists all state records for all job instances.
+// ListInstanceHistory lists all state records for all job instances. The returned history is sorted by their timestamp.
 func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHistory, error) {
 	tx, err := store.Transact(ctx, true)
 	if err != nil {
@@ -228,6 +228,10 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHist
 		}
 		states = append(states, state)
 	}
+
+	sort.Slice(states, func(i, j int) bool {
+		return states[i].Timestamp().Before(states[j].Timestamp())
+	})
 
 	return states, nil
 }
