@@ -131,17 +131,13 @@ func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
 		case timestampKey:
 			ts, err := NewTimestampFrom(value)
 			if err != nil {
-				return nil, fmt.Errorf("invalid timestamp value: %v", value)
+				return nil, err
 			}
 			opts = append(opts, WithStateTimestamp(ts.Time()))
 		case stateKey:
-			stateStr, ok := value.(string)
-			if !ok {
-				return nil, fmt.Errorf("invalid state value: %v", value)
-			}
-			state, err := NewStateFromString(stateStr)
+			state, err := NewStateFrom(value)
 			if err != nil {
-				return nil, fmt.Errorf("invalid state value: %v", value)
+				return nil, err
 			}
 			opts = append(opts, WithStateJobState(state))
 		}

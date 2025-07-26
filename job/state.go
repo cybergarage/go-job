@@ -62,6 +62,20 @@ const (
 	jobStateTerminatedString = "Terminated"
 )
 
+// NewStateFrom creates a new JobState from a given value.
+func NewStateFrom(a any) (JobState, error) {
+	switch v := a.(type) {
+	case JobState:
+		return v, nil
+	case string:
+		return NewStateFromString(v)
+	case int:
+		return JobState(v), nil
+	default:
+		return JobStateUnset, fmt.Errorf("invalid job state value: %v", a)
+	}
+}
+
 // NewStateFromString returns the JobState corresponding to the given string.
 func NewStateFromString(s string) (JobState, error) {
 	switch s {

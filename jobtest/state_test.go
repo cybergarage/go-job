@@ -46,7 +46,7 @@ func TestJobState(t *testing.T) {
 			if stateStr == "" {
 				t.Errorf("expected JobState %s to have a string representation", tt.state)
 			}
-			parsedState, err := job.NewStateFromString(stateStr)
+			parsedState, err := job.NewStateFrom(stateStr)
 			if err != nil {
 				t.Errorf("failed to parse JobState from string: %v", err)
 			}
