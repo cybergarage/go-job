@@ -118,7 +118,7 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 			}
 			opts = append(opts, WithLogUUID(uuid))
 		case timestampKey:
-			ts, err := NewTimestampFromString(value.(string))
+			ts, err := NewTimestampFrom(value)
 			if err != nil {
 				return nil, err
 			}

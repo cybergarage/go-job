@@ -15,6 +15,7 @@
 package job
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -28,6 +29,20 @@ type Timestamp time.Time
 // NewTimestamp creates a new Timestamp from the current time.
 func NewTimestamp() Timestamp {
 	return Timestamp(time.Now())
+}
+
+// NewTimestampFrom creates a new Timestamp from a given value.
+func NewTimestampFrom(a any) (Timestamp, error) {
+	switch v := a.(type) {
+	case Timestamp:
+		return v, nil
+	case time.Time:
+		return NewTimestampFromTime(v), nil
+	case string:
+		return NewTimestampFromString(v)
+	default:
+		return Timestamp{}, fmt.Errorf("invalid timestamp value: %v", a)
+	}
 }
 
 // NewTimestampFromTime creates a new Timestamp from a time.Time value.

@@ -129,11 +129,7 @@ func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
 			}
 			opts = append(opts, WithStateUUID(uuid))
 		case timestampKey:
-			timestampStr, ok := value.(string)
-			if !ok {
-				return nil, fmt.Errorf("invalid timestamp value: %v", value)
-			}
-			ts, err := NewTimestampFromString(timestampStr)
+			ts, err := NewTimestampFrom(value)
 			if err != nil {
 				return nil, fmt.Errorf("invalid timestamp value: %v", value)
 			}
