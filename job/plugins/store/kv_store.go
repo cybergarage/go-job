@@ -174,29 +174,61 @@ func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceSt
 	return tx.Commit(ctx)
 }
 
-/*
 // LookupInstanceHistory lists all state records for a job instance.
-func (store *kvStore) LookupInstanceHistory(ctx context.Context, job job.Instance) (InstanceHistory, error) {
-	if job == nil {
-		return nil, nil
+func (store *kvStore) LookupInstanceHistory(ctx context.Context, ji job.Instance) (job.InstanceHistory, error) {
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return nil, err
 	}
-	var records []InstanceState
-	for _, record := range store.history {
-		if record.UUID() == job.UUID() {
-			records = append(records, record)
+
+	rs, err := tx.GetRange(ctx, kv.NewInstanceStateKeyFrom(ji.UUID()))
+	if err != nil {
+		return nil, err
+	}
+
+	states := make([]job.InstanceState, 0)
+	for rs.Next() {
+		obj, err := rs.Object()
+		if err != nil {
+			return nil, err
 		}
+		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
+		if err != nil {
+			return nil, err
+		}
+		states = append(states, state)
 	}
-	return records, nil
+
+	return states, nil
 }
 
 // ListInstanceHistory lists all state records for all job instances.
-func (store *kvStore) ListInstanceHistory(ctx context.Context) (InstanceHistory, error) {
-	if len(store.history) == 0 {
-		return nil, nil
+func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHistory, error) {
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return nil, err
 	}
-	return store.history, nil
+
+	rs, err := tx.GetRange(ctx, kv.NewInstanceStateListKey())
+	if err != nil {
+		return nil, err
+	}
+
+	states := make([]job.InstanceState, 0)
+	for rs.Next() {
+		obj, err := rs.Object()
+		if err != nil {
+			return nil, err
+		}
+		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
+		if err != nil {
+			return nil, err
+		}
+		states = append(states, state)
+	}
+
+	return states, nil
 }
-*/
 
 // ClearInstanceHistory clears all state records for a job instance.
 func (store *kvStore) ClearInstanceHistory(ctx context.Context) error {
