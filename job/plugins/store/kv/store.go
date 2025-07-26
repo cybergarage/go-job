@@ -14,6 +14,10 @@
 
 package kv
 
+import (
+	"context"
+)
+
 // Option represents a option.
 type Option = any
 
@@ -28,19 +32,19 @@ type ResultSet interface {
 // Transaction represents a transaction interface.
 type Transaction interface {
 	// Set stores a key-value object. If the key already holds some value, it is overwritten.
-	Set(obj Object) error
+	Set(ctx context.Context, obj Object) error
 	// Get returns a key-value object of the specified key.
-	Get(key Key) (Object, error)
+	Get(ctx context.Context, key Key) (Object, error)
 	// GetRange returns a result set of the specified key.
-	GetRange(key Key, opts ...Option) (ResultSet, error)
+	GetRange(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
 	// Remove removes the specified key-value object.
-	Remove(key Key) error
+	Remove(ctx context.Context, key Key) error
 	// RemoveRange removes the specified key-value objects.
-	RemoveRange(key Key) error
+	RemoveRange(ctx context.Context, key Key) error
 	// Commit commits this transaction.
-	Commit() error
+	Commit(ctx context.Context) error
 	// Cancel cancels this transaction.
-	Cancel() error
+	Cancel(ctx context.Context) error
 }
 
 // Store represents a store interface.
@@ -48,5 +52,5 @@ type Store interface {
 	// Name returns the name of the store.
 	Name() string
 	// Transact begin a new transaction.
-	Transact(write bool) (Transaction, error)
+	Transact(ctx context.Context, write bool) (Transaction, error)
 }
