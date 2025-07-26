@@ -15,6 +15,7 @@
 package job
 
 import (
+	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/google/uuid"
 )
 
@@ -102,4 +103,13 @@ func NewInstanceFromMap(m map[string]any) (Instance, error) {
 		}
 	}
 	return NewInstance(opts...)
+}
+
+// NewInstanceFromJSONString creates a new job instance from the provided JSON string.
+func NewInstanceFromJSONString(jsonStr string) (Instance, error) {
+	m, err := encoding.UnmarshalJSONToMap(jsonStr)
+	if err != nil {
+		return nil, err
+	}
+	return NewInstanceFromMap(m)
 }
