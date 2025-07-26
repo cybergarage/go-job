@@ -17,6 +17,7 @@ package store
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
@@ -243,34 +244,47 @@ func (store *kvStore) ClearInstanceHistory(ctx context.Context) error {
 	return tx.Commit(ctx)
 }
 
-/*
 // Logf logs a formatted message at the specified log level.
-func (store *kvStore) Logf(ctx context.Context, job job.Instance, logLevel LogLevel, format string, args ...any) error {
-	log := NewLog(
-		WithLogKind(job.Kind()),
-		WithLogUUID(job.UUID()),
-		WithLogLevel(logLevel),
-		WithLogMessage(fmt.Sprintf(format, args...)),
+func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.LogLevel, format string, args ...any) error {
+	log := job.NewLog(
+		job.WithLogKind(ji.Kind()),
+		job.WithLogUUID(ji.UUID()),
+		job.WithLogLevel(logLevel),
+		job.WithLogMessage(fmt.Sprintf(format, args...)),
 	)
-	store.logs = append(store.logs, log)
-	return nil
+
+	obj, err := kv.NewObjectFromLog(log)
+	if err != nil {
+		return err
+	}
+
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return err
+	}
+	if err := tx.Set(ctx, obj); err != nil {
+		return errors.Join(err, tx.Cancel(ctx))
+	}
+
+	return tx.Commit(ctx)
 }
 
 // Infof logs an informational message for a job instance.
-func (store *kvStore) Infof(ctx context.Context, job job.Instance, format string, args ...any) error {
-	return store.Logf(ctx, job, LogInfo, format, args...)
+func (store *kvStore) Infof(ctx context.Context, ji job.Instance, format string, args ...any) error {
+	return store.Logf(ctx, ji, job.LogInfo, format, args...)
 }
 
 // Warnf logs a warning message for a job instance.
-func (store *kvStore) Warnf(ctx context.Context, job job.Instance, format string, args ...any) error {
-	return store.Logf(ctx, job, LogWarn, format, args...)
+func (store *kvStore) Warnf(ctx context.Context, ji job.Instance, format string, args ...any) error {
+	return store.Logf(ctx, ji, job.LogWarn, format, args...)
 }
 
 // Errorf logs an error message for a job instance.
-func (store *kvStore) Errorf(ctx context.Context, job job.Instance, format string, args ...any) error {
-	return store.Logf(ctx, job, LogError, format, args...)
+func (store *kvStore) Errorf(ctx context.Context, ji job.Instance, format string, args ...any) error {
+	return store.Logf(ctx, ji, job.LogError, format, args...)
 }
 
+/*
 // LookupInstanceLogs lists all log entries for a job instance.
 func (store *kvStore) LookupInstanceLogs(ctx context.Context, job job.Instance) ([]Log, error) {
 	var logs []Log
@@ -289,7 +303,7 @@ func (store *kvStore) ClearInstanceLogs(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	err = tx.RemoveRange(ctx, kv.NewInstanceLogListKey())
+	err = tx.RemoveRange(ctx, kv.NewLogListKey())
 	if err != nil {
 		return errors.Join(err, tx.Cancel(ctx))
 	}
