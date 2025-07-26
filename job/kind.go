@@ -14,5 +14,19 @@
 
 package job
 
+import (
+	"fmt"
+)
+
 // Kind is a type that represents the kind of a job.
 type Kind = string
+
+// NewKindFrom creates a new Kind from a specified value.
+// It returns an error if the value is not a valid kind.
+func NewKindFrom(a any) (Kind, error) {
+	kind, ok := a.(string)
+	if !ok {
+		return "", fmt.Errorf("invalid kind value: %v", a)
+	}
+	return Kind(kind), nil
+}

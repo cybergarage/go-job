@@ -106,7 +106,11 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			opts = append(opts, WithLogKind(value.(string)))
+			kind, err := NewKindFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithLogKind(kind))
 		case uuidKey:
 			uuid, err := NewUUIDFromString(value.(string))
 			if err != nil {

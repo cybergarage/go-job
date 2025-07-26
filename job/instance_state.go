@@ -117,9 +117,9 @@ func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			kind, ok := value.(string)
-			if !ok {
-				return nil, fmt.Errorf("invalid kind value: %v", value)
+			kind, err := NewKindFrom(value)
+			if err != nil {
+				return nil, err
 			}
 			opts = append(opts, WithStateKind(kind))
 		case uuidKey:
