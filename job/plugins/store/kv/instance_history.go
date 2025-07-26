@@ -15,25 +15,15 @@
 package kv
 
 import (
-	"github.com/google/uuid"
+	"github.com/cybergarage/go-job/job"
 )
 
-// Key represents a key in the key-value store.
-type Key string
-
-// KeyTypePrefix is a prefix for key types in the key-value store.
-type KeyTypePrefix = string
-
-const (
-	instancePrefix        KeyTypePrefix = "i"
-	instanceHistoryPrefix KeyTypePrefix = "s"
-)
-
-func newKeyFromUUID(prefix string, uuid uuid.UUID) Key {
-	return Key(prefix + uuid.String())
+// NewInstanceStateKeyFrom creates a new key for a job instance state.
+func NewInstanceStateKeyFrom(s job.InstanceState) Key {
+	return newKeyFromUUID(instanceHistoryPrefix, s.UUID())
 }
 
-// UUID returns the UUID representation of the key.
-func (k Key) UUID() (uuid.UUID, error) {
-	return uuid.Parse(string(k)[len(instancePrefix):])
+// NewInstanceStateListKey creates a new list key for job instance states.
+func NewInstanceStateListKey() Key {
+	return Key(instanceHistoryPrefix)
 }
