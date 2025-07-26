@@ -25,8 +25,9 @@ type Key string
 type KeyTypePrefix = string
 
 const (
-	instancePrefix        KeyTypePrefix = "i"
-	instanceHistoryPrefix KeyTypePrefix = "s"
+	instancePrefix      KeyTypePrefix = "i"
+	instanceStatePrefix KeyTypePrefix = "s"
+	instanceLogPrefix   KeyTypePrefix = "l"
 )
 
 func newKeyFromUUID(prefix string, uuid uuid.UUID) Key {

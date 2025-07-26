@@ -21,12 +21,12 @@ import (
 
 // NewInstanceStateKeyFrom creates a new key for a job instance state.
 func NewInstanceStateKeyFrom(uuid job.UUID) Key {
-	return newKeyFromUUID(instanceHistoryPrefix, uuid)
+	return newKeyFromUUID(instanceStatePrefix, uuid)
 }
 
 // NewInstanceStateListKey creates a new list key for job instance states.
 func NewInstanceStateListKey() Key {
-	return Key(instanceHistoryPrefix)
+	return Key(instanceStatePrefix)
 }
 
 // NewObjectFromInstanceState creates a new Object from a job instance state.
