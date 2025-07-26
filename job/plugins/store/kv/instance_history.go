@@ -16,14 +16,27 @@ package kv
 
 import (
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/encoding"
 )
 
 // NewInstanceStateKeyFrom creates a new key for a job instance state.
-func NewInstanceStateKeyFrom(s job.InstanceState) Key {
-	return newKeyFromUUID(instanceHistoryPrefix, s.UUID())
+func NewInstanceStateKeyFrom(state job.InstanceState) Key {
+	return newKeyFromUUID(instanceHistoryPrefix, state.UUID())
 }
 
 // NewInstanceStateListKey creates a new list key for job instance states.
 func NewInstanceStateListKey() Key {
 	return Key(instanceHistoryPrefix)
+}
+
+// NewObjectFromInstanceState creates a new Object from a job instance state.
+func NewObjectFromInstanceState(state job.InstanceState) (Object, error) {
+	data, err := encoding.MapToJSON(state.Map())
+	if err != nil {
+		return nil, err
+	}
+	return &object{
+		key:   NewInstanceStateKeyFrom(state),
+		value: []byte(data),
+	}, nil
 }
