@@ -196,13 +196,22 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (InstanceHistory,
 	}
 	return store.history, nil
 }
+*/
 
 // ClearInstanceHistory clears all state records for a job instance.
 func (store *kvStore) ClearInstanceHistory(ctx context.Context) error {
-	store.history = []InstanceState{}
-	return nil
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return err
+	}
+	err = tx.RemoveRange(ctx, kv.NewInstanceStateListKey())
+	if err != nil {
+		return errors.Join(err, tx.Cancel(ctx))
+	}
+	return tx.Commit(ctx)
 }
 
+/*
 // Logf logs a formatted message at the specified log level.
 func (store *kvStore) Logf(ctx context.Context, job job.Instance, logLevel LogLevel, format string, args ...any) error {
 	log := NewLog(
