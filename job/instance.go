@@ -262,13 +262,23 @@ func NewInstanceFromMap(m map[string]any) (Instance, error) {
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			opts = append(opts, WithKind(value.(string)))
+			kind, err := NewKindFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithKind(kind))
 		case uuidKey:
-			uuid, err := uuid.Parse(value.(string))
+			uuid, err := NewUUIDFrom(value)
 			if err != nil {
 				return nil, err
 			}
 			opts = append(opts, WithUUID(uuid))
+		case stateKey:
+			state, err := NewStateFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithState(state))
 		}
 	}
 	return NewInstance(opts...)
