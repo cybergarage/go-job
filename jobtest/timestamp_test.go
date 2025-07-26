@@ -33,12 +33,12 @@ func TestTimestamps(t *testing.T) {
 		t.Errorf("NewTimestampFromTime returned a different time: got %s, want %s", t2.String(), t1.String())
 	}
 
-	// Test NewTimestampFromString
-	t3, err := job.NewTimestampFromString(t1.String())
+	// Test NewTimestampFrom
+	t3, err := job.NewTimestampFrom(t1.String())
 	if err != nil {
-		t.Errorf("NewTimestampFromString failed: %v", err)
+		t.Errorf("NewTimestampFrom failed: %v", err)
 	}
 	if !t1.Equal(t3) {
-		t.Errorf("NewTimestampFromString returned a different time: got %s, want %s", t3.String(), t1.String())
+		t.Errorf("NewTimestampFrom returned a different time: got %s, want %s", t3.String(), t1.String())
 	}
 }
