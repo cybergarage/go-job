@@ -41,7 +41,7 @@ func NewObjectFromInstance(ji job.Instance) (Object, error) {
 	}
 
 	return &object{
-		key:   Key(ji.UUID().String()),
+		key:   NewInstanceKeyFrom(ji),
 		value: []byte(data),
 	}, nil
 }

@@ -15,18 +15,31 @@
 package kv
 
 import (
+	"github.com/cybergarage/go-job/job"
 	"github.com/google/uuid"
 )
 
 // Key represents a key in the key-value store.
 type Key string
 
-// NewKeyFromUUID creates a new Key from a UUID string.
-func NewKeyFromUUID(uuid uuid.UUID) Key {
-	return Key(uuid.String())
+// KeyTypePrefix is a prefix for key types in the key-value store.
+type KeyTypePrefix = string
+
+const (
+	jobKeyPrefix   KeyTypePrefix = "j"
+	instancePrefix KeyTypePrefix = "i"
+)
+
+func newKeyFromUUID(prefix string, uuid uuid.UUID) Key {
+	return Key(prefix + uuid.String())
+}
+
+// NewInstanceKeyFromUUID creates a new Key from a UUID string.
+func NewInstanceKeyFrom(ji job.Instance) Key {
+	return newKeyFromUUID(instancePrefix, ji.UUID())
 }
 
 // UUID returns the UUID representation of the key.
 func (k Key) UUID() (uuid.UUID, error) {
-	return uuid.Parse(string(k))
+	return uuid.Parse(string(k)[len(instancePrefix):])
 }
