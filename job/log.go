@@ -32,6 +32,10 @@ type Log interface {
 	Level() LogLevel
 	// Message returns the message of the log entry.
 	Message() string
+	// Map returns a map representation of the log entry.
+	Map() map[string]any
+	// String returns the string representation of the log entry.
+	String() string
 }
 
 type log struct {
@@ -135,6 +139,17 @@ func (l *log) Level() LogLevel {
 // Message returns the message of the log entry.
 func (l *log) Message() string {
 	return l.msg
+}
+
+// Map returns a map representation of the log entry.
+func (l *log) Map() map[string]any {
+	return map[string]any{
+		kindKey:      l.kind,
+		uuidKey:      l.uuid.String(),
+		timestampKey: l.ts.Format(time.RFC3339),
+		levelKey:     l.level.String(),
+		messageKey:   l.msg,
+	}
 }
 
 // String returns the string representation of the log entry.

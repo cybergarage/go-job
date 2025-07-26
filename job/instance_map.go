@@ -29,6 +29,8 @@ const (
 	maxRetriesKey = "max_retries"
 	priorityKey   = "priority"
 	timeoutKey    = "timeout"
+	levelKey      = "level"
+	messageKey    = "message"
 )
 
 // InstanceMap is a map representation of a job instance.
