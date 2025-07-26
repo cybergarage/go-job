@@ -42,7 +42,7 @@ func NewObjectFromLog(log job.Log) (Object, error) {
 }
 
 // NewLogFromMap creates a new log entry from a map representation.
-func NewInstanceLogFromBytes(b []byte) (job.Log, error) {
+func NewLogFromBytes(b []byte) (job.Log, error) {
 	m, err := encoding.MapFromJSON(string(b))
 	if err != nil {
 		return nil, err

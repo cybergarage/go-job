@@ -284,18 +284,33 @@ func (store *kvStore) Errorf(ctx context.Context, ji job.Instance, format string
 	return store.Logf(ctx, ji, job.LogError, format, args...)
 }
 
-/*
 // LookupInstanceLogs lists all log entries for a job instance.
-func (store *kvStore) LookupInstanceLogs(ctx context.Context, job job.Instance) ([]Log, error) {
-	var logs []Log
-	for _, log := range store.logs {
-		if log.UUID() == job.UUID() {
-			logs = append(logs, log)
-		}
+func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) ([]job.Log, error) {
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return nil, err
 	}
+
+	rs, err := tx.GetRange(ctx, kv.NewLogKeyFrom(ji.UUID()))
+	if err != nil {
+		return nil, err
+	}
+
+	logs := make([]job.Log, 0)
+	for rs.Next() {
+		obj, err := rs.Object()
+		if err != nil {
+			return nil, err
+		}
+		log, err := kv.NewLogFromBytes(obj.Bytes())
+		if err != nil {
+			return nil, err
+		}
+		logs = append(logs, log)
+	}
+
 	return logs, nil
 }
-*/
 
 // ClearInstanceLogs clears all log entries for a job instance.
 func (store *kvStore) ClearInstanceLogs(ctx context.Context) error {
