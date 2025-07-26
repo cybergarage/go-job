@@ -145,16 +145,20 @@ func (store *kvStore) ListInstances(ctx context.Context) ([]job.Instance, error)
 	return jobs, nil
 }
 
-/*
 // ClearInstances clears all job instances in the store.
 func (store *kvStore) ClearInstances(ctx context.Context) error {
-	store.jobs.Range(func(key, value any) bool {
-		store.jobs.Delete(key)
-		return true
-	})
-	return nil
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return err
+	}
+	err = tx.RemoveRange(ctx, kv.NewInstanceListKey())
+	if err != nil {
+		return errors.Join(err, tx.Cancel(ctx))
+	}
+	return tx.Commit(ctx)
 }
 
+/*
 // LogInstanceState adds a new state record for a job instance.
 func (store *kvStore) LogInstanceState(ctx context.Context, job job.Instance, state InstanceState) error {
 	if job == nil {
