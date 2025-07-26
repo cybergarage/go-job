@@ -18,21 +18,6 @@ import (
 	"fmt"
 )
 
-const (
-	uuidKey       = "uuid"
-	kindKey       = "kind"
-	timestampKey  = "timestamp"
-	stateKey      = "state"
-	errorKey      = "error"
-	resultSetKey  = "result_set"
-	argumentsKey  = "arguments"
-	maxRetriesKey = "max_retries"
-	priorityKey   = "priority"
-	timeoutKey    = "timeout"
-	levelKey      = "level"
-	messageKey    = "message"
-)
-
 // InstanceMap is a map representation of a job instance.
 type InstanceMap map[string]any
 
