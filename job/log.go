@@ -111,6 +111,12 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 				return nil, err
 			}
 			opts = append(opts, WithLogUUID(uuid))
+		case timestampKey:
+			ts, err := NewTimestampFromString(value.(string))
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithLogTimestamp(ts.Time()))
 		}
 	}
 	return NewLog(opts...), nil

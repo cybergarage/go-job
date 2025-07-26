@@ -42,3 +42,33 @@ func TestLogLevelFilter(t *testing.T) {
 		})
 	}
 }
+
+func TestLogLevelStrings(t *testing.T) {
+	tests := []struct {
+		level job.LogLevel
+	}{
+		{job.LogInfo},
+		{job.LogError},
+		{job.LogWarn},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.level.String(), func(t *testing.T) {
+			levelStr := tt.level.String()
+			if levelStr == "" {
+				t.Errorf("expected LogLevel %s to have a string representation", tt.level)
+			}
+			parsedLevel, err := job.NewLogLevelFromString(levelStr)
+			if err != nil {
+				t.Errorf("failed to parse LogLevel from string: %v", err)
+			}
+			if parsedLevel != tt.level {
+				t.Errorf("expected LogLevel %s to equal parsed level %s", tt.level.String(), parsedLevel.String())
+			}
+			parsedLevelStr := parsedLevel.String()
+			if parsedLevelStr == "" {
+				t.Errorf("expected LogLevel %s to have a string representation", parsedLevel)
+			}
+		})
+	}
+}

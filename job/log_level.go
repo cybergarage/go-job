@@ -14,6 +14,10 @@
 
 package job
 
+import (
+	"fmt"
+)
+
 // LogLevel represents the level of log messages.
 // It is used to categorize log messages for better organization and filtering.
 type LogLevel int
@@ -29,6 +33,25 @@ const (
 	LogAll LogLevel = LogInfo | LogError | LogWarn // 7
 )
 
+const (
+	logErrorString = "ERROR"
+	logInfoString  = "INFO"
+	logWarnString  = "WARN"
+)
+
+// NewLogLevelFromString returns the LogLevel corresponding to the given string.
+func NewLogLevelFromString(s string) (LogLevel, error) {
+	switch s {
+	case logInfoString:
+		return LogInfo, nil
+	case logErrorString:
+		return LogError, nil
+	case logWarnString:
+		return LogWarn, nil
+	}
+	return 0, fmt.Errorf("unknown log level: %s", s)
+}
+
 // Contains checks if the LogLevel contains another LogLevel.
 func (l LogLevel) Contains(other LogLevel) bool {
 	return (l & other) != 0
@@ -38,11 +61,11 @@ func (l LogLevel) Contains(other LogLevel) bool {
 func (l LogLevel) String() string {
 	switch l {
 	case LogInfo:
-		return "INFO"
+		return logInfoString
 	case LogError:
-		return "ERROR"
+		return logErrorString
 	case LogWarn:
-		return "WARN"
+		return logWarnString
 	default:
 		return "UNKNOWN"
 	}
