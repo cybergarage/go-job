@@ -15,7 +15,6 @@
 package kv
 
 import (
-	"github.com/cybergarage/go-job/job"
 	"github.com/google/uuid"
 )
 
@@ -32,16 +31,6 @@ const (
 
 func newKeyFromUUID(prefix string, uuid uuid.UUID) Key {
 	return Key(prefix + uuid.String())
-}
-
-// NewInstanceKeyFromUUID creates a new key from a UUID string.
-func NewInstanceKeyFrom(ji job.Instance) Key {
-	return newKeyFromUUID(instancePrefix, ji.UUID())
-}
-
-// NewInstanceListKey creates a new list key for a list of job instances.
-func NewInstanceListKey() Key {
-	return Key(instancePrefix)
 }
 
 // UUID returns the UUID representation of the key.

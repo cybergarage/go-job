@@ -21,6 +21,16 @@ import (
 	"github.com/cybergarage/go-job/job/encoding"
 )
 
+// NewInstanceKeyFromUUID creates a new key from a UUID string.
+func NewInstanceKeyFrom(ji job.Instance) Key {
+	return newKeyFromUUID(instancePrefix, ji.UUID())
+}
+
+// NewInstanceListKey creates a new list key for a list of job instances.
+func NewInstanceListKey() Key {
+	return Key(instancePrefix)
+}
+
 // NewObjectFromInstance creates a new Object from a job instance.
 func NewObjectFromInstance(ji job.Instance) (Object, error) {
 	data, err := encoding.MapToJSON(ji.Map())
