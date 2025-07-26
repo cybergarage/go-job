@@ -49,49 +49,43 @@ func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) err
 	return tx.Commit(ctx)
 }
 
+/*
 // DequeueInstance removes a job instance from the store by its unique identifier.
-func (store *kvStore) DequeueInstance(ctx context.Context, job job.Instance) error {
+func (store *kvStore) DequeueInstance(context.Context, job.Instance) error {
+	store.jobs.Delete(job.UUID())
+	return nil
+}
+*/
+
+// ListInstances lists all job instances in the store.
+func (store *kvStore) ListInstances(ctx context.Context) ([]job.Instance, error) {
 	tx, err := store.Transact(ctx, true)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	rs, err := tx.GetRange(ctx, kv.NewInstanceListKey())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	instances := []job.Instance{}
-	for _, r := range rs {
-		if r.Key().Kind() == kv.InstanceKeyKind {
-			ji, err := kv.NewInstanceFromBytes(r.Value())
-			if err != nil {
-				return err
-			}
-			instances = append(instances, ji)
+	jobs := make([]job.Instance, 0)
+	for rs.Next() {
+		obj, err := rs.Object()
+		if err != nil {
+			return nil, err
 		}
-	}
-
-	if err := tx.Delete(ctx, key); err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit()
-}
-
-/*
-
-// ListInstances lists all job instances in the store.
-func (store *kvStore) ListInstances(ctx context.Context) ([]Instance, error) {
-	jobs := make([]Instance, 0)
-	store.jobs.Range(func(key, value interface{}) bool {
-		if job, ok := value.(Instance); ok {
-			jobs = append(jobs, job)
+		job, err := kv.NewInstanceFromBytes(obj.Bytes())
+		if err != nil {
+			return nil, err
 		}
-		return true
-	})
+		jobs = append(jobs, job)
+	}
+
 	return jobs, nil
 }
 
+/*
 // ClearInstances clears all job instances in the store.
 func (store *kvStore) ClearInstances(ctx context.Context) error {
 	store.jobs.Range(func(key, value any) bool {
