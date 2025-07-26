@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
@@ -29,7 +30,7 @@ type kvStore struct {
 }
 
 // NewKVStore creates a new key-value store instance.
-func NewStoreWithKvStore(store kv.Store) *kvStore /*job.Store*/ {
+func NewStoreWithKvStore(store kv.Store) job.Store {
 	return &kvStore{
 		Store: store,
 	}
@@ -284,7 +285,7 @@ func (store *kvStore) Errorf(ctx context.Context, ji job.Instance, format string
 	return store.Logf(ctx, ji, job.LogError, format, args...)
 }
 
-// LookupInstanceLogs lists all log entries for a job instance.
+// LookupInstanceLogs lists all log entries for a job instance. The returned logs are sorted by their timestamp.
 func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) ([]job.Log, error) {
 	tx, err := store.Transact(ctx, true)
 	if err != nil {
@@ -308,6 +309,10 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 		}
 		logs = append(logs, log)
 	}
+
+	sort.Slice(logs, func(i, j int) bool {
+		return logs[i].Timestamp().Before(logs[j].Timestamp())
+	})
 
 	return logs, nil
 }
