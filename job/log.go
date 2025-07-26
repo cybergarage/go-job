@@ -112,7 +112,7 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 			}
 			opts = append(opts, WithLogKind(kind))
 		case uuidKey:
-			uuid, err := NewUUIDFromString(value.(string))
+			uuid, err := NewUUIDFrom(value)
 			if err != nil {
 				return nil, err
 			}

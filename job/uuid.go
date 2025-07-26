@@ -15,6 +15,8 @@
 package job
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 )
 
@@ -24,6 +26,18 @@ type UUID = uuid.UUID
 // NewUUID generates a new UUID for a job instance.
 func NewUUID() UUID {
 	return UUID(uuid.New())
+}
+
+// NewUUIDFrom creates a new UUID from a given value.
+func NewUUIDFrom(a any) (UUID, error) {
+	switch v := a.(type) {
+	case uuid.UUID:
+		return UUID(v), nil
+	case string:
+		return NewUUIDFromString(v)
+	default:
+		return UUID{}, fmt.Errorf("invalid UUID value: %v", a)
+	}
 }
 
 // NewUUIDFromString creates a UUID from a string representation.

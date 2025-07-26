@@ -123,14 +123,9 @@ func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
 			}
 			opts = append(opts, WithStateKind(kind))
 		case uuidKey:
-			uuidStr, ok := value.(string)
-			if !ok {
-				return nil, fmt.Errorf("invalid uuid value: %v", value)
-			}
-			var err error
-			uuid, err := NewUUIDFromString(uuidStr)
+			uuid, err := NewUUIDFrom(value)
 			if err != nil {
-				return nil, fmt.Errorf("invalid uuid value: %v", value)
+				return nil, err
 			}
 			opts = append(opts, WithStateUUID(uuid))
 		case timestampKey:
