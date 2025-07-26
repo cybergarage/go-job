@@ -36,7 +36,7 @@ type object struct {
 
 // NewObjectFromInstance creates a new Object from a job instance.
 func NewObjectFromInstance(ji job.Instance) (Object, error) {
-	data, err := ji.JSONString()
+	data, err := encoding.MapToJSON(ji.Map())
 	if err != nil {
 		return nil, fmt.Errorf("failed to get JSON string from job instance: %w", err)
 	}

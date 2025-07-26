@@ -430,15 +430,6 @@ func (ji *jobInstance) OptionMap() map[string]any {
 	return mergedMap
 }
 
-// JSONString returns a JSON string representation of the job instance.
-func (ji *jobInstance) JSONString() (string, error) {
-	data, err := encoding.MapToJSON(ji.Map())
-	if err != nil {
-		return "", fmt.Errorf("failed to marshal job instance to JSON: %w", err)
-	}
-	return string(data), nil
-}
-
 // String returns a string representation of the job instance.
 func (ji *jobInstance) String() string {
 	return fmt.Sprintf("%v", ji.Map())
