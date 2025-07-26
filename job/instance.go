@@ -81,7 +81,7 @@ type Instance interface {
 
 type jobInstance struct {
 	job     *job
-	uuid    uuid.UUID
+	uuid    UUID
 	state   JobState
 	attempt int
 	history History
@@ -212,7 +212,7 @@ func NewInstance(opts ...any) (Instance, error) {
 
 	ji := &jobInstance{
 		job:          job,
-		uuid:         uuid.New(),
+		uuid:         NewUUID(),
 		state:        JobStateUnset,
 		attempt:      0,
 		history:      newHistory(),
