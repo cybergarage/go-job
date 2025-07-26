@@ -17,6 +17,7 @@ package store
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
@@ -49,33 +50,57 @@ func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) err
 	return tx.Commit(ctx)
 }
 
-/*
-
 // DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
-func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, error) {
+func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, error) {
 	now := time.Now()
 
-	var nextJob Instance
-	store.jobs.Range(func(key, value interface{}) bool {
-		if job, ok := value.(Instance); ok {
-			scheduledAt := job.ScheduledAt()
-			if scheduledAt.Before(now) {
-				switch {
-				case nextJob == nil:
-					nextJob = job
-				case job.Before(nextJob):
-					nextJob = job
-				}
-			}
-		}
-		return true
-	})
-	if nextJob == nil {
-		return nil, nil
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return nil, err
 	}
-	store.jobs.Delete(nextJob.UUID())
-	return nextJob, nil
+
+	rs, err := tx.GetRange(ctx, kv.NewInstanceListKey())
+	if err != nil {
+		return nil, err
+	}
+
+	var nextJob job.Instance
+	for rs.Next() {
+		obj, err := rs.Object()
+		if err != nil {
+			return nil, errors.Join(err, tx.Cancel(ctx))
+		}
+		job, err := kv.NewInstanceFromBytes(obj.Bytes())
+		if err != nil {
+			return nil, errors.Join(err, tx.Cancel(ctx))
+		}
+		scheduledAt := job.ScheduledAt()
+		if scheduledAt.After(now) {
+			continue
+		}
+		switch {
+		case nextJob == nil:
+			nextJob = job
+		case job.Before(nextJob):
+			nextJob = job
+		}
+	}
+
+	if nextJob == nil {
+		return nil, tx.Commit(ctx)
+	}
+
+	key := kv.NewInstanceKeyFrom(nextJob)
+
+	err = tx.Remove(ctx, key)
+	if err != nil {
+		return nil, errors.Join(err, tx.Cancel(ctx))
+	}
+
+	return nextJob, tx.Commit(ctx)
 }
+
+/*
 
 // DequeueInstance removes a job instance from the store by its unique identifier.
 func (store *kvStore) DequeueInstance(context.Context, job.Instance) error {
