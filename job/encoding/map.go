@@ -35,8 +35,8 @@ func MapFrom(s any) (map[string]any, error) {
 	return m, nil
 }
 
-// MapFromJSONString converts a JSON string to map[string]any.
-func MapFromJSONString(jsonStr string) (map[string]any, error) {
+// MapFromJSON converts a JSON string to map[string]any.
+func MapFromJSON(jsonStr string) (map[string]any, error) {
 	var m map[string]any
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {

@@ -58,5 +58,5 @@ func (obj *object) Value() []byte {
 
 // Map returns the object as a map.
 func (obj *object) Map() (map[string]any, error) {
-	return encoding.MapFromJSONString(string(obj.value))
+	return encoding.MapFromJSON(string(obj.value))
 }
