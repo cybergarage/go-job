@@ -160,10 +160,7 @@ func (store *kvStore) ClearInstances(ctx context.Context) error {
 
 /*
 // LogInstanceState adds a new state record for a job instance.
-func (store *kvStore) LogInstanceState(ctx context.Context, job job.Instance, state InstanceState) error {
-	if job == nil {
-		return nil
-	}
+func (store *kvStore) LogInstanceState(ctx context.Context, state InstanceState) error {
 	store.history = append(store.history, state)
 	return nil
 }

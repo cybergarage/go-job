@@ -101,10 +101,7 @@ func (store *localStore) ClearInstances(ctx context.Context) error {
 }
 
 // LogInstanceState adds a new state record for a job instance.
-func (store *localStore) LogInstanceState(ctx context.Context, job Instance, state InstanceState) error {
-	if job == nil {
-		return nil
-	}
+func (store *localStore) LogInstanceState(ctx context.Context, state InstanceState) error {
 	store.history = append(store.history, state)
 	return nil
 }

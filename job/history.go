@@ -83,7 +83,7 @@ func newHistory(opts ...HistoryOption) *history {
 // LogProcessState logs a state change for a job instance.
 func (h *history) LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error {
 	record := newInstanceState(job.Kind(), job.UUID(), state, opts...)
-	return h.store.LogInstanceState(context.Background(), job, record)
+	return h.store.LogInstanceState(context.Background(), record)
 }
 
 // LookupHistory retrieves all state records for a job instance, sorted by timestamp.
