@@ -85,21 +85,3 @@ func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 
 	return jiList, nil
 }
-
-// NewInstanceFromMap creates a new job instance from the provided map.
-func NewInstanceFromMap(m map[string]any) (Instance, error) {
-	opts := []any{}
-	for key, value := range m {
-		switch key {
-		case kindKey:
-			opts = append(opts, WithKind(value.(string)))
-		case uuidKey:
-			uuid, err := uuid.Parse(value.(string))
-			if err != nil {
-				return nil, err
-			}
-			opts = append(opts, WithUUID(uuid))
-		}
-	}
-	return NewInstance(opts...)
-}
