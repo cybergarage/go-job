@@ -40,3 +40,12 @@ func NewObjectFromInstanceState(state job.InstanceState) (Object, error) {
 		value: []byte(data),
 	}, nil
 }
+
+// NewInstanceStateFromBytes creates a job instance state from a byte slice.
+func NewInstanceStateFromBytes(b []byte) (job.InstanceState, error) {
+	m, err := encoding.MapFromJSON(string(b))
+	if err != nil {
+		return nil, err
+	}
+	return job.NewInstanceStateFromMap(m)
+}
