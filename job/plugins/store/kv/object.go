@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/encoding"
 )
 
 // Object represents a key-value object.
@@ -39,7 +40,6 @@ func NewObjectFromInstance(ji job.Instance) (Object, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get JSON string from job instance: %w", err)
 	}
-
 	return &object{
 		key:   NewInstanceKeyFrom(ji),
 		value: []byte(data),
@@ -54,4 +54,9 @@ func (obj *object) Key() Key {
 // Value returns the value of the object.
 func (obj *object) Value() []byte {
 	return obj.value
+}
+
+// Map returns the object as a map.
+func (obj *object) Map() (map[string]any, error) {
+	return encoding.UnmarshalJSONToMap(string(obj.value))
 }
