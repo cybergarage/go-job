@@ -281,10 +281,17 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, job job.Instance) 
 	}
 	return logs, nil
 }
+*/
 
 // ClearInstanceLogs clears all log entries for a job instance.
 func (store *kvStore) ClearInstanceLogs(ctx context.Context) error {
-	store.logs = []Log{}
-	return nil
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return err
+	}
+	err = tx.RemoveRange(ctx, kv.NewInstanceLogListKey())
+	if err != nil {
+		return errors.Join(err, tx.Cancel(ctx))
+	}
+	return tx.Commit(ctx)
 }
-*/
