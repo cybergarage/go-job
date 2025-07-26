@@ -94,6 +94,24 @@ func NewLog(opts ...LogOption) Log {
 	return l
 }
 
+// NewLogFromMap creates a new log entry from a map representation.
+func NewLogFromMap(m map[string]any) (Log, error) {
+	opts := []LogOption{}
+	for key, value := range m {
+		switch key {
+		case kindKey:
+			opts = append(opts, WithLogKind(value.(string)))
+		case uuidKey:
+			uuid, err := NewUUIDFromString(value.(string))
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithLogUUID(uuid))
+		}
+	}
+	return NewLog(opts...), nil
+}
+
 // Kind returns the type of the log entry.
 func (l *log) Kind() string {
 	return l.kind
