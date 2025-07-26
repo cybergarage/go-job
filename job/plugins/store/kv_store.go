@@ -49,22 +49,36 @@ func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) err
 	return tx.Commit(ctx)
 }
 
-/*
 // DequeueInstance removes a job instance from the store by its unique identifier.
 func (store *kvStore) DequeueInstance(ctx context.Context, job job.Instance) error {
 	tx, err := store.Transact(ctx, true)
 	if err != nil {
 		return err
 	}
+
 	rs, err := tx.GetRange(ctx, kv.NewInstanceListKey())
 	if err != nil {
 		return err
 	}
+
+	instances := []job.Instance{}
+	for _, r := range rs {
+		if r.Key().Kind() == kv.InstanceKeyKind {
+			ji, err := kv.NewInstanceFromBytes(r.Value())
+			if err != nil {
+				return err
+			}
+			instances = append(instances, ji)
+		}
+	}
+
 	if err := tx.Delete(ctx, key); err != nil {
 		return errors.Join(err, tx.Cancel(ctx))
 	}
 	return tx.Commit()
 }
+
+/*
 
 // ListInstances lists all job instances in the store.
 func (store *kvStore) ListInstances(ctx context.Context) ([]Instance, error) {

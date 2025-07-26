@@ -15,9 +15,6 @@
 package kv
 
 import (
-	"fmt"
-
-	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/encoding"
 )
 
@@ -32,18 +29,6 @@ type Object interface {
 type object struct {
 	key   Key
 	value []byte
-}
-
-// NewObjectFromInstance creates a new Object from a job instance.
-func NewObjectFromInstance(ji job.Instance) (Object, error) {
-	data, err := encoding.MapToJSON(ji.Map())
-	if err != nil {
-		return nil, fmt.Errorf("failed to get JSON string from job instance: %w", err)
-	}
-	return &object{
-		key:   NewInstanceKeyFrom(ji),
-		value: []byte(data),
-	}, nil
 }
 
 // Key returns the key of the object.
