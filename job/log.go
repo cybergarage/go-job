@@ -124,7 +124,7 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 			}
 			opts = append(opts, WithLogTimestamp(ts.Time()))
 		case levelKey:
-			level, err := NewLogLevelFromString(value.(string))
+			level, err := NewLogLevelFrom(value)
 			if err != nil {
 				return nil, err
 			}

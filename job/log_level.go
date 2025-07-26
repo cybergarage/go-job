@@ -39,6 +39,18 @@ const (
 	logWarnString  = "WARN"
 )
 
+// NewLogLevelFrom creates a new LogLevel from a specified value.
+func NewLogLevelFrom(a any) (LogLevel, error) {
+	switch v := a.(type) {
+	case LogLevel:
+		return v, nil
+	case string:
+		return NewLogLevelFromString(v)
+	default:
+		return 0, fmt.Errorf("invalid log level value: %v", a)
+	}
+}
+
 // NewLogLevelFromString returns the LogLevel corresponding to the given string.
 func NewLogLevelFromString(s string) (LogLevel, error) {
 	switch s {
