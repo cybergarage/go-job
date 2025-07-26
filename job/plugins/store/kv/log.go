@@ -16,35 +16,36 @@ package kv
 
 import (
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/encoding"
 )
 
-// NewInstanceLogKeyFrom creates a new key for a job instance log.
-func NewInstanceLogKeyFrom(uuid job.UUID) Key {
+// NewLogKeyFrom creates a new key for a job log.
+func NewLogKeyFrom(uuid job.UUID) Key {
 	return newKeyFromUUID(instanceLogPrefix, uuid)
 }
 
-// NewInstanceLogListKey creates a new list key for job instance logs.
-func NewInstanceLogListKey() Key {
+// NewLogListKey creates a new list key for job instance logs.
+func NewLogListKey() Key {
 	return Key(instanceLogPrefix)
 }
 
-/*
-func NewObjectFromInstanceLog(state job.Log) (Object, error) {
-	data, err := encoding.MapToJSON(state.Map())
+// NewObjectFromLog creates a new object from a job log entry.
+func NewObjectFromLog(log job.Log) (Object, error) {
+	data, err := encoding.MapToJSON(log.Map())
 	if err != nil {
 		return nil, err
 	}
 	return &object{
-		key:   NewInstanceLogKeyFrom(state.UUID()),
+		key:   NewLogKeyFrom(log.UUID()),
 		value: []byte(data),
 	}, nil
 }
 
+// NewLogFromMap creates a new log entry from a map representation.
 func NewInstanceLogFromBytes(b []byte) (job.Log, error) {
 	m, err := encoding.MapFromJSON(string(b))
 	if err != nil {
 		return nil, err
 	}
-	return job.NewInstanceLogFromMap(m)
+	return job.NewLogFromMap(m)
 }
-*/
