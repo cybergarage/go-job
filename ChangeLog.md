@@ -18,6 +18,11 @@
 - Distributed Store
   - etcd plugin added
 
+## v0.9.3 (2025-07-26)
+### 🛠 Enhancements
+- Updated scheduling logic to automatically schedule jobs with timing configuration upon registration.
+- Improved QueueStore interface with `DequeueNextInstance` for priority-based job retrieval.
+
 ## v0.9.2 (2025-07-25)
 ### 🛠 Enhancements
 - **Instance Management**: Added `Manager::ListInstances()`, `LookupInstances()`, and `Query` system for comprehensive instance filtering and retrieval
