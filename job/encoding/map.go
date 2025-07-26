@@ -19,8 +19,8 @@ import (
 	"fmt"
 )
 
-// UnmarshalToMap converts any struct to map[string]any using JSON marshaling/unmarshaling.
-func UnmarshalToMap(s any) (map[string]any, error) {
+// MapFrom converts any struct to map[string]any using JSON marshaling/unmarshaling.
+func MapFrom(s any) (map[string]any, error) {
 	jsonData, err := json.Marshal(s)
 	if err != nil {
 		return nil, fmt.Errorf("JSON marshal error: %v", err)
@@ -35,8 +35,8 @@ func UnmarshalToMap(s any) (map[string]any, error) {
 	return m, nil
 }
 
-// UnmarshalJSONToMap converts a JSON string to map[string]any.
-func UnmarshalJSONToMap(jsonStr string) (map[string]any, error) {
+// MapFromJSONString converts a JSON string to map[string]any.
+func MapFromJSONString(jsonStr string) (map[string]any, error) {
 	var m map[string]any
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {
