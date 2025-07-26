@@ -78,6 +78,35 @@ func newInstanceState(kind string, uuid uuid.UUID, state JobState, opts ...Insta
 	return is
 }
 
+// NewInstanceStateFromMap creates a new instance state from a map representation.
+func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
+	var kind string
+	var uuid UUID
+	var state JobState
+	opts := map[string]any{}
+	for key, value := range m {
+		switch key {
+		case kindKey:
+			var ok bool
+			kind, ok = value.(string)
+			if !ok {
+				return nil, fmt.Errorf("invalid kind value: %v", value)
+			}
+		case uuidKey:
+			uuidStr, ok := value.(string)
+			if !ok {
+				return nil, fmt.Errorf("invalid uuid value: %v", value)
+			}
+			var err error
+			uuid, err = NewUUIDFromString(uuidStr)
+			if err != nil {
+				return nil, fmt.Errorf("invalid uuid value: %v", value)
+			}
+		}
+	}
+	return newInstanceState(kind, uuid, state, WithStateOption(opts)), nil
+}
+
 // Kind returns the kind of the job instance.
 func (state *instanceState) Kind() string {
 	return state.kind
