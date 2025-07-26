@@ -93,26 +93,14 @@ func (q *queue) Dequeue() (Instance, error) {
 		q.Lock()
 		ctx := context.Background()
 
-		jobs, err := q.store.ListInstances(ctx)
+		job, err := q.store.DequeueNextInstance(ctx)
 		if err != nil {
 			q.Unlock()
 			return nil, err
 		}
-
-		sort.Slice(jobs, func(i, j int) bool {
-			return jobs[i].Before(jobs[j])
-		})
-
-		now := time.Now()
-		for _, job := range jobs {
-			scheduledAt := job.ScheduledAt()
-			if scheduledAt.Before(now) {
-				err := q.store.DequeueInstance(ctx, job)
-				if err == nil {
-					q.Unlock()
-					return job, nil
-				}
-			}
+		if job != nil {
+			q.Unlock()
+			return job, nil
 		}
 		q.Unlock()
 		time.Sleep(1 * time.Second)

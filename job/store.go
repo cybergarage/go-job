@@ -32,6 +32,8 @@ type Store interface {
 type QueueStore interface {
 	// EnqueueInstance stores a job instance in the store.
 	EnqueueInstance(ctx context.Context, job Instance) error
+	// DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
+	DequeueNextInstance(ctx context.Context) (Instance, error)
 	// DequeueInstance removes a job instance from the store by its unique identifier.
 	DequeueInstance(ctx context.Context, job Instance) error
 	// ListInstances lists all job instances in the store.

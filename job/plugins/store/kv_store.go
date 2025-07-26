@@ -50,6 +50,33 @@ func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) err
 }
 
 /*
+
+// DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
+func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, error) {
+	now := time.Now()
+
+	var nextJob Instance
+	store.jobs.Range(func(key, value interface{}) bool {
+		if job, ok := value.(Instance); ok {
+			scheduledAt := job.ScheduledAt()
+			if scheduledAt.Before(now) {
+				switch {
+				case nextJob == nil:
+					nextJob = job
+				case job.Before(nextJob):
+					nextJob = job
+				}
+			}
+		}
+		return true
+	})
+	if nextJob == nil {
+		return nil, nil
+	}
+	store.jobs.Delete(nextJob.UUID())
+	return nextJob, nil
+}
+
 // DequeueInstance removes a job instance from the store by its unique identifier.
 func (store *kvStore) DequeueInstance(context.Context, job.Instance) error {
 	store.jobs.Delete(job.UUID())
