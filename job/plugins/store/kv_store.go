@@ -158,13 +158,23 @@ func (store *kvStore) ClearInstances(ctx context.Context) error {
 	return tx.Commit(ctx)
 }
 
-/*
 // LogInstanceState adds a new state record for a job instance.
-func (store *kvStore) LogInstanceState(ctx context.Context, state InstanceState) error {
-	store.history = append(store.history, state)
-	return nil
+func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceState) error {
+	obj, err := kv.NewObjectFromInstanceState(state)
+	if err != nil {
+		return err
+	}
+	tx, err := store.Transact(ctx, true)
+	if err != nil {
+		return err
+	}
+	if err := tx.Set(ctx, obj); err != nil {
+		return errors.Join(err, tx.Cancel(ctx))
+	}
+	return tx.Commit(ctx)
 }
 
+/*
 // LookupInstanceHistory lists all state records for a job instance.
 func (store *kvStore) LookupInstanceHistory(ctx context.Context, job job.Instance) (InstanceHistory, error) {
 	if job == nil {
