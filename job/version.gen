@@ -30,7 +30,5 @@ package job
 
 const (
 	Version = "$next_version"
-	Revision  = "$revision"
-	BuildDate = "$build_date"
 )
 EOF
