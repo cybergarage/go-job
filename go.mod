@@ -6,8 +6,14 @@ require (
 	github.com/cybergarage/go-logger v1.3.11
 	github.com/cybergarage/go-safecast v1.3.4
 	github.com/google/uuid v1.6.0
+	github.com/hashicorp/go-memdb v1.3.5
 	github.com/robfig/cron/v3 v3.0.1
 	google.golang.org/grpc v1.74.2
+)
+
+require (
+	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 )
 
 require (
