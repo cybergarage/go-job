@@ -15,10 +15,14 @@
 package job
 
 import (
+	"context"
 	"errors"
-	"os"
+	"net"
+	"strconv"
 
+	v1 "github.com/cybergarage/go-job/job/api/gen/go/v1"
 	logger "github.com/cybergarage/go-logger/log"
+	"google.golang.org/grpc"
 )
 
 // Server is an interface that defines methods for managing the job server.
@@ -32,7 +36,11 @@ type Server interface {
 }
 
 type server struct {
-	manager Manager
+	manager    Manager
+	addr       string
+	port       int
+	grpcServer *grpc.Server
+	v1.UnimplementedJobServiceServer
 }
 
 // NewServer returns a new job server instance.
@@ -43,6 +51,8 @@ func NewServer(opts ...any) (Server, error) {
 	}
 	return &server{
 		manager: mgr,
+		addr:    DefaultGrpcAddr,
+		port:    DefaultGrpcPort,
 	}, nil
 }
 
@@ -51,10 +61,55 @@ func (server *server) Manager() Manager {
 	return server.manager
 }
 
+func (server *server) grpcStart() error {
+	var err error
+	addr := net.JoinHostPort(server.addr, strconv.Itoa(server.port))
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+
+	loggingUnaryInterceptor := func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		resp, err := handler(ctx, req)
+		if err == nil {
+			logger.Infof("gRPC Request: %s", info.FullMethod)
+		} else {
+			logger.Errorf("gRPC Request: %s", info.FullMethod)
+		}
+		return resp, err
+	}
+
+	server.grpcServer = grpc.NewServer(grpc.UnaryInterceptor(loggingUnaryInterceptor))
+	v1.RegisterJobServiceServer(server.grpcServer, server)
+	go func() {
+		if err := server.grpcServer.Serve(listener); err != nil {
+			logger.Error(err)
+		}
+	}()
+
+	logger.Infof("gRPC server (%s) started", addr)
+
+	return nil
+}
+
+// Stop stops the Grpc server.
+func (server *server) grpcStop() error {
+	if server.grpcServer != nil {
+		server.grpcServer.Stop()
+		server.grpcServer = nil
+	}
+
+	addr := net.JoinHostPort(server.addr, strconv.Itoa(server.port))
+	logger.Infof("gRPC server (%s) terminated", addr)
+
+	return nil
+}
+
 // Start starts the job server.
 func (server *server) Start() error {
 	starters := []func() error{
 		server.manager.Start,
+		server.grpcStart,
 	}
 	var errs error
 	for _, starter := range starters {
@@ -63,15 +118,20 @@ func (server *server) Start() error {
 		}
 	}
 
-	logger.Infof("%s (PID:%d) started", ProductName, os.Getpid())
+	if errs != nil {
+		return errs
+	}
 
-	return errs
+	logger.Infof("%s/%s started", ProductName, Version)
+
+	return nil
 }
 
 // Stop stops the job server.
 func (server *server) Stop() error {
 	stoppers := []func() error{
 		server.manager.Stop,
+		server.grpcStop,
 	}
 	var errs error
 	for _, stopper := range stoppers {
@@ -79,6 +139,30 @@ func (server *server) Stop() error {
 			errs = errors.Join(errs, err)
 		}
 	}
-	logger.Infof("%s (PID:%d) terminated", ProductName, os.Getpid())
-	return errs
+
+	if errs != nil {
+		return errs
+	}
+
+	logger.Infof("%s/%s terminated", ProductName, Version)
+
+	return nil
+}
+
+func (server *server) GetVersion(ctx context.Context, req *v1.VersionRequest) (*v1.VersionResponse, error) {
+	return &v1.VersionResponse{
+		Version: Version,
+	}, nil
+}
+
+func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobRequest) (*v1.ScheduleJobResponse, error) {
+	return nil, nil
+}
+
+func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegisteredJobsRequest) (*v1.ListRegisteredJobsResponse, error) {
+	return nil, nil
+}
+
+func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstancesRequest) (*v1.LookupInstancesResponse, error) {
+	return nil, nil
 }
