@@ -35,10 +35,14 @@ BIN_SRC_DIR=cmd
 BIN_ID=${MODULE_ROOT}/${BIN_SRC_DIR}
 BIN_CLI=${PKG_NAME}ctl
 BIN_CLI_ID=${BIN_ID}/${BIN_CLI}
+BIN_SERVER=${PKG_NAME}d
+BIN_SERVER_ID=${BIN_ID}/${BIN_SERVER}
 BIN_SRCS=\
-        ${BIN_SRC_DIR}/${BIN_CLI}
+        ${BIN_SRC_DIR}/${BIN_CLI} \
+        ${BIN_SRC_DIR}/${BIN_SERVER}
 BINS=\
-        ${BIN_CLI_ID}
+        ${BIN_CLI_ID} \
+        ${BIN_SERVER_ID}
 
 .PHONY: format vet lint clean
 .IGNORE: lint
