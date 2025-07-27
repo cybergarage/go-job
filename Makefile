@@ -30,6 +30,16 @@ TEST_PKG_ID=${MODULE_ROOT}/${TEST_PKG_NAME}
 TEST_PKG_DIR=${TEST_PKG_NAME}
 TEST_PKG=${MODULE_ROOT}/${TEST_PKG_DIR}
 
+
+BIN_SRC_ROOT=cmd
+BIN_ID=${MODULE_ROOT}/${BIN_SRC_ROOT}
+BIN_CLI=${PKG_NAME}ctl
+BIN_CLI_ID=${BIN_ID}/${BIN_CLI}
+BIN_SRCS=\
+        ${BIN_SRC_ROOT}/${BIN_CLI}
+BINS=\
+        ${BIN_CLI_ID}
+
 .PHONY: format vet lint clean
 .IGNORE: lint
 
@@ -55,6 +65,12 @@ godoc:
 test: lint
 	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
+
+build:
+	go build -v -gcflags=${GCFLAGS} -ldflags=${LDFLAGS} ${BINS}
+
+install:
+	go install -v -gcflags=${GCFLAGS} -ldflags=${LDFLAGS} ${BINS}
 
 clean:
 	go clean -i ${PKG}
