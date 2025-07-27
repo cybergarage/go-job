@@ -23,6 +23,7 @@ import (
 	v1 "github.com/cybergarage/go-job/job/api/gen/go/v1"
 	logger "github.com/cybergarage/go-logger/log"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Server is an interface that defines methods for managing the job server.
@@ -157,6 +158,7 @@ func (server *server) Restart() error {
 	return server.Start()
 }
 
+// GetVersion returns the version of the job server.
 func (server *server) GetVersion(ctx context.Context, req *v1.VersionRequest) (*v1.VersionResponse, error) {
 	return &v1.VersionResponse{
 		Version:    Version,
@@ -164,6 +166,7 @@ func (server *server) GetVersion(ctx context.Context, req *v1.VersionRequest) (*
 	}, nil
 }
 
+// ScheduleJob schedules a job with the specified kind, priority, and arguments.
 func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobRequest) (*v1.ScheduleJobResponse, error) {
 	kind := req.GetKind()
 
@@ -196,10 +199,26 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 	}, nil
 }
 
+// ListRegisteredJobs returns a list of registered jobs.
 func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegisteredJobsRequest) (*v1.ListRegisteredJobsResponse, error) {
-	return nil, nil
+	jobs := []*v1.Job{}
+	allJobs, err := server.Manager().ListJobs()
+	if err != nil {
+		return nil, err
+	}
+	for _, job := range allJobs {
+		jobs = append(jobs, &v1.Job{
+			Kind:         job.Kind(),
+			Description:  job.Description(),
+			RegisteredAt: timestamppb.New(job.RegisteredAt()),
+		})
+	}
+	return &v1.ListRegisteredJobsResponse{
+		Jobs: jobs,
+	}, nil
 }
 
+// LookupInstances looks up all job instances which match the specified query.
 func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstancesRequest) (*v1.LookupInstancesResponse, error) {
 	return nil, nil
 }
