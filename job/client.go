@@ -15,60 +15,73 @@
 package job
 
 import (
+	"context"
 	"net"
 	"strconv"
 
+	pb "github.com/cybergarage/go-job/job/api/gen/go/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Client represens a gRPC client.
 type Client struct {
-	Host string
-	Port int
-	Conn *grpc.ClientConn
+	host string
+	port int
+	conn *grpc.ClientConn
 }
 
 // NewClient returns a new gRPC client.
 func NewClient() *Client {
 	client := &Client{
-		Host: "",
-		Port: DefaultGrpcPort,
-		Conn: nil,
+		host: "",
+		port: DefaultGrpcPort,
+		conn: nil,
 	}
 	return client
 }
 
 // SetPort sets a port number.
 func (client *Client) SetPort(port int) {
-	client.Port = port
+	client.port = port
 }
 
 // SetHost sets a host name.
 func (client *Client) SetHost(host string) {
-	client.Host = host
+	client.host = host
 }
 
 // Open opens a gRPC connection.
 func (client *Client) Open() error {
-	addr := net.JoinHostPort(client.Host, strconv.Itoa(client.Port))
+	addr := net.JoinHostPort(client.host, strconv.Itoa(client.port))
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
-	client.Conn = conn
+	client.conn = conn
 	return nil
 }
 
 // Close closes the gRPC connection.
 func (client *Client) Close() error {
-	if client.Conn == nil {
+	if client.conn == nil {
 		return nil
 	}
-	err := client.Conn.Close()
+	err := client.conn.Close()
 	if err != nil {
 		return err
 	}
-	client.Conn = nil
+	client.conn = nil
 	return nil
+}
+
+// GetVersion retrieves the version of the job service.
+func (client *Client) GetVersion(name string) (string, error) {
+	c := pb.NewJobServiceClient(client.conn)
+	req := &pb.VersionRequest{}
+	res, err := c.GetVersion(context.Background(), req)
+	if err != nil {
+		return "", err
+	}
+	return res.GetVersion(), nil
 }
