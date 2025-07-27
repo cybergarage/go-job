@@ -41,6 +41,15 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 		t.Fatalf("failed to open job client: %v", err)
 	}
 
+	version, err := client.GetVersion()
+	if err != nil {
+		t.Fatalf("failed to get version: %v", err)
+	}
+
+	if version != job.Version {
+		t.Errorf("expected version %s, got %s", job.Version, version)
+	}
+
 	defer func() {
 		err := client.Close()
 		if err != nil {

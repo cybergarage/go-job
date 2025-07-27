@@ -76,7 +76,7 @@ func (client *Client) Close() error {
 }
 
 // GetVersion retrieves the version of the job service.
-func (client *Client) GetVersion(name string) (string, error) {
+func (client *Client) GetVersion() (string, error) {
 	c := v1.NewJobServiceClient(client.conn)
 	req := &v1.VersionRequest{}
 	res, err := c.GetVersion(context.Background(), req)
