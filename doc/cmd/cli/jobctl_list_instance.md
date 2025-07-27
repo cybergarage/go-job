@@ -1,18 +1,29 @@
-## jobctl
+## jobctl list instance
 
+List job instances
 
+### Synopsis
+
+List all job instances.
+
+```
+jobctl list instance [flags]
+```
 
 ### Options
 
 ```
-  -h, --help          help for jobctl
+  -h, --help   help for instance
+```
+
+### Options inherited from parent commands
+
+```
       --host string   gRPC host or address for a go-job instance (default "localhost")
       --port int      gRPC port number for a go-job instance (default 50053)
 ```
 
 ### SEE ALSO
 
-* [jobctl get](jobctl_get.md)	 - Get the specified resource
 * [jobctl list](jobctl_list.md)	 - List all resources
-* [jobctl schedule](jobctl_schedule.md)	 - Schedule a job
 
