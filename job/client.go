@@ -142,3 +142,56 @@ func (client *Client) ListRegisteredJobs() ([]Job, error) {
 	}
 	return pbJobs, nil
 }
+
+// LookupInstances looks up job instances based on the provided query.
+func (client *Client) LookupInstances(query Query) ([]Instance, error) {
+	c := v1.NewJobServiceClient(client.conn)
+
+	pbQuery := &v1.Query{}
+	kind, ok := query.Kind()
+	if ok {
+		pbQuery.Kind = &kind
+	}
+	id, ok := query.UUID()
+	if ok {
+		idStr := id.String()
+		pbQuery.Uuid = &idStr
+	}
+	state, ok := query.State()
+	if ok {
+		pbState, err := state.ProtoState()
+		if err != nil {
+			return nil, err
+		}
+		pbQuery.State = &pbState
+	}
+
+	req := &v1.LookupInstancesRequest{
+		Query: pbQuery,
+	}
+	res, err := c.LookupInstances(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	pbInstances := make([]Instance, len(res.GetInstances()))
+	for i, pbInstance := range res.GetInstances() {
+		uuid, err := NewUUIDFrom(pbInstance.GetUuid())
+		if err != nil {
+			return nil, err
+		}
+		state, err := NewStateFrom(pbInstance.GetState())
+		if err != nil {
+			return nil, err
+		}
+		pbInstances[i], err = NewInstance(
+			WithUUID(uuid),
+			WithKind(pbInstance.GetKind()),
+			WithState(state),
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return pbInstances, nil
+}

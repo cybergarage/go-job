@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
@@ -23,12 +24,20 @@ import (
 func ServerAPIsTest(t *testing.T, server job.Server) {
 	t.Helper()
 
+	var wg sync.WaitGroup
+
 	// Register a job with the server
 
 	kind := "sum"
+
+	resHandler := func(ji job.Instance, responses []any) {
+		wg.Done()
+	}
+
 	j, err := job.NewJob(
 		job.WithKind(kind),
 		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithResponseHandler(resHandler),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create job: %v", err)
@@ -89,6 +98,8 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 
 	// Schedule a job
 
+	wg.Add(1)
+
 	instance, err := client.ScheduleJob(kind, 1, 2)
 	if err != nil {
 		t.Fatalf("failed to schedule job: %v", err)
@@ -97,6 +108,20 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 		t.Fatal("expected job instance to be non-nil")
 	}
 
+	wg.Wait()
+
+	// Lookup job instance
+	instances, err := client.LookupInstances(
+		job.NewQuery(
+			job.WithQueryUUID(instance.UUID()),
+		),
+	)
+	if err != nil {
+		t.Fatalf("failed to lookup job instances: %v", err)
+	}
+	if len(instances) == 0 {
+		t.Fatal("expected at least one job instance")
+	}
 }
 
 func TestServerAPIs(t *testing.T) {
