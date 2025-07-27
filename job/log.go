@@ -118,7 +118,7 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 			}
 			opts = append(opts, WithLogUUID(uuid))
 		case timestampKey:
-			ts, err := NewTimestampFrom(value)
+			ts, err := NewTimeFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -177,7 +177,7 @@ func (l *log) Map() map[string]any {
 	return map[string]any{
 		kindKey:      l.kind,
 		uuidKey:      l.uuid.String(),
-		timestampKey: NewTimestampFromTime(l.ts).String(),
+		timestampKey: NewTimeFromTime(l.ts).String(),
 		levelKey:     l.level.String(),
 		messageKey:   l.msg,
 	}
@@ -185,5 +185,5 @@ func (l *log) Map() map[string]any {
 
 // String returns the string representation of the log entry.
 func (l *log) String() string {
-	return NewTimestampFromTime(l.ts).String() + " [" + l.level.String() + "] " + l.msg
+	return NewTimeFromTime(l.ts).String() + " [" + l.level.String() + "] " + l.msg
 }

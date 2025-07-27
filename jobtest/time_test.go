@@ -22,19 +22,19 @@ import (
 
 func TestTimestampString(t *testing.T) {
 	// Test NewTimestamp
-	t1 := job.NewTimestamp()
+	t1 := job.NewTime()
 	if t1.String() == "" {
 		t.Error("NewTimestamp returned an empty string")
 	}
 
 	// Test NewTimestampFromTime
-	t2 := job.NewTimestampFromTime(t1.Time())
+	t2 := job.NewTimeFromTime(t1.Time())
 	if !t1.Equal(t2) {
 		t.Errorf("NewTimestampFromTime returned a different time: got %s, want %s", t2.String(), t1.String())
 	}
 
 	// Test NewTimestampFrom
-	t3, err := job.NewTimestampFrom(t1.String())
+	t3, err := job.NewTimeFrom(t1.String())
 	if err != nil {
 		t.Errorf("NewTimestampFrom failed: %v", err)
 	}

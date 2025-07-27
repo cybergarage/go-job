@@ -279,6 +279,12 @@ func NewInstanceFromMap(m map[string]any) (Instance, error) {
 				return nil, err
 			}
 			opts = append(opts, WithState(state))
+		case argumentsKey:
+			args, err := NewArgumentsFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithArguments(args.Arguments()...))
 		}
 	}
 	return NewInstance(opts...)
