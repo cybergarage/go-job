@@ -70,6 +70,9 @@ test: lint
 	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG}/... -coverprofile=${PKG_COVER}.out ${PKG}/... ${TEST_PKG}/...
 	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
+cover: test
+	open ${PKG_COVER}.html || xdg-open ${PKG_COVER}.html || gnome-open ${PKG_COVER}.html
+
 build:
 	go build -v -gcflags=${GCFLAGS} -ldflags=${LDFLAGS} ${BINS}
 
