@@ -20,6 +20,8 @@ const (
 )
 
 const (
+	// DefaultGrpcAddr is the default address of the gRPC server.
+	DefaultGrpcAddr = ""
 	// DefaultGrpcPort is the default port number of the gRPC server.
 	DefaultGrpcPort = 50053
 )
