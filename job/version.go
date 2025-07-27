@@ -16,4 +16,6 @@ package job
 
 const (
 	Version = "v0.9.3"
+    Revision  = ""
+    BuildDate = ""
 )
