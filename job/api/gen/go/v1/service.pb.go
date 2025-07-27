@@ -437,10 +437,10 @@ type ScheduleJobRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Kind to schedule (must be pre-registered)
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	// Priority (lower values = higher priority; -1 means unset)
-	Priority int32 `protobuf:"varint,11,opt,name=priority,proto3" json:"priority,omitempty"`
 	// Arguments to pass to the job executor
-	Arguments     []string `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	Arguments []string `protobuf:"bytes,11,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	// Priority (lower values = higher priority; -1 means unset)
+	Priority      *int32 `protobuf:"varint,12,opt,name=priority,proto3,oneof" json:"priority,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -482,18 +482,18 @@ func (x *ScheduleJobRequest) GetKind() string {
 	return ""
 }
 
-func (x *ScheduleJobRequest) GetPriority() int32 {
-	if x != nil {
-		return x.Priority
-	}
-	return 0
-}
-
 func (x *ScheduleJobRequest) GetArguments() []string {
 	if x != nil {
 		return x.Arguments
 	}
 	return nil
+}
+
+func (x *ScheduleJobRequest) GetPriority() int32 {
+	if x != nil && x.Priority != nil {
+		return *x.Priority
+	}
+	return 0
 }
 
 type ScheduleJobResponse struct {
@@ -816,11 +816,12 @@ const file_service_proto_rawDesc = "" +
 	"\x0e_terminated_atB\x0f\n" +
 	"\r_cancelled_atB\x0f\n" +
 	"\r_timed_out_atB\x10\n" +
-	"\x0e_attempt_count\"b\n" +
+	"\x0e_attempt_count\"t\n" +
 	"\x12ScheduleJobRequest\x12\x12\n" +
-	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
-	"\bpriority\x18\v \x01(\x05R\bpriority\x12\x1c\n" +
-	"\targuments\x18\f \x03(\tR\targuments\"F\n" +
+	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1c\n" +
+	"\targuments\x18\v \x03(\tR\targuments\x12\x1f\n" +
+	"\bpriority\x18\f \x01(\x05H\x00R\bpriority\x88\x01\x01B\v\n" +
+	"\t_priority\"F\n" +
 	"\x13ScheduleJobResponse\x12/\n" +
 	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\"\x1b\n" +
 	"\x19ListRegisteredJobsRequest\"=\n" +
@@ -920,6 +921,7 @@ func file_service_proto_init() {
 	file_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_service_proto_msgTypes[2].OneofWrappers = []any{}
 	file_service_proto_msgTypes[3].OneofWrappers = []any{}
+	file_service_proto_msgTypes[4].OneofWrappers = []any{}
 	file_service_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
