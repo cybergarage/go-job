@@ -38,3 +38,13 @@ func newKeyFromUUID(prefix string, uuid uuid.UUID) Key {
 func (k Key) UUID() (uuid.UUID, error) {
 	return uuid.Parse(string(k)[len(instancePrefix):])
 }
+
+// Bytes returns the byte representation of the key.
+func (k Key) Bytes() []byte {
+	return []byte(k)
+}
+
+// String returns the string representation of the key.
+func (k Key) String() string {
+	return string(k)
+}
