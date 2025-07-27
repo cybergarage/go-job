@@ -33,6 +33,8 @@ type Server interface {
 	Start() error
 	// Stop stops the job server.
 	Stop() error
+	// Restart restarts the job server.
+	Restart() error
 }
 
 type server struct {
@@ -147,6 +149,14 @@ func (server *server) Stop() error {
 	logger.Infof("%s/%s terminated", ProductName, Version)
 
 	return nil
+}
+
+// Restart restarts the job server.
+func (server *server) Restart() error {
+	if err := server.Stop(); err != nil {
+		return err
+	}
+	return server.Start()
 }
 
 func (server *server) GetVersion(ctx context.Context, req *v1.VersionRequest) (*v1.VersionResponse, error) {
