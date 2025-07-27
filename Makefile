@@ -94,6 +94,17 @@ proto: protopkg $(pbs)
 
 # Documentation generation
 
+DOC_CLI_ROOT=doc/cmd/cli
+DOC_CLI_BIN=jobdoc
+doc-cmd-cli:
+	go build -o ${DOC_CLI_ROOT}/${DOC_CLI_BIN} ${MODULE_ROOT}/${DOC_CLI_ROOT}
+	pushd ${DOC_CLI_ROOT} && ./${DOC_CLI_BIN} && popd
+	rm ${DOC_CLI_ROOT}/${DOC_CLI_BIN}
+	git add ${DOC_CLI_ROOT}/*.md
+	git commit ${DOC_CLI_ROOT}/*.md -m "Update CLI documentation"
+
+cmd-docs: doc-cmd-cli
+
 %.md : %.adoc
 	asciidoctor -b docbook -a leveloffset=+1 -o - $< | pandoc -t markdown_strict --wrap=none -f docbook > $@
 
@@ -102,6 +113,6 @@ proto: protopkg $(pbs)
 
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
-doc: $(docs) $(images)
+doc: $(docs) $(images) cmd-docs
 	@echo "Generated: $(docs)"
 	@echo "Generated: $(images)"
