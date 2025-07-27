@@ -168,9 +168,9 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 	kind := req.GetKind()
 
 	opts := []any{}
-	priority := req.GetPriority()
-	if 0 < priority {
-		opts = append(opts, WithPriority(Priority(priority)))
+	priority := req.Priority
+	if priority != nil {
+		opts = append(opts, WithPriority(Priority(*priority)))
 	}
 	if req.GetArguments() != nil {
 		args := []any{}
