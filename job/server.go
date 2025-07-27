@@ -223,18 +223,27 @@ func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegist
 // LookupInstances looks up all job instances which match the specified query.
 func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstancesRequest) (*v1.LookupInstancesResponse, error) {
 	queryOpts := []QueryOption{}
-	kind := req.GetQuery().Kind
-	if kind != nil && 0 < len(*kind) {
-		queryOpts = append(queryOpts, WithQueryKind(*kind))
+	queryKind := req.GetQuery().Kind
+	if queryKind != nil && 0 < len(*queryKind) {
+		queryOpts = append(queryOpts, WithQueryKind(*queryKind))
 	}
-	uuidKey := req.GetQuery().Uuid
-	if uuidKey != nil && 0 < len(*uuidKey) {
-		uuid, err := NewUUIDFrom(*uuidKey)
+	queryUUID := req.GetQuery().Uuid
+	if queryUUID != nil && 0 < len(*queryUUID) {
+		uuid, err := NewUUIDFrom(*queryUUID)
 		if err != nil {
 			return nil, err
 		}
 		queryOpts = append(queryOpts, WithQueryUUID(uuid))
 	}
+	queryState := req.GetQuery().State
+	if queryState != nil {
+		state, err := NewStateFrom(*queryState)
+		if err != nil {
+			return nil, err
+		}
+		queryOpts = append(queryOpts, WithQueryState(state))
+	}
+
 	allInstances, err := server.Manager().LookupInstances(NewQuery(queryOpts...))
 	if err != nil {
 		return nil, err
