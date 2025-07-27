@@ -177,7 +177,9 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 		for _, arg := range req.GetArguments() {
 			args = append(args, arg)
 		}
-		opts = append(opts, WithArguments(args...))
+		if 0 < len(args) {
+			opts = append(opts, WithArguments(args...))
+		}
 	}
 
 	postJob, err := server.Manager().ScheduleRegisteredJob(kind, opts...)
