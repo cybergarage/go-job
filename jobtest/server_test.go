@@ -20,9 +20,33 @@ import (
 	"github.com/cybergarage/go-job/job"
 )
 
-func ServerAPIsTest(t *testing.T, job job.Server) {
+func ServerAPIsTest(t *testing.T, server job.Server) {
 	t.Helper()
 
+	err := server.Start()
+	if err != nil {
+		t.Fatalf("failed to start job server: %v", err)
+	}
+	defer func() {
+		err := server.Stop()
+		if err != nil {
+			t.Errorf("failed to stop job server: %v", err)
+		}
+	}()
+
+	client := job.NewClient()
+
+	err = client.Open()
+	if err != nil {
+		t.Fatalf("failed to open job client: %v", err)
+	}
+
+	defer func() {
+		err := client.Close()
+		if err != nil {
+			t.Errorf("failed to close job client: %v", err)
+		}
+	}()
 }
 
 func TestServerAPIs(t *testing.T) {
