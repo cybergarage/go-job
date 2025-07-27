@@ -148,3 +148,26 @@ func (s JobState) String() string {
 		return jobStateUnsetString
 	}
 }
+
+// ProtoState converts the JobState to its corresponding protobuf representation.
+func (s JobState) ProtoState() (v1.JobState, error) {
+	switch s {
+	case JobStateUnset:
+		return v1.JobState_JOB_STATE_UNSET, nil
+	case JobCreated:
+		return v1.JobState_JOB_STATE_CREATED, nil
+	case JobScheduled:
+		return v1.JobState_JOB_STATE_SCHEDULED, nil
+	case JobProcessing:
+		return v1.JobState_JOB_STATE_PROCESSING, nil
+	case JobCancelled:
+		return v1.JobState_JOB_STATE_CANCELLED, nil
+	case JobTimedOut:
+		return v1.JobState_JOB_STATE_TIMED_OUT, nil
+	case JobCompleted:
+		return v1.JobState_JOB_STATE_COMPLETED, nil
+	case JobTerminated:
+		return v1.JobState_JOB_STATE_TERMINATED, nil
+	}
+	return v1.JobState_JOB_STATE_UNSET, fmt.Errorf("unknown job state: %s", s)
+}
