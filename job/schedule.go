@@ -79,6 +79,16 @@ func WithScheduleAfter(d time.Duration) ScheduleOption {
 	}
 }
 
+// NewCrontabSpecFrom creates a crontab spec string from various input types.
+func NewCrontabSpecFrom(a any) (string, error) {
+	switch v := a.(type) {
+	case string:
+		return v, nil
+	default:
+		return "", fmt.Errorf("invalid crontab spec value: %v", a)
+	}
+}
+
 func newSchedule(opts ...ScheduleOption) (*schedule, error) {
 	js := &schedule{
 		crontabSpec:  "",
@@ -127,7 +137,10 @@ func (js *schedule) Next() time.Time {
 func (js *schedule) Map() map[string]any {
 	m := map[string]any{}
 	if 0 < len(js.crontabSpec) {
-		m["crontab"] = js.crontabSpec
+		m[crontabKey] = js.crontabSpec
+	}
+	if !js.scheduleAt.IsZero() {
+		m[scheduleAtKey] = NewTimeFromTime(js.scheduleAt).String()
 	}
 	return m
 }

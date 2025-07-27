@@ -285,6 +285,18 @@ func NewInstanceFromMap(m map[string]any) (Instance, error) {
 				return nil, err
 			}
 			opts = append(opts, WithArguments(args.Arguments()...))
+		case crontabKey:
+			crontabSpec, err := NewCrontabSpecFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithCrontabSpec(crontabSpec))
+		case scheduleAtKey:
+			scheduleAt, err := NewTimeFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithScheduleAt(scheduleAt.Time()))
 		}
 	}
 	return NewInstance(opts...)

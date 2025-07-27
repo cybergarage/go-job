@@ -27,4 +27,6 @@ const (
 	timeoutKey    = "timeout"
 	levelKey      = "level"
 	messageKey    = "message"
+	crontabKey    = "crontab"
+	scheduleAtKey = "schedule_at"
 )
