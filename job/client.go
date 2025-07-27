@@ -16,6 +16,7 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strconv"
 
@@ -84,4 +85,37 @@ func (client *Client) GetVersion() (string, error) {
 		return "", err
 	}
 	return res.GetVersion(), nil
+}
+
+// ScheduleJob schedules a job with the specified kind, priority, and arguments.
+// The priority is lower for higher priority jobs, similar to Unix nice values.
+func (client *Client) ScheduleJob(kind string, priority Priority, args ...any) (Instance, error) {
+	reqArgs := make([]string, len(args))
+	for i, arg := range args {
+		reqArgs[i] = fmt.Sprintf("%v", arg)
+	}
+	c := v1.NewJobServiceClient(client.conn)
+	req := &v1.ScheduleJobRequest{
+		Kind:      kind,
+		Arguments: reqArgs,
+		Priority:  int32(priority),
+	}
+	res, err := c.ScheduleJob(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+	ji := res.GetInstance()
+	uuid, err := NewUUIDFrom(ji.GetUuid())
+	if err != nil {
+		return nil, err
+	}
+	state, err := NewStateFrom(ji.GetState())
+	if err != nil {
+		return nil, err
+	}
+	return NewInstance(
+		WithUUID(uuid),
+		WithKind(kind),
+		WithState(state),
+	)
 }
