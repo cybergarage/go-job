@@ -159,8 +159,10 @@ message ListRegisteredJobsResponse {
 message Query {
   // Filter by job kind
   optional string kind = 1;
+  // Filter by job instance UUID
+  optional string uuid = 2;
   // Filter by job state
-  optional JobState state = 2;
+  optional JobState state = 3;
 }
 
 message LookupInstancesRequest {

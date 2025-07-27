@@ -626,8 +626,10 @@ type Query struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Filter by job kind
 	Kind *string `protobuf:"bytes,1,opt,name=kind,proto3,oneof" json:"kind,omitempty"`
+	// Filter by job instance UUID
+	Uuid *string `protobuf:"bytes,2,opt,name=uuid,proto3,oneof" json:"uuid,omitempty"`
 	// Filter by job state
-	State         *JobState `protobuf:"varint,2,opt,name=state,proto3,enum=job.v1.JobState,oneof" json:"state,omitempty"`
+	State         *JobState `protobuf:"varint,3,opt,name=state,proto3,enum=job.v1.JobState,oneof" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -665,6 +667,13 @@ func (*Query) Descriptor() ([]byte, []int) {
 func (x *Query) GetKind() string {
 	if x != nil && x.Kind != nil {
 		return *x.Kind
+	}
+	return ""
+}
+
+func (x *Query) GetUuid() string {
+	if x != nil && x.Uuid != nil {
+		return *x.Uuid
 	}
 	return ""
 }
@@ -826,11 +835,13 @@ const file_service_proto_rawDesc = "" +
 	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\"\x1b\n" +
 	"\x19ListRegisteredJobsRequest\"=\n" +
 	"\x1aListRegisteredJobsResponse\x12\x1f\n" +
-	"\x04jobs\x18\x01 \x03(\v2\v.job.v1.JobR\x04jobs\"`\n" +
+	"\x04jobs\x18\x01 \x03(\v2\v.job.v1.JobR\x04jobs\"\x82\x01\n" +
 	"\x05Query\x12\x17\n" +
-	"\x04kind\x18\x01 \x01(\tH\x00R\x04kind\x88\x01\x01\x12+\n" +
-	"\x05state\x18\x02 \x01(\x0e2\x10.job.v1.JobStateH\x01R\x05state\x88\x01\x01B\a\n" +
-	"\x05_kindB\b\n" +
+	"\x04kind\x18\x01 \x01(\tH\x00R\x04kind\x88\x01\x01\x12\x17\n" +
+	"\x04uuid\x18\x02 \x01(\tH\x01R\x04uuid\x88\x01\x01\x12+\n" +
+	"\x05state\x18\x03 \x01(\x0e2\x10.job.v1.JobStateH\x02R\x05state\x88\x01\x01B\a\n" +
+	"\x05_kindB\a\n" +
+	"\x05_uuidB\b\n" +
 	"\x06_state\"=\n" +
 	"\x16LookupInstancesRequest\x12#\n" +
 	"\x05query\x18\x01 \x01(\v2\r.job.v1.QueryR\x05query\"L\n" +
