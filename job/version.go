@@ -16,6 +16,4 @@ package job
 
 const (
 	Version = "v0.9.3"
-	Revision  = "48c7bb454764d5b2a78b63ea97ea501adcdeb3c6"
-	BuildDate = "2025-07-25T12:23:36+09:00"
 )
