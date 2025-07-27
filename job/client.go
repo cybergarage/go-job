@@ -19,7 +19,7 @@ import (
 	"net"
 	"strconv"
 
-	pb "github.com/cybergarage/go-job/job/api/gen/go/v1"
+	v1 "github.com/cybergarage/go-job/job/api/gen/go/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -77,8 +77,8 @@ func (client *Client) Close() error {
 
 // GetVersion retrieves the version of the job service.
 func (client *Client) GetVersion(name string) (string, error) {
-	c := pb.NewJobServiceClient(client.conn)
-	req := &pb.VersionRequest{}
+	c := v1.NewJobServiceClient(client.conn)
+	req := &v1.VersionRequest{}
 	res, err := c.GetVersion(context.Background(), req)
 	if err != nil {
 		return "", err
