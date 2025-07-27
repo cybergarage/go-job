@@ -228,6 +228,21 @@ mgr, _ := NewManager(
 
 This design makes `go-job` adaptable for microservices, cloud-native applications, and any scenario requiring distributed job processing and state management.
 
+# User Guides
+
+- Get Started
+  - [Quick Start](doc/quick-start.md)
+- Operation
+  - [CLI (jobctl)](doc/cmd/cli/jobctl.md)
+
+# Developer Guides
+
+- References
+  - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
+
+- Extending `go-job`
+  - [Plug-In Concept](doc/plugin-concept.md)
+
 # Related Projects
 
 `go-job` is being developed in collaboration with the following Cybergarage projects:
