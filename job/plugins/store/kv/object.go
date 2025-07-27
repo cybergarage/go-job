@@ -31,6 +31,14 @@ type object struct {
 	value []byte
 }
 
+// NewObject creates a new key-value object.
+func NewObject(key Key, value []byte) Object {
+	return &object{
+		key:   key,
+		value: value,
+	}
+}
+
 // Key returns the key of the object.
 func (obj *object) Key() Key {
 	return obj.key
