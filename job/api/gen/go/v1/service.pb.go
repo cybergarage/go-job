@@ -126,11 +126,17 @@ func (*VersionRequest) Descriptor() ([]byte, []int) {
 }
 
 type VersionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Version       string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	Revision      string                 `protobuf:"bytes,2,opt,name=revision,proto3" json:"revision,omitempty"`
-	BuildDate     string                 `protobuf:"bytes,3,opt,name=build_date,json=buildDate,proto3" json:"build_date,omitempty"`
-	ApiVersion    string                 `protobuf:"bytes,4,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// ////////////////////////////
+	// Basic information: 1-10
+	// ////////////////////////////
+	Version    string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	ApiVersion string `protobuf:"bytes,2,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
+	// ////////////////////////////
+	// Execution information: 11-20
+	// ////////////////////////////
+	Revision      *string `protobuf:"bytes,11,opt,name=revision,proto3,oneof" json:"revision,omitempty"`
+	BuildDate     *string `protobuf:"bytes,12,opt,name=build_date,json=buildDate,proto3,oneof" json:"build_date,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -172,23 +178,23 @@ func (x *VersionResponse) GetVersion() string {
 	return ""
 }
 
-func (x *VersionResponse) GetRevision() string {
+func (x *VersionResponse) GetApiVersion() string {
 	if x != nil {
-		return x.Revision
+		return x.ApiVersion
+	}
+	return ""
+}
+
+func (x *VersionResponse) GetRevision() string {
+	if x != nil && x.Revision != nil {
+		return *x.Revision
 	}
 	return ""
 }
 
 func (x *VersionResponse) GetBuildDate() string {
-	if x != nil {
-		return x.BuildDate
-	}
-	return ""
-}
-
-func (x *VersionResponse) GetApiVersion() string {
-	if x != nil {
-		return x.ApiVersion
+	if x != nil && x.BuildDate != nil {
+		return *x.BuildDate
 	}
 	return ""
 }
@@ -766,14 +772,16 @@ var File_service_proto protoreflect.FileDescriptor
 const file_service_proto_rawDesc = "" +
 	"\n" +
 	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\"\x10\n" +
-	"\x0eVersionRequest\"\x87\x01\n" +
+	"\x0eVersionRequest\"\xad\x01\n" +
 	"\x0fVersionResponse\x12\x18\n" +
-	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1a\n" +
-	"\brevision\x18\x02 \x01(\tR\brevision\x12\x1d\n" +
+	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1f\n" +
+	"\vapi_version\x18\x02 \x01(\tR\n" +
+	"apiVersion\x12\x1f\n" +
+	"\brevision\x18\v \x01(\tH\x00R\brevision\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"build_date\x18\x03 \x01(\tR\tbuildDate\x12\x1f\n" +
-	"\vapi_version\x18\x04 \x01(\tR\n" +
-	"apiVersion\"\xfe\x01\n" +
+	"build_date\x18\f \x01(\tH\x01R\tbuildDate\x88\x01\x01B\v\n" +
+	"\t_revisionB\r\n" +
+	"\v_build_date\"\xfe\x01\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12?\n" +
@@ -914,6 +922,7 @@ func file_service_proto_init() {
 	if File_service_proto != nil {
 		return
 	}
+	file_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_service_proto_msgTypes[2].OneofWrappers = []any{}
 	file_service_proto_msgTypes[3].OneofWrappers = []any{}
 	file_service_proto_msgTypes[4].OneofWrappers = []any{}

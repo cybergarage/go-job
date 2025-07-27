@@ -15,10 +15,16 @@ message VersionRequest {
 }
 
 message VersionResponse {
+  //////////////////////////////
+  // Basic information: 1-10
+  //////////////////////////////
   string version = 1;
-  string revision = 2;
-  string build_date = 3;
-  string api_version = 4;
+  string api_version = 2;
+  //////////////////////////////
+  // Execution information: 11-20
+  //////////////////////////////
+  optional string revision = 11;
+  optional string build_date = 12;
 }
 
 //////////////////////////////
