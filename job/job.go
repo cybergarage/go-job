@@ -62,6 +62,13 @@ func WithDescription(desc string) JobOption {
 	}
 }
 
+// WithHandler sets the handler for the job.
+func WithRegisteredAt(t time.Time) JobOption {
+	return func(j *job) {
+		j.registeredAt = t
+	}
+}
+
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
 	return newJob(opts...)
