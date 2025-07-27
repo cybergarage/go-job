@@ -297,6 +297,24 @@ func NewInstanceFromMap(m map[string]any) (Instance, error) {
 				return nil, err
 			}
 			opts = append(opts, WithScheduleAt(scheduleAt.Time()))
+		case maxRetriesKey:
+			maxRetries, err := NewMaxRetriesFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithMaxRetries(maxRetries))
+		case priorityKey:
+			priority, err := NewPriorityFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithPriority(priority))
+		case timeoutKey:
+			timeout, err := NewTimeoutFrom(value)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, WithTimeout(timeout))
 		}
 	}
 	return NewInstance(opts...)
