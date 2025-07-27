@@ -51,11 +51,7 @@ func GetRootCommand() *cobra.Command {
 }
 
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		log.Errorf("%s couldn't be executed (%s)", job.ProductName, err.Error())
-		os.Exit(1)
-	}
+	log.SetSharedLogger(log.NewStdoutLogger(log.LevelInfo))
 
 	server, err := job.NewServer()
 	if err != nil {
