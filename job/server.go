@@ -201,11 +201,12 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 
 // ListRegisteredJobs returns a list of registered jobs.
 func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegisteredJobsRequest) (*v1.ListRegisteredJobsResponse, error) {
-	jobs := []*v1.Job{}
 	allJobs, err := server.Manager().ListJobs()
 	if err != nil {
 		return nil, err
 	}
+
+	jobs := []*v1.Job{}
 	for _, job := range allJobs {
 		jobs = append(jobs, &v1.Job{
 			Kind:         job.Kind(),
@@ -213,6 +214,7 @@ func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegist
 			RegisteredAt: timestamppb.New(job.RegisteredAt()),
 		})
 	}
+
 	return &v1.ListRegisteredJobsResponse{
 		Jobs: jobs,
 	}, nil
@@ -220,5 +222,34 @@ func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegist
 
 // LookupInstances looks up all job instances which match the specified query.
 func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstancesRequest) (*v1.LookupInstancesResponse, error) {
-	return nil, nil
+	queryOpts := []QueryOption{}
+	kind := req.GetQuery().Kind
+	if kind != nil && 0 < len(*kind) {
+		queryOpts = append(queryOpts, WithQueryKind(*kind))
+	}
+	uuidKey := req.GetQuery().Uuid
+	if uuidKey != nil && 0 < len(*uuidKey) {
+		uuid, err := NewUUIDFrom(*uuidKey)
+		if err != nil {
+			return nil, err
+		}
+		queryOpts = append(queryOpts, WithQueryUUID(uuid))
+	}
+	allInstances, err := server.Manager().LookupInstances(NewQuery(queryOpts...))
+	if err != nil {
+		return nil, err
+	}
+
+	instances := []*v1.JobInstance{}
+	for _, instance := range allInstances {
+		instances = append(instances, &v1.JobInstance{
+			Kind:  instance.Kind(),
+			Uuid:  instance.UUID().String(),
+			State: v1.JobState(instance.State()),
+		})
+	}
+
+	return &v1.LookupInstancesResponse{
+		Instances: instances,
+	}, nil
 }
