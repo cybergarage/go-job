@@ -8,6 +8,20 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 
 //////////////////////////////
+// Version
+//////////////////////////////
+
+message VersionRequest {  
+}
+
+message VersionResponse {
+  string version = 1;
+  string revision = 2;
+  string build_date = 3;
+  string api_version = 4;
+}
+
+//////////////////////////////
 // Job state enumeration
 //////////////////////////////
 
@@ -95,16 +109,6 @@ message JobInstance {
 }
 
 //////////////////////////////
-// JobService representation
-//////////////////////////////
-
-service JobService {
-  rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
-  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (ListRegisteredJobsResponse);
-  rpc LookupInstances(LookupInstancesRequest) returns (LookupInstancesResponse);
-}
-
-//////////////////////////////
 // ScheduleJobRequest/Response
 //////////////////////////////
 
@@ -162,4 +166,15 @@ message LookupInstancesRequest {
 message LookupInstancesResponse {
   // List of job instances
   repeated JobInstance instances = 1;
+}
+
+//////////////////////////////
+// JobService representation
+//////////////////////////////
+
+service JobService {
+  rpc GetVersion(VersionRequest) returns (VersionResponse); 
+  rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
+  rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (ListRegisteredJobsResponse);
+  rpc LookupInstances(LookupInstancesRequest) returns (LookupInstancesResponse);
 }

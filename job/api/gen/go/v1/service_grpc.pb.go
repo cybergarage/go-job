@@ -21,6 +21,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	JobService_GetVersion_FullMethodName         = "/job.v1.JobService/GetVersion"
 	JobService_ScheduleJob_FullMethodName        = "/job.v1.JobService/ScheduleJob"
 	JobService_ListRegisteredJobs_FullMethodName = "/job.v1.JobService/ListRegisteredJobs"
 	JobService_LookupInstances_FullMethodName    = "/job.v1.JobService/LookupInstances"
@@ -30,6 +31,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JobServiceClient interface {
+	GetVersion(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error)
 	ScheduleJob(ctx context.Context, in *ScheduleJobRequest, opts ...grpc.CallOption) (*ScheduleJobResponse, error)
 	ListRegisteredJobs(ctx context.Context, in *ListRegisteredJobsRequest, opts ...grpc.CallOption) (*ListRegisteredJobsResponse, error)
 	LookupInstances(ctx context.Context, in *LookupInstancesRequest, opts ...grpc.CallOption) (*LookupInstancesResponse, error)
@@ -41,6 +43,16 @@ type jobServiceClient struct {
 
 func NewJobServiceClient(cc grpc.ClientConnInterface) JobServiceClient {
 	return &jobServiceClient{cc}
+}
+
+func (c *jobServiceClient) GetVersion(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VersionResponse)
+	err := c.cc.Invoke(ctx, JobService_GetVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *jobServiceClient) ScheduleJob(ctx context.Context, in *ScheduleJobRequest, opts ...grpc.CallOption) (*ScheduleJobResponse, error) {
@@ -77,6 +89,7 @@ func (c *jobServiceClient) LookupInstances(ctx context.Context, in *LookupInstan
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility.
 type JobServiceServer interface {
+	GetVersion(context.Context, *VersionRequest) (*VersionResponse, error)
 	ScheduleJob(context.Context, *ScheduleJobRequest) (*ScheduleJobResponse, error)
 	ListRegisteredJobs(context.Context, *ListRegisteredJobsRequest) (*ListRegisteredJobsResponse, error)
 	LookupInstances(context.Context, *LookupInstancesRequest) (*LookupInstancesResponse, error)
@@ -90,6 +103,9 @@ type JobServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedJobServiceServer struct{}
 
+func (UnimplementedJobServiceServer) GetVersion(context.Context, *VersionRequest) (*VersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVersion not implemented")
+}
 func (UnimplementedJobServiceServer) ScheduleJob(context.Context, *ScheduleJobRequest) (*ScheduleJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScheduleJob not implemented")
 }
@@ -118,6 +134,24 @@ func RegisterJobServiceServer(s grpc.ServiceRegistrar, srv JobServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&JobService_ServiceDesc, srv)
+}
+
+func _JobService_GetVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).GetVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: JobService_GetVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).GetVersion(ctx, req.(*VersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _JobService_ScheduleJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -181,6 +215,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "job.v1.JobService",
 	HandlerType: (*JobServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetVersion",
+			Handler:    _JobService_GetVersion_Handler,
+		},
 		{
 			MethodName: "ScheduleJob",
 			Handler:    _JobService_ScheduleJob_Handler,

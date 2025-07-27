@@ -89,6 +89,110 @@ func (JobState) EnumDescriptor() ([]byte, []int) {
 	return file_service_proto_rawDescGZIP(), []int{0}
 }
 
+type VersionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VersionRequest) Reset() {
+	*x = VersionRequest{}
+	mi := &file_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VersionRequest) ProtoMessage() {}
+
+func (x *VersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VersionRequest.ProtoReflect.Descriptor instead.
+func (*VersionRequest) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{0}
+}
+
+type VersionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	Revision      string                 `protobuf:"bytes,2,opt,name=revision,proto3" json:"revision,omitempty"`
+	BuildDate     string                 `protobuf:"bytes,3,opt,name=build_date,json=buildDate,proto3" json:"build_date,omitempty"`
+	ApiVersion    string                 `protobuf:"bytes,4,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VersionResponse) Reset() {
+	*x = VersionResponse{}
+	mi := &file_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VersionResponse) ProtoMessage() {}
+
+func (x *VersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VersionResponse.ProtoReflect.Descriptor instead.
+func (*VersionResponse) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *VersionResponse) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *VersionResponse) GetRevision() string {
+	if x != nil {
+		return x.Revision
+	}
+	return ""
+}
+
+func (x *VersionResponse) GetBuildDate() string {
+	if x != nil {
+		return x.BuildDate
+	}
+	return ""
+}
+
+func (x *VersionResponse) GetApiVersion() string {
+	if x != nil {
+		return x.ApiVersion
+	}
+	return ""
+}
+
 type Job struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Kind of the job (e.g., "email", "data_processing")
@@ -107,7 +211,7 @@ type Job struct {
 
 func (x *Job) Reset() {
 	*x = Job{}
-	mi := &file_service_proto_msgTypes[0]
+	mi := &file_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -119,7 +223,7 @@ func (x *Job) String() string {
 func (*Job) ProtoMessage() {}
 
 func (x *Job) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[0]
+	mi := &file_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -132,7 +236,7 @@ func (x *Job) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Job.ProtoReflect.Descriptor instead.
 func (*Job) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{0}
+	return file_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Job) GetKind() string {
@@ -198,7 +302,7 @@ type JobInstance struct {
 
 func (x *JobInstance) Reset() {
 	*x = JobInstance{}
-	mi := &file_service_proto_msgTypes[1]
+	mi := &file_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -210,7 +314,7 @@ func (x *JobInstance) String() string {
 func (*JobInstance) ProtoMessage() {}
 
 func (x *JobInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[1]
+	mi := &file_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -223,7 +327,7 @@ func (x *JobInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobInstance.ProtoReflect.Descriptor instead.
 func (*JobInstance) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{1}
+	return file_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *JobInstance) GetUuid() string {
@@ -338,7 +442,7 @@ type ScheduleJobRequest struct {
 
 func (x *ScheduleJobRequest) Reset() {
 	*x = ScheduleJobRequest{}
-	mi := &file_service_proto_msgTypes[2]
+	mi := &file_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -350,7 +454,7 @@ func (x *ScheduleJobRequest) String() string {
 func (*ScheduleJobRequest) ProtoMessage() {}
 
 func (x *ScheduleJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[2]
+	mi := &file_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,7 +467,7 @@ func (x *ScheduleJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScheduleJobRequest.ProtoReflect.Descriptor instead.
 func (*ScheduleJobRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{2}
+	return file_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ScheduleJobRequest) GetKind() string {
@@ -397,7 +501,7 @@ type ScheduleJobResponse struct {
 
 func (x *ScheduleJobResponse) Reset() {
 	*x = ScheduleJobResponse{}
-	mi := &file_service_proto_msgTypes[3]
+	mi := &file_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -409,7 +513,7 @@ func (x *ScheduleJobResponse) String() string {
 func (*ScheduleJobResponse) ProtoMessage() {}
 
 func (x *ScheduleJobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[3]
+	mi := &file_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -422,7 +526,7 @@ func (x *ScheduleJobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScheduleJobResponse.ProtoReflect.Descriptor instead.
 func (*ScheduleJobResponse) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{3}
+	return file_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ScheduleJobResponse) GetInstance() *JobInstance {
@@ -440,7 +544,7 @@ type ListRegisteredJobsRequest struct {
 
 func (x *ListRegisteredJobsRequest) Reset() {
 	*x = ListRegisteredJobsRequest{}
-	mi := &file_service_proto_msgTypes[4]
+	mi := &file_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -452,7 +556,7 @@ func (x *ListRegisteredJobsRequest) String() string {
 func (*ListRegisteredJobsRequest) ProtoMessage() {}
 
 func (x *ListRegisteredJobsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[4]
+	mi := &file_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -465,7 +569,7 @@ func (x *ListRegisteredJobsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRegisteredJobsRequest.ProtoReflect.Descriptor instead.
 func (*ListRegisteredJobsRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{4}
+	return file_service_proto_rawDescGZIP(), []int{6}
 }
 
 type ListRegisteredJobsResponse struct {
@@ -478,7 +582,7 @@ type ListRegisteredJobsResponse struct {
 
 func (x *ListRegisteredJobsResponse) Reset() {
 	*x = ListRegisteredJobsResponse{}
-	mi := &file_service_proto_msgTypes[5]
+	mi := &file_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -490,7 +594,7 @@ func (x *ListRegisteredJobsResponse) String() string {
 func (*ListRegisteredJobsResponse) ProtoMessage() {}
 
 func (x *ListRegisteredJobsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[5]
+	mi := &file_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -503,7 +607,7 @@ func (x *ListRegisteredJobsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRegisteredJobsResponse.ProtoReflect.Descriptor instead.
 func (*ListRegisteredJobsResponse) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{5}
+	return file_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListRegisteredJobsResponse) GetJobs() []*Job {
@@ -525,7 +629,7 @@ type Query struct {
 
 func (x *Query) Reset() {
 	*x = Query{}
-	mi := &file_service_proto_msgTypes[6]
+	mi := &file_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -537,7 +641,7 @@ func (x *Query) String() string {
 func (*Query) ProtoMessage() {}
 
 func (x *Query) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[6]
+	mi := &file_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +654,7 @@ func (x *Query) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Query.ProtoReflect.Descriptor instead.
 func (*Query) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{6}
+	return file_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Query) GetKind() string {
@@ -577,7 +681,7 @@ type LookupInstancesRequest struct {
 
 func (x *LookupInstancesRequest) Reset() {
 	*x = LookupInstancesRequest{}
-	mi := &file_service_proto_msgTypes[7]
+	mi := &file_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -589,7 +693,7 @@ func (x *LookupInstancesRequest) String() string {
 func (*LookupInstancesRequest) ProtoMessage() {}
 
 func (x *LookupInstancesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[7]
+	mi := &file_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -602,7 +706,7 @@ func (x *LookupInstancesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupInstancesRequest.ProtoReflect.Descriptor instead.
 func (*LookupInstancesRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{7}
+	return file_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *LookupInstancesRequest) GetQuery() *Query {
@@ -622,7 +726,7 @@ type LookupInstancesResponse struct {
 
 func (x *LookupInstancesResponse) Reset() {
 	*x = LookupInstancesResponse{}
-	mi := &file_service_proto_msgTypes[8]
+	mi := &file_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -634,7 +738,7 @@ func (x *LookupInstancesResponse) String() string {
 func (*LookupInstancesResponse) ProtoMessage() {}
 
 func (x *LookupInstancesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[8]
+	mi := &file_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +751,7 @@ func (x *LookupInstancesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupInstancesResponse.ProtoReflect.Descriptor instead.
 func (*LookupInstancesResponse) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{8}
+	return file_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *LookupInstancesResponse) GetInstances() []*JobInstance {
@@ -661,7 +765,15 @@ var File_service_proto protoreflect.FileDescriptor
 
 const file_service_proto_rawDesc = "" +
 	"\n" +
-	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\"\xfe\x01\n" +
+	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\"\x10\n" +
+	"\x0eVersionRequest\"\x87\x01\n" +
+	"\x0fVersionResponse\x12\x18\n" +
+	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1a\n" +
+	"\brevision\x18\x02 \x01(\tR\brevision\x12\x1d\n" +
+	"\n" +
+	"build_date\x18\x03 \x01(\tR\tbuildDate\x12\x1f\n" +
+	"\vapi_version\x18\x04 \x01(\tR\n" +
+	"apiVersion\"\xfe\x01\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12?\n" +
@@ -724,9 +836,11 @@ const file_service_proto_rawDesc = "" +
 	"\x13JOB_STATE_CANCELLED\x10\b\x12\x17\n" +
 	"\x13JOB_STATE_TIMED_OUT\x10\x10\x12\x17\n" +
 	"\x13JOB_STATE_COMPLETED\x10 \x12\x18\n" +
-	"\x14JOB_STATE_TERMINATED\x10@2\x85\x02\n" +
+	"\x14JOB_STATE_TERMINATED\x10@2\xc4\x02\n" +
 	"\n" +
-	"JobService\x12F\n" +
+	"JobService\x12=\n" +
+	"\n" +
+	"GetVersion\x12\x16.job.v1.VersionRequest\x1a\x17.job.v1.VersionResponse\x12F\n" +
 	"\vScheduleJob\x12\x1a.job.v1.ScheduleJobRequest\x1a\x1b.job.v1.ScheduleJobResponse\x12[\n" +
 	"\x12ListRegisteredJobs\x12!.job.v1.ListRegisteredJobsRequest\x1a\".job.v1.ListRegisteredJobsResponse\x12R\n" +
 	"\x0fLookupInstances\x12\x1e.job.v1.LookupInstancesRequest\x1a\x1f.job.v1.LookupInstancesResponseB*Z(github.com/cybergarage/go-job/api/job/v1b\x06proto3"
@@ -744,48 +858,52 @@ func file_service_proto_rawDescGZIP() []byte {
 }
 
 var file_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_service_proto_goTypes = []any{
 	(JobState)(0),                      // 0: job.v1.JobState
-	(*Job)(nil),                        // 1: job.v1.Job
-	(*JobInstance)(nil),                // 2: job.v1.JobInstance
-	(*ScheduleJobRequest)(nil),         // 3: job.v1.ScheduleJobRequest
-	(*ScheduleJobResponse)(nil),        // 4: job.v1.ScheduleJobResponse
-	(*ListRegisteredJobsRequest)(nil),  // 5: job.v1.ListRegisteredJobsRequest
-	(*ListRegisteredJobsResponse)(nil), // 6: job.v1.ListRegisteredJobsResponse
-	(*Query)(nil),                      // 7: job.v1.Query
-	(*LookupInstancesRequest)(nil),     // 8: job.v1.LookupInstancesRequest
-	(*LookupInstancesResponse)(nil),    // 9: job.v1.LookupInstancesResponse
-	(*timestamppb.Timestamp)(nil),      // 10: google.protobuf.Timestamp
-	(*anypb.Any)(nil),                  // 11: google.protobuf.Any
+	(*VersionRequest)(nil),             // 1: job.v1.VersionRequest
+	(*VersionResponse)(nil),            // 2: job.v1.VersionResponse
+	(*Job)(nil),                        // 3: job.v1.Job
+	(*JobInstance)(nil),                // 4: job.v1.JobInstance
+	(*ScheduleJobRequest)(nil),         // 5: job.v1.ScheduleJobRequest
+	(*ScheduleJobResponse)(nil),        // 6: job.v1.ScheduleJobResponse
+	(*ListRegisteredJobsRequest)(nil),  // 7: job.v1.ListRegisteredJobsRequest
+	(*ListRegisteredJobsResponse)(nil), // 8: job.v1.ListRegisteredJobsResponse
+	(*Query)(nil),                      // 9: job.v1.Query
+	(*LookupInstancesRequest)(nil),     // 10: job.v1.LookupInstancesRequest
+	(*LookupInstancesResponse)(nil),    // 11: job.v1.LookupInstancesResponse
+	(*timestamppb.Timestamp)(nil),      // 12: google.protobuf.Timestamp
+	(*anypb.Any)(nil),                  // 13: google.protobuf.Any
 }
 var file_service_proto_depIdxs = []int32{
-	10, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
-	10, // 1: job.v1.Job.schedule_at:type_name -> google.protobuf.Timestamp
+	12, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
+	12, // 1: job.v1.Job.schedule_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: job.v1.JobInstance.state:type_name -> job.v1.JobState
-	11, // 3: job.v1.JobInstance.arguments:type_name -> google.protobuf.Any
-	11, // 4: job.v1.JobInstance.results:type_name -> google.protobuf.Any
-	10, // 5: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
-	10, // 6: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
-	10, // 7: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
-	10, // 8: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
-	10, // 9: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
-	10, // 10: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
-	10, // 11: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
-	11, // 12: job.v1.ScheduleJobRequest.arguments:type_name -> google.protobuf.Any
-	2,  // 13: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
-	1,  // 14: job.v1.ListRegisteredJobsResponse.jobs:type_name -> job.v1.Job
+	13, // 3: job.v1.JobInstance.arguments:type_name -> google.protobuf.Any
+	13, // 4: job.v1.JobInstance.results:type_name -> google.protobuf.Any
+	12, // 5: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
+	12, // 6: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
+	12, // 7: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
+	12, // 8: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
+	12, // 9: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
+	12, // 10: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
+	12, // 11: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
+	13, // 12: job.v1.ScheduleJobRequest.arguments:type_name -> google.protobuf.Any
+	4,  // 13: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
+	3,  // 14: job.v1.ListRegisteredJobsResponse.jobs:type_name -> job.v1.Job
 	0,  // 15: job.v1.Query.state:type_name -> job.v1.JobState
-	7,  // 16: job.v1.LookupInstancesRequest.query:type_name -> job.v1.Query
-	2,  // 17: job.v1.LookupInstancesResponse.instances:type_name -> job.v1.JobInstance
-	3,  // 18: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
-	5,  // 19: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
-	8,  // 20: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
-	4,  // 21: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
-	6,  // 22: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
-	9,  // 23: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
-	21, // [21:24] is the sub-list for method output_type
-	18, // [18:21] is the sub-list for method input_type
+	9,  // 16: job.v1.LookupInstancesRequest.query:type_name -> job.v1.Query
+	4,  // 17: job.v1.LookupInstancesResponse.instances:type_name -> job.v1.JobInstance
+	1,  // 18: job.v1.JobService.GetVersion:input_type -> job.v1.VersionRequest
+	5,  // 19: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
+	7,  // 20: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
+	10, // 21: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
+	2,  // 22: job.v1.JobService.GetVersion:output_type -> job.v1.VersionResponse
+	6,  // 23: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
+	8,  // 24: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
+	11, // 25: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
+	22, // [22:26] is the sub-list for method output_type
+	18, // [18:22] is the sub-list for method input_type
 	18, // [18:18] is the sub-list for extension type_name
 	18, // [18:18] is the sub-list for extension extendee
 	0,  // [0:18] is the sub-list for field type_name
@@ -796,17 +914,17 @@ func file_service_proto_init() {
 	if File_service_proto != nil {
 		return
 	}
-	file_service_proto_msgTypes[0].OneofWrappers = []any{}
-	file_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_service_proto_msgTypes[2].OneofWrappers = []any{}
-	file_service_proto_msgTypes[6].OneofWrappers = []any{}
+	file_service_proto_msgTypes[3].OneofWrappers = []any{}
+	file_service_proto_msgTypes[4].OneofWrappers = []any{}
+	file_service_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_service_proto_rawDesc), len(file_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
