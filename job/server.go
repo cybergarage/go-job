@@ -63,10 +63,13 @@ func (server *server) Manager() Manager {
 	return server.manager
 }
 
+func (server *server) bindAddr() string {
+	return net.JoinHostPort(server.addr, strconv.Itoa(server.port))
+}
+
 func (server *server) grpcStart() error {
 	var err error
-	addr := net.JoinHostPort(server.addr, strconv.Itoa(server.port))
-	listener, err := net.Listen("tcp", addr)
+	listener, err := net.Listen("tcp", server.bindAddr())
 	if err != nil {
 		return err
 	}
@@ -89,8 +92,6 @@ func (server *server) grpcStart() error {
 		}
 	}()
 
-	logger.Infof("gRPC server (%s) started", addr)
-
 	return nil
 }
 
@@ -100,9 +101,6 @@ func (server *server) grpcStop() error {
 		server.grpcServer.Stop()
 		server.grpcServer = nil
 	}
-
-	addr := net.JoinHostPort(server.addr, strconv.Itoa(server.port))
-	logger.Infof("gRPC server (%s) terminated", addr)
 
 	return nil
 }
@@ -124,7 +122,7 @@ func (server *server) Start() error {
 		return errs
 	}
 
-	logger.Infof("%s/%s started", ProductName, Version)
+	logger.Infof("%s/%s (%s) started", ProductName, Version, server.bindAddr())
 
 	return nil
 }
@@ -146,7 +144,7 @@ func (server *server) Stop() error {
 		return errs
 	}
 
-	logger.Infof("%s/%s terminated", ProductName, Version)
+	logger.Infof("%s/%s (%s) terminated", ProductName, Version, server.bindAddr())
 
 	return nil
 }
