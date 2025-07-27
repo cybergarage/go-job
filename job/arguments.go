@@ -57,8 +57,8 @@ func NewArgumentsWithStrings(args ...string) Arguments {
 	return newArguments(WithArguments(anyArgs...))
 }
 
-// NewArgumentsWithString creates a new Arguments instance from a JSON string representation of arguments.
-func NewArgumentsWithString(s string) (Arguments, error) {
+// NewArgumentsFromString creates a new Arguments instance from a JSON string representation of arguments.
+func NewArgumentsFromString(s string) (Arguments, error) {
 	var arr []any
 	err := json.Unmarshal([]byte(s), &arr)
 	if err != nil {
@@ -80,7 +80,7 @@ func NewArgumentsFrom(args any) (Arguments, error) {
 	case []string:
 		return NewArgumentsWithStrings(v...), nil
 	case string:
-		return NewArgumentsWithString(v)
+		return NewArgumentsFromString(v)
 	}
 	return nil, fmt.Errorf("unsupported type for arguments: %T", args)
 }
