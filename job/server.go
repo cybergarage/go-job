@@ -165,7 +165,33 @@ func (server *server) GetVersion(ctx context.Context, req *v1.VersionRequest) (*
 }
 
 func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobRequest) (*v1.ScheduleJobResponse, error) {
-	return nil, nil
+	kind := req.GetKind()
+
+	opts := []any{}
+	priority := req.GetPriority()
+	if 0 < priority {
+		opts = append(opts, WithPriority(Priority(priority)))
+	}
+	if req.GetArguments() != nil {
+		args := []any{}
+		for _, arg := range req.GetArguments() {
+			args = append(args, arg)
+		}
+		opts = append(opts, WithArguments(args...))
+	}
+
+	postJob, err := server.Manager().ScheduleRegisteredJob(kind, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.ScheduleJobResponse{
+		Instance: &v1.JobInstance{
+			Kind:  kind,
+			Uuid:  postJob.UUID().String(),
+			State: v1.JobState_JOB_STATE_SCHEDULED,
+		},
+	}, nil
 }
 
 func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegisteredJobsRequest) (*v1.ListRegisteredJobsResponse, error) {
