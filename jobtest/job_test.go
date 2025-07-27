@@ -40,6 +40,13 @@ func TestScheduleJobs(t *testing.T) {
 			args: []any{1, 2},
 		},
 		{
+			kind: "sum (string)",
+			opts: []any{
+				job.WithExecutor(func(a, b int) int { return a + b }),
+			},
+			args: []any{"1", "2"},
+		},
+		{
 			kind: "sum (struct)",
 			opts: []any{
 				job.WithExecutor(func(opt sumOpt) int { return opt.a + opt.b }),
