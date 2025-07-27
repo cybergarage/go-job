@@ -21,6 +21,6 @@ Get the specified resource in the specified category.
 
 ### SEE ALSO
 
-* [jobctl](jobctl.md)	 - 
+* [jobctl](jobctl.md)	 - Job Control CLI
 * [jobctl get version](jobctl_get_version.md)	 - Get version
 

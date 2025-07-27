@@ -1,6 +1,10 @@
 ## jobctl
 
+Job Control CLI
 
+### Synopsis
+
+jobctl is a command-line interface for managing jobs in the go-job framework.
 
 ### Options
 

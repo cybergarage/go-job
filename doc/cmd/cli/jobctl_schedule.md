@@ -31,5 +31,5 @@ job schedule kind args...
 
 ### SEE ALSO
 
-* [jobctl](jobctl.md)	 - 
+* [jobctl](jobctl.md)	 - Job Control CLI
 
