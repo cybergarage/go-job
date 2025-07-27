@@ -27,8 +27,8 @@ var gRPCPort int
 var rootCmd = &cobra.Command{ // nolint:exhaustruct
 	Use:               "jobctl",
 	Version:           job.Version,
-	Short:             "",
-	Long:              "",
+	Short:             "Job Control CLI",
+	Long:              "jobctl is a command-line interface for managing jobs in the go-job framework.",
 	DisableAutoGenTag: true,
 }
 
