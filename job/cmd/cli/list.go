@@ -17,12 +17,14 @@ package cli
 import (
 	"fmt"
 
+	"github.com/cybergarage/go-job/job"
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	rootCmd.AddCommand(listCmd)
 	listCmd.AddCommand(listJobCmd)
+	listCmd.AddCommand(listInstanceCmd)
 }
 
 var listCmd = &cobra.Command{ // nolint:exhaustruct
@@ -42,7 +44,24 @@ var listJobCmd = &cobra.Command{ // nolint:exhaustruct
 			return
 		}
 		for n, job := range jobs {
-			fmt.Printf("%d: %s\n", n, job.String())
+			fmt.Printf("[%d] %s\n", n, job.String())
+		}
+	},
+}
+
+var listInstanceCmd = &cobra.Command{ // nolint:exhaustruct
+	Use:   "instance",
+	Short: "List job instances",
+	Long:  "List all job instances.",
+	Run: func(cmd *cobra.Command, args []string) {
+		query := job.NewQuery()
+		instances, err := GetClient().LookupInstances(query)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		for n, instance := range instances {
+			fmt.Printf("[%d] %s\n", n, instance.String())
 		}
 	},
 }
