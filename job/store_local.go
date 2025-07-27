@@ -177,3 +177,15 @@ func (store *localStore) ClearInstanceLogs(ctx context.Context) error {
 	store.logs = []Log{}
 	return nil
 }
+
+// Start starts the local store.
+func (store *localStore) Start() error {
+	// No specific start logic for local store
+	return nil
+}
+
+// Stop stops the local store.
+func (store *localStore) Stop() error {
+	// No specific stop logic for local store
+	return nil
+}

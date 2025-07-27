@@ -53,4 +53,8 @@ type Store interface {
 	Name() string
 	// Transact begin a new transaction.
 	Transact(ctx context.Context, write bool) (Transaction, error)
+	// Start starts the store.
+	Start() error
+	// Stop stops the store.
+	Stop() error
 }

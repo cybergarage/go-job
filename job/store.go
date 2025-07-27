@@ -26,6 +26,10 @@ type Store interface {
 	QueueStore
 	// HistoryStore provides methods for managing job instance state history.
 	HistoryStore
+	// Start starts the store.
+	Start() error
+	// Stop stops the store.
+	Stop() error
 }
 
 // QueueStore is an interface that defines methods for managing job instances in a pending state.

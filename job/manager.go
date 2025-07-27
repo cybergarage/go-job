@@ -255,9 +255,28 @@ func (mgr *manager) LookupInstanceLogs(job Instance) ([]Log, error) {
 	return mgr.Repository.LookupLogs(job)
 }
 
+// Start starts the job manager.
+func (mgr *manager) Start() error {
+	starters := []func() error{
+		mgr.store.Start,
+		mgr.workerGroup.Start,
+	}
+	var errs error
+	for _, starter := range starters {
+		if err := starter(); err != nil {
+			errs = errors.Join(errs, err)
+		}
+	}
+
+	logger.Infof("%s (PID:%d) started", ProductName, os.Getpid())
+
+	return errs
+}
+
 // Stop stops the job manager.
 func (mgr *manager) Stop() error {
 	stoppers := []func() error{
+		mgr.store.Stop,
 		mgr.workerGroup.Stop,
 	}
 	var errs error
