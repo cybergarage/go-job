@@ -15,6 +15,7 @@
 package job
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -31,6 +32,22 @@ const (
 	// LowPriority is the low priority for jobs.
 	LowPriority = Priority(10)
 )
+
+// NewPriorityFrom creates a Priority from various input types.
+func NewPriorityFrom(a any) (Priority, error) {
+	switch v := a.(type) {
+	case int:
+		return Priority(v), nil
+	case string:
+		p, err := strconv.Atoi(v)
+		if err != nil {
+			return DefaultPriority, err
+		}
+		return Priority(p), nil
+	default:
+		return DefaultPriority, fmt.Errorf("invalid priority value: %v", a)
+	}
+}
 
 // Equal checks if the priority is equal to another priority.
 func (p Priority) Equal(other Priority) bool {
