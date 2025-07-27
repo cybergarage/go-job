@@ -17,6 +17,7 @@ package job
 import (
 	"fmt"
 	"math/rand/v2"
+	"strconv"
 	"time"
 )
 
@@ -135,6 +136,38 @@ func newPolicy() *policy {
 		backoffFn: func() time.Duration {
 			return time.Duration(0)
 		},
+	}
+}
+
+// NewMaxRetriesFrom creates a maximum retries value from various input types.
+func NewMaxRetriesFrom(a any) (int, error) {
+	switch v := a.(type) {
+	case int:
+		return v, nil
+	case string:
+		count, err := strconv.Atoi(v)
+		if err != nil {
+			return 0, fmt.Errorf("invalid max retries value: %v", v)
+		}
+		return count, nil
+	default:
+		return 0, fmt.Errorf("invalid max retries value: %v", a)
+	}
+}
+
+// NewTimeoutFrom creates a timeout duration from various input types.
+func NewTimeoutFrom(a any) (time.Duration, error) {
+	switch v := a.(type) {
+	case time.Duration:
+		return v, nil
+	case string:
+		duration, err := time.ParseDuration(v)
+		if err != nil {
+			return 0, fmt.Errorf("invalid timeout value: %v", v)
+		}
+		return duration, nil
+	default:
+		return 0, fmt.Errorf("invalid timeout value: %v", a)
 	}
 }
 
