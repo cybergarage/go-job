@@ -18,3 +18,8 @@ const (
 	// ProductName is the product name.
 	ProductName = "go-job"
 )
+
+const (
+	// DefaultGrpcPort is the default port number of the gRPC server.
+	DefaultGrpcPort = 50053
+)
