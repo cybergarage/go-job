@@ -2,8 +2,14 @@
 
 major=$(git tag | sort | tail -n 1 | awk -F'.' '{print $1}')
 minor=$(git tag | sort | tail -n 1 | awk -F'.' '{print $2}')
-patch=$(git tag | sort | tail -n 1 | awk -F'.' '{print ($3+1)}')
+patch=$(git tag | sort | tail -n 1 | awk -F'.' '{print ($3)}')
 version="${major}.${minor}.${patch}"
+
+next_patch=$(git tag | sort | tail -n 1 | awk -F'.' '{print ($3+1)}')
+next_version="${major}.${minor}.${next_patch}"
+
+revision=$(git rev-list -n 1 "${version}")
+build_date=$(git show -s --format=%cI "${version}")
 
 cat <<EOF
 // Copyright (C) 2025 The go-job Authors. All rights reserved.
@@ -23,6 +29,8 @@ cat <<EOF
 package job
 
 const (
-	Version = "$version"
+	Version = "$next_version"
+	Revision  = "$revision"
+	BuildDate = "$build_date"
 )
 EOF
