@@ -11,7 +11,6 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	anypb "google.golang.org/protobuf/types/known/anypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -289,9 +288,9 @@ type JobInstance struct {
 	// Current state
 	State JobState `protobuf:"varint,11,opt,name=state,proto3,enum=job.v1.JobState" json:"state,omitempty"`
 	// Job arguments
-	Arguments []*anypb.Any `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	Arguments []string `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
 	// Execution results (if completed)
-	Results []*anypb.Any `protobuf:"bytes,13,rep,name=results,proto3" json:"results,omitempty"`
+	Results []string `protobuf:"bytes,13,rep,name=results,proto3" json:"results,omitempty"`
 	// Error information (if failed)
 	Error         *string                `protobuf:"bytes,14,opt,name=error,proto3,oneof" json:"error,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,21,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
@@ -357,14 +356,14 @@ func (x *JobInstance) GetState() JobState {
 	return JobState_JOB_STATE_UNSET
 }
 
-func (x *JobInstance) GetArguments() []*anypb.Any {
+func (x *JobInstance) GetArguments() []string {
 	if x != nil {
 		return x.Arguments
 	}
 	return nil
 }
 
-func (x *JobInstance) GetResults() []*anypb.Any {
+func (x *JobInstance) GetResults() []string {
 	if x != nil {
 		return x.Results
 	}
@@ -441,7 +440,7 @@ type ScheduleJobRequest struct {
 	// Priority (lower values = higher priority; -1 means unset)
 	Priority int32 `protobuf:"varint,11,opt,name=priority,proto3" json:"priority,omitempty"`
 	// Arguments to pass to the job executor
-	Arguments     []*anypb.Any `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
+	Arguments     []string `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -490,7 +489,7 @@ func (x *ScheduleJobRequest) GetPriority() int32 {
 	return 0
 }
 
-func (x *ScheduleJobRequest) GetArguments() []*anypb.Any {
+func (x *ScheduleJobRequest) GetArguments() []string {
 	if x != nil {
 		return x.Arguments
 	}
@@ -771,7 +770,7 @@ var File_service_proto protoreflect.FileDescriptor
 
 const file_service_proto_rawDesc = "" +
 	"\n" +
-	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\"\x10\n" +
+	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x10\n" +
 	"\x0eVersionRequest\"\xad\x01\n" +
 	"\x0fVersionResponse\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1f\n" +
@@ -791,13 +790,13 @@ const file_service_proto_rawDesc = "" +
 	"scheduleAt\x88\x01\x01B\f\n" +
 	"\n" +
 	"_cron_specB\x0e\n" +
-	"\f_schedule_at\"\xf1\x06\n" +
+	"\f_schedule_at\"\xc5\x06\n" +
 	"\vJobInstance\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04uuid\x18\x02 \x01(\tR\x04uuid\x12&\n" +
-	"\x05state\x18\v \x01(\x0e2\x10.job.v1.JobStateR\x05state\x122\n" +
-	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targuments\x12.\n" +
-	"\aresults\x18\r \x03(\v2\x14.google.protobuf.AnyR\aresults\x12\x19\n" +
+	"\x05state\x18\v \x01(\x0e2\x10.job.v1.JobStateR\x05state\x12\x1c\n" +
+	"\targuments\x18\f \x03(\tR\targuments\x12\x18\n" +
+	"\aresults\x18\r \x03(\tR\aresults\x12\x19\n" +
 	"\x05error\x18\x0e \x01(\tH\x00R\x05error\x88\x01\x01\x12>\n" +
 	"\n" +
 	"created_at\x18\x15 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\tcreatedAt\x88\x01\x01\x12B\n" +
@@ -817,11 +816,11 @@ const file_service_proto_rawDesc = "" +
 	"\x0e_terminated_atB\x0f\n" +
 	"\r_cancelled_atB\x0f\n" +
 	"\r_timed_out_atB\x10\n" +
-	"\x0e_attempt_count\"x\n" +
+	"\x0e_attempt_count\"b\n" +
 	"\x12ScheduleJobRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
-	"\bpriority\x18\v \x01(\x05R\bpriority\x122\n" +
-	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targuments\"F\n" +
+	"\bpriority\x18\v \x01(\x05R\bpriority\x12\x1c\n" +
+	"\targuments\x18\f \x03(\tR\targuments\"F\n" +
 	"\x13ScheduleJobResponse\x12/\n" +
 	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\"\x1b\n" +
 	"\x19ListRegisteredJobsRequest\"=\n" +
@@ -881,40 +880,36 @@ var file_service_proto_goTypes = []any{
 	(*LookupInstancesRequest)(nil),     // 10: job.v1.LookupInstancesRequest
 	(*LookupInstancesResponse)(nil),    // 11: job.v1.LookupInstancesResponse
 	(*timestamppb.Timestamp)(nil),      // 12: google.protobuf.Timestamp
-	(*anypb.Any)(nil),                  // 13: google.protobuf.Any
 }
 var file_service_proto_depIdxs = []int32{
 	12, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
 	12, // 1: job.v1.Job.schedule_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: job.v1.JobInstance.state:type_name -> job.v1.JobState
-	13, // 3: job.v1.JobInstance.arguments:type_name -> google.protobuf.Any
-	13, // 4: job.v1.JobInstance.results:type_name -> google.protobuf.Any
-	12, // 5: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
-	12, // 6: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
-	12, // 7: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
-	12, // 8: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
-	12, // 9: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
-	12, // 10: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
-	12, // 11: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
-	13, // 12: job.v1.ScheduleJobRequest.arguments:type_name -> google.protobuf.Any
-	4,  // 13: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
-	3,  // 14: job.v1.ListRegisteredJobsResponse.jobs:type_name -> job.v1.Job
-	0,  // 15: job.v1.Query.state:type_name -> job.v1.JobState
-	9,  // 16: job.v1.LookupInstancesRequest.query:type_name -> job.v1.Query
-	4,  // 17: job.v1.LookupInstancesResponse.instances:type_name -> job.v1.JobInstance
-	1,  // 18: job.v1.JobService.GetVersion:input_type -> job.v1.VersionRequest
-	5,  // 19: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
-	7,  // 20: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
-	10, // 21: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
-	2,  // 22: job.v1.JobService.GetVersion:output_type -> job.v1.VersionResponse
-	6,  // 23: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
-	8,  // 24: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
-	11, // 25: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
-	22, // [22:26] is the sub-list for method output_type
-	18, // [18:22] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	12, // 3: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
+	12, // 4: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
+	12, // 5: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
+	12, // 6: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
+	12, // 7: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
+	12, // 8: job.v1.JobInstance.cancelled_at:type_name -> google.protobuf.Timestamp
+	12, // 9: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
+	4,  // 10: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
+	3,  // 11: job.v1.ListRegisteredJobsResponse.jobs:type_name -> job.v1.Job
+	0,  // 12: job.v1.Query.state:type_name -> job.v1.JobState
+	9,  // 13: job.v1.LookupInstancesRequest.query:type_name -> job.v1.Query
+	4,  // 14: job.v1.LookupInstancesResponse.instances:type_name -> job.v1.JobInstance
+	1,  // 15: job.v1.JobService.GetVersion:input_type -> job.v1.VersionRequest
+	5,  // 16: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
+	7,  // 17: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
+	10, // 18: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
+	2,  // 19: job.v1.JobService.GetVersion:output_type -> job.v1.VersionResponse
+	6,  // 20: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
+	8,  // 21: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
+	11, // 22: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
+	19, // [19:23] is the sub-list for method output_type
+	15, // [15:19] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_service_proto_init() }
