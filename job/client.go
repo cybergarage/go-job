@@ -89,7 +89,7 @@ func (client *Client) GetVersion() (string, error) {
 
 // ScheduleJob schedules a job with the specified kind, priority, and arguments.
 // The priority is lower for higher priority jobs, similar to Unix nice values.
-func (client *Client) ScheduleJob(kind string, priority Priority, args ...any) (Instance, error) {
+func (client *Client) ScheduleJob(kind string, args ...any) (Instance, error) {
 	reqArgs := make([]string, len(args))
 	for i, arg := range args {
 		reqArgs[i] = fmt.Sprintf("%v", arg)
@@ -98,7 +98,7 @@ func (client *Client) ScheduleJob(kind string, priority Priority, args ...any) (
 	req := &v1.ScheduleJobRequest{
 		Kind:      kind,
 		Arguments: reqArgs,
-		Priority:  int32(priority),
+		Priority:  nil,
 	}
 	res, err := c.ScheduleJob(context.Background(), req)
 	if err != nil {

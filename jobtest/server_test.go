@@ -23,7 +23,24 @@ import (
 func ServerAPIsTest(t *testing.T, server job.Server) {
 	t.Helper()
 
-	err := server.Start()
+	// Register a job with the server
+
+	kind := "sum"
+	j, err := job.NewJob(
+		job.WithKind(kind),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create job: %v", err)
+	}
+	_, err = server.Manager().RegisterJob(j)
+	if err != nil {
+		t.Fatalf("Failed to register job: %v", err)
+	}
+
+	// Start the server
+
+	err = server.Start()
 	if err != nil {
 		t.Fatalf("failed to start job server: %v", err)
 	}
@@ -34,20 +51,13 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 		}
 	}()
 
+	// Open a client to the server
+
 	client := job.NewClient()
 
 	err = client.Open()
 	if err != nil {
 		t.Fatalf("failed to open job client: %v", err)
-	}
-
-	version, err := client.GetVersion()
-	if err != nil {
-		t.Fatalf("failed to get version: %v", err)
-	}
-
-	if version != job.Version {
-		t.Errorf("expected version %s, got %s", job.Version, version)
 	}
 
 	defer func() {
@@ -56,6 +66,26 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 			t.Errorf("failed to close job client: %v", err)
 		}
 	}()
+
+	// Verify the server version
+
+	version, err := client.GetVersion()
+	if err != nil {
+		t.Fatalf("failed to get version: %v", err)
+	}
+	if version != job.Version {
+		t.Errorf("expected version %s, got %s", job.Version, version)
+	}
+
+	// Schedule a job
+
+	instance, err := client.ScheduleJob(kind, 1, 2)
+	if err != nil {
+		t.Fatalf("failed to schedule job: %v", err)
+	}
+	if instance == nil {
+		t.Fatal("expected job instance to be non-nil")
+	}
 }
 
 func TestServerAPIs(t *testing.T) {
