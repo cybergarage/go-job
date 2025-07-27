@@ -14,7 +14,11 @@
 
 package job
 
-import "fmt"
+import (
+	"fmt"
+
+	v1 "github.com/cybergarage/go-job/job/api/gen/go/v1"
+)
 
 // JobState represents the state of a job as an integer.
 type JobState int
@@ -71,9 +75,27 @@ func NewStateFrom(a any) (JobState, error) {
 		return NewStateFromString(v)
 	case int:
 		return JobState(v), nil
-	default:
-		return JobStateUnset, fmt.Errorf("invalid job state value: %v", a)
+	case v1.JobState:
+		switch v {
+		case v1.JobState_JOB_STATE_UNSET:
+			return JobStateUnset, nil
+		case v1.JobState_JOB_STATE_CREATED:
+			return JobCreated, nil
+		case v1.JobState_JOB_STATE_SCHEDULED:
+			return JobScheduled, nil
+		case v1.JobState_JOB_STATE_PROCESSING:
+			return JobProcessing, nil
+		case v1.JobState_JOB_STATE_CANCELLED:
+			return JobCancelled, nil
+		case v1.JobState_JOB_STATE_TIMED_OUT:
+			return JobTimedOut, nil
+		case v1.JobState_JOB_STATE_COMPLETED:
+			return JobCompleted, nil
+		case v1.JobState_JOB_STATE_TERMINATED:
+			return JobTerminated, nil
+		}
 	}
+	return JobStateUnset, fmt.Errorf("invalid job state value: %v", a)
 }
 
 // NewStateFromString returns the JobState corresponding to the given string.
