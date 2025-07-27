@@ -119,3 +119,26 @@ func (client *Client) ScheduleJob(kind string, args ...any) (Instance, error) {
 		WithState(state),
 	)
 }
+
+// ListRegisteredJobs lists all registered jobs.
+func (client *Client) ListRegisteredJobs() ([]Job, error) {
+	c := v1.NewJobServiceClient(client.conn)
+	req := &v1.ListRegisteredJobsRequest{}
+	res, err := c.ListRegisteredJobs(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+	pbJobs := make([]Job, len(res.GetJobs()))
+	for i, pbJob := range res.GetJobs() {
+		job, err := NewJob(
+			WithKind(pbJob.GetKind()),
+			WithDescription(pbJob.GetDescription()),
+			WithRegisteredAt(pbJob.GetRegisteredAt().AsTime()),
+		)
+		if err != nil {
+			return nil, err
+		}
+		pbJobs[i] = job
+	}
+	return pbJobs, nil
+}

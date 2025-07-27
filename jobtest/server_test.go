@@ -77,6 +77,16 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 		t.Errorf("expected version %s, got %s", job.Version, version)
 	}
 
+	// List registered jobs
+
+	jobs, err := client.ListRegisteredJobs()
+	if err != nil {
+		t.Fatalf("failed to list registered jobs: %v", err)
+	}
+	if len(jobs) == 0 {
+		t.Fatal("expected at least one registered job")
+	}
+
 	// Schedule a job
 
 	instance, err := client.ScheduleJob(kind, 1, 2)
@@ -86,6 +96,7 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 	if instance == nil {
 		t.Fatal("expected job instance to be non-nil")
 	}
+
 }
 
 func TestServerAPIs(t *testing.T) {
