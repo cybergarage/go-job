@@ -282,10 +282,10 @@ func (x *Job) GetScheduleAt() *timestamppb.Timestamp {
 
 type JobInstance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Unique instance identifier
-	Uuid string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	// Kind
-	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// Unique instance identifier
+	Uuid string `protobuf:"bytes,2,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	// Current state
 	State JobState `protobuf:"varint,11,opt,name=state,proto3,enum=job.v1.JobState" json:"state,omitempty"`
 	// Job arguments
@@ -301,7 +301,7 @@ type JobInstance struct {
 	TerminatedAt  *timestamppb.Timestamp `protobuf:"bytes,25,opt,name=terminated_at,json=terminatedAt,proto3,oneof" json:"terminated_at,omitempty"`
 	CancelledAt   *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
 	TimedOutAt    *timestamppb.Timestamp `protobuf:"bytes,27,opt,name=timed_out_at,json=timedOutAt,proto3,oneof" json:"timed_out_at,omitempty"`
-	AttemptCount  int32                  `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3" json:"attempt_count,omitempty"`
+	AttemptCount  *int32                 `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3,oneof" json:"attempt_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -336,16 +336,16 @@ func (*JobInstance) Descriptor() ([]byte, []int) {
 	return file_service_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *JobInstance) GetUuid() string {
+func (x *JobInstance) GetKind() string {
 	if x != nil {
-		return x.Uuid
+		return x.Kind
 	}
 	return ""
 }
 
-func (x *JobInstance) GetKind() string {
+func (x *JobInstance) GetUuid() string {
 	if x != nil {
-		return x.Kind
+		return x.Uuid
 	}
 	return ""
 }
@@ -428,8 +428,8 @@ func (x *JobInstance) GetTimedOutAt() *timestamppb.Timestamp {
 }
 
 func (x *JobInstance) GetAttemptCount() int32 {
-	if x != nil {
-		return x.AttemptCount
+	if x != nil && x.AttemptCount != nil {
+		return *x.AttemptCount
 	}
 	return 0
 }
@@ -791,10 +791,10 @@ const file_service_proto_rawDesc = "" +
 	"scheduleAt\x88\x01\x01B\f\n" +
 	"\n" +
 	"_cron_specB\x0e\n" +
-	"\f_schedule_at\"\xda\x06\n" +
+	"\f_schedule_at\"\xf1\x06\n" +
 	"\vJobInstance\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
-	"\x04kind\x18\x02 \x01(\tR\x04kind\x12&\n" +
+	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
+	"\x04uuid\x18\x02 \x01(\tR\x04uuid\x12&\n" +
 	"\x05state\x18\v \x01(\x0e2\x10.job.v1.JobStateR\x05state\x122\n" +
 	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targuments\x12.\n" +
 	"\aresults\x18\r \x03(\v2\x14.google.protobuf.AnyR\aresults\x12\x19\n" +
@@ -807,8 +807,8 @@ const file_service_proto_rawDesc = "" +
 	"\rterminated_at\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampH\x05R\fterminatedAt\x88\x01\x01\x12B\n" +
 	"\fcancelled_at\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampH\x06R\vcancelledAt\x88\x01\x01\x12A\n" +
 	"\ftimed_out_at\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampH\aR\n" +
-	"timedOutAt\x88\x01\x01\x12#\n" +
-	"\rattempt_count\x18\x1f \x01(\x05R\fattemptCountB\b\n" +
+	"timedOutAt\x88\x01\x01\x12(\n" +
+	"\rattempt_count\x18\x1f \x01(\x05H\bR\fattemptCount\x88\x01\x01B\b\n" +
 	"\x06_errorB\r\n" +
 	"\v_created_atB\x0f\n" +
 	"\r_scheduled_atB\x0f\n" +
@@ -816,7 +816,8 @@ const file_service_proto_rawDesc = "" +
 	"\r_completed_atB\x10\n" +
 	"\x0e_terminated_atB\x0f\n" +
 	"\r_cancelled_atB\x0f\n" +
-	"\r_timed_out_at\"x\n" +
+	"\r_timed_out_atB\x10\n" +
+	"\x0e_attempt_count\"x\n" +
 	"\x12ScheduleJobRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
 	"\bpriority\x18\v \x01(\x05R\bpriority\x122\n" +

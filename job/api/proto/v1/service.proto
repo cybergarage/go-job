@@ -77,10 +77,10 @@ message JobInstance {
   // Basic information: 1-10
   //////////////////////////////
 
-  // Unique instance identifier
-  string uuid = 1;
   // Kind
-  string kind = 2;
+  string kind = 1;
+  // Unique instance identifier
+  string uuid = 2;
 
   //////////////////////////////
   // Execution information: 11-20
@@ -111,7 +111,7 @@ message JobInstance {
   // Runtime information: 31-40
   //////////////////////////////
 
-  int32 attempt_count = 31;
+  optional int32 attempt_count = 31;
 }
 
 //////////////////////////////
