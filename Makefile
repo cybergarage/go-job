@@ -31,12 +31,12 @@ TEST_PKG_DIR=${TEST_PKG_NAME}
 TEST_PKG=${MODULE_ROOT}/${TEST_PKG_DIR}
 
 
-BIN_SRC_ROOT=cmd
-BIN_ID=${MODULE_ROOT}/${BIN_SRC_ROOT}
+BIN_SRC_DIR=cmd
+BIN_ID=${MODULE_ROOT}/${BIN_SRC_DIR}
 BIN_CLI=${PKG_NAME}ctl
 BIN_CLI_ID=${BIN_ID}/${BIN_CLI}
 BIN_SRCS=\
-        ${BIN_SRC_ROOT}/${BIN_CLI}
+        ${BIN_SRC_DIR}/${BIN_CLI}
 BINS=\
         ${BIN_CLI_ID}
 
@@ -50,7 +50,7 @@ version:
 	-git commit ${PKG_SRC_DIR}/version.go -m "Update version"
 
 format: version
-	gofmt -s -w ${PKG_SRC_DIR} ${TEST_PKG_DIR}
+	gofmt -s -w ${PKG_SRC_DIR} ${TEST_PKG_DIR} ${BIN_SRC_DIR}
 
 vet: format
 	go vet ${PKG_ID} ${TEST_PKG_ID}
