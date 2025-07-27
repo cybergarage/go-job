@@ -129,9 +129,9 @@ message ScheduleJobRequest {
   //////////////////////////////
   // Execution options: 11-20
   //////////////////////////////
-  
-  // Priority (lower values = higher priority)
-  optional int32 priority = 11;
+
+  // Priority (lower values = higher priority; -1 means unset)
+  int32 priority = 11;
   // Arguments to pass to the job executor
   repeated google.protobuf.Any arguments = 12;
 }

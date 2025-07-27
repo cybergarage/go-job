@@ -438,8 +438,8 @@ type ScheduleJobRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Kind to schedule (must be pre-registered)
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	// Priority (lower values = higher priority)
-	Priority *int32 `protobuf:"varint,11,opt,name=priority,proto3,oneof" json:"priority,omitempty"`
+	// Priority (lower values = higher priority; -1 means unset)
+	Priority int32 `protobuf:"varint,11,opt,name=priority,proto3" json:"priority,omitempty"`
 	// Arguments to pass to the job executor
 	Arguments     []*anypb.Any `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -484,8 +484,8 @@ func (x *ScheduleJobRequest) GetKind() string {
 }
 
 func (x *ScheduleJobRequest) GetPriority() int32 {
-	if x != nil && x.Priority != nil {
-		return *x.Priority
+	if x != nil {
+		return x.Priority
 	}
 	return 0
 }
@@ -816,12 +816,11 @@ const file_service_proto_rawDesc = "" +
 	"\r_completed_atB\x10\n" +
 	"\x0e_terminated_atB\x0f\n" +
 	"\r_cancelled_atB\x0f\n" +
-	"\r_timed_out_at\"\x8a\x01\n" +
+	"\r_timed_out_at\"x\n" +
 	"\x12ScheduleJobRequest\x12\x12\n" +
-	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1f\n" +
-	"\bpriority\x18\v \x01(\x05H\x00R\bpriority\x88\x01\x01\x122\n" +
-	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targumentsB\v\n" +
-	"\t_priority\"F\n" +
+	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
+	"\bpriority\x18\v \x01(\x05R\bpriority\x122\n" +
+	"\targuments\x18\f \x03(\v2\x14.google.protobuf.AnyR\targuments\"F\n" +
 	"\x13ScheduleJobResponse\x12/\n" +
 	"\binstance\x18\x01 \x01(\v2\x13.job.v1.JobInstanceR\binstance\"\x1b\n" +
 	"\x19ListRegisteredJobsRequest\"=\n" +
@@ -925,7 +924,6 @@ func file_service_proto_init() {
 	file_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_service_proto_msgTypes[2].OneofWrappers = []any{}
 	file_service_proto_msgTypes[3].OneofWrappers = []any{}
-	file_service_proto_msgTypes[4].OneofWrappers = []any{}
 	file_service_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
