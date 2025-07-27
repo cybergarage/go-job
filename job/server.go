@@ -151,7 +151,8 @@ func (server *server) Stop() error {
 
 func (server *server) GetVersion(ctx context.Context, req *v1.VersionRequest) (*v1.VersionResponse, error) {
 	return &v1.VersionResponse{
-		Version: Version,
+		Version:    Version,
+		ApiVersion: DefaultApiVersion,
 	}, nil
 }
 
