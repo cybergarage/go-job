@@ -28,6 +28,11 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 
 	var wg sync.WaitGroup
 
+	err := server.Manager().Clear()
+	if err != nil {
+		t.Fatalf("failed to clear job manager: %v", err)
+	}
+
 	// Register a job with the server
 
 	kind := "sum"
@@ -144,7 +149,7 @@ func TestServerAPIs(t *testing.T) {
 
 	clients := []job.Client{
 		job.NewGrpcClient(),
-		// job.NewCliClient(),
+		job.NewCliClient(),
 	}
 
 	servers := []job.Server{}
