@@ -30,10 +30,19 @@ const (
 // JobServiceClient is the client API for JobService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// JobService provides job scheduling and management capabilities.
+// This service allows you to register jobs, schedule them for execution,
+// and monitor their progress through various states.
 type JobServiceClient interface {
+	// GetVersion returns the service version information.
 	GetVersion(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error)
+	// ScheduleJob schedules a job for execution with the specified parameters.
+	// The job must be pre-registered in the system before it can be scheduled.
 	ScheduleJob(ctx context.Context, in *ScheduleJobRequest, opts ...grpc.CallOption) (*ScheduleJobResponse, error)
+	// ListRegisteredJobs returns all currently registered jobs in the system.
 	ListRegisteredJobs(ctx context.Context, in *ListRegisteredJobsRequest, opts ...grpc.CallOption) (*ListRegisteredJobsResponse, error)
+	// LookupInstances searches for job instances based on the provided query criteria.
 	LookupInstances(ctx context.Context, in *LookupInstancesRequest, opts ...grpc.CallOption) (*LookupInstancesResponse, error)
 }
 
@@ -88,10 +97,19 @@ func (c *jobServiceClient) LookupInstances(ctx context.Context, in *LookupInstan
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility.
+//
+// JobService provides job scheduling and management capabilities.
+// This service allows you to register jobs, schedule them for execution,
+// and monitor their progress through various states.
 type JobServiceServer interface {
+	// GetVersion returns the service version information.
 	GetVersion(context.Context, *VersionRequest) (*VersionResponse, error)
+	// ScheduleJob schedules a job for execution with the specified parameters.
+	// The job must be pre-registered in the system before it can be scheduled.
 	ScheduleJob(context.Context, *ScheduleJobRequest) (*ScheduleJobResponse, error)
+	// ListRegisteredJobs returns all currently registered jobs in the system.
 	ListRegisteredJobs(context.Context, *ListRegisteredJobsRequest) (*ListRegisteredJobsResponse, error)
+	// LookupInstances searches for job instances based on the provided query criteria.
 	LookupInstances(context.Context, *LookupInstancesRequest) (*LookupInstancesResponse, error)
 	mustEmbedUnimplementedJobServiceServer()
 }

@@ -179,9 +179,20 @@ message LookupInstancesResponse {
 // JobService representation
 //////////////////////////////
 
+// JobService provides job scheduling and management capabilities.
+// This service allows you to register jobs, schedule them for execution,
+// and monitor their progress through various states.
 service JobService {
-  rpc GetVersion(VersionRequest) returns (VersionResponse); 
+  // GetVersion returns the service version information.
+  rpc GetVersion(VersionRequest) returns (VersionResponse);
+  
+  // ScheduleJob schedules a job for execution with the specified parameters.
+  // The job must be pre-registered in the system before it can be scheduled.
   rpc ScheduleJob(ScheduleJobRequest) returns (ScheduleJobResponse);
+  
+  // ListRegisteredJobs returns all currently registered jobs in the system.
   rpc ListRegisteredJobs(ListRegisteredJobsRequest) returns (ListRegisteredJobsResponse);
+  
+  // LookupInstances searches for job instances based on the provided query criteria.
   rpc LookupInstances(LookupInstancesRequest) returns (LookupInstancesResponse);
 }
