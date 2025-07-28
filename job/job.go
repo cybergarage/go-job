@@ -74,6 +74,22 @@ func NewJob(opts ...any) (Job, error) {
 	return newJob(opts...)
 }
 
+// NewJobFromMap creates a new job from a map representation.
+func NewJobFromMap(m map[string]any) (Job, error) {
+	opts := []any{}
+	for k, v := range m {
+		switch k {
+		case kindKey:
+			opts = append(opts, WithKind(fmt.Sprintf("%v", v)))
+		case descKey:
+			opts = append(opts, WithDescription(fmt.Sprintf("%v", v)))
+		default:
+			return nil, fmt.Errorf("unknown job map key: %s", k)
+		}
+	}
+	return newJob(opts...)
+}
+
 func newJob(opts ...any) (*job, error) {
 	schedule, err := newSchedule()
 	if err != nil {
@@ -133,6 +149,7 @@ func (j *job) Schedule() Schedule {
 func (j *job) Map() map[string]any {
 	return map[string]any{
 		kindKey: j.kind,
+		descKey: j.desc,
 	}
 }
 

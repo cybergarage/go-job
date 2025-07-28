@@ -29,4 +29,5 @@ const (
 	messageKey    = "message"
 	crontabKey    = "crontab"
 	scheduleAtKey = "schedule_at"
+	descKey       = "description"
 )
