@@ -50,6 +50,8 @@ type Instance interface {
 	Policy() Policy
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState, opts ...any) error
+	// Handler returns the handler for the job instance.
+	Handler() Handler
 	// Process executes the job instance executor with the arguments provided in the context.
 	Process() ([]any, error)
 	// Result returns the processed result set of the executor when the job instance is completed or terminated.
@@ -386,6 +388,11 @@ func (ji *jobInstance) TimeoutedAt() time.Time {
 	return ji.timedoutAt
 }
 
+// Handler returns the handler for the job instance.
+func (ji *jobInstance) Handler() Handler {
+	return ji.handler
+}
+
 // Process executes the job instance executor with the arguments provided in the context.
 func (ji *jobInstance) Process() ([]any, error) {
 	if ji.handler == nil {
@@ -393,12 +400,10 @@ func (ji *jobInstance) Process() ([]any, error) {
 	}
 	ji.attempt++
 	ji.resultSet, ji.resultError = ji.handler.Execute(ji.Arguments()...)
-	if ji.resultError == nil {
-		ji.handler.HandleCompleted(ji, ji.resultSet)
-		return ji.resultSet, nil
+	if ji.resultError != nil {
+		ji.resultError = ji.handler.HandleTerminated(ji, ji.resultError)
 	}
-	ji.resultError = ji.handler.HandleTerminated(ji, ji.resultError)
-	return nil, ji.resultError
+	return ji.resultSet, ji.resultError
 }
 
 // Result returns the processed result set of the executor when the job instance is completed or terminated.
