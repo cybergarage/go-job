@@ -46,7 +46,7 @@ func NewCliClient(args ...string) Client {
 
 // Name returns the name of the client.
 func (cli *cliClient) Name() string {
-	return "CLI Client"
+	return jobctl
 }
 
 // SetPort sets a port number.

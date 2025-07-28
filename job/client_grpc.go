@@ -44,7 +44,7 @@ func NewGrpcClient() Client {
 
 // Name returns the name of the client.
 func (client *grpcClient) Name() string {
-	return "gRPC Client"
+	return "gRPC"
 }
 
 // SetPort sets a port number.
