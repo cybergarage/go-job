@@ -23,8 +23,8 @@ import (
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-	listCmd.AddCommand(listJobCmd)
-	listCmd.AddCommand(listInstanceCmd)
+	listCmd.AddCommand(listJobsCmd)
+	listCmd.AddCommand(listInstancesCmd)
 }
 
 var listCmd = &cobra.Command{ // nolint:exhaustruct
@@ -33,8 +33,8 @@ var listCmd = &cobra.Command{ // nolint:exhaustruct
 	Long:  "List all resources in the specified category",
 }
 
-var listJobCmd = &cobra.Command{ // nolint:exhaustruct
-	Use:   "job",
+var listJobsCmd = &cobra.Command{ // nolint:exhaustruct
+	Use:   "jobs",
 	Short: "List registered jobs",
 	Long:  "List all the registered jobs.",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -49,8 +49,8 @@ var listJobCmd = &cobra.Command{ // nolint:exhaustruct
 	},
 }
 
-var listInstanceCmd = &cobra.Command{ // nolint:exhaustruct
-	Use:   "instance",
+var listInstancesCmd = &cobra.Command{ // nolint:exhaustruct
+	Use:   "instances",
 	Short: "List job instances",
 	Long:  "List all job instances.",
 	Run: func(cmd *cobra.Command, args []string) {
