@@ -126,11 +126,10 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	}
 	switch len(instances) {
 	case 1:
-		instance := instances[0]
-		if instance.UUID() != instance.UUID() {
+		if instances[0].UUID() != instance.UUID() {
 			t.Errorf("expected job instance UUID %s, got %s", instance.UUID(), instance.UUID())
 		}
-		// if instance.State() != job.JobCompleted {
+		// if instances[0].State() != job.JobCompleted {
 		// 	t.Errorf("expected job instance %s to be completed, got %s", instance.UUID(), instance.State())
 		// }
 	default:
