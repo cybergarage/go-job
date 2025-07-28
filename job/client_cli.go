@@ -25,7 +25,7 @@ const (
 	jobctl = "jobctl"
 )
 
-// gRPC client implementation for client.
+// shell client implementation for client.
 type cliClient struct {
 	args []string
 	host string
@@ -59,12 +59,16 @@ func (cli *cliClient) SetHost(host string) {
 	cli.host = host
 }
 
-// Open opens a gRPC connection.
+// Open opens a shell connection.
 func (cli *cliClient) Open() error {
+	_, err := exec.LookPath(jobctl)
+	if err != nil {
+		return fmt.Errorf("%s command not found in PATH: %w", jobctl, err)
+	}
 	return nil
 }
 
-// Close closes the gRPC connection.
+// Close closes the shell connection.
 func (cli *cliClient) Close() error {
 	return nil
 }
