@@ -28,7 +28,7 @@ func Example() {
 		WithKind("sum"),
 		WithExecutor(func(a, b int) int { return a + b }),
 		WithScheduleAt(time.Now()), // immediate scheduling is the default, so this option is redundant
-		WithResponseHandler(func(ji Instance, res []any) {
+		WithCompleteProcessor(func(ji Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
 		WithTerminateProcessor(func(ji Instance, err error) error {

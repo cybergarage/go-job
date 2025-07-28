@@ -394,10 +394,10 @@ func (ji *jobInstance) Process() ([]any, error) {
 	ji.attempt++
 	ji.resultSet, ji.resultError = ji.handler.Execute(ji.Arguments()...)
 	if ji.resultError == nil {
-		ji.handler.HandleResponse(ji, ji.resultSet)
+		ji.handler.HandleCompleted(ji, ji.resultSet)
 		return ji.resultSet, nil
 	}
-	ji.resultError = ji.handler.HandleError(ji, ji.resultError)
+	ji.resultError = ji.handler.HandleTerminated(ji, ji.resultError)
 	return nil, ji.resultError
 }
 

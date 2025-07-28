@@ -157,7 +157,7 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	jobOpts := []any{
 		WithExecutor(job.Handler().Executor()),
 		WithTerminateProcessor(job.Handler().TerminateProcessor()),
-		WithResponseHandler(job.Handler().ResponseHandler()),
+		WithCompleteProcessor(job.Handler().CompleteProcessor()),
 		WithCrontabSpec(job.Schedule().CrontabSpec()),
 		WithInstanceHistory(mgr.Repository),
 	}

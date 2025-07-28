@@ -43,7 +43,7 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	j, err := job.NewJob(
 		job.WithKind(kind),
 		job.WithExecutor(func(a, b int) int { return a + b }),
-		job.WithResponseHandler(resHandler),
+		job.WithCompleteProcessor(resHandler),
 		job.WithTerminateProcessor(errHandler),
 	)
 	if err != nil {

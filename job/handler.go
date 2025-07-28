@@ -18,15 +18,17 @@ import (
 	"fmt"
 )
 
-// TerminateProcessor defines how users can process job execution errors.
+// TerminateProcessor is called when a job reaches the terminated state.
 // Users can:
 //   - Return nil to resolve the error (mark job as successful)
 //   - Return a modified error to transform the error
 //   - Return the original error to keep it unchanged
 type TerminateProcessor = func(job Instance, err error) error
 
-// ResponseHandler is a function type that handles the responses from a job execution.
-type ResponseHandler func(job Instance, responses []any)
+// CompleteProcessor is called when a job reaches the completed state (successful completion).
+// It allows users to handle the results of the job execution.
+// Users can process the results and perform any necessary actions.
+type CompleteProcessor func(job Instance, responses []any)
 
 // HandlerOption is a function type that applies options to a job handler.
 type HandlerOption func(*handler)
@@ -45,8 +47,8 @@ func WithTerminateProcessor(fn TerminateProcessor) HandlerOption {
 	}
 }
 
-// WithResponseHandler sets the response handler function for the job handler.
-func WithResponseHandler(fn ResponseHandler) HandlerOption {
+// WithCompleteProcessor sets the response handler function for the job handler.
+func WithCompleteProcessor(fn CompleteProcessor) HandlerOption {
 	return func(h *handler) {
 		h.resHandler = fn
 	}
@@ -58,20 +60,20 @@ type Handler interface {
 	Executor() Executor
 	// TerminateProcessor returns the error processor function set for the job handler.
 	TerminateProcessor() TerminateProcessor
-	// ResponseHandler returns the response handler function set for the job handler.
-	ResponseHandler() ResponseHandler
+	// CompleteProcessor returns the response handler function set for the job handler.
+	CompleteProcessor() CompleteProcessor
 	// Execute runs the job with the provided parameters.
 	Execute(params ...any) ([]any, error)
-	// HandleError processes errors that occur during job execution.
-	HandleError(job Instance, err error) error
-	// HandleResponse processes the responses from a job execution.
-	HandleResponse(job Instance, responses []any)
+	// HandleTerminated processes errors that occur during job execution.
+	HandleTerminated(job Instance, err error) error
+	// HandleCompleted processes the responses from a job execution.
+	HandleCompleted(job Instance, responses []any)
 }
 
 type handler struct {
 	executor       Executor
 	errorProcessor TerminateProcessor
-	resHandler     ResponseHandler
+	resHandler     CompleteProcessor
 }
 
 // NewHandler creates a new instance of a job handler with the provided options.
@@ -101,8 +103,8 @@ func (h *handler) TerminateProcessor() TerminateProcessor {
 	return h.errorProcessor
 }
 
-// ResponseHandler returns the response handler function set for the job handler.
-func (h *handler) ResponseHandler() ResponseHandler {
+// CompleteProcessor returns the response handler function set for the job handler.
+func (h *handler) CompleteProcessor() CompleteProcessor {
 	return h.resHandler
 }
 
@@ -118,16 +120,16 @@ func (h *handler) Execute(params ...any) ([]any, error) {
 	return res, nil
 }
 
-// HandleError processes errors that occur during job execution using the error handler, if set.
-func (h *handler) HandleError(job Instance, err error) error {
+// HandleTerminated processes errors that occur during job execution using the error handler, if set.
+func (h *handler) HandleTerminated(job Instance, err error) error {
 	if h.errorProcessor == nil {
 		return err
 	}
 	return h.errorProcessor(job, err)
 }
 
-// HandleResponse processes the responses from a job execution using the response handler, if set.
-func (h *handler) HandleResponse(job Instance, responses []any) {
+// HandleCompleted processes the responses from a job execution using the response handler, if set.
+func (h *handler) HandleCompleted(job Instance, responses []any) {
 	if h.resHandler == nil {
 		return
 	}

@@ -99,7 +99,7 @@ func TestScheduleJobs(t *testing.T) {
 			opts := append(
 				tt.opts,
 				job.WithKind(tt.kind),
-				job.WithResponseHandler(resHandler),
+				job.WithCompleteProcessor(resHandler),
 				job.WithTerminateProcessor(errHandler),
 			)
 

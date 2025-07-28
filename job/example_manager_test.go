@@ -31,7 +31,7 @@ func ExampleManager_ScheduleJob() {
 	mgr.ScheduleJob(
 		job,
 		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
-		WithResponseHandler(func(inst Instance, res []any) {
+		WithCompleteProcessor(func(inst Instance, res []any) {
 			fmt.Printf("Result: %v\n", res)
 		}),
 		WithArguments(1, 2),
@@ -58,7 +58,7 @@ func ExampleManager_ScheduleRegisteredJob() {
 	mgr.ScheduleRegisteredJob(
 		job.Kind(),
 		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
-		WithResponseHandler(func(inst Instance, res []any) {
+		WithCompleteProcessor(func(inst Instance, res []any) {
 			fmt.Printf("Result: %v\n", res)
 		}),
 		WithArguments(1, 2),

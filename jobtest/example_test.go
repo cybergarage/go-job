@@ -30,7 +30,7 @@ func Example() {
 		job.WithKind("sum"),
 		job.WithExecutor(func(a, b int) int { return a + b }),
 		job.WithScheduleAt(time.Now()), // immediate scheduling is the default, so this option is redundant
-		job.WithResponseHandler(func(ji job.Instance, res []any) {
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
 		job.WithTerminateProcessor(func(ji job.Instance, err error) error {
