@@ -241,7 +241,7 @@ This design makes `go-job` adaptable for microservices, cloud-native application
 # Developer Guides
 
 - Extending `go-job`
-  - [Plug-In Concept](doc/plugin-concept.md)
+  - [Plug-In Guide](doc/plugin-guide.md)
 
 # Related Projects
 
