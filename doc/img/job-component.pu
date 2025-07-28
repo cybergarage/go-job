@@ -1,4 +1,4 @@
-@startuml go-job-components
+@startuml job-component
 
 component Manager
 component Job
