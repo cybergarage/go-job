@@ -124,8 +124,17 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	if err != nil {
 		t.Fatalf("failed to lookup job instances: %v", err)
 	}
-	if len(instances) == 0 {
-		t.Fatal("expected at least one job instance")
+	switch len(instances) {
+	case 1:
+		instance := instances[0]
+		if instance.UUID() != instance.UUID() {
+			t.Errorf("expected job instance UUID %s, got %s", instance.UUID(), instance.UUID())
+		}
+		// if instance.State() != job.JobCompleted {
+		// 	t.Errorf("expected job instance %s to be completed, got %s", instance.UUID(), instance.State())
+		// }
+	default:
+		t.Fatalf("expected exactly one job instance, got %d", len(instances))
 	}
 }
 
