@@ -232,13 +232,13 @@ This design makes `go-job` adaptable for microservices, cloud-native application
 
 - Get Started
   - [Quick Start](doc/quick-start.md)
+- References
+  - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 - Operation
   - [CLI (jobctl)](doc/cmd/cli/jobctl.md)
 
 # Developer Guides
 
-- References
-  - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 
 - Extending `go-job`
   - [Plug-In Concept](doc/plugin-concept.md)
