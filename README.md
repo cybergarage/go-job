@@ -245,7 +245,7 @@ This design makes `go-job` adaptable for microservices, cloud-native application
 
 # Related Projects
 
-`go-job` is being developed in collaboration with the following Cybergarage projects:
+`go-job` is developed in collaboration with the following Cybergarage projects:
 
 - [go-logger](https://github.com/cybergarage/go-logger) ![go logger](https://img.shields.io/github/v/tag/cybergarage/go-logger)
 
