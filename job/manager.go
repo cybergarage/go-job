@@ -60,6 +60,8 @@ type Manager interface {
 	Clear() error
 	// StopWithWait stops the job manager and waits for all jobs to complete.
 	StopWithWait() error
+	// Store returns the job store.
+	Store() Store
 	// ResizeWorkers scales the number of workers in the group.
 	ResizeWorkers(num int) error
 	// NumWorkers returns the number of workers in the group.
@@ -113,6 +115,11 @@ func newManager(opts ...any) (*manager, error) {
 	WithWorkerGroupQueue(mgr.Repository.Queue())(mgr.workerGroup)
 
 	return mgr, nil
+}
+
+// Store returns the job store.
+func (mgr *manager) Store() Store {
+	return mgr.store
 }
 
 // RegisterJob registers a job in the registry. If a job with the same kind is already registered,
