@@ -35,10 +35,16 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 		wg.Done()
 	}
 
+	errHandler := func(ji job.Instance, err error) error {
+		ji.Errorf("Error: %v", err)
+		return err
+	}
+
 	j, err := job.NewJob(
 		job.WithKind(kind),
 		job.WithExecutor(func(a, b int) int { return a + b }),
 		job.WithResponseHandler(resHandler),
+		job.WithErrorHandler(errHandler),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create job: %v", err)
