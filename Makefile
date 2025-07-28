@@ -106,14 +106,14 @@ doc-cmd-cli:
 	pushd ${DOC_CLI_ROOT} && ./${DOC_CLI_BIN} && popd
 	rm ${DOC_CLI_ROOT}/${DOC_CLI_BIN}
 	git add ${DOC_CLI_ROOT}/*.md
-	git commit ${DOC_CLI_ROOT}/*.md -m "Update CLI documentation"
+	git commit ${DOC_CLI_ROOT}/*.md -m "docs: update CLI documentation"
 
 doc-proto:
 	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
 	protoc --doc_out=./${DOC_ROOT} --doc_opt=markdown,grpc-api.md \
 		--proto_path=${PKG_PROTO_ROOT}/proto/v1 \
 		$(shell find ${PKG_PROTO_ROOT}/proto/v1 -name "*.proto")
-	git commit ${DOC_ROOT}/grpc-api.md -m "Update proto documentation"
+	git commit ${DOC_ROOT}/grpc-api.md -m "docs: update proto documentation"
 
 cmd-docs: doc-cmd-cli
 
@@ -122,7 +122,7 @@ cmd-docs: doc-cmd-cli
 
 %.png : %.pu
 	plantuml -tpng $<
-	git commit $@ $< -m "Update images"
+	git commit $@ $< -m "docs: update images"
 
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
