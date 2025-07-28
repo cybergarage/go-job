@@ -17,8 +17,9 @@ package job
 import (
 	"fmt"
 	"math/rand/v2"
-	"strconv"
 	"time"
+
+	"github.com/cybergarage/go-safecast/safecast"
 )
 
 const (
@@ -141,18 +142,12 @@ func newPolicy() *policy {
 
 // NewMaxRetriesFrom creates a maximum retries value from various input types.
 func NewMaxRetriesFrom(a any) (int, error) {
-	switch v := a.(type) {
-	case int:
-		return v, nil
-	case string:
-		count, err := strconv.Atoi(v)
-		if err != nil {
-			return 0, fmt.Errorf("invalid max retries value: %v", v)
-		}
-		return count, nil
-	default:
+	var maxRetries int
+	err := safecast.ToInt(a, &maxRetries)
+	if err != nil {
 		return 0, fmt.Errorf("invalid max retries value: %v", a)
 	}
+	return maxRetries, nil
 }
 
 // NewTimeoutFrom creates a timeout duration from various input types.
