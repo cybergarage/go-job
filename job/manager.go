@@ -156,7 +156,7 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	jobOpts := []any{
 		WithExecutor(job.Handler().Executor()),
-		WithErrorHandler(job.Handler().ErrorHandler()),
+		WithTerminateProcessor(job.Handler().TerminateProcessor()),
 		WithResponseHandler(job.Handler().ResponseHandler()),
 		WithCrontabSpec(job.Schedule().CrontabSpec()),
 		WithInstanceHistory(mgr.Repository),

@@ -33,7 +33,7 @@ func Example() {
 		job.WithResponseHandler(func(ji job.Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
-		job.WithErrorHandler(func(ji job.Instance, err error) error {
+		job.WithTerminateProcessor(func(ji job.Instance, err error) error {
 			ji.Errorf("Error executing job: %v", err)
 			return err
 		}),

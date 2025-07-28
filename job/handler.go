@@ -18,8 +18,12 @@ import (
 	"fmt"
 )
 
-// ErrorHandler is a function type that defines how to handle errors during job execution.
-type ErrorHandler = func(job Instance, err error) error
+// TerminateProcessor defines how users can process job execution errors.
+// Users can:
+//   - Return nil to resolve the error (mark job as successful)
+//   - Return a modified error to transform the error
+//   - Return the original error to keep it unchanged
+type TerminateProcessor = func(job Instance, err error) error
 
 // ResponseHandler is a function type that handles the responses from a job execution.
 type ResponseHandler func(job Instance, responses []any)
@@ -34,17 +38,17 @@ func WithExecutor(executor Executor) HandlerOption {
 	}
 }
 
-// WithErrorHandler sets the error handler function for the job handler.
-func WithErrorHandler(errorHandler ErrorHandler) HandlerOption {
+// WithTerminateProcessor sets the error handler function for the job handler.
+func WithTerminateProcessor(fn TerminateProcessor) HandlerOption {
 	return func(h *handler) {
-		h.errorHandler = errorHandler
+		h.errorProcessor = fn
 	}
 }
 
 // WithResponseHandler sets the response handler function for the job handler.
-func WithResponseHandler(responseHandler ResponseHandler) HandlerOption {
+func WithResponseHandler(fn ResponseHandler) HandlerOption {
 	return func(h *handler) {
-		h.resHandler = responseHandler
+		h.resHandler = fn
 	}
 }
 
@@ -52,8 +56,8 @@ func WithResponseHandler(responseHandler ResponseHandler) HandlerOption {
 type Handler interface {
 	// Executor returns the executor function set for the job handler.
 	Executor() Executor
-	// ErrorHandler returns the error handler function set for the job handler.
-	ErrorHandler() ErrorHandler
+	// TerminateProcessor returns the error processor function set for the job handler.
+	TerminateProcessor() TerminateProcessor
 	// ResponseHandler returns the response handler function set for the job handler.
 	ResponseHandler() ResponseHandler
 	// Execute runs the job with the provided parameters.
@@ -65,9 +69,9 @@ type Handler interface {
 }
 
 type handler struct {
-	executor     Executor
-	errorHandler ErrorHandler
-	resHandler   ResponseHandler
+	executor       Executor
+	errorProcessor TerminateProcessor
+	resHandler     ResponseHandler
 }
 
 // NewHandler creates a new instance of a job handler with the provided options.
@@ -77,9 +81,9 @@ func NewHandler(opts ...HandlerOption) Handler {
 
 func newHandler(opts ...HandlerOption) *handler {
 	h := &handler{
-		executor:     nil,
-		errorHandler: nil,
-		resHandler:   nil,
+		executor:       nil,
+		errorProcessor: nil,
+		resHandler:     nil,
 	}
 	for _, opt := range opts {
 		opt(h)
@@ -92,9 +96,9 @@ func (h *handler) Executor() Executor {
 	return h.executor
 }
 
-// ErrorHandler returns the error handler function set for the job handler.
-func (h *handler) ErrorHandler() ErrorHandler {
-	return h.errorHandler
+// TerminateProcessor returns the error processor function set for the job handler.
+func (h *handler) TerminateProcessor() TerminateProcessor {
+	return h.errorProcessor
 }
 
 // ResponseHandler returns the response handler function set for the job handler.
@@ -116,10 +120,10 @@ func (h *handler) Execute(params ...any) ([]any, error) {
 
 // HandleError processes errors that occur during job execution using the error handler, if set.
 func (h *handler) HandleError(job Instance, err error) error {
-	if h.errorHandler == nil {
+	if h.errorProcessor == nil {
 		return err
 	}
-	return h.errorHandler(job, err)
+	return h.errorProcessor(job, err)
 }
 
 // HandleResponse processes the responses from a job execution using the response handler, if set.

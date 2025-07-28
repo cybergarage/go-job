@@ -100,7 +100,7 @@ func TestScheduleJobs(t *testing.T) {
 				tt.opts,
 				job.WithKind(tt.kind),
 				job.WithResponseHandler(resHandler),
-				job.WithErrorHandler(errHandler),
+				job.WithTerminateProcessor(errHandler),
 			)
 
 			j, err := job.NewJob(opts...)

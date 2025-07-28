@@ -44,7 +44,7 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 		job.WithKind(kind),
 		job.WithExecutor(func(a, b int) int { return a + b }),
 		job.WithResponseHandler(resHandler),
-		job.WithErrorHandler(errHandler),
+		job.WithTerminateProcessor(errHandler),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create job: %v", err)
