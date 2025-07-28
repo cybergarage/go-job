@@ -89,6 +89,7 @@ protopkg:
 	go get -u google.golang.org/protobuf
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest	
+
 %.pb.go : %.proto protopkg
 	protoc -I=${PKG_PROTO_ROOT}/proto/v1 --go_out=paths=source_relative:${PKG_PROTO_ROOT}/gen/go/v1 --go-grpc_out=paths=source_relative:${PKG_PROTO_ROOT}/gen/go/v1 --plugin=protoc-gen-go=${GOBIN}/protoc-gen-go --plugin=protoc-gen-go-grpc=${GOBIN}/protoc-gen-go-grpc $<
 protos=$(shell find ${PKG_PROTO_ROOT} -name '*.proto')
@@ -97,7 +98,8 @@ proto: protopkg $(pbs)
 
 # Documentation generation
 
-DOC_CLI_ROOT=doc/cmd/cli
+DOC_ROOT=doc
+DOC_CLI_ROOT=${DOC_ROOT}/cmd/cli
 DOC_CLI_BIN=jobdoc
 doc-cmd-cli:
 	go build -o ${DOC_CLI_ROOT}/${DOC_CLI_BIN} ${MODULE_ROOT}/${DOC_CLI_ROOT}
@@ -105,6 +107,13 @@ doc-cmd-cli:
 	rm ${DOC_CLI_ROOT}/${DOC_CLI_BIN}
 	git add ${DOC_CLI_ROOT}/*.md
 	git commit ${DOC_CLI_ROOT}/*.md -m "Update CLI documentation"
+
+doc-proto:
+	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+	protoc --doc_out=./${DOC_ROOT} --doc_opt=markdown,grpc-api.md \
+		--proto_path=${PKG_PROTO_ROOT}/proto/v1 \
+		${PKG_PROTO_ROOT}/proto/v1/service.proto
+	git commit ${DOC_ROOT}/grpc-api.md -m "Update proto documentation"
 
 cmd-docs: doc-cmd-cli
 
@@ -116,6 +125,6 @@ cmd-docs: doc-cmd-cli
 
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
-doc: $(docs) $(images) cmd-docs
+doc: $(docs) $(images) cmd-docs doc-proto
 	@echo "Generated: $(docs)"
 	@echo "Generated: $(images)"
