@@ -16,6 +16,7 @@ package jobtest
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"testing"
 
@@ -138,8 +139,12 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 }
 
 func TestServerAPIs(t *testing.T) {
+	t.Setenv("PATH", fmt.Sprintf("%s/bin:%s", os.Getenv("GOPATH"),
+		os.Getenv("PATH")))
+
 	clients := []job.Client{
 		job.NewGrpcClient(),
+		// job.NewCliClient(),
 	}
 
 	servers := []job.Server{}
