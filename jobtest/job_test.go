@@ -91,10 +91,16 @@ func TestScheduleJobs(t *testing.T) {
 				wg.Done()
 			}
 
+			errHandler := func(ji job.Instance, err error) error {
+				ji.Errorf("Error: %v", err)
+				return err
+			}
+
 			opts := append(
 				tt.opts,
 				job.WithKind(tt.kind),
 				job.WithResponseHandler(resHandler),
+				job.WithErrorHandler(errHandler),
 			)
 
 			j, err := job.NewJob(opts...)
