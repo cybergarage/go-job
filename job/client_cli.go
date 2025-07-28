@@ -15,6 +15,7 @@
 package job
 
 import (
+	"encoding/json"
 	"fmt"
 	"os/exec"
 
@@ -73,31 +74,93 @@ func (cli *cliClient) Close() error {
 	return nil
 }
 
+func (cli *cliClient) trimOutput(out []byte) string {
+	if len(out) > 0 && out[len(out)-1] == '\n' {
+		return string(out[:len(out)-1])
+	}
+	return string(out)
+}
+
 // GetVersion retrieves the version of the job service.
 func (cli *cliClient) GetVersion() (string, error) {
-	var args []string
-	args = append(args, cli.args...)
-	args = append(args, "get", "version")
-	out, err := exec.Command(jobctl, args...).CombinedOutput()
-	if err == nil {
-		return string(out), nil
+	var cmdArgs []string
+	cmdArgs = append(cmdArgs, cli.args...)
+	cmdArgs = append(cmdArgs, "get", "version")
+	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	if err != nil {
+		return "", err
 	}
-	return "", fmt.Errorf("%w : %s", err, string(out))
-
+	return cli.trimOutput(out), nil
 }
 
 // ScheduleJob schedules a job with the specified kind, priority, and arguments.
 // The priority is lower for higher priority jobs, similar to Unix nice values.
 func (cli *cliClient) ScheduleJob(kind string, args ...any) (Instance, error) {
-	return nil, fmt.Errorf("CLI client does not support scheduling jobs")
+	var cmdArgs []string
+	cmdArgs = append(cmdArgs, cli.args...)
+	cmdArgs = append(cmdArgs, "schedule", kind)
+	for _, arg := range args {
+		cmdArgs = append(cmdArgs, fmt.Sprintf("%v", arg))
+	}
+	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	var m map[string]any
+	if err := json.Unmarshal(out, &m); err != nil {
+		return nil, err
+	}
+	i, err := NewInstanceFromMap(m)
+	if err != nil {
+		return nil, err
+	}
+	return i, nil
 }
 
 // ListRegisteredJobs lists all registered jobs.
 func (cli *cliClient) ListRegisteredJobs() ([]Job, error) {
-	return nil, fmt.Errorf("CLI client does not support listing registered jobs")
+	var cmdArgs []string
+	cmdArgs = append(cmdArgs, cli.args...)
+	cmdArgs = append(cmdArgs, "list", "jobs")
+	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	var maps []map[string]any
+	if err := json.Unmarshal(out, &maps); err != nil {
+		return nil, err
+	}
+	jobs := make([]Job, len(maps))
+	for n, m := range maps {
+		j, err := NewJobFromMap(m)
+		if err != nil {
+			return nil, err
+		}
+		jobs[n] = j
+	}
+	return jobs, nil
 }
 
 // LookupInstances looks up job instances based on the provided query.
 func (cli *cliClient) LookupInstances(query Query) ([]Instance, error) {
-	return nil, fmt.Errorf("CLI client does not support looking up instances")
+	var cmdArgs []string
+	cmdArgs = append(cmdArgs, cli.args...)
+	cmdArgs = append(cmdArgs, "list", "instances")
+	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	var maps []map[string]any
+	if err := json.Unmarshal(out, &maps); err != nil {
+		return nil, err
+	}
+	instances := make([]Instance, len(maps))
+	for n, m := range maps {
+		i, err := NewInstanceFromMap(m)
+		if err != nil {
+			return nil, err
+		}
+		instances[n] = i
+	}
+	return instances, nil
 }
