@@ -15,25 +15,12 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/spf13/cobra"
 )
 
-func init() {
-	getCmd.AddCommand(getVersionCmd)
-}
+var ErrInvalid = errors.New("invalid")
 
-var getVersionCmd = &cobra.Command{ // nolint:exhaustruct
-	Use:   "version",
-	Short: "Get version",
-	Long:  "Get version string.",
-	Run: func(cmd *cobra.Command, args []string) {
-		ver, err := GetClient().GetVersion()
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-		fmt.Println(ver)
-	},
+func errInvalidArguments(args ...any) error {
+	return fmt.Errorf("%w arguments: %v", ErrInvalid, args)
 }

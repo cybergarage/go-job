@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/spf13/cobra"
 )
 
@@ -37,15 +38,26 @@ var listJobsCmd = &cobra.Command{ // nolint:exhaustruct
 	Use:   "jobs",
 	Short: "List registered jobs",
 	Long:  "List all the registered jobs.",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		jobs, err := GetClient().ListRegisteredJobs()
 		if err != nil {
-			fmt.Println(err.Error())
-			return
+			return err
 		}
+		fmt.Printf("[\n")
 		for n, job := range jobs {
-			fmt.Printf("[%d] %s\n", n, job.String())
+			json, err := encoding.MapToJSON(job.Map())
+			if err != nil {
+				return err
+			}
+			fmt.Printf("  %s", json)
+			if n < len(jobs)-1 {
+				fmt.Printf(",\n")
+			} else {
+				fmt.Printf("\n")
+			}
 		}
+		fmt.Printf("]\n")
+		return nil
 	},
 }
 
@@ -53,15 +65,26 @@ var listInstancesCmd = &cobra.Command{ // nolint:exhaustruct
 	Use:   "instances",
 	Short: "List job instances",
 	Long:  "List all job instances.",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		query := job.NewQuery()
 		instances, err := GetClient().LookupInstances(query)
 		if err != nil {
-			fmt.Println(err.Error())
-			return
+			return err
 		}
+		fmt.Printf("[\n")
 		for n, instance := range instances {
-			fmt.Printf("[%d] %s\n", n, instance.String())
+			json, err := encoding.MapToJSON(instance.Map())
+			if err != nil {
+				return err
+			}
+			fmt.Printf("  %s", json)
+			if n < len(instances)-1 {
+				fmt.Printf(",\n")
+			} else {
+				fmt.Printf("\n")
+			}
 		}
+		fmt.Printf("]\n")
+		return nil
 	},
 }

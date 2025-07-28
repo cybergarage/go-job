@@ -15,15 +15,32 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	rootCmd.AddCommand(getCmd)
+	getCmd.AddCommand(getVersionCmd)
 }
 
 var getCmd = &cobra.Command{ // nolint:exhaustruct
 	Use:   "get",
 	Short: "Get the specified resource",
 	Long:  "Get the specified resource in the specified category.",
+}
+
+var getVersionCmd = &cobra.Command{ // nolint:exhaustruct
+	Use:   "version",
+	Short: "Get version",
+	Long:  "Get version string.",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ver, err := GetClient().GetVersion()
+		if err != nil {
+			return err
+		}
+		fmt.Println(ver)
+		return nil
+	},
 }
