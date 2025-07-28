@@ -22,6 +22,6 @@ List all resources in the specified category
 ### SEE ALSO
 
 * [jobctl](jobctl.md)	 - 
-* [jobctl list instance](jobctl_list_instance.md)	 - List job instances
-* [jobctl list job](jobctl_list_job.md)	 - List registered jobs
+* [jobctl list instances](jobctl_list_instances.md)	 - List job instances
+* [jobctl list jobs](jobctl_list_jobs.md)	 - List registered jobs
 
