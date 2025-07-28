@@ -112,7 +112,7 @@ doc-proto:
 	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
 	protoc --doc_out=./${DOC_ROOT} --doc_opt=markdown,grpc-api.md \
 		--proto_path=${PKG_PROTO_ROOT}/proto/v1 \
-		${PKG_PROTO_ROOT}/proto/v1/service.proto
+		$(shell find ${PKG_PROTO_ROOT}/proto/v1 -name "*.proto")
 	git commit ${DOC_ROOT}/grpc-api.md -m "Update proto documentation"
 
 cmd-docs: doc-cmd-cli
