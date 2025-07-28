@@ -294,11 +294,11 @@ func (mgr *manager) Clear() error {
 	mgr.Lock()
 	defer mgr.Unlock()
 
-	closer := []func() error{
+	cleaners := []func() error{
 		mgr.Repository.Clear,
 	}
-	for _, close := range closer {
-		if err := close(); err != nil {
+	for _, cleaner := range cleaners {
+		if err := cleaner(); err != nil {
 			return fmt.Errorf("failed to clear job manager: %w", err)
 		}
 	}
