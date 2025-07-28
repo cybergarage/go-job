@@ -17,6 +17,8 @@ package job
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/cybergarage/go-safecast/safecast"
 )
 
 // Priority represents the priority of a job. A lower value means a higher priority, similar to the Unix nice value.
@@ -35,18 +37,12 @@ const (
 
 // NewPriorityFrom creates a Priority from various input types.
 func NewPriorityFrom(a any) (Priority, error) {
-	switch v := a.(type) {
-	case int:
-		return Priority(v), nil
-	case string:
-		p, err := strconv.Atoi(v)
-		if err != nil {
-			return DefaultPriority, err
-		}
-		return Priority(p), nil
-	default:
-		return DefaultPriority, fmt.Errorf("invalid priority value: %v", a)
+	var p int
+	err := safecast.To(a, &p)
+	if err != nil {
+		return DefaultPriority, fmt.Errorf("failed to cast to Priority: %w", err)
 	}
+	return Priority(p), nil
 }
 
 // Equal checks if the priority is equal to another priority.
