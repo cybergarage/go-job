@@ -18,12 +18,12 @@ import (
 	"github.com/cybergarage/go-job/job"
 )
 
-var client *job.Client
+var client job.Client
 
-func SetClient(c *job.Client) {
+func SetClient(c job.Client) {
 	client = c
 }
 
-func GetClient() *job.Client {
+func GetClient() job.Client {
 	return client
 }
