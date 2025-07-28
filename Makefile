@@ -122,6 +122,7 @@ cmd-docs: doc-cmd-cli
 
 %.png : %.pu
 	plantuml -tpng $<
+	git commit $@ $< -m "Update images"
 
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
