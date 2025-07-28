@@ -236,9 +236,9 @@ This design makes `go-job` adaptable for microservices, cloud-native application
   - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 - Operation
   - [CLI (jobctl)](doc/cmd/cli/jobctl.md)
+  - [gRPC API](doc/grpc-api.md)
 
 # Developer Guides
-
 
 - Extending `go-job`
   - [Plug-In Concept](doc/plugin-concept.md)
