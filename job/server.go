@@ -251,10 +251,14 @@ func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstanc
 
 	instances := []*v1.JobInstance{}
 	for _, instance := range allInstances {
+		state, err := instance.State().ProtoState()
+		if err != nil {
+			return nil, err
+		}
 		instances = append(instances, &v1.JobInstance{
 			Kind:  instance.Kind(),
 			Uuid:  instance.UUID().String(),
-			State: v1.JobState(instance.State()),
+			State: state,
 		})
 	}
 
