@@ -28,6 +28,8 @@ type Registry interface {
 	ListJobs() ([]Job, error)
 	// LookupJob looks up a job by its kind in the registry.
 	LookupJob(kind Kind) (Job, bool)
+	// Clear clears all registered jobs.
+	Clear() error
 }
 
 // registry is responsible for managing job instances.
@@ -43,34 +45,40 @@ func NewRegistry() Registry {
 }
 
 // RegisterJob registers a job in the registry.
-func (r *registry) RegisterJob(job Job) error {
-	if _, exists := r.jobs[job.Kind()]; exists {
+func (reg *registry) RegisterJob(job Job) error {
+	if _, exists := reg.jobs[job.Kind()]; exists {
 		return fmt.Errorf("job with kind %q is already registered", job.Kind())
 	}
-	r.jobs[job.Kind()] = job
+	reg.jobs[job.Kind()] = job
 	return nil
 }
 
 // UnregisterJob removes a job from the registry by its kind.
-func (r *registry) UnregisterJob(kind Kind) error {
-	if _, exists := r.jobs[kind]; !exists {
+func (reg *registry) UnregisterJob(kind Kind) error {
+	if _, exists := reg.jobs[kind]; !exists {
 		return fmt.Errorf("job with kind %q is not registered", kind)
 	}
-	delete(r.jobs, kind)
+	delete(reg.jobs, kind)
 	return nil
 }
 
 // ListJobs returns a slice of all registered jobs.
-func (r *registry) ListJobs() ([]Job, error) {
-	jobs := make([]Job, 0, len(r.jobs))
-	for _, job := range r.jobs {
+func (reg *registry) ListJobs() ([]Job, error) {
+	jobs := make([]Job, 0, len(reg.jobs))
+	for _, job := range reg.jobs {
 		jobs = append(jobs, job)
 	}
 	return jobs, nil
 }
 
 // LookupJob looks up a job by its kind in the registry.
-func (r *registry) LookupJob(kind Kind) (Job, bool) {
-	job, exists := r.jobs[kind]
+func (reg *registry) LookupJob(kind Kind) (Job, bool) {
+	job, exists := reg.jobs[kind]
 	return job, exists
+}
+
+// Clear clears all registered jobs.
+func (reg *registry) Clear() error {
+	reg.jobs = make(map[string]Job)
+	return nil
 }
