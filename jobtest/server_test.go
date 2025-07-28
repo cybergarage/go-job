@@ -15,13 +15,14 @@
 package jobtest
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
 )
 
-func ServerAPIsTest(t *testing.T, server job.Server) {
+func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	t.Helper()
 
 	var wg sync.WaitGroup
@@ -61,8 +62,6 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 	}()
 
 	// Open a client to the server
-
-	client := job.NewClient()
 
 	err = client.Open()
 	if err != nil {
@@ -125,15 +124,22 @@ func ServerAPIsTest(t *testing.T, server job.Server) {
 }
 
 func TestServerAPIs(t *testing.T) {
-	servers := []job.Server{}
+	clients := []job.Client{
+		job.NewGrpcClient(),
+	}
 
+	servers := []job.Server{}
 	server, err := job.NewServer()
 	if err != nil {
 		t.Fatalf("failed to create job server: %v", err)
 	}
 	servers = append(servers, server)
 
-	for _, srv := range servers {
-		ServerAPIsTest(t, srv)
+	for _, cli := range clients {
+		for _, srv := range servers {
+			t.Run(fmt.Sprintf("client(%s)_server(%s)", cli.Name(), srv.Manager().Store().Name()), func(t *testing.T) {
+				ServerAPIsTest(t, cli, srv)
+			})
+		}
 	}
 }
