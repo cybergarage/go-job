@@ -68,11 +68,15 @@ func NewRepository(opts ...RepositoryOption) *repository {
 }
 
 // Clear clears all job queues, history, and logs.
-func (r *repository) Clear() error {
+func (repo *repository) Clear() error {
+	registryCleaner := func(ctx context.Context) error {
+		return repo.Registry.Clear()
+	}
 	clearners := []func(context.Context) error{
-		r.store.ClearInstanceHistory,
-		r.store.ClearInstanceLogs,
-		r.store.ClearInstances,
+		registryCleaner,
+		repo.store.ClearInstanceHistory,
+		repo.store.ClearInstanceLogs,
+		repo.store.ClearInstances,
 	}
 	for _, clear := range clearners {
 		if err := clear(context.Background()); err != nil {

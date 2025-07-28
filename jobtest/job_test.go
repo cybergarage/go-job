@@ -86,21 +86,22 @@ func TestScheduleJobs(t *testing.T) {
 
 			// Register a test job
 
-			resHandler := func(ji job.Instance, responses []any) {
+			processHandler := func(ji job.Instance, responses []any) {
 				ji.Infof("%v", responses)
 				wg.Done()
 			}
 
-			errHandler := func(ji job.Instance, err error) error {
+			errorHandler := func(ji job.Instance, err error) error {
 				ji.Errorf("Error: %v", err)
+				t.Error("Error in job execution:", err)
 				return err
 			}
 
 			opts := append(
 				tt.opts,
 				job.WithKind(tt.kind),
-				job.WithCompleteProcessor(resHandler),
-				job.WithTerminateProcessor(errHandler),
+				job.WithCompleteProcessor(processHandler),
+				job.WithTerminateProcessor(errorHandler),
 			)
 
 			j, err := job.NewJob(opts...)
@@ -248,6 +249,12 @@ func TestScheduleJobs(t *testing.T) {
 				}
 			}
 
+			// Unregister the job
+
+			if err := mgr.UnregisterJob(tt.kind); err != nil {
+				t.Errorf("Failed to unregister job: %v", err)
+			}
+
 			// Clean up
 
 			if err := mgr.Clear(); err != nil {
@@ -269,12 +276,6 @@ func TestScheduleJobs(t *testing.T) {
 			}
 			if len(logs) != 0 {
 				t.Errorf("Expected no logs after clearing, but got %d logs", len(logs))
-			}
-
-			// Unregister the job
-
-			if err := mgr.UnregisterJob(tt.kind); err != nil {
-				t.Errorf("Failed to unregister job: %v", err)
 			}
 		})
 	}
