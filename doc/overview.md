@@ -1,8 +1,24 @@
 # Overview
 
-This document provides a detailed overview of `` go-job’s features and architecture. `go-job `` is a flexible and extensible job scheduling and execution library for Go, supporting arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
+This document provides a detailed overview of `` go-job’s features and usage. `go-job `` is a flexible and extensible job scheduling and execution library for Go, supporting arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
 
-## Arbitrary Function Execution
+## Features
+
+`go-job` provides:
+
+- Arbitrary function registration
+
+- Rich scheduling options
+
+- Prioritized and scalable execution
+
+- Strong observability
+
+- Pluggable, distributed storage
+
+Use it to build robust, scalable job systems in Go.
+
+### Arbitrary Function Execution
 
 `go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results.
 
@@ -29,7 +45,7 @@ Then schedule the jobs with arguments:
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases.
 
-## Flexible Scheduling
+### Flexible Scheduling
 
 Schedule jobs:
 
@@ -41,29 +57,29 @@ Schedule jobs:
 
 - **On a recurring cron schedule**
 
-### Schedule at a Specific Time
+#### Schedule at a Specific Time
 
     mgr.ScheduleJob(job, WithScheduleAt(time.Now().Add(10 * time.Minute)))
 
-### Delay Execution
+#### Delay Execution
 
     mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 
-### Cron Scheduling
+#### Cron Scheduling
 
     mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *")) // daily at midnight
 
 Supports standard cron format: `min hour dom month dow`.
 
-## Queue Priority & Worker Management
+### Queue Priority & Worker Management
 
-### Job Priority
+#### Job Priority
 
     mgr.ScheduleJob(job, WithPriority(10)) // high-priority
 
 Higher-priority jobs are executed before lower-priority ones.
 
-### Dynamic Worker Pool
+#### Dynamic Worker Pool
 
     mgr, _ := NewManager(WithNumWorkers(5))
     mgr.Start()
@@ -71,9 +87,9 @@ Higher-priority jobs are executed before lower-priority ones.
 
 Allows concurrent execution and real-time scalability.
 
-## Job Observation
+### Job Observation
 
-### Handlers for Response and Error
+#### Handlers for Response and Error
 
     job, _ := NewJob(
         WithKind("observe"),
@@ -87,14 +103,14 @@ Allows concurrent execution and real-time scalability.
     )
     mgr.ScheduleJob(job, WithArguments(42))
 
-### State History
+#### State History
 
     states := mgr.ProcessHistory(ji)
     for _, s := range states {
         fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
     }
 
-### Log History
+#### Log History
 
     logs := mgr.ProcessLogs(ji)
     for _, log := range logs {
@@ -103,7 +119,7 @@ Allows concurrent execution and real-time scalability.
 
 Provides auditability and debugging capability for each job instance.
 
-## Distributed Support via Store Interface
+### Distributed Support via Store Interface
 
 `go-job` supports pluggable storage via the `Store` interface.
 
@@ -122,20 +138,4 @@ This enables:
 
 - Fault-tolerant execution
 
-To learn more about the `Store` interface, see the [Extension Guide ](plugin-guide.md) documentation.
-
-## Summary
-
-`go-job` provides:
-
-- Arbitrary function registration
-
-- Rich scheduling options
-
-- Prioritized and scalable execution
-
-- Strong observability
-
-- Pluggable, distributed storage
-
-Use it to build robust, scalable job systems in Go.
+To learn more about the `Store` interface, see [Design and Architecture](design.md) and [Extension Guide ](plugin-guide.md) documentation.
