@@ -102,7 +102,11 @@ The main components of `go-job` are:
 
 To use go-job, you can embed the manager directly in your Go application to schedule jobs, manage job instances, and process their states and logs. This approach allows you to handle all job management tasks easily within your application.
 
+To learn more about the manager to embed in your Go application directory, see the [Quick Start](quick-start.md) and [Go Reference](https://pkg.go.dev/github.com/cybergarage/go-job) documentation.
+
 Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
+
+To learn more about the server component, see the [gRPC API](grpc-api.md) and [CLI (jobctl)](cmd/cli/job-cli.md) documentation.
 
 ## Job Registration and Processing Flow
 
