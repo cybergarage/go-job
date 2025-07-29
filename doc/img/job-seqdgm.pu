@@ -1,30 +1,60 @@
 @startuml
 
-== Register Job  ==
+participant Client
+
+box "Server Components" #LightBlue
+    participant Manager
+    participant Registry
+    participant Scheduler
+    participant Worker
+    participant Queue
+    participant History
+end box
+
+box "Plugin Component" #LightBlue
+    participant Store
+end box
+
+== Register Job ==
 
 Client -> Manager : Register Job
 Manager -> Registry : Register Job
 
+== Query Registered Jobs ==
+
+Client -> Manager : Query Registered Jobs
+Manager -> Registry : Query Registered Jobs
+Registry -> Manager : Return Registered Jobs
+Manager -> Client : Return Registered Jobs
+
 == Schedule Job Instance ==
 
 Client -> Manager : Schedule Job Instance
-Manager -> Scheduler : Schedule Job Instance
 Manager -> Registry : Query Job
 Registry -> Manager : Response Job
+Manager -> Scheduler : Schedule Job
 Scheduler -> Scheduler : Create Job Instance
 Scheduler -> Queue : Enqueue Job Instance
+Queue -> Store : Enqueue Job Instance
 
 == Process Job Instance ==
 
+Worker -> Queue : Dequeue Job Instance
+Store --> Queue : Dequeue Job Instance
 Queue --> Worker : Dequeue Job Instance
 Worker -> History : Update Job State
 Worker -> Worker : Execute Job Instance
 Worker -> History : Update Job State
-Worker --> Client : Notify Job Completion
+History -> Store : Update Job State
+Worker --> Client : Notify Job Completion or Termination
 
-== Query Job Instance State  ==
+== Query Job Instance History ==
 
-Client -> History : Query Job Instance State
-History -> Client : Return Job Instance State
+Client -> Manager : Query Job Instance History
+Manager -> History : Query Job Instance History
+History -> Store : Query Job Instance History
+Store -> History : Return Job Instance History
+History -> Manager : Return Job Instance History
+Manager -> Client : Return Job Instance History
 
 @enduml
