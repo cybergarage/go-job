@@ -108,7 +108,7 @@ For more information about embedding the manager in your Go application, see the
 
 Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
 
-For more information about the server component, see the [gRPC API](grpc-api.md) and [CLI (jobctl)](cmd/cli/job-cli.md) documentation.
+For more information about the server component, see the [gRPC API](grpc-api.md) and [CLI (jobctl)](cmd/cli/jobctl.md) documentation.
 
 ## Job Registration and Processing Flow
 
