@@ -119,13 +119,12 @@ cmd-docs: doc-cmd-cli
 
 %.md : %.adoc
 	asciidoctor -b docbook -a leveloffset=+1 -o - $< | pandoc -t markdown_strict --wrap=none -f docbook > $@
+	-git commit $@ $< -m "docs: update $<"
 
 %.png : %.pu
 	plantuml -tpng $<
-	git commit $@ $< -m "docs: update images"
+	-git commit $@ $< -m "docs: update $<"
 
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
 doc: $(docs) $(images) cmd-docs doc-proto
-	@echo "Generated: $(docs)"
-	@echo "Generated: $(images)"
