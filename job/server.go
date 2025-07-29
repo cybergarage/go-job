@@ -99,7 +99,7 @@ func (server *server) grpcStart() error {
 // Stop stops the Grpc server.
 func (server *server) grpcStop() error {
 	if server.grpcServer != nil {
-		server.grpcServer.Stop()
+		server.grpcServer.GracefulStop()
 		server.grpcServer = nil
 	}
 
