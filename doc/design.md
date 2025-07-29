@@ -44,7 +44,7 @@ This section defines the key terms and concepts used throughout the `go-job` sys
 The main components of `go-job` are:
 
 <figure>
-<img src="img/framework.png" alt="framework" />
+<img src="img/job-framework.png" alt="job framework" />
 </figure>
 
 <table>
