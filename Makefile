@@ -119,11 +119,11 @@ cmd-docs: doc-cmd-cli
 
 %.md : %.adoc
 	asciidoctor -b docbook -a leveloffset=+1 -o - $< | pandoc -t markdown_strict --wrap=none -f docbook > $@
-	-git commit $@ $< -m "docs: update $<"
+	-git commit $@ $< -m "docs: update $(notdir $<)"
 
 %.png : %.pu
 	plantuml -tpng $<
-	-git commit $@ $< -m "docs: update $<"
+	-git commit $@ $< -m "docs: update $(notdir $<)"
 
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
