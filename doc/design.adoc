@@ -32,6 +32,8 @@ This section defines the key terms and concepts used throughout the `go-job` sys
 
 The main components of `go-job` are:
 
+image::img/framework.png[]
+
 [cols="1,3", options="header"]
 |===
 |Component |Description
