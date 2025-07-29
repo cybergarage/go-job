@@ -12,6 +12,20 @@
 
  The library provides robust job observation features, including state and log history tracking, as well as customizable response and error handlers. With support for distributed storage backends, `go-job` is suitable for both local and distributed environments, making it ideal for building scalable, reliable job processing systems in Go applications.
 
+## Features
+
+`go-job` offers a powerful and flexible foundation for job scheduling, execution, and monitoring in Go. It supports arbitrary function execution, dynamic scheduling, prioritization, distributed processing, and detailed job observation.
+
+Key features include:
+
+* **Arbitrary Function Execution** – Register and run any function with custom input/output types using Go's `any` type. This allows you to create jobs from functions with any signature, enabling integration of diverse tasks.
+* **Flexible Scheduling** – Schedule jobs to run immediately, after a delay, at a specific time, or on a recurring cron schedule. Supports both one-time and repeated executions (cron), providing versatility for time-based job triggers.
+* **Queue Priority & Worker Management** – Prioritize jobs in the queue and dynamically adjust worker pools for concurrency control. Higher-priority jobs run before lower-priority ones, and the number of worker goroutines can be scaled to meet throughput needs.
+* **Job Observation** – Monitor the full lifecycle of jobs, including state changes and logs. You can attach custom handlers to job completion or failure events and track each job’s state history and log history for auditing and debugging.
+* **Pluggable Storage for Distributed Support** – Abstracted storage via a `Store` interface allows integration of various backends (in-memory, file, database, etc.). This makes it possible to coordinate jobs across multiple nodes, enabling distributed job processing with persistent state.
+
+To learn more about each feature and see usage examples, refer to [Overview](https://github.com/cybergarage/go-job/blob/main/doc/overview.md), [Design and Architecture](doc/design.md), and the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
+
 ## Getting Started
 
 ### Installation
@@ -73,20 +87,6 @@ func main() {
 	}
 }
 ```
-
-## Features
-
-`go-job` offers a powerful and flexible foundation for job scheduling, execution, and monitoring in Go. It supports arbitrary function execution, dynamic scheduling, prioritization, distributed processing, and detailed job observation.
-
-Key features include:
-
-* **Arbitrary Function Execution** – Register and run any function with custom input/output types using Go's `any` type. This allows you to create jobs from functions with any signature, enabling integration of diverse tasks.
-* **Flexible Scheduling** – Schedule jobs to run immediately, after a delay, at a specific time, or on a recurring cron schedule. Supports both one-time and repeated executions (cron), providing versatility for time-based job triggers.
-* **Queue Priority & Worker Management** – Prioritize jobs in the queue and dynamically adjust worker pools for concurrency control. Higher-priority jobs run before lower-priority ones, and the number of worker goroutines can be scaled to meet throughput needs.
-* **Job Observation** – Monitor the full lifecycle of jobs, including state changes and logs. You can attach custom handlers to job completion or failure events and track each job’s state history and log history for auditing and debugging.
-* **Pluggable Storage for Distributed Support** – Abstracted storage via a `Store` interface allows integration of various backends (in-memory, file, database, etc.). This makes it possible to coordinate jobs across multiple nodes, enabling distributed job processing with persistent state.
-
-To learn more about each feature and see usage examples, refer to [Overview](https://github.com/cybergarage/go-job/blob/main/doc/overview.md), [Design and Architecture](doc/design.md), and the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
 
 # User Guides
 
