@@ -122,7 +122,7 @@ This enables:
 
 - Fault-tolerant execution
 
-To learn more about the `Store` interface, see the [Plug-In Guide](plugin-guide.md) documentation.
+To learn more about the `Store` interface, see the [Extension Guide ](plugin-guide.md) documentation.
 
 ## Summary
 

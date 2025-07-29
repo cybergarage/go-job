@@ -155,8 +155,8 @@ This enables:
 * State persistence across restarts
 * Fault-tolerant execution
 
-To learn more about the `Store` interface, see the link:plugin-guide.md[Plug-In Guide] documentation.
-	
+To learn more about the `Store` interface, see link:design.md[Design and Architecture] and link:plugin-guide.md[Extension Guide ] documentation.
+
 == Summary
 
 `go-job` provides:
