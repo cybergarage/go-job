@@ -71,15 +71,7 @@ To use go-job, you can embed the manager directly in your Go application to sche
 
 Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
 
-=== Extending with Distributed Store Plugins
-
-The queue, history, and log components can be shared between go-job servers using the store interface, which allows for a distributed architecture where multiple go-job servers can operate together, sharing job queue and instance information. The shared store can be implemented using various distributed storage systems like etcd or FoundationDB, enabling features such as distributed scheduling and cross-node job coordination.
-
-image::img/job-store.png[]
-
-To learn more about the shared store interface and how to extend `go-job` with custom plugins, see link:extension-guide.md[Extension Guide].
-
-== Job Registration and  Processing Flow
+== Job Registration and Processing Flow
 
 The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained. 
 
@@ -90,6 +82,8 @@ image::img/job-seqdgm.png[]
 === Store Plugins and Registry Sharing Limitations
 
 Currently, the registry that holds job definitions cannot be shared between go-job servers. Because Go does not support serializing or transmitting function pointers (executors) over RPC, each go-job server must maintain its own local registry of job definitions.
+
+image::img/job-store.png[]
 
 The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see link:extension-guide.md[Extension Guide].
 
