@@ -6,7 +6,7 @@ This guide provides an overview of how to extend `go-job` with custom plugins, a
 
 === Store Interface
 
-image::img/framework.png[]
+image::img/job-framework.png[]
 
 [source,go]
 ----
