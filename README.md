@@ -65,7 +65,8 @@ func main() {
 	// Schedule the registered job
 	ji, _ := mgr.ScheduleRegisteredJob("sum",
 		job.WithArguments(1, 2),
-		job.WithScheduleAt(time.Now()), // immediate scheduling is the default, so this option is redundant
+		// immediate scheduling is the default, so this option is redundant
+		job.WithScheduleAt(time.Now()), 
 	)
 
 	// Start the job manager
