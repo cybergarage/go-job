@@ -25,8 +25,8 @@ Manager -> Registry : Register Job
 
 Client -> Manager : Query Registered Jobs
 Manager -> Registry : Query Registered Jobs
-Registry -> Manager : Return Registered Jobs
-Manager -> Client : Return Registered Jobs
+Registry -> Manager : Response Registered Jobs
+Manager -> Client : Response Registered Jobs
 
 == Schedule Job Instance ==
 
@@ -56,15 +56,15 @@ Worker --> Client : Notify Job Completion or Termination
 Client -> Manager : Query Job State History
 Manager -> History : Query Job State History
 History -> Store : Query Job State History
-Store -> History : Return Job State History
-History -> Manager : Return Job State History
-Manager -> Client : Return Job State History
+Store -> History : Response Job State History
+History -> Manager : Response Job State History
+Manager -> Client : Response Job State History
 
 Client -> Manager : Query Job logs
 Manager -> Log : Query Job logs
 Log -> Store : Query Job logs
-Store -> Log : Return Job logs
-Log -> Manager : Return Job logs
-Manager -> Client : Return Job logs
+Store -> Log : Response Job logs
+Log -> Manager : Response Job logs
+Manager -> Client : Response Job logs
 
 @enduml
