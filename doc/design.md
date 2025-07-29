@@ -100,11 +100,17 @@ The main components of `go-job` are:
 
 ### Selecting Manager or Server Usage
 
-To use `go-job`, you can embed the manager directly to schedule jobs, manage job instances, and process their states and logs. The server component provides a gRPC interface for remote job management, enabling clients to schedule jobs and retrieve job states and logs over the network.
+To use go-job, you can embed the manager directly in your Go application to schedule jobs, manage job instances, and process their states and logs. This approach allows you to handle all job management tasks easily within your application.
+
+Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
 
 ### Extending with Distributed Store Plugins
 
 The queue, history, and log components can be shared between go-job servers using the store interface, which allows for a distributed architecture where multiple go-job servers can operate together, sharing job queue and instance information. The shared store can be implemented using various distributed storage systems like etcd or FoundationDB, enabling features such as distributed scheduling and cross-node job coordination.
+
+<figure>
+<img src="img/job-store.png" alt="job store" />
+</figure>
 
 To learn more about the shared store interface and how to extend `go-job` with custom plugins, see [Extension Guide](extension-guide.md).
 
