@@ -18,7 +18,7 @@ import (
 	"context"
 )
 
-// Store is the interface for job instance storage.
+// Store defines the interface for job queue, history, and logging.
 type Store interface {
 	// Name returns the name of the store.
 	Name() string
