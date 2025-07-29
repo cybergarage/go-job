@@ -24,7 +24,7 @@ Key features include:
 * **Job Observation** – Monitor the full lifecycle of jobs, including state changes and logs. You can attach custom handlers to job completion or failure events and track each job’s state history and log history for auditing and debugging.
 * **Pluggable Storage for Distributed Support** – Abstracted storage via a `Store` interface allows integration of various backends (in-memory, file, database, etc.). This makes it possible to coordinate jobs across multiple nodes, enabling distributed job processing with persistent state.
 
-To learn more about each feature and see usage examples, refer to [Overview](https://github.com/cybergarage/go-job/blob/main/doc/overview.md), [Design and Architecture](doc/design.md), and the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
+To learn more about each feature and see usage examples, refer to [Overview](https://github.com/cybergarage/go-job/blob/main/doc/overview.md) and [Design and Architecture](doc/design.md).
 
 ## Getting Started
 
@@ -104,7 +104,7 @@ func main() {
 - Development
   - [Design and Architecture](doc/design.md)
 - Extending `go-job`
-  - [Plug-In Guide](doc/plugin-guide.md)
+  - [Extension Guide ](doc/plugin-guide.md)
 
 # Related Projects
 
