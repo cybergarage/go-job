@@ -4,6 +4,17 @@
 
 `go-job` is designed to handle job scheduling and execution efficiently, the architecture consists of several key components: the registry which holds job definitions, the manager which coordinates job scheduling, and the worker which processes job instances. The queue is used to manage job instances, ensuring that jobs are executed in the order they are scheduled.
 
+== Key Components
+
+The main components of `go-job` are:
+* **Registry**: Holds job definitions and their associated executors.
+* **Manager**: Coordinates job scheduling and execution.
+* **Worker**: Processes job instances, executing the registered functions.
+* **Queue**: Manages job instances, ensuring they are processed in the correct order.   
+* **Store**: Provides persistence for job metadata and execution state, allowing for distributed operation and fault tolerance.
+* **History**: Tracks the state transitions of job instances, providing a history of execution.
+* **Log**: Captures logs for each job instance, providing detailed execution information.
+
 == Sequence Diagram ==
 
 The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained
