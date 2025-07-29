@@ -33,7 +33,7 @@ Manager -> Client : Response Registered Jobs
 Client -> Manager : Schedule Job Instance
 Manager -> Registry : Query Job
 Registry -> Manager : Response Job
-Manager -> Scheduler : Schedule Job
+Manager -> Scheduler : Schedule Job　Instance
 Scheduler -> Scheduler : Create Job Instance
 Scheduler -> Queue : Enqueue Job Instance
 Queue -> Store : Enqueue Job Instance
