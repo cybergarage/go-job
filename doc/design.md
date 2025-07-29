@@ -102,7 +102,7 @@ The queue, history, and log components can be shared between go-job servers usin
 
 However, the registry that holds job definitions cannot be shared between go-job servers. Since Go has no built-in RPC mechanism to share job executors (which are function pointers), each go-job server must maintain its own local registry of job definitions.
 
-## Job State
+## Job State Lifecycle
 
 The job state in `go-job` is managed through a combination of job instances and their associated states. The state of a job instance is crucial for understanding its lifecycle and for debugging purposes.
 
@@ -110,4 +110,39 @@ The job state in `go-job` is managed through a combination of job instances and 
 <img src="img/job-state.png" alt="job state" />
 </figure>
 
-Each job instance can transition through various states, such as `Pending`, `Running`, `Completed`, and `Failed`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">State</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><p>Created</p></td>
+<td style="text-align: left;"><p>The job instance has been created and is awaiting scheduling.</p></td>
+</tr>
+<tr>
+<td style="text-align: left;"><p>Scheduled</p></td>
+<td style="text-align: left;"><p>The job instance has been queued and is waiting to be processed by a worker.</p></td>
+</tr>
+<tr>
+<td style="text-align: left;"><p>Processing</p></td>
+<td style="text-align: left;"><p>The job instance is currently being executed by a worker.</p></td>
+</tr>
+<tr>
+<td style="text-align: left;"><p>Terminated</p></td>
+<td style="text-align: left;"><p>The job instance encountered an error or was forcibly stopped before completion.</p></td>
+</tr>
+<tr>
+<td style="text-align: left;"><p>Completed</p></td>
+<td style="text-align: left;"><p>The job instance finished successfully.</p></td>
+</tr>
+</tbody>
+</table>
+
+Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, and `Terminated`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
