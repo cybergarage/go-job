@@ -104,7 +104,7 @@ func main() {
 - Development
   - [Design and Architecture](doc/design.md)
 - Extending `go-job`
-  - [Extension Guide ](doc/plugin-guide.md)
+  - [Extension Guide ](doc/extension-guide.md)
 
 # Related Projects
 
