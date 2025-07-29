@@ -79,7 +79,7 @@ image::img/job-store.png[]
 
 To learn more about the shared store interface and how to extend `go-job` with custom plugins, see link:extension-guide.md[Extension Guide].
 
-== Sequence Diagram ==
+== Job Registration and  Processing Flow
 
 The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained. 
 

@@ -114,7 +114,7 @@ The queue, history, and log components can be shared between go-job servers usin
 
 To learn more about the shared store interface and how to extend `go-job` with custom plugins, see [Extension Guide](extension-guide.md).
 
-## Sequence Diagram
+## Job Registration and Processing Flow
 
 The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained.
 
