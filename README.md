@@ -76,164 +76,23 @@ func main() {
 
 ## Features
 
-This section provides an overview of the key features and functionalities of `go-job`. To learn more about each feature, refer to the corresponding sections in the [overview]([overview.md](https://github.com/cybergarage/go-job/blob/main/doc/overview.md)) and [godoc](https://pkg.go.dev/github.com/cybergarage/go-job) documentation.
+`go-job` offers a powerful and flexible foundation for job scheduling, execution, and monitoring in Go. It supports arbitrary function execution, dynamic scheduling, prioritization, distributed processing, and detailed job observation.
 
-### Job Execution with Arbitrary Functions
+Key features include:
 
-`go-job` allows you to register and execute jobs with any function signature using Go's `any` type for arguments and results. This flexibility enables you to define custom executors that accept and return any data types, making it easy to integrate with various workflows.
+* **Arbitrary Function Execution** – Register and run any function with custom input/output types using Go's `any` type. This allows you to create jobs from functions with any signature, enabling integration of diverse tasks.
+* **Flexible Scheduling** – Schedule jobs to run immediately, after a delay, at a specific time, or on a recurring cron schedule. Supports both one-time and repeated executions (cron), providing versatility for time-based job triggers.
+* **Queue Priority & Worker Management** – Prioritize jobs in the queue and dynamically adjust worker pools for concurrency control. Higher-priority jobs run before lower-priority ones, and the number of worker goroutines can be scaled to meet throughput needs.
+* **Job Observation** – Monitor the full lifecycle of jobs, including state changes and logs. You can attach custom handlers to job completion or failure events and track each job’s state history and log history for auditing and debugging.
+* **Pluggable Storage for Distributed Support** – Abstracted storage via a `Store` interface allows integration of various backends (in-memory, file, database, etc.). This makes it possible to coordinate jobs across multiple nodes, enabling distributed job processing with persistent state.
 
-For example, you can register a job that adds two numbers, concatenates strings, or performs any custom logic:
-
-```go
-sumJob, _ := NewJob(
-	WithKind("sum"),
-	WithExecutor(func(a, b int) int { return a + b }),
-)
-type concatOpt struct {
-		a string
-		b string
-	}
-concatJob, _ := NewJob(
-	WithKind("concat"),
-	WithExecutor(func(opt concatOpt) string { return opt.a + " "+ opt.b }),
-)
-```
-
-When scheduling jobs, you can pass arguments of any type, and the executor will receive them as parameters. The results are also handled as `any`, allowing flexible response handling.
-
-```go
-mgr.ScheduleJob(sumJob, WithArguments(sumOpt{1, 2}))
-mgr.ScheduleJob(concatJob, WithArguments(concatOpt{"Hello", "world!"}))
-```
-
-This design makes `go-job` suitable for a wide range of use cases, from simple arithmetic to complex business logic.
-
-### Flexible Scheduling
-
-`go-job` provides flexible scheduling options to fit various job execution requirements. You can schedule jobs to run immediately, at a specific time, or after a certain delay. The library supports both one-time and recurring job executions.
-
-#### Schedule at a Specific Time
-
-You can schedule a job to run at a particular time using `WithScheduleAt`:
-
-```go
-mgr.ScheduleJob(job, WithScheduleAt(time.Now().Add(10 * time.Minute)))
-```
-
-#### Schedule with a Delay
-
-To run a job after a delay, use `WithScheduleAfter`:
-
-```go
-mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
-```
-
-#### Cron-style Scheduling
-
-You can schedule jobs using a cron expression with `WithCrontabSpec`. This allows you to define complex recurring schedules similar to Unix cron syntax:
-
-```go
-mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *")) // Runs every day at midnight
-```
-
-This feature is useful for jobs that need to run on specific days, times, or intervals defined by a crontab specification.
-
-### Flexible Queue Priority and Worker Management
-
-`go-job` supports prioritizing jobs in the queue and managing multiple workers for concurrent job execution. You can assign priorities to jobs, ensuring that higher-priority jobs are executed before lower-priority ones.
-
-#### Job Priority
-
-When creating or scheduling a job, use `WithPriority` to set its priority. Higher values indicate higher priority:
-
-```go
-mgr.ScheduleJob(job, WithPriority(10))
-```
-
-Jobs with higher priority are dequeued and executed before those with lower priority, allowing you to control the order of job processing.
-
-#### Worker Pool Management
-
-You can configure the number of worker goroutines that process jobs concurrently. This enables efficient resource utilization and parallel job execution:
-
-```go
-mgr, _ := NewManager(
-	WithNumWorkers(5), // Set the number of workers to 5
-)
-mgr.Start()
-mgr.ResizeWorkers(10) // Dynamically resize the worker pool to 10 workers
-```
-
-This flexibility allows you to scale job processing based on your application's needs, balancing throughput and resource usage.
-
-### Job Observation with Handler, LogHistory, and StateHistory
-
-`go-job` provides robust job observation capabilities through its Handler, LogHistory, and StateHistory features. These mechanisms enable you to monitor job execution, track state transitions, and audit job activities for debugging and analytics.
-
-#### Handler for Custom Observation
-
-Handlers allow you to define custom logic that executes in response to job events, such as completion, failure, or state changes. By attaching response and error handlers, you can log results, trigger notifications, or perform cleanup tasks:
-
-```go
-job, _ := NewJob(
-	WithKind("observe"),
-	WithExecutor(func(a int) int { return a * 2 }),
-	WithResponseHandler(func(ji Instance, res []any) {
-		ji.Infof("Job completed: %v\n", res)
-	}),
-	WithErrorHandler(func(ji Instance, err error) {
-		ji.Errorf("Job failed: %v\n", err)
-	}),
-)
-
-// Schedule the registered job
-ji, _ := mgr.ScheduleJob(job, WithArguments(1, 2))
-```
-
-#### Tracking State Transitions
-
-StateHistory tracks the lifecycle of each job instance, recording every state change (e.g., pending, running, completed, failed). This feature provides visibility into job progress and helps identify bottlenecks or failures:
-
-```go
-states := mgr.ProcessHistory(ji)
-for _, state := range states {
-	fmt.Printf("State: %s, ChangedAt: %v\n", state.State(), state.Timestamp())
-}
-```
-
-#### Tracking Logs
-
-`go-job` maintains a log history for each job instance, recording significant events such as scheduling, execution, completion, and errors. You can query these logs to audit job activities and diagnose issues:
-
-```go
-logs := mgr.ProcessLogs(ji)
-for _, log := range logs {
-	fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
-}
-```
-
-These observation tools make `go-job` suitable for production environments where monitoring, auditing, and debugging are essential for reliable job management.
-
-### Distributed Support via Store Interface
-
-`go-job` features a virtualized job store interface, enabling seamless integration with various storage backends. This abstraction allows you to use in-memory, file-based, or distributed stores such as databases or cloud storage, making it suitable for both local and distributed environments.
-
-By implementing the `Store` interface, you can persist job definitions, states, and histories across multiple nodes or services. This flexibility ensures reliable job management and coordination in distributed systems, supporting scalability and fault tolerance.
-
-Example: Using a custom distributed store
-
-```go
-mgr, _ := NewManager(
-	WithStore(NewDistributedStore(...)), // Plug in your distributed store implementation
-)
-```
-
-This design makes `go-job` adaptable for microservices, cloud-native applications, and any scenario requiring distributed job processing and state management.
+To learn more about each feature and see usage examples, refer to the [Overview](https://github.com/cybergarage/go-job/blob/main/doc/overview.md) and GoDoc documentation.
 
 # User Guides
 
 - Get Started
   - [Quick Start](doc/quick-start.md)
+  - [Overview](doc/overview.md)
 - References
   - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 - Operation
