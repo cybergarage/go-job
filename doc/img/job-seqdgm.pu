@@ -9,6 +9,7 @@ box "Server Components" #LightBlue
     participant Worker
     participant Queue
     participant History
+    participant Log
 end box
 
 box "Plugin Component" #LightBlue
@@ -46,15 +47,24 @@ Worker -> History : Update Job State
 Worker -> Worker : Execute Job Instance
 Worker -> History : Update Job State
 History -> Store : Update Job State
+Worker -> Log : Log message
+Log -> Store : Log message
 Worker --> Client : Notify Job Completion or Termination
 
-== Query Job Instance History ==
+== Query Job Execution History ==
 
-Client -> Manager : Query Job Instance History
-Manager -> History : Query Job Instance History
-History -> Store : Query Job Instance History
-Store -> History : Return Job Instance History
-History -> Manager : Return Job Instance History
-Manager -> Client : Return Job Instance History
+Client -> Manager : Query Job State History
+Manager -> History : Query Job State History
+History -> Store : Query Job State History
+Store -> History : Return Job State History
+History -> Manager : Return Job State History
+Manager -> Client : Return Job State History
+
+Client -> Manager : Query Job logs
+Manager -> Log : Query Job logs
+Log -> Store : Query Job logs
+Store -> Log : Return Job logs
+Log -> Manager : Return Job logs
+Manager -> Client : Return Job logs
 
 @enduml
