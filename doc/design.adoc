@@ -1,31 +1,76 @@
 = Design and Architecture 
 
+This document provides a detailed overview of `go-job`'s features and architecture.
+
 :toc:
 
-`go-job` is designed to handle job scheduling and execution efficiently, the architecture consists of several key components: the registry which holds job definitions, the manager which coordinates job scheduling, and the worker which processes job instances. The queue is used to manage job instances, ensuring that jobs are executed in the order they are scheduled.
+== Terminology
+
+This section defines the key terms and concepts used throughout the `go-job` system. Understanding these terms is essential for working effectively with the job scheduling and execution framework.
+
+[cols="1,3", options="header"]
+|===
+|Term |Definition
+
+|Job
+|A reusable definition that specifies work to be performed, including the executor function, scheduling rules, and retry policies.
+
+|Job Instance
+|A specific execution of a job with concrete arguments, unique identifier, and state tracking throughout its lifecycle.
+
+|Executor
+|A Go function that implements the actual business logic for a specific job type.
+
+| Processor
+|A function that processes job instances, including completion and termination logic.
+
+|===
 
 == Key Components
 
+`go-job` is designed to handle job scheduling and execution efficiently. The architecture consists of several key components that work together to provide a robust job processing system.
+
 The main components of `go-job` are:
-* **Registry**: Holds job definitions and their associated executors.
-* **Manager**: Coordinates job scheduling and execution.
-* **Worker**: Processes job instances, executing the registered functions.
-* **Queue**: Manages job instances, ensuring they are processed in the correct order.   
-* **Store**: Provides persistence for job metadata and execution state, allowing for distributed operation and fault tolerance.
-* **History**: Tracks the state transitions of job instances, providing a history of execution.
-* **Log**: Captures logs for each job instance, providing detailed execution information.
+
+[cols="1,3", options="header"]
+|===
+|Component |Description
+
+|Manager
+|Coordinates job scheduling and execution across go-job components.
+
+|Registry  
+|Holds job definitions and their associated executors.
+
+|Worker
+|Processes job instances by executing the registered functions.
+
+|Queue
+|Manages job instances, ensuring they are processed in the correct order.
+
+|History
+|Tracks state transitions of job instances, providing an execution history.
+
+|Log
+|Captures logs for each job instance, providing detailed execution information.
+
+|Store
+|Provides abstracted persistence for job metadata and execution state, enabling distributed operation and fault tolerance.
+|===
+
+The queue, history, and log components can be shared between go-job servers using the store interface, which allows for a distributed architecture where multiple go-job servers can operate together, sharing job queue and instance information.
 
 == Sequence Diagram ==
 
-The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained
+The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained. 
 
- The following sequence diagram illustrates the flow of job registration, scheduling, and processing.
+The following sequence diagram illustrates the flow of job registration, scheduling, and processing.
 
 image::img/job-seqdgm.png[]
 
-The queue, history, and log components can be shared between go-job servers using distributed store plugins. This allows for a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information.
+The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information.
 
-However, the registry which holds job definitions is not shared between go-job servers. Because Go has no built-in RPC mechanism to share job executors (which are function pointers), each go-job server must maintain its own registry of job definitions.
+However, the registry that holds job definitions cannot be shared between go-job servers. Since Go has no built-in RPC mechanism to share job executors (which are function pointers), each go-job server must maintain its own local registry of job definitions.
 
 == Job State
 
