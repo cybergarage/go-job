@@ -24,6 +24,8 @@ This section defines the key terms and concepts used throughout the `go-job` sys
 | Processor
 |A function that processes job instances, including completion and termination logic.
 
+|Worker
+|A component that executes job instances by invoking the registered executors, handling retries, and managing state transitions.
 |===
 
 == Key Components

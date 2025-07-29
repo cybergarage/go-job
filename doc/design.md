@@ -34,6 +34,10 @@ This section defines the key terms and concepts used throughout the `go-job` sys
 <td style="text-align: left;"><p>Processor</p></td>
 <td style="text-align: left;"><p>A function that processes job instances, including completion and termination logic.</p></td>
 </tr>
+<tr>
+<td style="text-align: left;"><p>Worker</p></td>
+<td style="text-align: left;"><p>A component that executes job instances by invoking the registered executors, handling retries, and managing state transitions.</p></td>
+</tr>
 </tbody>
 </table>
 
