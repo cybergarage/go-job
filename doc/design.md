@@ -60,6 +60,10 @@ The main components of `go-job` are:
 </thead>
 <tbody>
 <tr>
+<td style="text-align: left;"><p>Server</p></td>
+<td style="text-align: left;"><p>Provides gRPC endpoints for job scheduling and management, allowing clients to interact with the job system through the manager.</p></td>
+</tr>
+<tr>
 <td style="text-align: left;"><p>Manager</p></td>
 <td style="text-align: left;"><p>Coordinates job scheduling and execution across go-job components.</p></td>
 </tr>
@@ -90,7 +94,15 @@ The main components of `go-job` are:
 </tbody>
 </table>
 
-The queue, history, and log components can be shared between go-job servers using the store interface, which allows for a distributed architecture where multiple go-job servers can operate together, sharing job queue and instance information.
+### Selecting Manager or Server Usage
+
+To use `go-job`, you can embed the manager directly to schedule jobs, manage job instances, and process their states and logs. The server component provides a gRPC interface for remote job management, enabling clients to schedule jobs and retrieve job states and logs over the network.
+
+### Extending with Distributed Store Plugins
+
+The queue, history, and log components can be shared between go-job servers using the store interface, which allows for a distributed architecture where multiple go-job servers can operate together, sharing job queue and instance information. The shared store can be implemented using various distributed storage systems like etcd or FoundationDB, enabling features such as distributed scheduling and cross-node job coordination.
+
+To learn more about the shared store interface and how to extend `go-job` with custom plugins, see the \[Extension Guide\](doc/extension-guide.md).
 
 ## Sequence Diagram
 
@@ -102,9 +114,9 @@ The following sequence diagram illustrates the flow of job registration, schedul
 <img src="img/job-seqdgm.png" alt="job seqdgm" />
 </figure>
 
-The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information.
+The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see the \[Extension Guide\](doc/extension-guide.md).
 
-However, the registry that holds job definitions cannot be shared between go-job servers. Since Go has no built-in RPC mechanism to share job executors (which are function pointers), each go-job server must maintain its own local registry of job definitions.
+Currently, the registry that holds job definitions cannot be shared between go-job servers. Because Go does not support serializing or transmitting function pointers (executors) over RPC, each go-job server must maintain its own local registry of job definitions.
 
 ## Job State Lifecycle
 
