@@ -4,10 +4,12 @@ This guide provides an overview of how to extend `go-job` with custom plugins, a
 
 ## Plugin Development
 
-### Store Interface
+### Store Plugin
+
+#### Store Interface
 
 <figure>
-<img src="img/job-framework.png" alt="job framework" />
+<img src="img/job-store.png" alt="job store" />
 </figure>
 
     // Store defines the interface for job queue, history, and logging.
