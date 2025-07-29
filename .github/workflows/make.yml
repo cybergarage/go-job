@@ -21,6 +21,9 @@ jobs:
     - name: Set up golangci-lint
       run: sudo snap install golangci-lint --classic
 
+    - name: Install
+      run: make install
+
     - name: Test
       run: make test
 
