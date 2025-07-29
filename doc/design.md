@@ -1,5 +1,21 @@
 # Design and Architecture
 
+`go-job` is designed to handle job scheduling and execution efficiently, the architecture consists of several key components: the registry which holds job definitions, the manager which coordinates job scheduling, and the worker which processes job instances. The queue is used to manage job instances, ensuring that jobs are executed in the order they are scheduled.
+
+## Sequence Diagram
+
+The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained
+
+    The following sequence diagram illustrates the flow of job registration, scheduling, and processing.
+
+<figure>
+<img src="img/job-seqdgm.png" alt="job seqdgm" />
+</figure>
+
+The queue, history, and log components can be shared between go-job servers using distributed store plugins. This allows for a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information.
+
+However, the registry which holds job definitions is not shared between go-job servers. Because Go has no built-in RPC mechanism to share job executors (which are function pointers), each go-job server must maintain its own registry of job definitions.
+
 ## Job State
 
 The job state in `go-job` is managed through a combination of job instances and their associated states. The state of a job instance is crucial for understanding its lifecycle and for debugging purposes.
