@@ -15,6 +15,8 @@
 package kv
 
 import (
+	"bytes"
+
 	"github.com/cybergarage/go-job/job/encoding"
 )
 
@@ -42,6 +44,16 @@ func NewObject(key Key, value []byte) Object {
 // Key returns the key of the object.
 func (obj *object) Key() Key {
 	return obj.key
+}
+
+func (obj *object) Equal(other Object) bool {
+	if other == nil {
+		return false
+	}
+	if obj.Key() != other.Key() {
+		return false
+	}
+	return bytes.Equal(obj.Bytes(), other.Bytes())
 }
 
 // Bytes returns the bytes of the object.
