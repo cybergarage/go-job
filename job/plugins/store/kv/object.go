@@ -24,6 +24,8 @@ import (
 type Object interface {
 	// Key returns a key of the object.
 	Key() Key
+	// Equal checks if two objects are equal.
+	Equal(other Object) bool
 	// Bytes returns the bytes of the object.
 	Bytes() []byte
 }
