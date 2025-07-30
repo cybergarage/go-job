@@ -152,12 +152,18 @@ func TestServerAPIs(t *testing.T) {
 		job.NewCliClient(),
 	}
 
-	servers := []job.Server{}
-	server, err := job.NewServer()
-	if err != nil {
-		t.Fatalf("failed to create job server: %v", err)
+	serversConstructors := []func(opts ...any) (job.Server, error){
+		job.NewServer,
 	}
-	servers = append(servers, server)
+
+	servers := []job.Server{}
+	for _, constructor := range serversConstructors {
+		server, err := constructor()
+		if err != nil {
+			t.Fatalf("failed to create job server: %v", err)
+		}
+		servers = append(servers, server)
+	}
 
 	for _, cli := range clients {
 		for _, srv := range servers {
