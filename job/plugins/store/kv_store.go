@@ -162,7 +162,11 @@ func (store *kvStore) ClearInstances(ctx context.Context) error {
 
 // LogInstanceState adds a new state record for a job instance.
 func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceState) error {
-	obj, err := kv.NewObjectFromInstanceState(state)
+	keySuffixes := []string{}
+	if store.UniqueKeys() {
+		keySuffixes = append(keySuffixes, state.Timestamp().String())
+	}
+	obj, err := kv.NewObjectFromInstanceState(state, keySuffixes...)
 	if err != nil {
 		return err
 	}

@@ -20,8 +20,8 @@ import (
 )
 
 // NewInstanceStateKeyFrom creates a new key for a job instance state.
-func NewInstanceStateKeyFrom(uuid job.UUID) Key {
-	return newKeyFromUUID(instanceStatePrefix, uuid)
+func NewInstanceStateKeyFrom(uuid job.UUID, suffixes ...string) Key {
+	return newKeyFromUUID(instanceStatePrefix, uuid, suffixes...)
 }
 
 // NewInstanceStateListKey creates a new list key for job instance states.
@@ -30,13 +30,13 @@ func NewInstanceStateListKey() Key {
 }
 
 // NewObjectFromInstanceState creates a new Object from a job instance state.
-func NewObjectFromInstanceState(state job.InstanceState) (Object, error) {
+func NewObjectFromInstanceState(state job.InstanceState, keySuffixes ...string) (Object, error) {
 	data, err := encoding.MapToJSON(state.Map())
 	if err != nil {
 		return nil, err
 	}
 	return &object{
-		key:   NewInstanceStateKeyFrom(state.UUID()),
+		key:   NewInstanceStateKeyFrom(state.UUID(), keySuffixes...),
 		value: []byte(data),
 	}, nil
 }
