@@ -16,10 +16,12 @@ package jobtest
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
+	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
 
 func StoreTest(t *testing.T, store kv.Store) {
@@ -134,7 +136,11 @@ func StoreTest(t *testing.T, store kv.Store) {
 		},
 	}
 
-	for _, test := range rangeTests {
+	keys := make([]kv.Key, len(rangeTests))
+	objs := make([]kv.Object, len(rangeTests))
+	for i, test := range rangeTests {
+		keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
+		objs[i] = kv.NewObject(keys[i], test.val)
 		t.Run("SetRange "+test.key.String(), func(t *testing.T) {
 			tx, err := store.Transact(context.Background(), true)
 			if err != nil {
@@ -142,27 +148,49 @@ func StoreTest(t *testing.T, store kv.Store) {
 			}
 			defer tx.Cancel(context.Background())
 
-			obj := kv.NewObject(test.key, test.val)
-			if err := tx.Set(context.Background(), obj); err != nil {
+			if err := tx.Set(context.Background(), objs[i]); err != nil {
 				t.Fatalf("failed to set object: %v", err)
 			}
 
 			if err := tx.Commit(context.Background()); err != nil {
 				t.Fatalf("failed to commit transaction: %v", err)
 			}
-
-			tx, err = store.Transact(context.Background(), false)
+		})
+		t.Run("GetRange "+test.key.String(), func(t *testing.T) {
+			tx, err := store.Transact(context.Background(), false)
 			if err != nil {
 				t.Fatalf("failed to begin read transaction: %v", err)
 			}
 			defer tx.Cancel(context.Background())
-			_, err = tx.GetRange(context.Background(), test.key)
+
+			rs, err := tx.GetRange(context.Background(), test.key)
 			if err != nil {
 				t.Fatalf("failed to get range: %v", err)
 			}
-		})
-	}
 
+			retrievedObjs, err := kvutil.ReadAll(rs)
+			if err != nil {
+				t.Fatalf("failed to read all objects from range: %v", err)
+			}
+			if len(retrievedObjs) != i+1 {
+				t.Fatalf("expected %d objects, got %d", i+1, len(retrievedObjs))
+			}
+
+			for _, obj := range retrievedObjs {
+				found := false
+				for _, expectedObj := range objs[:i+1] {
+					if obj.Equal(expectedObj) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("unexpected object: %v", obj)
+				}
+			}
+		})
+
+	}
 }
 
 func TestStores(t *testing.T) {
