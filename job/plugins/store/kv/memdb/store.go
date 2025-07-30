@@ -20,12 +20,16 @@ import (
 
 // Store represents a Memdb store service instance.
 type Store struct {
+	kv.Config
 	*Database
 }
 
 // NewStore returns a new memdb store instance.
 func NewStore() kv.Store {
 	return &Store{
+		Config: kv.NewConfig(
+			kv.WithUniqueKeys(true), // default to unique keys
+		),
 		Database: nil,
 	}
 }

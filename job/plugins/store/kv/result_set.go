@@ -14,23 +14,10 @@
 
 package kv
 
-import (
-	"context"
-)
-
-// Option represents a option.
-type Option = any
-
-// Store represents a store interface.
-type Store interface {
-	// Config returns the store configuration.
-	Config
-	// Name returns the name of the store.
-	Name() string
-	// Transact begin a new transaction.
-	Transact(ctx context.Context, write bool) (Transaction, error)
-	// Start starts the store.
-	Start() error
-	// Stop stops the store.
-	Stop() error
+// ResultSet represents a result set which includes query execution results.
+type ResultSet interface {
+	// Next moves the cursor forward next object from its current position.
+	Next() bool
+	// Object returns an object in the current cursor.
+	Object() (Object, error)
 }
