@@ -189,8 +189,44 @@ func StoreTest(t *testing.T, store kv.Store) {
 				}
 			}
 		})
-
 	}
+	for _, test := range rangeTests {
+		t.Run("RemoveRange"+test.key.String(), func(t *testing.T) {
+			tx, err := store.Transact(context.Background(), true)
+			if err != nil {
+				t.Fatalf("failed to begin transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			if err := tx.RemoveRange(context.Background(), test.key); err != nil {
+				t.Fatalf("failed to remove object: %v", err)
+			}
+
+			if err := tx.Commit(context.Background()); err != nil {
+				t.Fatalf("failed to commit transaction: %v", err)
+			}
+
+			tx, err = store.Transact(context.Background(), false)
+			if err != nil {
+				t.Fatalf("failed to begin read transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			rs, err := tx.GetRange(context.Background(), test.key)
+			if err != nil {
+				t.Fatalf("expected error when getting removed object, got nil")
+			}
+
+			retrievedObjs, err := kvutil.ReadAll(rs)
+			if err != nil {
+				t.Fatalf("failed to read all objects from range: %v", err)
+			}
+			if 0 < len(retrievedObjs) {
+				t.Errorf("expected no objects after removal, got %d", len(retrievedObjs))
+			}
+		})
+	}
+
 }
 
 func TestStores(t *testing.T) {
