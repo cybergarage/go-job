@@ -29,8 +29,8 @@ type kvStore struct {
 	kv.Store
 }
 
-// NewKVStore creates a new key-value store instance.
-func NewStoreWithKvStore(store kv.Store) job.Store {
+// NewKvStoreWith creates a new key-value store instance.
+func NewKvStoreWith(store kv.Store) job.Store {
 	return &kvStore{
 		Store: store,
 	}
