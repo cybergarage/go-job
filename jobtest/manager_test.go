@@ -19,9 +19,12 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
+	// "github.com/cybergarage/go-job/job/plugins/store"
 )
 
-func TestScheduleJobs(t *testing.T) {
+func ManagerTest(t *testing.T, mgr job.Manager) {
+	t.Helper()
+
 	type sumOpt struct {
 		a int
 		b int
@@ -60,13 +63,6 @@ func TestScheduleJobs(t *testing.T) {
 			},
 			args: []any{&sumOpt{1, 2}},
 		},
-	}
-
-	mgr, err := job.NewManager(
-		job.WithNumWorkers(1),
-	)
-	if err != nil {
-		t.Fatalf("Failed to create job manager: %v", err)
 	}
 
 	if err := mgr.Start(); err != nil {
@@ -277,6 +273,26 @@ func TestScheduleJobs(t *testing.T) {
 			if len(logs) != 0 {
 				t.Errorf("Expected no logs after clearing, but got %d logs", len(logs))
 			}
+		})
+	}
+}
+
+func TestManager(t *testing.T) {
+	stores := []job.Store{
+		job.NewLocalStore(),
+		// store.NewMemdbStore(),
+	}
+
+	for _, store := range stores {
+		t.Run(store.Name(), func(t *testing.T) {
+			mgr, err := job.NewManager(
+				job.WithStore(store),
+			)
+			if err != nil {
+				t.Errorf("Failed to create job manager: %v", err)
+				return
+			}
+			ManagerTest(t, mgr)
 		})
 	}
 }
