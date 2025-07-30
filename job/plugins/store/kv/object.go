@@ -46,11 +46,12 @@ func (obj *object) Key() Key {
 	return obj.key
 }
 
+// Equal checks if two objects are equal.
 func (obj *object) Equal(other Object) bool {
 	if other == nil {
 		return false
 	}
-	if obj.Key() != other.Key() {
+	if !obj.Key().Equal(other.Key()) {
 		return false
 	}
 	return bytes.Equal(obj.Bytes(), other.Bytes())

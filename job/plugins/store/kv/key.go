@@ -15,6 +15,8 @@
 package kv
 
 import (
+	"bytes"
+
 	"github.com/google/uuid"
 )
 
@@ -37,6 +39,11 @@ func newKeyFromUUID(prefix string, uuid uuid.UUID) Key {
 // UUID returns the UUID representation of the key.
 func (k Key) UUID() (uuid.UUID, error) {
 	return uuid.Parse(string(k)[len(instancePrefix):])
+}
+
+// Equal checks if two keys are equal.
+func (k Key) Equal(other Key) bool {
+	return bytes.Equal(k.Bytes(), other.Bytes())
 }
 
 // Bytes returns the byte representation of the key.
