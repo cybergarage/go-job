@@ -20,8 +20,8 @@ import (
 )
 
 // NewLogKeyFrom creates a new key for a job log.
-func NewLogKeyFrom(uuid job.UUID) Key {
-	return newKeyFromUUID(instanceLogPrefix, uuid)
+func NewLogKeyFrom(uuid job.UUID, suffixes ...string) Key {
+	return newKeyFromUUID(instanceLogPrefix, uuid, suffixes...)
 }
 
 // NewLogListKey creates a new list key for job instance logs.
@@ -30,13 +30,13 @@ func NewLogListKey() Key {
 }
 
 // NewObjectFromLog creates a new object from a job log entry.
-func NewObjectFromLog(log job.Log) (Object, error) {
+func NewObjectFromLog(log job.Log, keySuffixes ...string) (Object, error) {
 	data, err := encoding.MapToJSON(log.Map())
 	if err != nil {
 		return nil, err
 	}
 	return &object{
-		key:   NewLogKeyFrom(log.UUID()),
+		key:   NewLogKeyFrom(log.UUID(), keySuffixes...),
 		value: []byte(data),
 	}, nil
 }

@@ -170,6 +170,7 @@ func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceSt
 	if err != nil {
 		return err
 	}
+
 	tx, err := store.Transact(ctx, true)
 	if err != nil {
 		return err
@@ -266,7 +267,11 @@ func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.Lo
 		job.WithLogMessage(fmt.Sprintf(format, args...)),
 	)
 
-	obj, err := kv.NewObjectFromLog(log)
+	keySuffixes := []string{}
+	if store.UniqueKeys() {
+		keySuffixes = append(keySuffixes, log.Timestamp().String())
+	}
+	obj, err := kv.NewObjectFromLog(log, keySuffixes...)
 	if err != nil {
 		return err
 	}
@@ -278,7 +283,6 @@ func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.Lo
 	if err := tx.Set(ctx, obj); err != nil {
 		return errors.Join(err, tx.Cancel(ctx))
 	}
-
 	return tx.Commit(ctx)
 }
 
