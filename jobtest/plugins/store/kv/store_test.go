@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"context"
 	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
@@ -32,6 +33,136 @@ func StoreTest(t *testing.T, store kv.Store) {
 			t.Fatalf("failed to stop store: %v", err)
 		}
 	}()
+
+	// Set / Get tests
+
+	setterTests := []struct {
+		key kv.Key
+		val []byte
+	}{
+		{
+			key: kv.Key("test1"),
+			val: []byte("value1"),
+		},
+		{
+			key: kv.Key("test2"),
+			val: []byte("value2"),
+		},
+		{
+			key: kv.Key("test3"),
+			val: []byte("value3"),
+		},
+	}
+
+	for _, test := range setterTests {
+		t.Run("Set "+test.key.String(), func(t *testing.T) {
+			tx, err := store.Transact(context.Background(), true)
+			if err != nil {
+				t.Fatalf("failed to begin transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			obj := kv.NewObject(test.key, test.val)
+			if err := tx.Set(context.Background(), obj); err != nil {
+				t.Fatalf("failed to set object: %v", err)
+			}
+
+			if err := tx.Commit(context.Background()); err != nil {
+				t.Fatalf("failed to commit transaction: %v", err)
+			}
+
+			tx, err = store.Transact(context.Background(), false)
+			if err != nil {
+				t.Fatalf("failed to begin read transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			retrievedObj, err := tx.Get(context.Background(), test.key)
+			if err != nil {
+				t.Fatalf("failed to get object: %v", err)
+			}
+
+			if !retrievedObj.Equal(obj) {
+				t.Errorf("expected %v, got %v", obj, retrievedObj)
+			}
+		})
+		t.Run("Remove "+test.key.String(), func(t *testing.T) {
+			tx, err := store.Transact(context.Background(), true)
+			if err != nil {
+				t.Fatalf("failed to begin transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			if err := tx.Remove(context.Background(), test.key); err != nil {
+				t.Fatalf("failed to remove object: %v", err)
+			}
+
+			if err := tx.Commit(context.Background()); err != nil {
+				t.Fatalf("failed to commit transaction: %v", err)
+			}
+
+			tx, err = store.Transact(context.Background(), false)
+			if err != nil {
+				t.Fatalf("failed to begin read transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			_, err = tx.Get(context.Background(), test.key)
+			if err == nil {
+				t.Errorf("expected error when getting removed object, got nil")
+			}
+		})
+	}
+
+	// Set / GetRange tests
+
+	rangeTests := []struct {
+		key kv.Key
+		val []byte
+	}{
+		{
+			key: kv.Key("range1"),
+			val: []byte("value1"),
+		},
+		{
+			key: kv.Key("range1"),
+			val: []byte("value2"),
+		},
+		{
+			key: kv.Key("range1"),
+			val: []byte("value3"),
+		},
+	}
+
+	for _, test := range rangeTests {
+		t.Run("SetRange "+test.key.String(), func(t *testing.T) {
+			tx, err := store.Transact(context.Background(), true)
+			if err != nil {
+				t.Fatalf("failed to begin transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+
+			obj := kv.NewObject(test.key, test.val)
+			if err := tx.Set(context.Background(), obj); err != nil {
+				t.Fatalf("failed to set object: %v", err)
+			}
+
+			if err := tx.Commit(context.Background()); err != nil {
+				t.Fatalf("failed to commit transaction: %v", err)
+			}
+
+			tx, err = store.Transact(context.Background(), false)
+			if err != nil {
+				t.Fatalf("failed to begin read transaction: %v", err)
+			}
+			defer tx.Cancel(context.Background())
+			_, err = tx.GetRange(context.Background(), test.key)
+			if err != nil {
+				t.Fatalf("failed to get range: %v", err)
+			}
+		})
+	}
+
 }
 
 func TestStores(t *testing.T) {
