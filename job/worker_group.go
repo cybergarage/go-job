@@ -48,10 +48,10 @@ func WithNumWorkers(number int) WorkerGroupOption {
 	}
 }
 
-// WithWorkerGroupQueue sets the job queue for the worker group.
-func WithWorkerGroupQueue(queue Queue) WorkerGroupOption {
+// WithWorkerGroupManager sets the job manager for the worker group.
+func WithWorkerGroupManager(mgr Manager) WorkerGroupOption {
 	return func(g *workerGroup) {
-		g.queue = queue
+		g.manager = mgr
 	}
 }
 
@@ -62,15 +62,15 @@ func NewWorkerGroup(opts ...WorkerGroupOption) WorkerGroup {
 
 type workerGroup struct {
 	sync.Mutex
+	manager Manager
 	workers []Worker
-	queue   Queue
 }
 
 func newWorkerGroup(opts ...WorkerGroupOption) *workerGroup {
 	g := &workerGroup{
 		Mutex:   sync.Mutex{},
 		workers: make([]Worker, DefaultWorkerNum),
-		queue:   nil,
+		manager: nil,
 	}
 	for _, opt := range opts {
 		opt(g)
@@ -80,11 +80,11 @@ func newWorkerGroup(opts ...WorkerGroupOption) *workerGroup {
 
 // Start starts all workers in the group.
 func (g *workerGroup) Start() error {
-	if g.queue == nil {
-		return errors.New("worker group queue is not set")
+	if g.manager == nil {
+		return errors.New("worker group manager is not set")
 	}
 	for i := 0; i < len(g.workers); i++ {
-		g.workers[i] = NewWorker(WithWorkerQueue(g.queue))
+		g.workers[i] = NewWorker(WithWorkerManager(g.manager))
 	}
 	for _, w := range g.workers {
 		if err := w.Start(); err != nil {
@@ -130,7 +130,7 @@ func (g *workerGroup) ResizeWorkers(num int) error {
 
 	if len(g.workers) < num {
 		for i := len(g.workers); i < num; i++ {
-			worker := NewWorker(WithWorkerQueue(g.queue))
+			worker := NewWorker(WithWorkerManager(g.manager))
 			if err := worker.Start(); err != nil {
 				return err
 			}

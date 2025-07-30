@@ -44,6 +44,10 @@ type Manager interface {
 	// It creates a new job instance and enqueues it in the job queue.
 	// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 	ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error)
+	// EnqueueInstance enqueues a job instance in the job queue.
+	EnqueuInstance(job Instance) error
+	// DequeueNextInstance returns the next scheduled job instance and dequeues it from the job queue.
+	DequeueNextInstance() (Instance, error)
 	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
 	ListInstances() ([]Instance, error)
 	// LookupInstances looks up all job instances which match the specified query.
@@ -112,7 +116,7 @@ func newManager(opts ...any) (*manager, error) {
 	mgr.Repository = NewRepository(
 		WithRepositoryStore(mgr.store),
 	)
-	WithWorkerGroupQueue(mgr.Repository.Queue())(mgr.workerGroup)
+	WithWorkerGroupManager(mgr)(mgr.workerGroup)
 
 	return mgr, nil
 }
@@ -155,10 +159,7 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 // If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	jobOpts := []any{
-		WithExecutor(job.Handler().Executor()),
-		WithTerminateProcessor(job.Handler().TerminateProcessor()),
-		WithCompleteProcessor(job.Handler().CompleteProcessor()),
-		WithCrontabSpec(job.Schedule().CrontabSpec()),
+		WithJob(job),
 		WithInstanceHistory(mgr.Repository),
 	}
 	jobOpts = append(jobOpts, opts...)
@@ -178,6 +179,44 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	}
 
 	return ji, nil
+}
+
+// EnqueueInstance enqueues a job instance in the job queue.
+func (mgr *manager) EnqueuInstance(job Instance) error {
+	mgr.Lock()
+	defer mgr.Unlock()
+
+	return mgr.Queue().Enqueue(job)
+}
+
+// DequeueNextInstance returns the next scheduled job instance and dequeues it from the job queue.
+func (mgr *manager) DequeueNextInstance() (Instance, error) {
+	instance, err := mgr.Queue().Dequeue()
+	if err != nil {
+		return nil, err
+	}
+
+	// If the instance has a handler, it means it was dequeued from the local store.
+
+	if instance.Handler() != nil {
+		return instance, nil
+	}
+
+	// If the instance has no handler, it means it was dequeued from a remote store.
+	// In this case, we need to recreate the instance with the corresponding job information.
+
+	job, ok := mgr.LookupJob(instance.Kind())
+	if !ok {
+		return nil, fmt.Errorf("job not found for instance: %s", instance.Kind())
+	}
+
+	return NewInstance(
+		WithJob(job),
+		WithKind(instance.Kind()),
+		WithUUID(instance.UUID()),
+		WithState(instance.State()),
+		WithArguments(instance.Arguments()...),
+	)
 }
 
 // ListInstance returns a list of all job instances which are currently scheduled, processing, completed, or terminated after the manager started.

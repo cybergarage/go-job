@@ -33,7 +33,7 @@ type Worker interface {
 }
 
 type worker struct {
-	queue      Queue
+	manager    Manager
 	done       chan struct{}
 	processing bool
 }
@@ -46,17 +46,16 @@ func (w *worker) IsProcessing() bool {
 // WorkerOption is a function that configures a job worker.
 type WorkerOption func(*worker)
 
-// WithWorkerQueue sets the job queue for the worker.
-func WithWorkerQueue(queue Queue) WorkerOption {
+func WithWorkerManager(mgr Manager) WorkerOption {
 	return func(w *worker) {
-		w.queue = queue
+		w.manager = mgr
 	}
 }
 
 // NewWorker creates a new instance of the job worker.
 func NewWorker(opts ...WorkerOption) Worker {
 	w := &worker{
-		queue:      nil,
+		manager:    nil,
 		done:       make(chan struct{}),
 		processing: false,
 	}
@@ -86,7 +85,7 @@ func (w *worker) Run() error {
 		if 0 < delay {
 			time.Sleep(delay) // Wait for the retry delay
 		}
-		w.queue.Enqueue(ji) // Retry the job
+		w.manager.EnqueuInstance(ji) // Retry the job
 		err := ji.UpdateState(JobScheduled)
 		if err != nil {
 			logError(ji, err)
@@ -94,7 +93,7 @@ func (w *worker) Run() error {
 	}
 
 	rescheduleInstance := func(ji Instance) {
-		w.queue.Enqueue(ji) // Reschedule if recurring
+		w.manager.EnqueuInstance(ji) // Reschedule if recurring
 		err := ji.UpdateState(JobScheduled)
 		if err != nil {
 			logError(ji, err)
@@ -108,7 +107,7 @@ func (w *worker) Run() error {
 				w.processing = false
 				return
 			default:
-				ji, err := w.queue.Dequeue()
+				ji, err := w.manager.DequeueNextInstance()
 				if err != nil {
 					logger.Error(err)
 					continue

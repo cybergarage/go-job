@@ -104,6 +104,31 @@ type jobInstance struct {
 // InstanceOption defines a function that configures a job instance.
 type InstanceOption func(*jobInstance) error
 
+// WithJob sets the job for the job instance.
+func WithJob(job Job) InstanceOption {
+	return func(ji *jobInstance) error {
+		handlerOpts := []HandlerOption{
+			WithExecutor(job.Handler().Executor()),
+			WithTerminateProcessor(job.Handler().TerminateProcessor()),
+			WithCompleteProcessor(job.Handler().CompleteProcessor()),
+		}
+		for _, opt := range handlerOpts {
+			opt(ji.handler)
+		}
+
+		scheduleOpts := []ScheduleOption{
+			WithCrontabSpec(job.Schedule().CrontabSpec()),
+		}
+		for _, opt := range scheduleOpts {
+			if err := opt(ji.schedule); err != nil {
+				return nil
+			}
+		}
+
+		return nil
+	}
+}
+
 // WithUUID sets the unique identifier for the job instance.
 func WithUUID(uuid uuid.UUID) InstanceOption {
 	return func(ji *jobInstance) error {
