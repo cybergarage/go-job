@@ -118,20 +118,21 @@ func StoreTest(t *testing.T, store kv.Store) {
 
 	// Set / GetRange tests
 
+	rangeKey := kv.Key("range1")
 	rangeTests := []struct {
 		key kv.Key
 		val []byte
 	}{
 		{
-			key: kv.Key("range1"),
+			key: rangeKey,
 			val: []byte("value1"),
 		},
 		{
-			key: kv.Key("range1"),
+			key: rangeKey,
 			val: []byte("value2"),
 		},
 		{
-			key: kv.Key("range1"),
+			key: rangeKey,
 			val: []byte("value3"),
 		},
 	}
@@ -141,7 +142,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 	for i, test := range rangeTests {
 		keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
 		objs[i] = kv.NewObject(keys[i], test.val)
-		t.Run("SetRange "+test.key.String(), func(t *testing.T) {
+		t.Run(fmt.Sprintf("SetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
 			tx, err := store.Transact(context.Background(), true)
 			if err != nil {
 				t.Fatalf("failed to begin transaction: %v", err)
@@ -156,7 +157,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 				t.Fatalf("failed to commit transaction: %v", err)
 			}
 		})
-		t.Run("GetRange "+test.key.String(), func(t *testing.T) {
+		t.Run(fmt.Sprintf("GetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
 			tx, err := store.Transact(context.Background(), false)
 			if err != nil {
 				t.Fatalf("failed to begin read transaction: %v", err)
@@ -190,43 +191,41 @@ func StoreTest(t *testing.T, store kv.Store) {
 			}
 		})
 	}
-	for _, test := range rangeTests {
-		t.Run("RemoveRange"+test.key.String(), func(t *testing.T) {
-			tx, err := store.Transact(context.Background(), true)
-			if err != nil {
-				t.Fatalf("failed to begin transaction: %v", err)
-			}
-			defer tx.Cancel(context.Background())
 
-			if err := tx.RemoveRange(context.Background(), test.key); err != nil {
-				t.Fatalf("failed to remove object: %v", err)
-			}
+	t.Run("RemoveRange "+rangeKey.String(), func(t *testing.T) {
+		tx, err := store.Transact(context.Background(), true)
+		if err != nil {
+			t.Fatalf("failed to begin transaction: %v", err)
+		}
+		defer tx.Cancel(context.Background())
 
-			if err := tx.Commit(context.Background()); err != nil {
-				t.Fatalf("failed to commit transaction: %v", err)
-			}
+		if err := tx.RemoveRange(context.Background(), rangeKey); err != nil {
+			t.Fatalf("failed to remove object: %v", err)
+		}
 
-			tx, err = store.Transact(context.Background(), false)
-			if err != nil {
-				t.Fatalf("failed to begin read transaction: %v", err)
-			}
-			defer tx.Cancel(context.Background())
+		if err := tx.Commit(context.Background()); err != nil {
+			t.Fatalf("failed to commit transaction: %v", err)
+		}
 
-			rs, err := tx.GetRange(context.Background(), test.key)
-			if err != nil {
-				t.Fatalf("expected error when getting removed object, got nil")
-			}
+		tx, err = store.Transact(context.Background(), false)
+		if err != nil {
+			t.Fatalf("failed to begin read transaction: %v", err)
+		}
+		defer tx.Cancel(context.Background())
 
-			retrievedObjs, err := kvutil.ReadAll(rs)
-			if err != nil {
-				t.Fatalf("failed to read all objects from range: %v", err)
-			}
-			if 0 < len(retrievedObjs) {
-				t.Errorf("expected no objects after removal, got %d", len(retrievedObjs))
-			}
-		})
-	}
+		rs, err := tx.GetRange(context.Background(), rangeKey)
+		if err != nil {
+			t.Fatalf("expected error when getting removed object, got nil")
+		}
 
+		retrievedObjs, err := kvutil.ReadAll(rs)
+		if err != nil {
+			t.Fatalf("failed to read all objects from range: %v", err)
+		}
+		if 0 < len(retrievedObjs) {
+			t.Errorf("expected no objects after removal, got %d", len(retrievedObjs))
+		}
+	})
 }
 
 func TestStores(t *testing.T) {
