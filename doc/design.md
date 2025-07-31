@@ -1,6 +1,6 @@
 # Design and Architecture
 
-This document provides a detailed overview of \`go-job’s features and architecture.
+This document provides a detailed overview of \`go-job’s design and architecture, including future plans.
 
 ## Design Concept
 
