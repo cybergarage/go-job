@@ -23,6 +23,7 @@ import (
 func ExampleNewJob_simple() {
 	NewJob(
 		WithKind("no args and no return"),
+		WithDescription("A simple job that prints a message"),
 		WithExecutor(func() { fmt.Println("Hello, World!") }),
 	)
 }
@@ -30,6 +31,7 @@ func ExampleNewJob_simple() {
 func ExampleNewJob_concat() {
 	NewJob(
 		WithKind("concat (two args and one return)"),
+		WithDescription("Concatenates two strings"),
 		WithExecutor(func(a, b string) string { return a + ", " + b }),
 		WithArguments("hello", "world"),
 	)
@@ -37,7 +39,8 @@ func ExampleNewJob_concat() {
 
 func ExampleNewJob_split() {
 	NewJob(
-		WithKind("split (one args and two return)"),
+		WithKind("split (one arg and two return)"),
+		WithDescription("Splits a string into two parts"),
 		WithExecutor(func(s string) (string, string) {
 			parts := strings.Split(s, ",")
 			return parts[0], parts[1]
@@ -49,6 +52,7 @@ func ExampleNewJob_split() {
 func ExampleNewJob_abs() {
 	NewJob(
 		WithKind("abs (one arg and one return)"),
+		WithDescription("Returns the absolute value of an integer"),
 		WithExecutor(func(a int) int { return int(math.Abs(float64(a))) }),
 		WithArguments(-42),
 	)
@@ -57,6 +61,7 @@ func ExampleNewJob_abs() {
 func ExampleNewJob_sum() {
 	NewJob(
 		WithKind("sum (two args and one return)"),
+		WithDescription("Returns the sum of two integers"),
 		WithExecutor(func(a, b int) int { return a + b }),
 		WithArguments(1, 2),
 	)
@@ -70,6 +75,7 @@ func ExampleNewJob_struct() {
 
 	NewJob(
 		WithKind("sum (struct arg and one return)"),
+		WithDescription("Returns the sum of two integers from a struct"),
 		WithExecutor(func(opt SumOpt) int { return opt.a + opt.b }),
 		WithArguments(SumOpt{1, 2}),
 	)
