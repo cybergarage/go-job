@@ -72,7 +72,7 @@ Supports standard cron format: `min hour dom month dow`.
 
 #### Job Priority
 
-    mgr.ScheduleJob(job, WithPriority(10)) // high-priority
+    mgr.ScheduleJob(job, WithPriority(0)) // high-priority
 
 Higher-priority jobs are executed before lower-priority ones.
 
