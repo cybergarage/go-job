@@ -2,6 +2,8 @@
 
 Go offers multiple libraries for scheduling and executing background jobs. This document compares **`go-job`** (a new extensible job library by CyberGarage) with three popular Go job libraries: **gocron**, **JobRunner**, and **Machinery**. We focus on their technical design and architecture, extensibility, distributed execution models, and component-level differences. A summary table and use-case guidance are provided to help Go engineers decide which scheduler fits their needs.
 
+This document was compiled by **OpenAI Research** based on an in-depth technical analysis of multiple Go job libraries. It reflects the architectural design, extensibility, and usage characteristics of each library as of mid-2025, drawing from official documentation, source code, and implementation patterns.
+
 ## Summary of Key Differences
 
 The table below highlights core differences between `go-job` and its counterparts:
