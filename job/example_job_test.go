@@ -17,6 +17,7 @@ package job
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 func ExampleNewJob_simple() {
@@ -26,10 +27,27 @@ func ExampleNewJob_simple() {
 	)
 }
 
+func ExampleNewJob_concat() {
+	NewJob(
+		WithKind("concat (two args and one return)"),
+		WithExecutor(func(a, b string) string { return a + ", " + b }),
+		WithArguments("hello", "world"),
+	)
+}
+
+func ExampleNewJob_split() {
+	NewJob(
+		WithKind("split (one args and one return)"),
+		WithExecutor(func(s string) []string { return strings.Split(s, ",") }),
+		WithArguments("hello,world"),
+	)
+}
+
 func ExampleNewJob_abs() {
 	NewJob(
 		WithKind("abs (one arg and one return)"),
 		WithExecutor(func(a int) int { return int(math.Abs(float64(a))) }),
+		WithArguments(-42),
 	)
 }
 
@@ -37,6 +55,7 @@ func ExampleNewJob_sum() {
 	NewJob(
 		WithKind("sum (two args and one return)"),
 		WithExecutor(func(a, b int) int { return a + b }),
+		WithArguments(1, 2),
 	)
 }
 
@@ -49,5 +68,6 @@ func ExampleNewJob_struct() {
 	NewJob(
 		WithKind("sum (struct arg and one return)"),
 		WithExecutor(func(opt SumOpt) int { return opt.a + opt.b }),
+		WithArguments(SumOpt{1, 2}),
 	)
 }
