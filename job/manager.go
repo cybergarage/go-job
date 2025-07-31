@@ -209,6 +209,7 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 
 	job, ok := mgr.LookupJob(instance.Kind())
 	if !ok {
+		// Jobs are registered per manager, so if the job is not registered in this manager, we need to re-enqueue the instance that cannot be handled by the current manager.
 		logger.Infof("manager does not have job registered for instance: %s", instance.Kind())
 		logger.Infof("manager re-enqueueing instance: %s", instance.UUID())
 		err := mgr.EnqueuInstance(instance) // Re-enqueue the instance
@@ -220,6 +221,7 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 	return NewInstance(
 		WithJob(job),
 		WithUUID(instance.UUID()),
+		WithCreatedAt(instance.CreatedAt()),
 		WithState(instance.State()),
 		WithArguments(instance.Arguments()...),
 	)
