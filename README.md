@@ -92,8 +92,8 @@ func main() {
 # User Guides
 
 - Get Started
-  - [Overview](doc/overview.md)
   - [Quick Start](doc/quick-start.md)
+  - [Feature Overview and Usage Guide](doc/overview.md)
   - [go-job Comparison (OpenAI Research)](doc/design-comparison.md)
 
 - References
