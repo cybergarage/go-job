@@ -126,28 +126,6 @@ Alternatively, you can use the go-job server component, which provides a gRPC in
 
 For more information about the server component, see the [gRPC API](grpc-api.md) and [CLI (jobctl)](cmd/cli/jobctl.md) documentation.
 
-## Job Registration and Processing Flow
-
-The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained.
-
-The following sequence diagram illustrates the flow of job registration, scheduling, and processing.
-
-<figure>
-<img src="img/job-seqdgm.png" alt="job seqdgm" />
-</figure>
-
-### Store Plugins and Registry Sharing Limitations
-
-Currently, the registry that holds job definitions cannot be shared between go-job servers. Because Go does not support serializing or transmitting function pointers (executors) over RPC, each go-job server must maintain its own local registry of job definitions.
-
-<figure>
-<img src="img/job-store.png" alt="job store" />
-</figure>
-
-> **Note:** In the future, support for sharing the registry across go-job servers may be added through technologies such as shell scripts, Python, and WebAssembly (Wasm), but there are currently no concrete plans for this feature.
-
-The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see [Extension Guide](extension-guide.md).
-
 ## Job State Lifecycle
 
 The job state in `go-job` is managed through a combination of job instances and their associated states. The state of a job instance is crucial for understanding its lifecycle and for debugging purposes.
@@ -191,4 +169,28 @@ The job state in `go-job` is managed through a combination of job instances and 
 </tbody>
 </table>
 
+> **Note:** The canceled and timed-out states are not explicitly defined in the current implementation. In the future, these states may be added to provide more granular control over job instance lifecycles.
+
 Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, and `Terminated`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
+
+## Job Registration and Processing Flow
+
+The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained.
+
+The following sequence diagram illustrates the flow of job registration, scheduling, and processing.
+
+<figure>
+<img src="img/job-seqdgm.png" alt="job seqdgm" />
+</figure>
+
+### Store Plugins and Registry Sharing Limitations
+
+Currently, the registry that holds job definitions cannot be shared between go-job servers. Because Go does not support serializing or transmitting function pointers (executors) over RPC, each go-job server must maintain its own local registry of job definitions.
+
+<figure>
+<img src="img/job-store.png" alt="job store" />
+</figure>
+
+> **Note:** In the future, support for sharing the registry across go-job servers may be added through technologies such as shell scripts, Python, and WebAssembly (Wasm), but there are currently no concrete plans for this feature.
+
+The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see [Extension Guide](extension-guide.md).
