@@ -92,8 +92,10 @@ func main() {
 # User Guides
 
 - Get Started
-  - [Quick Start](doc/quick-start.md)
   - [Overview](doc/overview.md)
+  - [Quick Start](doc/quick-start.md)
+  - [Comparison of go-job with Other OSS Go Job Libraries](doc/design-comparison.md)
+
 - References
   - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 - Operation
