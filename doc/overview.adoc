@@ -42,7 +42,6 @@ Then schedule the jobs with arguments:
 
 [source,go]
 ----
-mgr.ScheduleJob(sumJob, WithArguments(1, 2))
 mgr.ScheduleJob(concatJob, WithArguments(concatOpt{"Hello", "world!"}))
 ----
 

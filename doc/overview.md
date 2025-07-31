@@ -37,7 +37,6 @@ Use it to build robust, scalable job systems in Go.
 
 Then schedule the jobs with arguments:
 
-    mgr.ScheduleJob(sumJob, WithArguments(1, 2))
     mgr.ScheduleJob(concatJob, WithArguments(concatOpt{"Hello", "world!"}))
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
