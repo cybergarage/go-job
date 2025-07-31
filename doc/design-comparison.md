@@ -1,4 +1,4 @@
-# = Comparison of go-job with Other OSS Go Job Libraries
+# Comparison of go-job with Other OSS Go Job Libraries
 
 Go offers multiple libraries for scheduling and executing background jobs. This document compares **`go-job`** (a new extensible job library by CyberGarage) with three popular Go job libraries: **gocron**, **JobRunner**, and **Machinery**. We focus on their technical design and architecture, extensibility, distributed execution models, and component-level differences. A summary table and use-case guidance are provided to help Go engineers decide which scheduler fits their needs.
 
