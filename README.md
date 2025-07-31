@@ -99,8 +99,8 @@ func main() {
 - References
   - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 - Operation
-  - [CLI (jobctl)](doc/cmd/cli/jobctl.md)
   - [gRPC API](doc/grpc-api.md)
+  - [CLI (jobctl)](doc/cmd/cli/jobctl.md)
 
 # Developer Guides
 
