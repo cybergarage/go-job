@@ -144,6 +144,8 @@ Currently, the registry that holds job definitions cannot be shared between go-j
 <img src="img/job-store.png" alt="job store" />
 </figure>
 
+> **Note:** In the future, support for sharing the registry across go-job servers may be added through technologies such as shell scripts, Python, and WebAssembly (Wasm), but there are currently no concrete plans for this feature.
+
 The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see [Extension Guide](extension-guide.md).
 
 ## Job State Lifecycle
