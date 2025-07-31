@@ -49,9 +49,9 @@ type job struct {
 type JobOption func(*job)
 
 // WithKind sets the name of the job.
-func WithKind(name string) JobOption {
+func WithKind(kind string) JobOption {
 	return func(j *job) {
-		j.kind = name
+		j.kind = kind
 	}
 }
 
