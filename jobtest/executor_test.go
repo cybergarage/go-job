@@ -30,6 +30,13 @@ func TestExecutor(t *testing.T) {
 		expected []any
 	}{
 		{
+			fn: func() {
+				fmt.Println("Hello, World!")
+			},
+			params:   []any{},
+			expected: nil,
+		},
+		{
 			fn: func() int {
 				return 42
 			},
