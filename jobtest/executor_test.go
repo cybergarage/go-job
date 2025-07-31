@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -113,7 +114,11 @@ func TestExecutor(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%T", tt.fn), func(t *testing.T) {
+		paramsJSON, err := json.Marshal(tt.params)
+		if err != nil {
+			t.Fatalf("failed to marshal params: %v", err)
+		}
+		t.Run(fmt.Sprintf("%T(%s)", tt.fn, string(paramsJSON)), func(t *testing.T) {
 			got, err := job.Execute(tt.fn, tt.params...)
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
