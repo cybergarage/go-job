@@ -1,4 +1,4 @@
-= Overview
+= Feature Overview and Usage Guide
 
 :toc:
 :toclevels: 2
