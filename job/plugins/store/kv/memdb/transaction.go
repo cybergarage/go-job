@@ -25,14 +25,12 @@ import (
 
 // transaction represents a Memdb transaction instance.
 type transaction struct {
-	kv.Transaction
 	*memdb.Txn
 }
 
 func newTransaction(txn *memdb.Txn) *transaction {
 	return &transaction{
-		Txn:         txn,
-		Transaction: nil,
+		Txn: txn,
 	}
 }
 
