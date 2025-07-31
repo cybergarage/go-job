@@ -10,6 +10,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/cobra v1.9.1
 	github.com/valkey-io/valkey-go v1.0.63
+	go.etcd.io/etcd/client/v3 v3.6.4
 	google.golang.org/grpc v1.74.2
 )
 
@@ -28,7 +29,6 @@ require (
 	github.com/spf13/pflag v1.0.6 // indirect
 	go.etcd.io/etcd/api/v3 v3.6.4 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.6.4 // indirect
-	go.etcd.io/etcd/client/v3 v3.6.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250528174236-200df99c418a // indirect
