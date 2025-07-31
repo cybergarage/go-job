@@ -219,7 +219,6 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 
 	return NewInstance(
 		WithJob(job),
-		WithKind(instance.Kind()),
 		WithUUID(instance.UUID()),
 		WithState(instance.State()),
 		WithArguments(instance.Arguments()...),
