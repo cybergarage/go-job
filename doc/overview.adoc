@@ -26,11 +26,6 @@ Use it to build robust, scalable job systems in Go.
 
 [source,go]
 ----
-sumJob, _ := NewJob(
-    WithKind("sum"),
-    WithExecutor(func(a, b int) int { return a + b }),
-)
-
 type concatOpt struct {
     a string
     b string

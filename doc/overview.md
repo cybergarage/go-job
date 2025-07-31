@@ -24,11 +24,6 @@ Use it to build robust, scalable job systems in Go.
 
 `go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results.
 
-    sumJob, _ := NewJob(
-        WithKind("sum"),
-        WithExecutor(func(a, b int) int { return a + b }),
-    )
-
     type concatOpt struct {
         a string
         b string
