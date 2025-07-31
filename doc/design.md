@@ -8,11 +8,11 @@ These design choices position `go-job` as a scalable, flexible, and production-g
 
 The core design principles of `go-job` are:
 
-- **General-Purpose Job Definition**: Unlike `gocron` or `JobRunner`, which require specific function types or interface implementations, `go-job` allows registration of arbitrary Go functions with any signature using `any`-typed arguments and return values.
+- **General-Purpose Job Definition**: `go-job` allows registration of arbitrary Go functions with any signature using `any`-typed arguments and return values.
 
-- **Flexible Scheduling**: `go-job` supports not only cron-style and fixed-interval execution like `gocron`, but also delayed, timed, and immediate scheduling — all within a unified API.
+- **Flexible Scheduling**: `go-job` supports not only cron-style and fixed-interval execution, but also delayed, timed, and immediate scheduling — all within a unified API.
 
-- **Distributed and Observable by Design**: Where `Machinery` relies on external brokers for distribution, `go-job` introduces a pluggable `Store` interface to enable consistent state sharing and coordination between nodes, while also providing first-class support for logging, state transitions, and job lifecycle monitoring.
+- **Distributed and Observable by Design**: `go-job` introduces a pluggable `Store` interface to enable consistent state sharing and coordination between nodes, while also providing first-class support for logging, state transitions, and job lifecycle monitoring.
 
 - **Extensibility First**: Every component — executors, stores, workers, handlers — is designed to be pluggable or replaceable, making `go-job` suitable for embedded use, microservices, and server-mode deployment with gRPC APIs.
 
