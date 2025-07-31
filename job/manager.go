@@ -218,13 +218,18 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 		}
 	}
 
-	return NewInstance(
+	// Recreate the instance with the corresponding job information, including the handler's executor.
+	newInstance, err := NewInstance(
 		WithJob(job),
 		WithUUID(instance.UUID()),
 		WithCreatedAt(instance.CreatedAt()),
 		WithState(instance.State()),
 		WithArguments(instance.Arguments()...),
 	)
+	if err != nil {
+		return nil, err
+	}
+	return newInstance, nil
 }
 
 // ListInstance returns a list of all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
