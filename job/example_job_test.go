@@ -14,9 +14,28 @@
 
 package job
 
-func ExampleNewJob() {
+import (
+	"fmt"
+	"math"
+)
+
+func ExampleNewJob_simple() {
 	NewJob(
-		WithKind("sum"),
+		WithKind("no args and no return"),
+		WithExecutor(func() { fmt.Println("Hello, World!") }),
+	)
+}
+
+func ExampleNewJob_abs() {
+	NewJob(
+		WithKind("abs (one arg and one return)"),
+		WithExecutor(func(a int) int { return int(math.Abs(float64(a))) }),
+	)
+}
+
+func ExampleNewJob_sum() {
+	NewJob(
+		WithKind("sum (two args and one return)"),
 		WithExecutor(func(a, b int) int { return a + b }),
 	)
 }
@@ -28,7 +47,7 @@ func ExampleNewJob_struct() {
 	}
 
 	NewJob(
-		WithKind("sum"),
+		WithKind("sum (struct arg and one return)"),
 		WithExecutor(func(opt SumOpt) int { return opt.a + opt.b }),
 	)
 }
