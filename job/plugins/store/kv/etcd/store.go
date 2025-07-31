@@ -21,17 +21,16 @@ import (
 	v3 "go.etcd.io/etcd/client/v3"
 )
 
-// StoreOption is an alias for valkey.ClientOption, used for configuring the Valkey store.
+// StoreOption is an alias for etcd.ClientOption, used for configuring the etcd store.
 type StoreOption = v3.Config
 
-// Store represents a Memdb store service instance.
+// Store represents a etcd store service instance.
 type Store struct {
 	kv.Config
-	cofig StoreOption
 	*v3.Client
 }
 
-// NewStore returns a new memdb store instance.
+// NewStore returns a new etcd store instance.
 func NewStore(option StoreOption) (kv.Store, error) {
 	client, err := v3.New(option)
 	if err != nil {
@@ -45,19 +44,27 @@ func NewStore(option StoreOption) (kv.Store, error) {
 	}, nil
 }
 
-// Name returns the name of this memdb store.
+// Name returns the name of this etcd store.
 func (store *Store) Name() string {
 	return "etcd"
 }
 
-// Start starts this memdb.
+// Start starts this etcd.
 func (store *Store) Start() error {
 	return nil
 }
 
-// Stop stops this memdb.
+// Stop stops this etcd.
 func (store *Store) Stop() error {
-	return nil
+	if store.Client == nil {
+		return nil
+	}
+	err := store.Client.Close()
+	if err == nil {
+		store.Client = nil
+		return nil
+	}
+	return err
 }
 
 // Transact returns a new transaction instance.
