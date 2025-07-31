@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	logger "github.com/cybergarage/go-logger/log"
 )
 
 // Manager is an interface that defines methods for managing jobs.
@@ -196,9 +198,9 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 		return nil, err
 	}
 
-	// If the instance has a handler, it means it was dequeued from the local store.
+	// If the instance has a executor handler, it means it was dequeued from the local store.
 
-	if instance.Handler() != nil {
+	if instance.Handler().Executor() != nil {
 		return instance, nil
 	}
 
@@ -207,7 +209,12 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 
 	job, ok := mgr.LookupJob(instance.Kind())
 	if !ok {
-		return nil, fmt.Errorf("job not found for instance: %s", instance.Kind())
+		logger.Infof("manager does not have job registered for instance: %s", instance.Kind())
+		logger.Infof("manager re-enqueueing instance: %s", instance.UUID())
+		err := mgr.EnqueuInstance(instance) // Re-enqueue the instance
+		if err != nil {
+			logger.Errorf("failed to re-enqueue instance: %s", err)
+		}
 	}
 
 	return NewInstance(
