@@ -37,8 +37,11 @@ func ExampleNewJob_concat() {
 
 func ExampleNewJob_split() {
 	NewJob(
-		WithKind("split (one args and one return)"),
-		WithExecutor(func(s string) []string { return strings.Split(s, ",") }),
+		WithKind("split (one args and two return)"),
+		WithExecutor(func(s string) (string, string) {
+			parts := strings.Split(s, ",")
+			return parts[0], parts[1]
+		}),
 		WithArguments("hello,world"),
 	)
 }
