@@ -154,7 +154,11 @@ Allows concurrent execution and real-time scalability.
 
 ### Job Observation
 
+`go-job` offers multiple ways to track both executed and queued job instances, using handlers and manager methods.
+
 #### Handlers for Response and Error
+
+With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register handlers to monitor job execution and process results or errors as they occur.
 
     job, err := NewJob(
         WithKind("observe"),
@@ -169,6 +173,8 @@ Allows concurrent execution and real-time scalability.
     mgr.ScheduleJob(job, WithArguments(42))
 
 #### List All job Instances
+
+With `Manager::LookupInstances()`, you can retrieve any job instance—whether it is scheduled, in progress, or already executed.
 
 ##### List All Queued and Executed Job Instances
 
@@ -197,16 +203,22 @@ Allows concurrent execution and real-time scalability.
 
 #### Retrieve History and Logs for Job Instances
 
+You can use manager methods to access the processing history and logs of any specified job instance.
+
 ##### State History
 
-    states := mgr.ProcessHistory(ji)
+With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
+
+    states := mgr.LookupInstanceHistory(ji)
     for _, s := range states {
         fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
     }
 
 #### Log History
 
-    logs := mgr.ProcessLogs(ji)
+With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
+
+    logs := mgr.LookupInstanceLogs(ji)
     for _, log := range logs {
         fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
     }
