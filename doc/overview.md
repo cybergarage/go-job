@@ -211,13 +211,19 @@ Provides auditability and debugging capability for each job instance.
 
 ### Queue Priority & Worker Management
 
+`go-job` provides mechanisms to manage job priorities and worker pools effectively.
+
 #### Job Priority
+
+Use `WithPriority()` to assign a specific priority to each job.
 
     mgr.ScheduleJob(job, WithPriority(0)) // high-priority
 
 Higher-priority jobs are executed before lower-priority ones.
 
 #### Dynamic Worker Pool
+
+`go-job` supports dynamic worker pools to handle varying workloads.
 
     mgr, _ := NewManager(WithNumWorkers(5))
     mgr.Start()
