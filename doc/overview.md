@@ -63,9 +63,9 @@ Use `WithCompleteProcessor()` to capture the result of a job execution. This is 
 A job with two input parameters and one output can be defined like this:
 
     job, err := NewJob(
-        WithKind("sum (two input and one output)"),
-        WithExecutor(func(x int, y int) int {
-            return x + y
+        WithKind("concat (two input and one output)"),
+        WithExecutor(func(a string, b string) string {
+            return a + " " + b
         }),
         WithCompleteProcessor(func(ji Instance, res []any) {
             // In this case, log the result to the go-job manager
@@ -75,7 +75,7 @@ A job with two input parameters and one output can be defined like this:
 
 Then schedule jobs with arguments:
 
-    mgr.ScheduleJob(job, WithArguments(42, 58))
+    mgr.ScheduleJob(job, WithArguments("hello", "world"))
 
 #### Function with Struct Input and Output
 
@@ -91,7 +91,7 @@ A job with one struct input and one struct output can be defined like this:
         WithKind("concat (one struct input and one struct output)"),
         WithExecutor(func(param *concatString) *concatString {
             // Store the concatenated string result in the input struct, and return it
-            param.s = param.a + " " + param.b
+            param.s = param.a + ", " + param.b
             return param
         }),
         WithCompleteProcessor(func(ji Instance, res []any) {

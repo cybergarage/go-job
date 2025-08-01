@@ -78,9 +78,9 @@ A job with two input parameters and one output can be defined like this:
 [source,go]
 ----
 job, err := NewJob(
-    WithKind("sum (two input and one output)"),
-    WithExecutor(func(x int, y int) int {
-        return x + y
+    WithKind("concat (two input and one output)"),
+    WithExecutor(func(a string, b string) string {
+        return a + " " + b
     }),
     WithCompleteProcessor(func(ji Instance, res []any) {
         // In this case, log the result to the go-job manager
@@ -93,7 +93,7 @@ Then schedule jobs with arguments:
 
 [source,go]
 ----
-mgr.ScheduleJob(job, WithArguments(42, 58))
+mgr.ScheduleJob(job, WithArguments("hello", "world"))
 ----
 
 ==== Function with Struct Input and Output
@@ -112,7 +112,7 @@ job, err := NewJob(
     WithKind("concat (one struct input and one struct output)"),
     WithExecutor(func(param *concatString) *concatString {
         // Store the concatenated string result in the input struct, and return it
-        param.s = param.a + " " + param.b
+        param.s = param.a + ", " + param.b
         return param
     }),
     WithCompleteProcessor(func(ji Instance, res []any) {
