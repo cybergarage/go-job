@@ -56,8 +56,6 @@ Then schedule jobs with arguments:
 
 #### Function with Arguments and Result Example
 
-Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
-
 A job with two input parameters and one output can be defined like this:
 
     job, err := NewJob(
@@ -70,6 +68,8 @@ A job with two input parameters and one output can be defined like this:
             ji.Infof("%v", res[0])
         }),
     )
+
+Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
 
 Then schedule jobs with arguments:
 

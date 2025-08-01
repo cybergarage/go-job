@@ -68,8 +68,6 @@ mgr.ScheduleJob(job, WithArguments(42, 58))
 
 ==== Function with Arguments and Result Example
 
-Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
-
 A job with two input parameters and one output can be defined like this:
 
 [source,go]
@@ -85,6 +83,8 @@ job, err := NewJob(
     }),
 )
 ----
+
+Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
 
 Then schedule jobs with arguments:
 
