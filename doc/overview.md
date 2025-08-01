@@ -2,6 +2,10 @@
 
 `go-job` is a flexible and extensible job scheduling and execution library for Go that supports arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
 
+<figure>
+<img src="img/job-framework.png" alt="job framework" />
+</figure>
+
 This document provides a comprehensive overview of the features and usage of `go-job`.
 
 ## Features
