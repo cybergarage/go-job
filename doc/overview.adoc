@@ -262,10 +262,20 @@ Use `WithPriority()` to assign a specific priority to each job.
 
 [source,go]
 ----
-mgr.ScheduleJob(job, WithPriority(0)) // high-priority
+job, err := NewJob(
+    WithPriority(0), // high-priority
+    ....,
+)
 ----
 
 Higher-priority jobs are executed before lower-priority ones.
+
+You can also override a job's default priority at scheduling time by using `WithPriority()`.
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithPriority(0)) // high-priority
+----
 
 ==== Dynamic Worker Pool
 

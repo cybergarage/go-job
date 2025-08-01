@@ -217,9 +217,16 @@ Provides auditability and debugging capability for each job instance.
 
 Use `WithPriority()` to assign a specific priority to each job.
 
-    mgr.ScheduleJob(job, WithPriority(0)) // high-priority
+    job, err := NewJob(
+        WithPriority(0), // high-priority
+        ....,
+    )
 
 Higher-priority jobs are executed before lower-priority ones.
+
+You can also override a job’s default priority at scheduling time by using `WithPriority()`.
+
+    mgr.ScheduleJob(job, WithPriority(0)) // high-priority
 
 #### Dynamic Worker Pool
 
