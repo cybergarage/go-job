@@ -22,22 +22,87 @@ Use it to build robust, scalable job systems in Go.
 
 ### Arbitrary Function Execution
 
-`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results.
+`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results. The executor can be defined with any number of input and output parameters or complet sturucts.
 
-    type concatOpt struct {
-        a string
-        b string
-    }
-    concatJob, _ := NewJob(
-        WithKind("concat"),
-        WithExecutor(func(opt concatOpt) string {
-            return opt.a + " " + opt.b
+`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results. The executor can be defined with any number of input and output parameters or with complete struct definitions.
+
+#### Simple Function Example
+
+A job with no input parameters and no return value can be defined as follows:
+
+    job, err := NewJob(
+        WithKind("hello (no input and no return)"),
+        WithExecutor(func()  {
+            fmt.Println("Hello, world!")
         }),
     )
 
-Then schedule the jobs with arguments:
+Then schedule this job with no arguments simply by:
 
-    mgr.ScheduleJob(concatJob, WithArguments(concatOpt{"Hello", "world!"}))
+    mgr.ScheduleJob(job)
+
+#### Function with Arguments Example
+
+A job with two input parameters and no return value can be defined like this:
+
+    job, err := NewJob(
+        WithKind("sum (two input and no output)"),
+        WithExecutor(func(x int, y int) {
+            fmt.Println(x + y)
+        }),
+    )
+
+Then schedule jobs with arguments:
+
+    mgr.ScheduleJob(job, WithArguments(42, 58))
+
+#### Function with Arguments and Result Example
+
+Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
+
+A job with two input parameters and one output can be defined like this:
+
+    job, err := NewJob(
+        WithKind("sum (two input and one output)"),
+        WithExecutor(func(x int, y int) int {
+            return x + y
+        }),
+        WithCompleteProcessor(func(ji Instance, res []any) {
+            // In this case, log the result to the go-job manager
+            ji.Infof("%v", res[0])
+        }),
+    )
+
+Then schedule jobs with arguments:
+
+    mgr.ScheduleJob(job, WithArguments(42, 58))
+
+#### Function with Struct Input and Output
+
+A job with one struct input and one struct output can be defined like this:
+
+    type concatString struct {
+        a string
+        b string
+        s string
+    }
+
+    job, err := NewJob(
+        WithKind("concat (one struct input and one struct output)"),
+        WithExecutor(func(param *concatString) *concatString {
+            // Store the concatenated string result in the input struct, and return it
+            param.s = param.a + " " + param.b
+            return param
+        }),
+        WithCompleteProcessor(func(ji Instance, res []any) {
+            // In this case, log the result to the go-job manager
+            ji.Infof("%v", res[0])
+        }),
+    )
+
+Then schedule the jobs with arguments by:
+
+    mgr.ScheduleJob(job, WithArguments(&concatString{"Hello", "world!"}))
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
 
@@ -87,7 +152,7 @@ Allows concurrent execution and real-time scalability.
 
 #### Handlers for Response and Error
 
-    job, _ := NewJob(
+    job, err := NewJob(
         WithKind("observe"),
         WithExecutor(func(x int) int { return x * 2 }),
         WithCompleteProcessor(func(inst Instance, res []any) {
