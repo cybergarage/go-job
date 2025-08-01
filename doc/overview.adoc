@@ -16,8 +16,8 @@ This document provides a comprehensive overview of the features and usage of `go
 
 * Arbitrary function registration
 * Rich scheduling options
-* Prioritized and scalable execution
 * Strong observability
+* Prioritized and scalable execution
 * Pluggable, distributed storage
 
 Use it to build robust, scalable job systems in Go.

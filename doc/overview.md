@@ -16,9 +16,9 @@ This document provides a comprehensive overview of the features and usage of `go
 
 - Rich scheduling options
 
-- Prioritized and scalable execution
-
 - Strong observability
+
+- Prioritized and scalable execution
 
 - Pluggable, distributed storage
 
