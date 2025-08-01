@@ -24,6 +24,13 @@ import (
 )
 
 func TestExecutor(t *testing.T) {
+
+	type concatString struct {
+		a string
+		b string
+		s string
+	}
+
 	tests := []struct {
 		fn       any
 		params   []any
@@ -117,6 +124,14 @@ func TestExecutor(t *testing.T) {
 			fn:       func(a int) {},
 			params:   []any{1},
 			expected: []any{},
+		},
+		{
+			fn: func(param *concatString) *concatString {
+				param.s = param.a + " " + param.b
+				return param
+			},
+			params:   []any{&concatString{"Hello", "world!", ""}},
+			expected: []any{&concatString{"Hello", "world!", "Hello world!"}},
 		},
 	}
 
