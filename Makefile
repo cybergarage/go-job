@@ -64,6 +64,7 @@ lint: vet
 
 godoc:
 	go install golang.org/x/tools/cmd/godoc@latest
+	open http://localhost:6060/pkg/${PKG_ID}/ || xdg-open http://localhost:6060/pkg/${PKG_ID}/ || gnome-open http://localhost:6060/pkg/${PKG_ID}/
 	godoc -http=:6060 -play
 
 test: lint
