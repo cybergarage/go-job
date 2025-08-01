@@ -102,6 +102,8 @@ A job with one struct input and one struct output can be defined like this:
         }),
     )
 
+In this case, the result is also stored in the struct field `s`.
+
 Then schedule the jobs with arguments by:
 
     mgr.ScheduleJob(job, WithArguments(&concatString{"Hello", "world!"}))

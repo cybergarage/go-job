@@ -121,6 +121,8 @@ job, err := NewJob(
 )
 ----
 
+In this case, the result is also stored in the struct field `s`.
+
 Then schedule the jobs with arguments by:
 
 [source,go]
