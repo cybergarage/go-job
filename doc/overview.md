@@ -168,13 +168,13 @@ Allows concurrent execution and real-time scalability.
 
 ##### List All Queued and Executed Job Instances
 
-        query := job.NewQuery() // for all job instances
+       query := job.NewQuery() // queries all job instances (any state)
         jis, err := mgr.LookupInstances(query)
         if err != nil {
             t.Errorf("Failed to lookup job instance: %v", err)
         }
         for _, ji := range jis {
-            fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
+            fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
         }
 
 ##### List Terminated Job Instances
