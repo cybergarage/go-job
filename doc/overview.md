@@ -136,22 +136,6 @@ Schedule jobs:
 
 Supports standard cron format: `min hour dom month dow`.
 
-### Queue Priority & Worker Management
-
-#### Job Priority
-
-    mgr.ScheduleJob(job, WithPriority(0)) // high-priority
-
-Higher-priority jobs are executed before lower-priority ones.
-
-#### Dynamic Worker Pool
-
-    mgr, _ := NewManager(WithNumWorkers(5))
-    mgr.Start()
-    mgr.ResizeWorkers(10)
-
-Allows concurrent execution and real-time scalability.
-
 ### Job Observation
 
 `go-job` offers multiple ways to track both executed and queued job instances, using handlers and manager methods.
@@ -224,6 +208,22 @@ With `Manager::LookupInstanceLogs`, you can retrieve the log history for the spe
     }
 
 Provides auditability and debugging capability for each job instance.
+
+### Queue Priority & Worker Management
+
+#### Job Priority
+
+    mgr.ScheduleJob(job, WithPriority(0)) // high-priority
+
+Higher-priority jobs are executed before lower-priority ones.
+
+#### Dynamic Worker Pool
+
+    mgr, _ := NewManager(WithNumWorkers(5))
+    mgr.Start()
+    mgr.ResizeWorkers(10)
+
+Allows concurrent execution and real-time scalability.
 
 #### Distributed Support via Store Interface
 
