@@ -15,9 +15,9 @@
 package job
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	logger "github.com/cybergarage/go-logger/log"
@@ -47,7 +47,7 @@ type Manager interface {
 	// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
 	ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, error)
 	// EnqueueInstance enqueues a job instance in the job queue.
-	EnqueuInstance(job Instance) error
+	EnqueueInstance(job Instance) error
 	// DequeueNextInstance returns the next scheduled job instance and dequeues it from the job queue.
 	DequeueNextInstance() (Instance, error)
 	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
@@ -75,7 +75,6 @@ type Manager interface {
 }
 
 type manager struct {
-	sync.Mutex
 	store Store
 	*workerGroup
 	Repository
@@ -99,7 +98,6 @@ func NewManager(opts ...any) (Manager, error) {
 // NewManager creates a new instance of the job manager.
 func newManager(opts ...any) (*manager, error) {
 	mgr := &manager{
-		Mutex:       sync.Mutex{},
 		store:       NewLocalStore(),
 		workerGroup: newWorkerGroup(WithNumWorkers(DefaultWorkerNum)),
 	}
@@ -184,16 +182,15 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 }
 
 // EnqueueInstance enqueues a job instance in the job queue.
-func (mgr *manager) EnqueuInstance(job Instance) error {
-	mgr.Lock()
-	defer mgr.Unlock()
-
-	return mgr.Queue().Enqueue(job)
+func (mgr *manager) EnqueueInstance(job Instance) error {
+	return mgr.Queue().Enqueue(context.Background(), job)
 }
 
 // DequeueNextInstance returns the next scheduled job instance and dequeues it from the job queue.
 func (mgr *manager) DequeueNextInstance() (Instance, error) {
-	instance, err := mgr.Queue().Dequeue()
+	ctx := context.Background()
+
+	instance, err := mgr.Queue().Dequeue(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +209,7 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 		// Jobs are registered per manager, so if the job is not registered in this manager, we need to re-enqueue the instance that cannot be handled by the current manager.
 		logger.Infof("manager does not have job registered for instance: %s", instance.Kind())
 		logger.Infof("manager re-enqueueing instance: %s", instance.UUID())
-		err := mgr.EnqueuInstance(instance) // Re-enqueue the instance
+		err := mgr.EnqueueInstance(instance) // Re-enqueue the instance
 		if err != nil {
 			logger.Errorf("failed to re-enqueue instance: %s", err)
 		}
@@ -244,9 +241,6 @@ func (mgr *manager) ListInstances() ([]Instance, error) {
 
 // LookupInstances looks up all job instances which match the specified query.
 func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
-	mgr.Lock()
-	defer mgr.Unlock()
-
 	matchQuery := func(instance Instance, query Query) bool {
 		if query == nil {
 			return true // No query means match all
@@ -297,17 +291,11 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 
 // LookupHistory retrieves all state records for a job instance, sorted by timestamp.
 func (mgr *manager) LookupInstanceHistory(job Instance) (InstanceHistory, error) {
-	mgr.Lock()
-	defer mgr.Unlock()
-
 	return mgr.Repository.LookupHistory(job)
 }
 
 // LookupLogs retrieves all logs for a job instance.
 func (mgr *manager) LookupInstanceLogs(job Instance) ([]Log, error) {
-	mgr.Lock()
-	defer mgr.Unlock()
-
 	return mgr.Repository.LookupLogs(job)
 }
 
@@ -343,9 +331,6 @@ func (mgr *manager) Stop() error {
 
 // Clear clears all jobs and history from the job manager without registered jobs.
 func (mgr *manager) Clear() error {
-	mgr.Lock()
-	defer mgr.Unlock()
-
 	cleaners := []func() error{
 		mgr.Repository.Clear,
 	}
@@ -359,15 +344,14 @@ func (mgr *manager) Clear() error {
 
 // StopWithWait stops the job manager and waits for all jobs to complete.
 func (mgr *manager) StopWithWait() error {
+	ctx := context.Background()
+
 	for {
-		if noJobs, _ := mgr.Queue().Empty(); noJobs {
+		if noJobs, _ := mgr.Queue().Empty(ctx); noJobs {
 			break
 		}
 		time.Sleep(100 * time.Millisecond) // Wait for queue to empty
 	}
-
-	mgr.Queue().Lock()
-	defer mgr.Queue().Unlock()
 
 	err := mgr.workerGroup.StopWithWait()
 	if err != nil {

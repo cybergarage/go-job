@@ -17,32 +17,26 @@ package job
 import (
 	"context"
 	"sort"
-	"sync"
 	"time"
 )
 
 // Queue is an interface that defines methods for managing a job queue.
 type Queue interface {
 	// Enqueue adds a job to the queue.
-	Enqueue(job Instance) error
+	Enqueue(ctx context.Context, job Instance) error
 	// Dequeue removes and returns a job from the queue.
-	Dequeue() (Instance, error)
+	Dequeue(ctx context.Context) (Instance, error)
 	// List returns a list of all jobs in the queue.
-	List() ([]Instance, error)
+	List(ctx context.Context) ([]Instance, error)
 	// Size returns the number of jobs in the queue.
-	Size() (int, error)
+	Size(ctx context.Context) (int, error)
 	// Empty checks if the queue is empty.
-	Empty() (bool, error)
+	Empty(ctx context.Context) (bool, error)
 	// Clear clears all jobs in the queue.
-	Clear() error
-	// Lock acquires a lock for the queue.
-	Lock() error
-	// Unlock releases the lock for the queue.
-	Unlock() error
+	Clear(ctx context.Context) error
 }
 
 type queue struct {
-	sync.Mutex
 	store Store
 }
 
@@ -59,7 +53,6 @@ func WithQueueStore(store Store) QueueOption {
 // NewQueue creates a new instance of the job queue.
 func NewQueue(opts ...QueueOption) Queue {
 	queue := &queue{
-		Mutex: sync.Mutex{},
 		store: nil,
 	}
 	for _, opt := range opts {
@@ -68,50 +61,28 @@ func NewQueue(opts ...QueueOption) Queue {
 	return queue
 }
 
-// Lock acquires a lock for the queue.
-func (q *queue) Lock() error {
-	q.Mutex.Lock()
-	return nil
-}
-
-// Unlock releases the lock for the queue.
-func (q *queue) Unlock() error {
-	q.Mutex.Unlock()
-	return nil
-}
-
 // Enqueue adds a job to the queue.
-func (q *queue) Enqueue(job Instance) error {
-	q.Lock()
-	defer q.Unlock()
-	return q.store.EnqueueInstance(context.Background(), job)
+func (q *queue) Enqueue(ctx context.Context, job Instance) error {
+	return q.store.EnqueueInstance(ctx, job)
 }
 
 // Dequeue removes and returns a job from the queue.
-func (q *queue) Dequeue() (Instance, error) {
+func (q *queue) Dequeue(ctx context.Context) (Instance, error) {
 	for {
-		q.Lock()
-		ctx := context.Background()
-
 		job, err := q.store.DequeueNextInstance(ctx)
 		if err != nil {
-			q.Unlock()
 			return nil, err
 		}
 		if job != nil {
-			q.Unlock()
 			return job, nil
 		}
-		q.Unlock()
 		time.Sleep(1 * time.Second)
 	}
 }
 
 // List returns a list of all jobs in the queue.
-func (q *queue) List() ([]Instance, error) {
-	q.Lock()
-	defer q.Unlock()
-	jobs, err := q.store.ListInstances(context.Background())
+func (q *queue) List(ctx context.Context) ([]Instance, error) {
+	jobs, err := q.store.ListInstances(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -122,10 +93,8 @@ func (q *queue) List() ([]Instance, error) {
 }
 
 // Size returns the number of jobs in the queue.
-func (q *queue) Size() (int, error) {
-	q.Lock()
-	defer q.Unlock()
-	jobs, err := q.store.ListInstances(context.Background())
+func (q *queue) Size(ctx context.Context) (int, error) {
+	jobs, err := q.store.ListInstances(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -133,14 +102,12 @@ func (q *queue) Size() (int, error) {
 }
 
 // Empty checks if the queue is empty.
-func (q *queue) Empty() (bool, error) {
-	size, err := q.Size()
+func (q *queue) Empty(ctx context.Context) (bool, error) {
+	size, err := q.Size(ctx)
 	return size == 0, err
 }
 
 // Clear clears all jobs in the queue.
-func (q *queue) Clear() error {
-	q.Lock()
-	defer q.Unlock()
-	return q.store.ClearInstances(context.Background())
+func (q *queue) Clear(ctx context.Context) error {
+	return q.store.ClearInstances(ctx)
 }

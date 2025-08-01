@@ -14,6 +14,8 @@
 
 package job
 
+import "context"
+
 // Scheduler is responsible for scheduling jobs.
 type Scheduler interface {
 	// Queue returns the job queue used by the scheduler.
@@ -66,7 +68,7 @@ func (s *scheduler) Queue() Queue {
 
 // ScheduleJobInstance schedules a job instance by adding it to the queue.
 func (s *scheduler) ScheduleJobInstance(job Instance, opts ...any) error {
-	if err := s.queue.Enqueue(job); err != nil {
+	if err := s.queue.Enqueue(context.Background(), job); err != nil {
 		return err
 	}
 	return nil

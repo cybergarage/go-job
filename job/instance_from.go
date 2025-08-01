@@ -15,12 +15,14 @@
 package job
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 )
 
 // NewInstancesFromQueue creates a list of job instances from the provided queue.
 func NewInstancesFromQueue(queue Queue) ([]Instance, error) {
-	list, err := queue.List()
+	list, err := queue.List(context.Background())
 	if err != nil {
 		return nil, err
 	}

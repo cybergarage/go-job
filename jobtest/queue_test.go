@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -103,6 +104,8 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 		},
 	}
 
+	ctx := context.Background()
+
 	jobs := []job.Instance{}
 	for _, tt := range tests {
 		job, err := job.NewInstance(tt.opts...)
@@ -116,7 +119,7 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 	q := job.NewQueue(job.WithQueueStore(store))
 
 	for _, job := range jobs {
-		if err := q.Enqueue(job); err != nil {
+		if err := q.Enqueue(ctx, job); err != nil {
 			t.Errorf("Failed to enqueue job: %v", err)
 			return
 		}
@@ -124,7 +127,7 @@ func QueueStoreTest(t *testing.T, store job.Store) {
 
 	var lastJob job.Instance
 	for i := 0; i < len(jobs); i++ {
-		job, err := q.Dequeue()
+		job, err := q.Dequeue(ctx)
 		if err != nil {
 			t.Fatalf("Failed to dequeue job: %v", err)
 			return

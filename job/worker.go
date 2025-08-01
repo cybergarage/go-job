@@ -85,7 +85,7 @@ func (w *worker) Run() error {
 		if 0 < delay {
 			time.Sleep(delay) // Wait for the retry delay
 		}
-		w.manager.EnqueuInstance(ji) // Retry the job
+		w.manager.EnqueueInstance(ji) // Retry the job
 		err := ji.UpdateState(JobScheduled)
 		if err != nil {
 			logError(ji, err)
@@ -93,7 +93,7 @@ func (w *worker) Run() error {
 	}
 
 	rescheduleInstance := func(ji Instance) {
-		w.manager.EnqueuInstance(ji) // Reschedule if recurring
+		w.manager.EnqueueInstance(ji) // Reschedule if recurring
 		err := ji.UpdateState(JobScheduled)
 		if err != nil {
 			logError(ji, err)
