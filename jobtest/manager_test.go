@@ -66,7 +66,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 	}
 
 	if err := mgr.Start(); err != nil {
-		t.Fatalf("Failed to start job manager: %v", err)
+		t.Errorf("Failed to start job manager: %v", err)
+		return
 	}
 
 	defer func() {
@@ -90,6 +91,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			errorHandler := func(ji job.Instance, err error) error {
 				ji.Errorf("Error: %v", err)
 				t.Error("Error in job execution:", err)
+				wg.Done()
 				return err
 			}
 
@@ -102,20 +104,24 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			j, err := job.NewJob(opts...)
 			if err != nil {
-				t.Fatalf("Failed to create job: %v", err)
+				t.Errorf("Failed to create job: %v", err)
+				return
 			}
 
 			ji, err := mgr.RegisterJob(j)
 			if err != nil {
-				t.Fatalf("Failed to register job: %v", err)
+				t.Errorf("Failed to register job: %v", err)
+				return
 			}
 			if ji != nil {
-				t.Fatalf("Expected job instance to be nil, but got %v", ji)
+				t.Errorf("Expected job instance to be nil, but got %v", ji)
+				return
 			}
 
 			regJobs, err := mgr.ListJobs()
 			if err != nil {
-				t.Fatalf("Failed to list registered jobs: %v", err)
+				t.Errorf("Failed to list registered jobs: %v", err)
+				return
 			}
 			if len(regJobs) != 1 {
 				t.Errorf("Expected exactly one registered job, but got %d", len(regJobs))
@@ -131,7 +137,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				job.WithTimeout(0),
 			)
 			if err != nil {
-				t.Fatalf("Failed to schedule job: %v", err)
+				t.Errorf("Failed to schedule job: %v", err)
+				return
 			}
 
 			// Wait for the job to be processed
@@ -147,6 +154,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			instances, err := mgr.LookupInstances(job.NewQuery(job.WithQueryUUID(ji.UUID())))
 			if err != nil {
 				t.Errorf("Failed to lookup job instance: %v", err)
+				return
 			}
 			if len(instances) == 1 {
 				if instances[0].UUID() != ji.UUID() {
@@ -172,7 +180,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			history, err := mgr.LookupInstanceHistory(ji)
 			if err != nil {
-				t.Fatalf("Failed to retrieve instance history: %v", err)
+				t.Errorf("Failed to retrieve instance history: %v", err)
+				return
 			}
 			if len(history) == 0 {
 				t.Errorf("Expected at least one history record for job instance")
@@ -181,6 +190,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			lastState := history.LastState()
 			if lastState == nil {
 				t.Errorf("Expected last state to be non-nil, but it was nil")
+				return
 			}
 			if lastState.State() != job.JobCompleted {
 				t.Errorf("Expected last state to be %s, but got %s", job.JobCompleted, lastState.State())
