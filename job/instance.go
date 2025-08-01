@@ -107,18 +107,35 @@ type InstanceOption func(*jobInstance) error
 // WithJob sets the job for the job instance.
 func WithJob(job Job) InstanceOption {
 	return func(ji *jobInstance) error {
-		var err error
-		ji.job, err = newJob(
+		jobOpts := []JobOption{
 			WithKind(job.Kind()),
 			WithDescription(job.Description()),
 			WithRegisteredAt(job.RegisteredAt()),
+		}
+		for _, opt := range jobOpts {
+			opt(ji.job)
+		}
+
+		handlerOpts := []HandlerOption{
 			WithExecutor(job.Handler().Executor()),
 			WithTerminateProcessor(job.Handler().TerminateProcessor()),
 			WithCompleteProcessor(job.Handler().CompleteProcessor()),
+		}
+		for _, opt := range handlerOpts {
+			opt(ji.handler)
+		}
+
+		scheduleOpts := []ScheduleOption{
 			WithCrontabSpec(job.Schedule().CrontabSpec()),
 			WithScheduleAt(job.Schedule().Next()),
-		)
-		return err
+		}
+		for _, opt := range scheduleOpts {
+			if err := opt(ji.schedule); err != nil {
+				return err
+			}
+		}
+
+		return nil
 	}
 }
 
