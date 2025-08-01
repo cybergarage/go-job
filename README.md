@@ -75,7 +75,6 @@ func main() {
 	mgr.StopWithWait()
 
 	// Retrieve all queued and executed job instances
-
 	query := job.NewQuery() // queries all job instances (any state)
 	jis, _ := mgr.LookupInstances(query)
 	for _, ji := range jis {
