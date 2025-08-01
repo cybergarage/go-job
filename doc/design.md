@@ -16,8 +16,6 @@ The core design principles of `go-job` are:
 
 - **Extensibility First**: Every component — executors, stores, workers, handlers — is designed to be pluggable or replaceable, making `go-job` suitable for embedded use, microservices, and server-mode deployment with gRPC APIs.
 
-For more information about comparison with other OSS Go job libraries, see [Comparison of go-job with Other OSS Go Job Libraries](design-comparison.md).
-
 ## Terminology
 
 This section defines the key terms and concepts used throughout the `go-job` system. Understanding these terms is essential for working effectively with the job scheduling and execution framework.

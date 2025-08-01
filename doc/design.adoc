@@ -15,8 +15,6 @@ The core design principles of `go-job` are:
 * *Distributed and Observable by Design*: `go-job` introduces a pluggable `Store` interface to enable consistent state sharing and coordination between nodes, while also providing first-class support for logging, state transitions, and job lifecycle monitoring.
 * *Extensibility First*: Every component — executors, stores, workers, handlers — is designed to be pluggable or replaceable, making `go-job` suitable for embedded use, microservices, and server-mode deployment with gRPC APIs.
 
-For more information about comparison with other OSS Go job libraries, see link:design-comparison.md[Comparison of go-job with Other OSS Go Job Libraries].
-
 == Terminology
 
 This section defines the key terms and concepts used throughout the `go-job` system. Understanding these terms is essential for working effectively with the job scheduling and execution framework.
