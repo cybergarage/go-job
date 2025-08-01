@@ -82,12 +82,16 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			// Register a test job
 
+			var lastJi job.Instance
+
 			processHandler := func(ji job.Instance, responses []any) {
+				lastJi = ji
 				ji.Infof("%v", responses)
 				wg.Done()
 			}
 
 			errorHandler := func(ji job.Instance, err error) error {
+				lastJi = ji
 				ji.Errorf("Error: %v", err)
 				t.Error("Error in job execution:", err)
 				return err
@@ -144,13 +148,13 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			// Check instance state
 
-			if ji.State() != job.JobCompleted {
-				t.Errorf("Expected job instance (%s:%s) to be completed, but got %s", ji.Kind(), ji.UUID(), ji.State())
+			if lastJi.State() != job.JobCompleted {
+				t.Errorf("Expected job instance (%s:%s) to be completed, but got %s", lastJi.Kind(), lastJi.UUID(), lastJi.State())
 			}
 
-			_, err = ji.ResultSet()
+			_, err = lastJi.ResultSet()
 			if err != nil {
-				t.Errorf("Expected job instance (%s:%s) to have a result set, but got error: %s", ji.Kind(), ji.UUID(), err.Error())
+				t.Errorf("Expected job instance (%s:%s) to have a result set, but got error: %s", lastJi.Kind(), lastJi.UUID(), err.Error())
 			}
 
 			// Lookup job instance (from history)
