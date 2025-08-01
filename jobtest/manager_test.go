@@ -145,12 +145,12 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			// Check instance state
 
 			if ji.State() != job.JobCompleted {
-				t.Errorf("Expected job instance %s to be completed, but got %s", ji.UUID(), ji.State())
+				t.Errorf("Expected job instance (%s:%s) to be completed, but got %s", ji.Kind(), ji.UUID(), ji.State())
 			}
 
 			_, err = ji.ResultSet()
 			if err != nil {
-				t.Errorf("Expected job instance %s to have a result set, but got error: %v", ji.UUID(), err)
+				t.Errorf("Expected job instance (%s:%s) to have a result set, but got error: %s", ji.Kind(), ji.UUID(), err.Error())
 			}
 
 			// Lookup job instance (from history)

@@ -136,7 +136,7 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 			t.Errorf("expected job instance UUID %s, got %s", instance.UUID(), instance.UUID())
 		}
 		if instances[0].State() != job.JobCompleted {
-			t.Errorf("expected job instance %s to be completed, got %s", instance.UUID(), instance.State())
+			t.Errorf("expected job instance (%s:%s) to be completed, got %s", instance.Kind(), instance.UUID(), instance.State())
 		}
 	default:
 		t.Fatalf("expected exactly one job instance, got %d", len(instances))
