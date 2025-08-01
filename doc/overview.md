@@ -22,9 +22,7 @@ Use it to build robust, scalable job systems in Go.
 
 ### Arbitrary Function Execution
 
-`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results. The executor can be defined with any number of input and output parameters or complet sturucts.
-
-`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results. The executor can be defined with any number of input and output parameters or with complete struct definitions.
+`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results. The executor can be defined with any number of input and output parameters or with struct definitions.
 
 #### Simple Function Example
 
