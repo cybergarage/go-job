@@ -65,8 +65,7 @@ func main() {
 	// Schedule the registered job
 	ji, _ := mgr.ScheduleRegisteredJob("sum",
 		job.WithArguments(1, 2),
-		// immediate scheduling is the default, so this option is redundant
-		job.WithScheduleAt(time.Now()), 
+		job.WithScheduleAt(time.Now()), // immediate scheduling is the default, so this option is redundant
 	)
 
 	// Start the job manager
@@ -74,6 +73,14 @@ func main() {
 
 	// Wait for the job to complete
 	mgr.StopWithWait()
+
+	// Retrieve all queued and executed job instances
+
+	query := job.NewQuery() // queries all job instances (any state)
+	jis, _ := mgr.LookupInstances(query)
+	for _, ji := range jis {
+		fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
+	}
 
 	// Retrieve and print the job instance state history
 	history, _ := mgr.LookupInstanceHistory(ji)
