@@ -164,7 +164,36 @@ Allows concurrent execution and real-time scalability.
     )
     mgr.ScheduleJob(job, WithArguments(42))
 
-#### State History
+#### List All job Instances
+
+##### List All Queued and Executed Job Instances
+
+        query := job.NewQuery() // for all job instances
+        jis, err := mgr.LookupInstances(query)
+        if err != nil {
+            t.Errorf("Failed to lookup job instance: %v", err)
+        }
+        for _, ji := range jis {
+            fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
+        }
+
+##### List Terminated Job Instances
+
+        query := job.NewQuery(
+            job.WithQueryKind("sum"), // filter by job kind
+            job.WithQueryState(job.JobTerminated), // filter by terminated state
+        )
+        jis, err := mgr.LookupInstances(query)
+        if err != nil {
+            t.Errorf("Failed to lookup job instance: %v", err)
+        }
+        for _, ji := range jis {
+            fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
+        }
+
+#### Retrieve History and Logs for Job Instances
+
+##### State History
 
     states := mgr.ProcessHistory(ji)
     for _, s := range states {
@@ -180,7 +209,7 @@ Allows concurrent execution and real-time scalability.
 
 Provides auditability and debugging capability for each job instance.
 
-### Distributed Support via Store Interface
+#### Distributed Support via Store Interface
 
 `go-job` supports pluggable storage via the `Store` interface.
 
