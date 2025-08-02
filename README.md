@@ -52,6 +52,9 @@ func main() {
 	sumJob, _ := job.NewJob(
 		job.WithKind("sum"),
 		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithStateChangeProcessor(func(ji job.Instance, state job.JobState) {
+			ji.Infof("State changed to: %v", state)
+		}),
 		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
