@@ -173,7 +173,7 @@ Supports standard cron format: `min hour dom month dow`.
 
 `go-job` offers multiple ways to track both executed and queued job instances, using handlers and manager methods.
 
-==== Handlers for Response and Error
+==== Handlers for Completion and Termination
 
 With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register handlers to monitor job execution and process results or errors as they occur.
 
