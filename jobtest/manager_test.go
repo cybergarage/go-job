@@ -183,21 +183,22 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			// Check instance history
 
 			history, err := mgr.LookupInstanceHistory(ji)
-			if err != nil {
+			if err == nil {
+				if len(history) == 0 {
+					t.Errorf("Expected at least one history record for job instance")
+				}
+
+				lastState := history.LastState()
+				if lastState == nil {
+					t.Errorf("Expected last state to be non-nil, but it was nil")
+					return
+				}
+				if lastState.State() != job.JobCompleted {
+					t.Errorf("Expected last state to be %s, but got %s", job.JobCompleted, lastState.State())
+				}
+			} else {
 				t.Errorf("Failed to retrieve instance history: %v", err)
 				return
-			}
-			if len(history) == 0 {
-				t.Errorf("Expected at least one history record for job instance")
-			}
-
-			lastState := history.LastState()
-			if lastState == nil {
-				t.Errorf("Expected last state to be non-nil, but it was nil")
-				return
-			}
-			if lastState.State() != job.JobCompleted {
-				t.Errorf("Expected last state to be %s, but got %s", job.JobCompleted, lastState.State())
 			}
 
 			// Check history
@@ -235,17 +236,18 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			}
 
 			logs, err := mgr.LookupInstanceLogs(ji)
-			if err != nil {
+			if err == nil {
+				if len(logs) != len(expectedLogs) {
+					t.Errorf("Expected %d logs, but got %d", len(expectedLogs), len(logs))
+				}
+				for i, log := range logs {
+					if log.Message() != expectedLogs[i] {
+						t.Errorf("Expected log %d to be %s, but got %s", i, expectedLogs[i], log.Message())
+					}
+				}
+			} else {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return
-			}
-			if len(logs) != len(expectedLogs) {
-				t.Errorf("Expected %d logs, but got %d", len(expectedLogs), len(logs))
-			}
-			for i, log := range logs {
-				if log.Message() != expectedLogs[i] {
-					t.Errorf("Expected log %d to be %s, but got %s", i, expectedLogs[i], log.Message())
-				}
 			}
 
 			// Unregister the job
@@ -261,20 +263,22 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			}
 
 			history, err = mgr.LookupInstanceHistory(ji)
-			if err != nil {
-				t.Fatalf("Failed to retrieve instance history: %v", err)
-			}
-			if len(history) != 0 {
-				t.Errorf("Expected no history records after clearing, but got %d records", len(history))
+			if err == nil {
+				if len(history) != 0 {
+					t.Errorf("Expected no history records after clearing, but got %d records", len(history))
+				}
+			} else {
+				t.Errorf("Failed to retrieve instance history: %v", err)
 			}
 
 			logs, err = mgr.LookupInstanceLogs(ji)
-			if err != nil {
+			if err == nil {
+				if len(logs) != 0 {
+					t.Errorf("Expected no logs after clearing, but got %d logs", len(logs))
+				}
+			} else {
 				t.Errorf("Failed to retrieve instance logs: %v", err)
 				return
-			}
-			if len(logs) != 0 {
-				t.Errorf("Expected no logs after clearing, but got %d logs", len(logs))
 			}
 		})
 	}
