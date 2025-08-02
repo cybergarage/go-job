@@ -83,6 +83,10 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			// Register a test job
 
+			stateHandler := func(ji job.Instance, state job.JobState) error {
+				return nil
+			}
+
 			processHandler := func(ji job.Instance, responses []any) {
 				ji.Infof("%v", responses)
 				wg.Done()
@@ -98,6 +102,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			opts := append(
 				tt.opts,
 				job.WithKind(tt.kind),
+				job.WithStateChangeProcessor(stateHandler),
 				job.WithCompleteProcessor(processHandler),
 				job.WithTerminateProcessor(errorHandler),
 			)
