@@ -127,7 +127,8 @@ Then schedule the jobs with arguments by:
 
 [source,go]
 ----
-mgr.ScheduleJob(job, WithArguments(&concatString{"Hello", "world!"}))
+arg := &concatString{"Hello", "world!", ""}
+mgr.ScheduleJob(job, WithArguments(arg))
 ----
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the link:https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob[Examples] section in the link:https://pkg.go.dev/github.com/cybergarage/go-job[image:https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg[Go Reference]].
