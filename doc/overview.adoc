@@ -290,9 +290,11 @@ mgr.ResizeWorkers(10)
 
 Allows concurrent execution and real-time scalability.
 
-==== Distributed Support via Store Interface
+=== Distributed Support via Store Interface
 
 `go-job` supports pluggable storage via the `Store` interface.
+
+image::img/job-store.png[]
 
 [source,go]
 ----

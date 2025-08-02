@@ -238,9 +238,13 @@ You can also override a job’s default priority at scheduling time by using `Wi
 
 Allows concurrent execution and real-time scalability.
 
-#### Distributed Support via Store Interface
+### Distributed Support via Store Interface
 
 `go-job` supports pluggable storage via the `Store` interface.
+
+<figure>
+<img src="img/job-store.png" alt="job store" />
+</figure>
 
     distStore := NewMyDistributedStore(...)
     mgr, _ := NewManager(WithStore(distStore))
