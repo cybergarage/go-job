@@ -118,6 +118,7 @@ func WithJob(job Job) InstanceOption {
 
 		handlerOpts := []HandlerOption{
 			WithExecutor(job.Handler().Executor()),
+			WithStateChangeProcessor(job.Handler().StateChangeProcessor()),
 			WithTerminateProcessor(job.Handler().TerminateProcessor()),
 			WithCompleteProcessor(job.Handler().CompleteProcessor()),
 		}
@@ -475,6 +476,13 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	err := ji.history.LogProcessState(ji, state, WithStateOption(optMap))
 	if err != nil {
 		return err
+	}
+
+	chgProcessor := ji.Handler().StateChangeProcessor()
+	if chgProcessor != nil {
+		if err := chgProcessor(ji, state); err != nil {
+			return err
+		}
 	}
 
 	return nil
