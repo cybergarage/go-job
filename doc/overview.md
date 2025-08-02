@@ -106,7 +106,11 @@ In this case, the result is also stored in the struct field `s`.
 
 Then schedule the jobs with arguments by:
 
-    arg := &concatString{"Hello", "world!", ""}
+    arg := &concatString{
+        a: "Hello",
+        b: "world!",
+        s: "",
+    }
     mgr.ScheduleJob(job, WithArguments(arg))
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).

@@ -127,7 +127,11 @@ Then schedule the jobs with arguments by:
 
 [source,go]
 ----
-arg := &concatString{"Hello", "world!", ""}
+arg := &concatString{
+    a: "Hello",
+    b: "world!",
+    s: "",
+}
 mgr.ScheduleJob(job, WithArguments(arg))
 ----
 
