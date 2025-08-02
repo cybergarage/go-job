@@ -19,7 +19,7 @@ import (
 )
 
 // StateChangeProcessor is called when a job's state changes.
-type StateChangeProcessor = func(job Instance, state JobState) error
+type StateChangeProcessor = func(job Instance, state JobState)
 
 // TerminateProcessor is called when a job reaches the terminated state.
 // Users can:

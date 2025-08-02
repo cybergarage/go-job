@@ -83,8 +83,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			// Register a test job
 
-			stateHandler := func(ji job.Instance, state job.JobState) error {
-				return nil
+			stateHandler := func(ji job.Instance, state job.JobState) {
 			}
 
 			processHandler := func(ji job.Instance, responses []any) {

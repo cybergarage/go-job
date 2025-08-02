@@ -480,9 +480,7 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 
 	chgProcessor := ji.Handler().StateChangeProcessor()
 	if chgProcessor != nil {
-		if err := chgProcessor(ji, state); err != nil {
-			return err
-		}
+		chgProcessor(ji, state)
 	}
 
 	return nil
