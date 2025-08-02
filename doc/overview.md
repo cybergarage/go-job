@@ -145,13 +145,12 @@ Supports standard cron format: `min hour dom month dow`.
 
 `go-job` offers multiple ways to track both executed and queued job instances, using handlers and manager methods.
 
-#### Handlers for Completion and Termination
+#### Handlers for Completion, Termination and State Changes
 
-With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register handlers to monitor job execution and process results or errors as they occur.
+With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register handlers to monitor job execution and process completion or termination as they occur.
 
     job, err := NewJob(
-        WithKind("observe"),
-        WithExecutor(func(x int) int { return x * 2 }),
+        ....,
         WithCompleteProcessor(func(inst Instance, res []any) {
             inst.Infof("Result: %v", res)
         }),
@@ -159,7 +158,18 @@ With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register h
             inst.Errorf("Error: %v", err)
         }),
     )
-    mgr.ScheduleJob(job, WithArguments(42))
+
+Use `WithStateChangeProcessor()` to track and handle every state transition of a job instance.
+
+    job, err := NewJob(
+        ....,
+        WithStateChangeProcessor(func(inst Instance, state JobState) error {
+            inst.Infof("State changed to: %v", state)
+            return nil
+        }),
+    )
+
+For details on job state transitions, refer to [Design and Architecture](design.md).
 
 #### List All job Instances
 
@@ -202,6 +212,8 @@ With `Manager::LookupInstanceHistory`, you can retrieve the state history for th
     for _, s := range states {
         fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
     }
+
+For details on job state transitions, refer to [Design and Architecture](design.md).
 
 #### Log History
 
