@@ -257,7 +257,7 @@ Allows concurrent execution and real-time scalability.
 
 ### Distributed Support via Store Interface
 
-`go-job` supports pluggable storage via the `Store` interface.
+`go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
 
 <figure>
 <img src="img/job-store.png" alt="job store" />
