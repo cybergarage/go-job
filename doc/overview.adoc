@@ -296,12 +296,6 @@ Allows concurrent execution and real-time scalability.
 
 image::img/job-store.png[]
 
-[source,go]
-----
-distStore := NewMyDistributedStore(...)
-mgr, _ := NewManager(WithStore(distStore))
-----
-
 By implementing a custom store (e.g., etcd, FoundationDB), job metadata and execution state can be shared across nodes.
 
 This enables:
