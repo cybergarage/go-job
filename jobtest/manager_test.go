@@ -84,6 +84,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			// Register a test job
 
 			stateHandler := func(ji job.Instance, state job.JobState) {
+				t.Logf("State changed to: %s (%s) %v", ji.Kind(), ji.UUID(), state)
 			}
 
 			processHandler := func(ji job.Instance, responses []any) {
@@ -93,7 +94,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			errorHandler := func(ji job.Instance, err error) error {
 				ji.Errorf("Error: %v", err)
-				t.Error("Error in job execution:", err)
+				t.Errorf("Error in job execution: %s (%s) %s", ji.Kind(), ji.UUID(), err)
 				wg.Done()
 				return err
 			}
