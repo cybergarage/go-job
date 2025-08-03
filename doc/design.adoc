@@ -14,6 +14,8 @@ The core design principles of `go-job` are:
 * *Flexible Scheduling*: `go-job` supports not only cron-style and fixed-interval execution, but also delayed, timed, and immediate scheduling — all within a unified API.
 * *Distributed and Observable by Design*: `go-job` introduces a pluggable `Store` interface to enable consistent state sharing and coordination between nodes, while also providing first-class support for logging, state transitions, and job lifecycle monitoring.
 * *Extensibility First*: Every component — executors, stores, workers, handlers — is designed to be pluggable or replaceable, making `go-job` suitable for embedded use, microservices, and server-mode deployment with gRPC APIs.
+    
+For a comparison of design concepts with other OSS job frameworks, see link:https://github.com/cybergarage/go-job/blob/main/doc/design.md[go-job Comparison (OpenAI Research].
 
 == Terminology
 
