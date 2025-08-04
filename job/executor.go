@@ -22,6 +22,7 @@ import (
 )
 
 // Executor is a type that represents a function that executes a job.
+// It can be any function type, allowing for flexible job execution.
 type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
