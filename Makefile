@@ -127,7 +127,7 @@ cmd-docs: doc-cmd-cli
 		-a sectanchors \
 		-o - $< | \
 	pandoc -t gfm \
-		 --wrap=none \
+		--wrap=none \
 		--toc \
 		--toc-depth=3 \
 		--standalone \
