@@ -1,6 +1,5 @@
 # Feature Overview and Usage Guide
 ---
-generator: Asciidoctor 2.0.23
 lang: en
 title: Feature Overview and Usage Guide
 viewport: width=device-width, initial-scale=1.0
@@ -1062,7 +1061,7 @@ To learn more about the `Store` interface, see [Design and Architecture](design.
 
 <div id="footer-text">
 
-Last updated 2025-08-04 22:15:12 +0900
+Last updated 2025-08-04 22:16:03 +0900
 
 </div>
 
