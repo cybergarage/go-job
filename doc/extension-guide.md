@@ -3,10 +3,6 @@ date: 2025-08-04
 title: Extension Guide
 ---
 
-- [Plugin Development](#_plugin_development)
-  - [Store Plugin](#_store_plugin)
-    - [Store Interface](#_store_interface)
-
 This guide provides an overview of how to extend `go-job` with custom plugins, allowing you to add new functionality or integrate with external systems.
 
 # Plugin Development
