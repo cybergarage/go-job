@@ -128,8 +128,6 @@ type VersionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Version       string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 	ApiVersion    string                 `protobuf:"bytes,2,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
-	Revision      *string                `protobuf:"bytes,11,opt,name=revision,proto3,oneof" json:"revision,omitempty"`
-	BuildDate     *string                `protobuf:"bytes,12,opt,name=build_date,json=buildDate,proto3,oneof" json:"build_date,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -174,20 +172,6 @@ func (x *VersionResponse) GetVersion() string {
 func (x *VersionResponse) GetApiVersion() string {
 	if x != nil {
 		return x.ApiVersion
-	}
-	return ""
-}
-
-func (x *VersionResponse) GetRevision() string {
-	if x != nil && x.Revision != nil {
-		return *x.Revision
-	}
-	return ""
-}
-
-func (x *VersionResponse) GetBuildDate() string {
-	if x != nil && x.BuildDate != nil {
-		return *x.BuildDate
 	}
 	return ""
 }
@@ -275,7 +259,7 @@ func (x *Job) GetScheduleAt() *timestamppb.Timestamp {
 
 type JobInstance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Kind
+	// Kind of the job (e.g., "email", "data_processing")
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Unique instance identifier
 	Uuid string `protobuf:"bytes,2,opt,name=uuid,proto3" json:"uuid,omitempty"`
@@ -285,16 +269,17 @@ type JobInstance struct {
 	Arguments []string `protobuf:"bytes,12,rep,name=arguments,proto3" json:"arguments,omitempty"`
 	// Execution results (if completed)
 	Results []string `protobuf:"bytes,13,rep,name=results,proto3" json:"results,omitempty"`
-	// Error information (if failed)
-	Error         *string                `protobuf:"bytes,14,opt,name=error,proto3,oneof" json:"error,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,21,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
-	ScheduledAt   *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=scheduled_at,json=scheduledAt,proto3,oneof" json:"scheduled_at,omitempty"`
-	ProcessedAt   *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=processed_at,json=processedAt,proto3,oneof" json:"processed_at,omitempty"`
-	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
-	TerminatedAt  *timestamppb.Timestamp `protobuf:"bytes,25,opt,name=terminated_at,json=terminatedAt,proto3,oneof" json:"terminated_at,omitempty"`
-	CancelledAt   *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
-	TimedOutAt    *timestamppb.Timestamp `protobuf:"bytes,27,opt,name=timed_out_at,json=timedOutAt,proto3,oneof" json:"timed_out_at,omitempty"`
-	AttemptCount  *int32                 `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3,oneof" json:"attempt_count,omitempty"`
+	// Error information (if terminated)
+	Error        *string                `protobuf:"bytes,14,opt,name=error,proto3,oneof" json:"error,omitempty"`
+	CreatedAt    *timestamppb.Timestamp `protobuf:"bytes,21,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	ScheduledAt  *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=scheduled_at,json=scheduledAt,proto3,oneof" json:"scheduled_at,omitempty"`
+	ProcessedAt  *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=processed_at,json=processedAt,proto3,oneof" json:"processed_at,omitempty"`
+	CompletedAt  *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=completed_at,json=completedAt,proto3,oneof" json:"completed_at,omitempty"`
+	TerminatedAt *timestamppb.Timestamp `protobuf:"bytes,25,opt,name=terminated_at,json=terminatedAt,proto3,oneof" json:"terminated_at,omitempty"`
+	CancelledAt  *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
+	TimedOutAt   *timestamppb.Timestamp `protobuf:"bytes,27,opt,name=timed_out_at,json=timedOutAt,proto3,oneof" json:"timed_out_at,omitempty"`
+	// Total attempt count (initial execution + retries)
+	AttemptCount  *int32 `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3,oneof" json:"attempt_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -774,16 +759,11 @@ var File_service_proto protoreflect.FileDescriptor
 const file_service_proto_rawDesc = "" +
 	"\n" +
 	"\rservice.proto\x12\x06job.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x10\n" +
-	"\x0eVersionRequest\"\xad\x01\n" +
+	"\x0eVersionRequest\"L\n" +
 	"\x0fVersionResponse\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1f\n" +
 	"\vapi_version\x18\x02 \x01(\tR\n" +
-	"apiVersion\x12\x1f\n" +
-	"\brevision\x18\v \x01(\tH\x00R\brevision\x88\x01\x01\x12\"\n" +
-	"\n" +
-	"build_date\x18\f \x01(\tH\x01R\tbuildDate\x88\x01\x01B\v\n" +
-	"\t_revisionB\r\n" +
-	"\v_build_date\"\xfe\x01\n" +
+	"apiVersion\"\xfe\x01\n" +
 	"\x03Job\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12?\n" +
@@ -923,7 +903,6 @@ func file_service_proto_init() {
 	if File_service_proto != nil {
 		return
 	}
-	file_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_service_proto_msgTypes[2].OneofWrappers = []any{}
 	file_service_proto_msgTypes[3].OneofWrappers = []any{}
 	file_service_proto_msgTypes[4].OneofWrappers = []any{}
