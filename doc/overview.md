@@ -1,54 +1,41 @@
-<div id="header">
+---
+date: 2025-08-04
+title: Feature Overview and Usage Guide
+---
 
-# Feature Overview and Usage Guide
-
-</div>
-
-<div id="content">
-
-<div id="preamble">
-
-<div class="sectionbody">
-
-<div class="paragraph">
+- [Features](#_features)
+  - [Arbitrary Function Execution](#_arbitrary_function_execution)
+    - [Simple Function Example](#_simple_function_example)
+    - [Function with Arguments Example](#_function_with_arguments_example)
+    - [Function with Arguments and Result Example](#_function_with_arguments_and_result_example)
+    - [Function with Struct Input and Output](#_function_with_struct_input_and_output)
+  - [Job Scheduling](#_job_scheduling)
+    - [Execute Jobs Immediately](#_execute_jobs_immediately)
+    - [Schedule at a Specific Time](#_schedule_at_a_specific_time)
+    - [Delay Execution](#_delay_execution)
+    - [Recurring Cron Scheduling](#_recurring_cron_scheduling)
+  - [Job Monitoring and Observability](#_job_monitoring_and_observability)
+    - [Real-time Monitoring with Event Handlers](#_real_time_monitoring_with_event_handlers)
+    - [Historical Data Queries](#_historical_data_queries)
+  - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
+    - [Job Priority Control](#_job_priority_control)
+    - [Dynamic Worker Pool Management](#_dynamic_worker_pool_management)
+  - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
+  - [Remote Operation with gRPC API](#_remote_operation_with_grpc_api)
+    - [Command-Line Interface (jobctl)](#_command_line_interface_jobctl)
+  - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
 
 `go-job` is a flexible and extensible job scheduling and execution library for Go that supports arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
 
-</div>
-
-<div class="imageblock">
-
-<div class="content">
-
-![job framework](img/job-framework.png)
-
-</div>
-
-</div>
-
-<div class="paragraph">
+<figure>
+<img src="img/job-framework.png" alt="job framework" />
+</figure>
 
 This document provides a comprehensive overview of the features and usage of `go-job`.
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect1">
-
-## Features
-
-<div class="sectionbody">
-
-<div class="paragraph">
+# Features
 
 `go-job` provides:
-
-</div>
-
-<div class="ulist">
 
 - Arbitrary function registration
 
@@ -60,29 +47,13 @@ This document provides a comprehensive overview of the features and usage of `go
 
 - Pluggable, distributed storage
 
-</div>
-
-<div class="paragraph">
-
 Use it to build robust, scalable job systems in Go.
 
-</div>
-
-<div class="sect2">
-
-### Arbitrary Function Execution
-
-<div class="paragraph">
+## Arbitrary Function Execution
 
 `go-job` allows you to register and execute **any Go function** as a job. You can use functions with different signatures - from simple functions with no parameters to complex functions with multiple inputs and outputs.
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Executor can be any function type
 type Executor any
 
@@ -93,17 +64,7 @@ type Executor any
 // func(a, b int) (int, error)      // multiple inputs and outputs
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 This flexibility means you can:
-
-</div>
-
-<div class="ulist">
 
 - Use functions with any number of parameters
 
@@ -115,29 +76,13 @@ This flexibility means you can:
 
 - Handle errors in your job functions
 
-</div>
-
-<div class="paragraph">
-
 The `any` type allows `go-job` to work with your existing functions without requiring special interfaces or wrapper code.
 
-</div>
-
-<div class="sect3">
-
-#### Simple Function Example
-
-<div class="paragraph">
+### Simple Function Example
 
 A job with no input parameters and no return value can be defined as follows:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 job, err := NewJob(
     WithKind("hello (no input and no return)"),
     WithExecutor(func()  {
@@ -146,45 +91,17 @@ job, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 Then schedule this job with no arguments simply by:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 mgr.ScheduleJob(job)
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Function with Arguments Example
-
-<div class="paragraph">
+### Function with Arguments Example
 
 A job with two input parameters and no return value can be defined like this:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 job, err := NewJob(
     WithKind("sum (two input and no output)"),
     WithExecutor(func(x int, y int) {
@@ -193,45 +110,17 @@ job, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 Then schedule jobs with arguments:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 mgr.ScheduleJob(job, WithArguments(42, 58))
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Function with Arguments and Result Example
-
-<div class="paragraph">
+### Function with Arguments and Result Example
 
 A job with two input parameters and one output can be defined like this:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 job, err := NewJob(
     WithKind("concat (two input and one output)"),
     WithExecutor(func(a string, b string) string {
@@ -244,51 +133,19 @@ job, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
-
-</div>
-
-<div class="paragraph">
 
 Then schedule jobs with arguments:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 mgr.ScheduleJob(job, WithArguments("Hello", "world"))
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Function with Struct Input and Output
-
-<div class="paragraph">
+### Function with Struct Input and Output
 
 A job with one struct input and one struct output can be defined like this:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 type concatString struct {
     a string
     b string
@@ -309,27 +166,11 @@ job, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 In this case, the result is also stored in the struct field `s`.
-
-</div>
-
-<div class="paragraph">
 
 Then schedule the jobs with arguments by:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 arg := &concatString{
     a: "Hello",
     b: "world!",
@@ -338,31 +179,11 @@ arg := &concatString{
 mgr.ScheduleJob(job, WithArguments(arg))
 ```
 
-</div>
+This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
 
-</div>
-
-<div class="paragraph">
-
-This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [<span class="image">![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)</span>](https://pkg.go.dev/github.com/cybergarage/go-job).
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Job Scheduling
-
-<div class="paragraph">
+## Job Scheduling
 
 `go-job` provides flexible scheduling options to run jobs when you need them:
-
-</div>
-
-<div class="ulist">
 
 - **Immediately** - Jobs start executing right away (default behavior)
 
@@ -372,48 +193,20 @@ This approach supports diverse function signatures and is ideal for both simple 
 
 - **On a recurring schedule** - Use cron expressions for repeated execution
 
-</div>
-
-<div class="sect3">
-
-#### Execute Jobs Immediately
-
-<div class="paragraph">
+### Execute Jobs Immediately
 
 By default, jobs are scheduled for immediate execution:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Runs immediately
 mgr.ScheduleJob(job)
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Schedule at a Specific Time
-
-<div class="paragraph">
+### Schedule at a Specific Time
 
 Set an exact time for job execution:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Run 10 minutes from now
 futureTime := time.Now().Add(10 * time.Minute)
 mgr.ScheduleJob(job, WithScheduleAt(futureTime))
@@ -423,27 +216,11 @@ specificTime := time.Date(2025, 12, 25, 9, 0, 0, 0, time.UTC)
 mgr.ScheduleJob(job, WithScheduleAt(specificTime))
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Delay Execution
-
-<div class="paragraph">
+### Delay Execution
 
 Add a delay before the job starts:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Wait 5 seconds before execution
 mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 
@@ -451,27 +228,11 @@ mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Recurring Cron Scheduling
-
-<div class="paragraph">
+### Recurring Cron Scheduling
 
 Use cron expressions for repeated job execution:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Run daily at midnight
 mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *"))
 
@@ -482,55 +243,21 @@ mgr.ScheduleJob(job, WithCrontabSpec("0 9 * * 1-5"))
 mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 Cron format: `minute hour day-of-month month day-of-week`
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Job Monitoring and Observability
-
-<div class="paragraph">
+## Job Monitoring and Observability
 
 `go-job` provides comprehensive monitoring capabilities to track job execution and understand system behavior. You can monitor jobs in real-time using event handlers, or query historical data using manager methods.
 
-</div>
-
-<div class="sect3">
-
-#### Real-time Monitoring with Event Handlers
-
-<div class="paragraph">
+### Real-time Monitoring with Event Handlers
 
 Monitor job execution as it happens by registering event handlers that respond to completion, termination, and state changes.
 
-</div>
-
-<div class="sect4">
-
-##### Completion and Termination Handlers
-
-<div class="paragraph">
+#### Completion and Termination Handlers
 
 Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successful completion and error termination:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 job, err := NewJob(
     ....,
     WithCompleteProcessor(func(inst Instance, res []any) {
@@ -542,27 +269,11 @@ job, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect4">
-
-##### State Change Monitoring
-
-<div class="paragraph">
+#### State Change Monitoring
 
 Use `WithStateChangeProcessor()` to track every state transition throughout a job’s lifecycle:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 job, err := NewJob(
     ....,
     WithStateChangeProcessor(func(inst Instance, state JobState) error {
@@ -572,50 +283,20 @@ job, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Historical Data Queries
-
-<div class="paragraph">
+### Historical Data Queries
 
 Query job instances and their execution history using manager methods.
 
-</div>
-
-<div class="sect4">
-
-##### List All job Instances
-
-<div class="paragraph">
+#### List All job Instances
 
 With `Manager::LookupInstances()`, you can retrieve any job instance—whether it is scheduled, in progress, or already executed.
 
-</div>
+##### List All Queued and Executed Job Instances
 
-<div class="sect5">
-
-###### List All Queued and Executed Job Instances
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
-    query := job.NewQuery() // queries all job instances (any state)
+``` go
+   query := job.NewQuery() // queries all job instances (any state)
     jis, err := mgr.LookupInstances(query)
     if err != nil {
         t.Errorf("Failed to lookup job instance: %v", err)
@@ -625,21 +306,9 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
     }
 ```
 
-</div>
+##### List Terminated Job Instances
 
-</div>
-
-</div>
-
-<div class="sect5">
-
-###### List Terminated Job Instances
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
     query := job.NewQuery(
         job.WithQueryKind("sum"), // filter by job kind
         job.WithQueryState(job.JobTerminated), // filter by terminated state
@@ -653,125 +322,47 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
     }
 ```
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect4">
-
-##### Retrieve History and Logs for Job Instances
-
-<div class="paragraph">
+#### Retrieve History and Logs for Job Instances
 
 You can use manager methods to access the processing history and logs of any specified job instance.
 
-</div>
-
-<div class="sect5">
-
-###### State History
-
-<div class="paragraph">
+##### State History
 
 With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 states := mgr.LookupInstanceHistory(ji)
 for _, s := range states {
     fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
 }
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-</div>
-
-</div>
-
-<div class="sect5">
-
-###### Log History
-
-<div class="paragraph">
+##### Log History
 
 With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 logs := mgr.LookupInstanceLogs(ji)
 for _, log := range logs {
     fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
 }
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 Provides auditability and debugging capability for each job instance.
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Priority Management & Worker Scaling
-
-<div class="paragraph">
+## Priority Management & Worker Scaling
 
 `go-job` allows you to control job execution order through priorities and dynamically scale workers to handle varying workloads.
 
-</div>
-
-<div class="sect3">
-
-#### Job Priority Control
-
-<div class="paragraph">
+### Job Priority Control
 
 Assign priorities to jobs to control their execution order. Higher priority jobs are executed before lower priority ones. The priority value is an integer where lower values indicate higher priority (similar to Unix nice values).
 
-</div>
+#### Set Priority During Job Creation
 
-<div class="sect4">
-
-##### Set Priority During Job Creation
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // High priority job (executed first)
 highPriorityJob, err := NewJob(
     WithKind("urgent-task"),
@@ -787,27 +378,11 @@ lowPriorityJob, err := NewJob(
 )
 ```
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect4">
-
-##### Override Priority at Schedule Time
-
-<div class="paragraph">
+#### Override Priority at Schedule Time
 
 You can override a job’s default priority when scheduling:
 
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Schedule with default priority
 mgr.ScheduleJob(normalJob) // uses job's configured priority
 
@@ -815,53 +390,21 @@ mgr.ScheduleJob(normalJob) // uses job's configured priority
 mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 ```
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Dynamic Worker Pool Management
-
-<div class="paragraph">
+### Dynamic Worker Pool Management
 
 Scale your worker pool up or down based on workload demands without stopping the manager.
 
-</div>
+#### Set Initial Worker Count
 
-<div class="sect4">
-
-##### Set Initial Worker Count
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Start with 5 workers
 mgr, err := NewManager(WithNumWorkers(5))
 mgr.Start()
 ```
 
-</div>
+#### Scale Workers Dynamically
 
-</div>
-
-</div>
-
-<div class="sect4">
-
-##### Scale Workers Dynamically
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Scale up during high load
 mgr.ResizeWorkers(10) // increase to 10 workers
 
@@ -873,21 +416,9 @@ count := mgr.NumWorkers()
 fmt.Printf("Current workers: %d\n", count)
 ```
 
-</div>
+#### Real-world Scaling Example
 
-</div>
-
-</div>
-
-<div class="sect4">
-
-##### Real-world Scaling Example
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Monitor queue size and scale accordingly
 query := job.NewQuery(
     job.WithQueryState(job.JobScheduled), // filter by scheduled state
@@ -904,45 +435,15 @@ if queueSize > currentWorkers*2 {
 }
 ```
 
-</div>
-
-</div>
-
-<div class="paragraph">
-
 This enables efficient resource utilization and responsive performance under varying workloads.
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Remote Management with gRPC API
-
-<div class="paragraph">
+## Remote Management with gRPC API
 
 `go-job` provides a comprehensive gRPC API for remote job management, enabling you to schedule, monitor, and control jobs from external systems or distributed environments. This allows seamless integration with microservices, orchestration platforms, and remote applications.
 
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Remote Operation with gRPC API
-
-<div class="paragraph">
+## Remote Operation with gRPC API
 
 `go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration. The gRPC API offers full programmatic access to all core `go-job` functionality:
-
-</div>
-
-<div class="ulist">
 
 - Remote job scheduling with arguments and timing options
 
@@ -954,25 +455,11 @@ This enables efficient resource utilization and responsive performance under var
 
 - Secure communication with authentication support
 
-</div>
-
-<div class="paragraph">
-
 The gRPC API uses protobuf messages for job definitions, arguments, and results. For more details, see the [grpc.proto](grpc-api.md) definition.
 
-</div>
-
-<div class="sect3">
-
-#### Command-Line Interface (jobctl)
-
-<div class="paragraph">
+### Command-Line Interface (jobctl)
 
 `go-job` provides a command-line interface called [jobctl](./cmd/cli/jobctl.md) to interact with the gRPC API. The following methods are available:
-
-</div>
-
-<div class="ulist">
 
 - `ScheduleJob` - Schedule a new job remotely with arguments and scheduling options
 
@@ -980,51 +467,19 @@ The gRPC API uses protobuf messages for job definitions, arguments, and results.
 
 - `ListInstances` - Query job instances by kind, state, or time range
 
-</div>
-
-<div class="paragraph">
-
 For more details, see the [Command-Line Interface (jobctl)](./cmd/cli/jobctl.md) documentation.
 
-</div>
-
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Distributed Support via Store Interface
-
-<div class="paragraph">
+## Distributed Support via Store Interface
 
 `go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
 
-</div>
-
-<div class="imageblock">
-
-<div class="content">
-
-![job store](img/job-store.png)
-
-</div>
-
-</div>
-
-<div class="paragraph">
+<figure>
+<img src="img/job-store.png" alt="job store" />
+</figure>
 
 By implementing a custom store (e.g., etcd, FoundationDB), job metadata and execution state can be shared across nodes.
 
-</div>
-
-<div class="paragraph">
-
 This enables:
-
-</div>
-
-<div class="ulist">
 
 - Distributed scheduling
 
@@ -1034,28 +489,4 @@ This enables:
 
 - Fault-tolerant execution
 
-</div>
-
-<div class="paragraph">
-
-To learn more about the `Store` interface, see [Design and Architecture](design.md) and [Extension Guide](plugin-guide.md) documentation.
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="footer">
-
-<div id="footer-text">
-
-Last updated 2025-08-04 22:09:59 +0900
-
-</div>
-
-</div>
+To learn more about the `Store` interface, see [Design and Architecture](design.md) and [Extension Guide ](plugin-guide.md) documentation.
