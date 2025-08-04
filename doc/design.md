@@ -3,15 +3,6 @@ date: 2025-08-04
 title: Design and Architecture
 ---
 
-- [Design Concept](#_design_concept)
-- [Terminology](#_terminology)
-- [Key Components](#_key_components)
-  - [Selecting Manager Usage](#_selecting_manager_usage)
-  - [Selecting Server Usage](#_selecting_server_usage)
-- [Job State Lifecycle](#_job_state_lifecycle)
-- [Job Registration and Processing Flow](#_job_registration_and_processing_flow)
-  - [Store Plugins and Registry Sharing Limitations](#_store_plugins_and_registry_sharing_limitations)
-
 This document provides a detailed overview of \`go-job’s design and architecture, including future plans.
 
 # Design Concept
