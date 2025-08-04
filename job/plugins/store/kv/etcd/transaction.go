@@ -26,12 +26,14 @@ import (
 type transaction struct {
 	write bool
 	*v3.Client
+	v3.Txn
 }
 
 func newTransaction(client *v3.Client, write bool) *transaction {
 	return &transaction{
 		Client: client,
 		write:  write,
+		Txn:    client.Txn(context.Background()),
 	}
 }
 
