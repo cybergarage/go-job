@@ -35,7 +35,6 @@ proto/job/v1/job_service.proto
 
 ### Job
 Basic information: 1-10
-////////////////////////////
 
 
 | Field | Type | Label | Description |
@@ -55,7 +54,6 @@ Basic information: 1-10
 
 ### JobInstance
 Basic information: 1-10
-////////////////////////////
 
 
 | Field | Type | Label | Description |
@@ -66,14 +64,14 @@ Basic information: 1-10
 | arguments | [string](#string) | repeated | Job arguments |
 | results | [string](#string) | repeated | Execution results (if completed) |
 | error | [string](#string) | optional | Error information (if failed) |
-| created_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
+| created_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional | Timestamps: 21-30 |
 | scheduled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | processed_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | completed_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | terminated_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | cancelled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | timed_out_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
-| attempt_count | [int32](#int32) | optional |  |
+| attempt_count | [int32](#int32) | optional | Runtime information: 31-40 |
 
 
 
@@ -156,7 +154,6 @@ Basic information: 1-10
 
 ### ScheduleJobRequest
 Basic information: 1-10
-////////////////////////////
 
 
 | Field | Type | Label | Description |
@@ -203,9 +200,9 @@ Basic information: 1-10
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  | Basic information: 1-10 //////////////////////////// |
+| version | [string](#string) |  | Basic information: 1-10 |
 | api_version | [string](#string) |  |  |
-| revision | [string](#string) | optional | Execution information: 11-20 //////////////////////////// |
+| revision | [string](#string) | optional | Execution information: 11-20 |
 | build_date | [string](#string) | optional |  |
 
 
