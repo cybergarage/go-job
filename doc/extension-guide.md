@@ -1,61 +1,25 @@
-# Extension Guide 
 ---
-lang: en
+date: 2025-08-04
 title: Extension Guide
-viewport: width=device-width, initial-scale=1.0
 ---
 
-<div id="header">
-
-# Extension Guide
-
-</div>
-
-<div id="content">
-
-<div id="preamble">
-
-<div class="sectionbody">
-
-<div class="paragraph">
+- [Plugin Development](#_plugin_development)
+  - [Store Plugin](#_store_plugin)
+    - [Store Interface](#_store_interface)
 
 This guide provides an overview of how to extend `go-job` with custom plugins, allowing you to add new functionality or integrate with external systems.
 
-</div>
+# Plugin Development
 
-</div>
+## Store Plugin
 
-</div>
+### Store Interface
 
-<div class="sect1">
+<figure>
+<img src="img/job-store.png" alt="job store" />
+</figure>
 
-## Plugin Development
-
-<div class="sectionbody">
-
-<div class="sect2">
-
-### Store Plugin
-
-<div class="sect3">
-
-#### Store Interface
-
-<div class="imageblock">
-
-<div class="content">
-
-![job store](img/job-store.png)
-
-</div>
-
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` highlight
+``` go
 // Store defines the interface for job queue, history, and logging.
 type Store interface {
     // Name returns the name of the store.
@@ -118,27 +82,3 @@ type LogStore interface {
     ClearInstanceLogs(ctx context.Context) error
 }
 ```
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="footer">
-
-<div id="footer-text">
-
-Last updated 2025-08-04 22:16:03 +0900
-
-</div>
-
-</div>
