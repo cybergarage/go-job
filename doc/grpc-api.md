@@ -34,15 +34,16 @@ proto/job/v1/job_service.proto
 <a name="job-v1-Job"></a>
 
 ### Job
-
+@private Basic information: 1-10
+////////////////////////////
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| kind | [string](#string) |  | Basic information: 1-10 Kind of the job (e.g., &#34;email&#34;, &#34;data_processing&#34;) |
+| kind | [string](#string) |  | Kind of the job (e.g., &#34;email&#34;, &#34;data_processing&#34;) |
 | description | [string](#string) |  | Description of the job |
 | registered_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | Registered at timestamp |
-| cron_spec | [string](#string) | optional | Execution information: 11-20 Schedule using cron expression |
+| cron_spec | [string](#string) | optional | Schedule using cron expression |
 | schedule_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional | Schedule at a specific time |
 
 
@@ -53,25 +54,26 @@ proto/job/v1/job_service.proto
 <a name="job-v1-JobInstance"></a>
 
 ### JobInstance
-
+Basic information: 1-10
+////////////////////////////
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| kind | [string](#string) |  | Basic information: 1-10 Kind |
+| kind | [string](#string) |  | Kind |
 | uuid | [string](#string) |  | Unique instance identifier |
-| state | [JobState](#job-v1-JobState) |  | Execution information: 11-20 Current state |
+| state | [JobState](#job-v1-JobState) |  | Current state |
 | arguments | [string](#string) | repeated | Job arguments |
 | results | [string](#string) | repeated | Execution results (if completed) |
 | error | [string](#string) | optional | Error information (if failed) |
-| created_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional | Timestamps: 21-30 |
+| created_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | scheduled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | processed_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | completed_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | terminated_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | cancelled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | timed_out_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
-| attempt_count | [int32](#int32) | optional | Runtime information: 31-40 |
+| attempt_count | [int32](#int32) | optional |  |
 
 
 
@@ -153,13 +155,14 @@ proto/job/v1/job_service.proto
 <a name="job-v1-ScheduleJobRequest"></a>
 
 ### ScheduleJobRequest
-
+Basic information: 1-10
+////////////////////////////
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| kind | [string](#string) |  | Basic information: 1-10 Kind to schedule (must be pre-registered) |
-| arguments | [string](#string) | repeated | Execution options: 11-20 Arguments to pass to the job executor |
+| kind | [string](#string) |  | Kind to schedule (must be pre-registered) |
+| arguments | [string](#string) | repeated | Arguments to pass to the job executor |
 | priority | [int32](#int32) | optional | Priority (lower values = higher priority; -1 means unset) |
 
 
@@ -200,9 +203,9 @@ proto/job/v1/job_service.proto
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  | Basic information: 1-10 |
+| version | [string](#string) |  | Basic information: 1-10 //////////////////////////// |
 | api_version | [string](#string) |  |  |
-| revision | [string](#string) | optional | Execution information: 11-20 |
+| revision | [string](#string) | optional | Execution information: 11-20 //////////////////////////// |
 | build_date | [string](#string) | optional |  |
 
 
