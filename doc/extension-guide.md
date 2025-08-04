@@ -1,15 +1,12 @@
----
-date: 2025-08-04
-title: Extension Guide
----
+# Extension Guide
 
 This guide provides an overview of how to extend `go-job` with custom plugins, allowing you to add new functionality or integrate with external systems.
 
-# Plugin Development
+## Plugin Development
 
-## Store Plugin
+### Store Plugin
 
-### Store Interface
+#### Store Interface
 
 <figure>
 <img src="img/job-store.png" alt="job store" />
