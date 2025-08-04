@@ -28,16 +28,14 @@ Use it to build robust, scalable job systems in Go.
 
 `go-job` allows you to register and execute **any Go function** as a job. You can use functions with different signatures - from simple functions with no parameters to complex functions with multiple inputs and outputs.
 
-``` go
-// Executor can be any function type
-type Executor any
+    // Executor can be any function type
+    type Executor any
 
-// Examples of valid executors:
-// func()                           // no input, no output
-// func(int, string) bool           // multiple inputs, one output
-// func(*MyStruct) error            // struct input, error output
-// func(a, b int) (int, error)      // multiple inputs and outputs
-```
+    // Examples of valid executors:
+    // func()                           // no input, no output
+    // func(int, string) bool           // multiple inputs, one output
+    // func(*MyStruct) error            // struct input, error output
+    // func(a, b int) (int, error)      // multiple inputs and outputs
 
 This flexibility means you can:
 
@@ -57,102 +55,86 @@ The `any` type allows `go-job` to work with your existing functions without requ
 
 A job with no input parameters and no return value can be defined as follows:
 
-``` go
-job, err := NewJob(
-    WithKind("hello (no input and no return)"),
-    WithExecutor(func()  {
-        fmt.Println("Hello, world!")
-    }),
-)
-```
+    job, err := NewJob(
+        WithKind("hello (no input and no return)"),
+        WithExecutor(func()  {
+            fmt.Println("Hello, world!")
+        }),
+    )
 
 Then schedule this job with no arguments simply by:
 
-``` go
-mgr.ScheduleJob(job)
-```
+    mgr.ScheduleJob(job)
 
 #### Function with Arguments Example
 
 A job with two input parameters and no return value can be defined like this:
 
-``` go
-job, err := NewJob(
-    WithKind("sum (two input and no output)"),
-    WithExecutor(func(x int, y int) {
-        fmt.Println(x + y)
-    }),
-)
-```
+    job, err := NewJob(
+        WithKind("sum (two input and no output)"),
+        WithExecutor(func(x int, y int) {
+            fmt.Println(x + y)
+        }),
+    )
 
 Then schedule jobs with arguments:
 
-``` go
-mgr.ScheduleJob(job, WithArguments(42, 58))
-```
+    mgr.ScheduleJob(job, WithArguments(42, 58))
 
 #### Function with Arguments and Result Example
 
 A job with two input parameters and one output can be defined like this:
 
-``` go
-job, err := NewJob(
-    WithKind("concat (two input and one output)"),
-    WithExecutor(func(a string, b string) string {
-        return a + ", " + b
-    }),
-    WithCompleteProcessor(func(ji Instance, res []any) {
-        // In this case, log the result to the go-job manager
-        ji.Infof("%v", res[0])
-    }),
-)
-```
+    job, err := NewJob(
+        WithKind("concat (two input and one output)"),
+        WithExecutor(func(a string, b string) string {
+            return a + ", " + b
+        }),
+        WithCompleteProcessor(func(ji Instance, res []any) {
+            // In this case, log the result to the go-job manager
+            ji.Infof("%v", res[0])
+        }),
+    )
 
 Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
 
 Then schedule jobs with arguments:
 
-``` go
-mgr.ScheduleJob(job, WithArguments("Hello", "world"))
-```
+    mgr.ScheduleJob(job, WithArguments("Hello", "world"))
 
 #### Function with Struct Input and Output
 
 A job with one struct input and one struct output can be defined like this:
 
-``` go
-type concatString struct {
-    a string
-    b string
-    s string
-}
+    type concatString struct {
+        a string
+        b string
+        s string
+    }
 
-job, err := NewJob(
-    WithKind("concat (one struct input and one struct output)"),
-    WithExecutor(func(param *concatString) *concatString {
-        // Store the concatenated string result in the input struct, and return it
-        param.s = param.a + ", " + param.b
-        return param
-    }),
-    WithCompleteProcessor(func(ji Instance, res []any) {
-        // In this case, log the result to the go-job manager
-        ji.Infof("%v", res[0])
-    }),
-)
-```
+    job, err := NewJob(
+        WithKind("concat (one struct input and one struct output)"),
+        WithExecutor(func(param *concatString) *concatString {
+            // Store the concatenated string result in the input struct, and return it
+            param.s = param.a + ", " + param.b
+            return param
+        }),
+        WithCompleteProcessor(func(ji Instance, res []any) {
+            // In this case, log the result to the go-job manager
+            ji.Infof("%v", res[0])
+        }),
+    )
 
 In this case, the result is also stored in the struct field `s`.
 
 Then schedule the jobs with arguments by:
 
-``` go
-arg := &concatString{
-    a: "Hello",
-    b: "world!",
-    s: "",
-}
-mgr.ScheduleJob(job, WithArguments(arg))
-```
+    arg := &concatString{
+        a: "Hello",
+        b: "world!",
+        s: "",
+    }
+    mgr.ScheduleJob(job, WithArguments(arg))
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
 
@@ -172,51 +154,43 @@ This approach supports diverse function signatures and is ideal for both simple 
 
 By default, jobs are scheduled for immediate execution:
 
-``` go
-// Runs immediately
-mgr.ScheduleJob(job)
-```
+    // Runs immediately
+    mgr.ScheduleJob(job)
 
 #### Schedule at a Specific Time
 
 Set an exact time for job execution:
 
-``` go
-// Run 10 minutes from now
-futureTime := time.Now().Add(10 * time.Minute)
-mgr.ScheduleJob(job, WithScheduleAt(futureTime))
+    // Run 10 minutes from now
+    futureTime := time.Now().Add(10 * time.Minute)
+    mgr.ScheduleJob(job, WithScheduleAt(futureTime))
 
-// Run at a specific date and time
-specificTime := time.Date(2025, 12, 25, 9, 0, 0, 0, time.UTC)
-mgr.ScheduleJob(job, WithScheduleAt(specificTime))
-```
+    // Run at a specific date and time
+    specificTime := time.Date(2025, 12, 25, 9, 0, 0, 0, time.UTC)
+    mgr.ScheduleJob(job, WithScheduleAt(specificTime))
 
 #### Delay Execution
 
 Add a delay before the job starts:
 
-``` go
-// Wait 5 seconds before execution
-mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
+    // Wait 5 seconds before execution
+    mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 
-// Wait 2 hours before execution
-mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
-```
+    // Wait 2 hours before execution
+    mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
 
 #### Recurring Cron Scheduling
 
 Use cron expressions for repeated job execution:
 
-``` go
-// Run daily at midnight
-mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *"))
+    // Run daily at midnight
+    mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *"))
 
-// Run every weekday at 9 AM
-mgr.ScheduleJob(job, WithCrontabSpec("0 9 * * 1-5"))
+    // Run every weekday at 9 AM
+    mgr.ScheduleJob(job, WithCrontabSpec("0 9 * * 1-5"))
 
-// Run every 30 minutes
-mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
-```
+    // Run every 30 minutes
+    mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 
 Cron format: `minute hour day-of-month month day-of-week`
 
@@ -232,31 +206,27 @@ Monitor job execution as it happens by registering event handlers that respond t
 
 Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successful completion and error termination:
 
-``` go
-job, err := NewJob(
-    ....,
-    WithCompleteProcessor(func(inst Instance, res []any) {
-        inst.Infof("Result: %v", res)
-    }),
-    WithTerminateProcessor(func(inst Instance, err error) {
-        inst.Errorf("Error: %v", err)
-    }),
-)
-```
+    job, err := NewJob(
+        ....,
+        WithCompleteProcessor(func(inst Instance, res []any) {
+            inst.Infof("Result: %v", res)
+        }),
+        WithTerminateProcessor(func(inst Instance, err error) {
+            inst.Errorf("Error: %v", err)
+        }),
+    )
 
 ##### State Change Monitoring
 
 Use `WithStateChangeProcessor()` to track every state transition throughout a job’s lifecycle:
 
-``` go
-job, err := NewJob(
-    ....,
-    WithStateChangeProcessor(func(inst Instance, state JobState) error {
-        inst.Infof("State changed to: %v", state)
-        return nil
-    }),
-)
-```
+    job, err := NewJob(
+        ....,
+        WithStateChangeProcessor(func(inst Instance, state JobState) error {
+            inst.Infof("State changed to: %v", state)
+            return nil
+        }),
+    )
 
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
@@ -270,32 +240,28 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
 
 ###### List All Queued and Executed Job Instances
 
-``` go
-   query := job.NewQuery() // queries all job instances (any state)
-    jis, err := mgr.LookupInstances(query)
-    if err != nil {
-        t.Errorf("Failed to lookup job instance: %v", err)
-    }
-    for _, ji := range jis {
-        fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
-    }
-```
+       query := job.NewQuery() // queries all job instances (any state)
+        jis, err := mgr.LookupInstances(query)
+        if err != nil {
+            t.Errorf("Failed to lookup job instance: %v", err)
+        }
+        for _, ji := range jis {
+            fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
+        }
 
 ###### List Terminated Job Instances
 
-``` go
-    query := job.NewQuery(
-        job.WithQueryKind("sum"), // filter by job kind
-        job.WithQueryState(job.JobTerminated), // filter by terminated state
-    )
-    jis, err := mgr.LookupInstances(query)
-    if err != nil {
-        t.Errorf("Failed to lookup job instance: %v", err)
-    }
-    for _, ji := range jis {
-        fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
-    }
-```
+        query := job.NewQuery(
+            job.WithQueryKind("sum"), // filter by job kind
+            job.WithQueryState(job.JobTerminated), // filter by terminated state
+        )
+        jis, err := mgr.LookupInstances(query)
+        if err != nil {
+            t.Errorf("Failed to lookup job instance: %v", err)
+        }
+        for _, ji := range jis {
+            fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
+        }
 
 ##### Retrieve History and Logs for Job Instances
 
@@ -305,12 +271,10 @@ You can use manager methods to access the processing history and logs of any spe
 
 With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
 
-``` go
-states := mgr.LookupInstanceHistory(ji)
-for _, s := range states {
-    fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
-}
-```
+    states := mgr.LookupInstanceHistory(ji)
+    for _, s := range states {
+        fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
+    }
 
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
@@ -318,12 +282,10 @@ For details on job state transitions, refer to [Design and Architecture](design.
 
 With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
 
-``` go
-logs := mgr.LookupInstanceLogs(ji)
-for _, log := range logs {
-    fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
-}
-```
+    logs := mgr.LookupInstanceLogs(ji)
+    for _, log := range logs {
+        fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
+    }
 
 Provides auditability and debugging capability for each job instance.
 
@@ -337,33 +299,29 @@ Assign priorities to jobs to control their execution order. Higher priority jobs
 
 ##### Set Priority During Job Creation
 
-``` go
-// High priority job (executed first)
-highPriorityJob, err := NewJob(
-    WithKind("urgent-task"),
-    WithPriority(0), // lower number = higher priority like Unix nice values
-    WithExecutor(func() { fmt.Println("Urgent task executing") }),
-)
+    // High priority job (executed first)
+    highPriorityJob, err := NewJob(
+        WithKind("urgent-task"),
+        WithPriority(0), // lower number = higher priority like Unix nice values
+        WithExecutor(func() { fmt.Println("Urgent task executing") }),
+    )
 
-// Low priority job (executed later)
-lowPriorityJob, err := NewJob(
-    WithKind("background-task"),
-    WithPriority(200), // higher number = lower priority like Unix nice values
-    WithExecutor(func() { fmt.Println("Background task executing") }),
-)
-```
+    // Low priority job (executed later)
+    lowPriorityJob, err := NewJob(
+        WithKind("background-task"),
+        WithPriority(200), // higher number = lower priority like Unix nice values
+        WithExecutor(func() { fmt.Println("Background task executing") }),
+    )
 
 ##### Override Priority at Schedule Time
 
 You can override a job’s default priority when scheduling:
 
-``` go
-// Schedule with default priority
-mgr.ScheduleJob(normalJob) // uses job's configured priority
+    // Schedule with default priority
+    mgr.ScheduleJob(normalJob) // uses job's configured priority
 
-// Schedule with custom priority (overrides job's default priority)
-mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
-```
+    // Schedule with custom priority (overrides job's default priority)
+    mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 
 #### Dynamic Worker Pool Management
 
@@ -371,44 +329,38 @@ Scale your worker pool up or down based on workload demands without stopping the
 
 ##### Set Initial Worker Count
 
-``` go
-// Start with 5 workers
-mgr, err := NewManager(WithNumWorkers(5))
-mgr.Start()
-```
+    // Start with 5 workers
+    mgr, err := NewManager(WithNumWorkers(5))
+    mgr.Start()
 
 ##### Scale Workers Dynamically
 
-``` go
-// Scale up during high load
-mgr.ResizeWorkers(10) // increase to 10 workers
+    // Scale up during high load
+    mgr.ResizeWorkers(10) // increase to 10 workers
 
-// Scale down during low load
-mgr.ResizeWorkers(3)  // reduce to 3 workers
+    // Scale down during low load
+    mgr.ResizeWorkers(3)  // reduce to 3 workers
 
-// Get current worker count
-count := mgr.NumWorkers()
-fmt.Printf("Current workers: %d\n", count)
-```
+    // Get current worker count
+    count := mgr.NumWorkers()
+    fmt.Printf("Current workers: %d\n", count)
 
 ##### Real-world Scaling Example
 
-``` go
-// Monitor queue size and scale accordingly
-query := job.NewQuery(
-    job.WithQueryState(job.JobScheduled), // filter by scheduled state
-)
-jobs, _ := mgr.LookupInstances(query)
-queueSize := len(jobs)
-currentWorkers := mgr.NumWorkers()
-if queueSize > currentWorkers*2 {
-    // Scale up if queue is getting too long
-    mgr.ResizeWorkers(currentWorkers + 2)
-} else if queueSize == 0 && currentWorkers > 2 {
-    // Scale down if no jobs queued
-    mgr.ResizeWorkers(currentWorkers - 1)
-}
-```
+    // Monitor queue size and scale accordingly
+    query := job.NewQuery(
+        job.WithQueryState(job.JobScheduled), // filter by scheduled state
+    )
+    jobs, _ := mgr.LookupInstances(query)
+    queueSize := len(jobs)
+    currentWorkers := mgr.NumWorkers()
+    if queueSize > currentWorkers*2 {
+        // Scale up if queue is getting too long
+        mgr.ResizeWorkers(currentWorkers + 2)
+    } else if queueSize == 0 && currentWorkers > 2 {
+        // Scale down if no jobs queued
+        mgr.ResizeWorkers(currentWorkers - 1)
+    }
 
 This enables efficient resource utilization and responsive performance under varying workloads.
 
