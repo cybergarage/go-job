@@ -425,7 +425,43 @@ if queueSize > currentWorkers*2 {
 This enables efficient resource utilization and responsive performance under varying workloads.
 
 
-=== Distributed Support via Store Interface
+=== Remote Management with gRPC API
+
+`go-job` provides a comprehensive gRPC API for remote job management, enabling you to schedule, monitor, and control jobs from external systems or distributed environments. This allows seamless integration with microservices, orchestration platforms, and remote applications.
+
+The gRPC API offers full programmatic access to all core `go-job` functionality:
+
+* Remote job scheduling with arguments and timing options
+* Real-time job monitoring and status queries  
+* Dynamic worker pool management
+* Cross-platform compatibility through protocol buffers
+* Secure communication with authentication support
+
+This makes `go-job` suitable for cloud-native architectures and distributed systems where job coordination spans multiple services or nodes.
+
+
+=== Remote and Distributed Operation
+
+`go-job` supports distributed operation through a pluggable storage interface, allowing multiple instances to share job metadata and execution state. 
+
+==== gRPC API
+
+`go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration.
+
+===== CLI (jobctl)
+
+link:./cmd/cli/jobctl.md[Jobctl CLI] provides a command-line interface to interact with the gRPC API. The following methods are available:
+
+* `ScheduleJob` - Schedule a new job remotely, with arguments and scheduling options.
+* `ListJobs` - List all registered jobs and their metadata.
+* `ListInstances` - Query job instances by kind, state, or time range.
+* `GetInstance` - Retrieve details and logs for a specific job instance.
+* `CancelInstance` - Cancel a running or queued job instance.
+* `ScaleWorkers` - Dynamically adjust worker pool size.
+
+The gRPC API uses protobuf messages for job definitions, arguments, and results. See the link:api/grpc.proto[grpc.proto] file for full schema and usage examples.
+
+==== Distributed Support via Store Interface
 
 `go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
 
