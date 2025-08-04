@@ -379,33 +379,35 @@ The gRPC API offers full programmatic access to all core `go-job` functionality:
 
 This makes `go-job` suitable for cloud-native architectures and distributed systems where job coordination spans multiple services or nodes.
 
-### Remote and Distributed Operation
+### Remote Operation with gRPC API
 
-`go-job` supports distributed operation through a pluggable storage interface, allowing multiple instances to share job metadata and execution state.
+`go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration. The gRPC API offers full programmatic access to all core `go-job` functionality:
 
-#### gRPC API
+- Remote job scheduling with arguments and timing options
 
-`go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration.
+- Real-time job monitoring and status queries
 
-##### CLI (jobctl)
+- Dynamic worker pool management
 
-[Jobctl CLI](./cmd/cli/jobctl.md) provides a command-line interface to interact with the gRPC API. The following methods are available:
+- Cross-platform compatibility through protocol buffers
 
-- `ScheduleJob` - Schedule a new job remotely, with arguments and scheduling options.
+- Secure communication with authentication support
 
-- `ListJobs` - List all registered jobs and their metadata.
+The gRPC API uses protobuf messages for job definitions, arguments, and results. For more details, see the [grpc.proto](grpc-api.md) definition.
 
-- `ListInstances` - Query job instances by kind, state, or time range.
+#### CLI (jobctl)
 
-- `GetInstance` - Retrieve details and logs for a specific job instance.
+The [Jobctl CLI](./cmd/cli/jobctl.md) provides a command-line interface to interact with the gRPC API. The following methods are available:
 
-- `CancelInstance` - Cancel a running or queued job instance.
+- `ScheduleJob` - Schedule a new job remotely with arguments and scheduling options
 
-- `ScaleWorkers` - Dynamically adjust worker pool size.
+- `ListJobs` - List all registered jobs and their metadata
 
-The gRPC API uses protobuf messages for job definitions, arguments, and results. See the [grpc.proto](api/grpc.proto) file for full schema and usage examples.
+- `ListInstances` - Query job instances by kind, state, or time range
 
-#### Distributed Support via Store Interface
+For more details, see the [Jobctl CLI](./cmd/cli/jobctl.md) documentation.
+
+### Distributed Support via Store Interface
 
 `go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
 
