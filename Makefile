@@ -119,8 +119,19 @@ doc-proto:
 cmd-docs: doc-cmd-cli
 
 %.md : %.adoc
-	asciidoctor -b docbook -a leveloffset=+1 -o - $< | pandoc -t markdown_strict --wrap=none -f docbook > $@
-	-git commit $@ $< -m "docs: update $(notdir $<)"
+    asciidoctor -b docbook \
+        -a toc=top \
+        -a toclevels=3 \
+        -a toc-title="Table of Contents" \
+        -a sectanchors \
+        -o - $< | \
+    pandoc -t gfm \
+        --wrap=none \
+        --toc \
+        --toc-depth=3 \
+        --standalone \
+        -f docbook > $@
+    git commit $@ $< -m "docs: update $(notdir $<)"
 
 %.png : %.pu
 	plantuml -tpng $<
