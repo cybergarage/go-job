@@ -26,7 +26,30 @@ Use it to build robust, scalable job systems in Go.
 
 ### Arbitrary Function Execution
 
-`go-job` allows registration and execution of **any** function using Go’s `any` type for arguments and results. The executor can be defined with any number of input and output parameters or with struct definitions.
+`go-job` allows you to register and execute **any Go function** as a job. You can use functions with different signatures - from simple functions with no parameters to complex functions with multiple inputs and outputs.
+
+    // Executor can be any function type
+    type Executor any
+
+    // Examples of valid executors:
+    // func()                           // no input, no output
+    // func(int, string) bool           // multiple inputs, one output
+    // func(*MyStruct) error            // struct input, error output
+    // func(a, b int) (int, error)      // multiple inputs and outputs
+
+This flexibility means you can:
+
+- Use functions with any number of parameters
+
+- Return single values or multiple values
+
+- Work with primitive types (int, string, bool)
+
+- Pass complex structs as arguments
+
+- Handle errors in your job functions
+
+The `any` type allows `go-job` to work with your existing functions without requiring special interfaces or wrapper code.
 
 #### Simple Function Example
 
@@ -115,39 +138,73 @@ Then schedule the jobs with arguments by:
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
 
-### Flexible Scheduling
+### Job Scheduling
 
-Schedule jobs:
+`go-job` provides flexible scheduling options to run jobs when you need them:
 
-- **Immediately** (default)
+- **Immediately** - Jobs start executing right away (default behavior)
 
-- **At a specific time**
+- **At a specific time** - Schedule jobs to run at an exact date and time
 
-- **After a delay**
+- **After a delay** - Wait a specified duration before starting execution
 
-- **On a recurring cron schedule**
+- **On a recurring schedule** - Use cron expressions for repeated execution
+
+#### Execute Jobs Immediately
+
+By default, jobs are scheduled for immediate execution:
+
+    // Runs immediately
+    mgr.ScheduleJob(job)
 
 #### Schedule at a Specific Time
 
-    mgr.ScheduleJob(job, WithScheduleAt(time.Now().Add(10 * time.Minute)))
+Set an exact time for job execution:
+
+    // Run 10 minutes from now
+    futureTime := time.Now().Add(10 * time.Minute)
+    mgr.ScheduleJob(job, WithScheduleAt(futureTime))
+
+    // Run at a specific date and time
+    specificTime := time.Date(2025, 12, 25, 9, 0, 0, 0, time.UTC)
+    mgr.ScheduleJob(job, WithScheduleAt(specificTime))
 
 #### Delay Execution
 
+Add a delay before the job starts:
+
+    // Wait 5 seconds before execution
     mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 
-#### Cron Scheduling
+    // Wait 2 hours before execution
+    mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
 
-    mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *")) // daily at midnight
+#### Recurring Cron Scheduling
 
-Supports standard cron format: `min hour dom month dow`.
+Use cron expressions for repeated job execution:
 
-### Job Observation
+    // Run daily at midnight
+    mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *"))
 
-`go-job` offers multiple ways to track both executed and queued job instances, using handlers and manager methods.
+    // Run every weekday at 9 AM
+    mgr.ScheduleJob(job, WithCrontabSpec("0 9 * * 1-5"))
 
-#### Handlers for Completion, Termination and State Changes
+    // Run every 30 minutes
+    mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 
-With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register handlers to monitor job execution and process completion or termination as they occur.
+Cron format: `minute hour day-of-month month day-of-week`
+
+### Job Monitoring and Observability
+
+`go-job` provides comprehensive monitoring capabilities to track job execution and understand system behavior. You can monitor jobs in real-time using event handlers, or query historical data using manager methods.
+
+#### Real-time Monitoring with Event Handlers
+
+Monitor job execution as it happens by registering event handlers that respond to completion, termination, and state changes.
+
+##### Completion and Termination Handlers
+
+Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successful completion and error termination:
 
     job, err := NewJob(
         ....,
@@ -159,7 +216,9 @@ With `WithCompleteProcessor()` or `WithTerminateProcessor()`, you can register h
         }),
     )
 
-Use `WithStateChangeProcessor()` to track and handle every state transition of a job instance.
+##### State Change Monitoring
+
+Use `WithStateChangeProcessor()` to track every state transition throughout a job’s lifecycle:
 
     job, err := NewJob(
         ....,
@@ -171,11 +230,15 @@ Use `WithStateChangeProcessor()` to track and handle every state transition of a
 
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-#### List All job Instances
+#### Historical Data Queries
+
+Query job instances and their execution history using manager methods.
+
+##### List All job Instances
 
 With `Manager::LookupInstances()`, you can retrieve any job instance—whether it is scheduled, in progress, or already executed.
 
-##### List All Queued and Executed Job Instances
+###### List All Queued and Executed Job Instances
 
        query := job.NewQuery() // queries all job instances (any state)
         jis, err := mgr.LookupInstances(query)
@@ -186,7 +249,7 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
             fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
         }
 
-##### List Terminated Job Instances
+###### List Terminated Job Instances
 
         query := job.NewQuery(
             job.WithQueryKind("sum"), // filter by job kind
@@ -200,11 +263,11 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
             fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
         }
 
-#### Retrieve History and Logs for Job Instances
+##### Retrieve History and Logs for Job Instances
 
 You can use manager methods to access the processing history and logs of any specified job instance.
 
-##### State History
+###### State History
 
 With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
 
@@ -215,7 +278,7 @@ With `Manager::LookupInstanceHistory`, you can retrieve the state history for th
 
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-#### Log History
+###### Log History
 
 With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
 
@@ -226,34 +289,77 @@ With `Manager::LookupInstanceLogs`, you can retrieve the log history for the spe
 
 Provides auditability and debugging capability for each job instance.
 
-### Queue Priority & Worker Management
+### Priority Management & Worker Scaling
 
-`go-job` provides mechanisms to manage job priorities and worker pools effectively.
+`go-job` allows you to control job execution order through priorities and dynamically scale workers to handle varying workloads.
 
-#### Job Priority
+#### Job Priority Control
 
-Use `WithPriority()` to assign a specific priority to each job.
+Assign priorities to jobs to control their execution order. Higher priority jobs are executed before lower priority ones.
 
-    job, err := NewJob(
-        WithPriority(0), // high-priority
-        ....,
+##### Set Priority During Job Creation
+
+    // High priority job (executed first)
+    highPriorityJob, err := NewJob(
+        WithKind("urgent-task"),
+        WithPriority(100), // higher number = lower priority
+        WithExecutor(func() { fmt.Println("Urgent task executing") }),
     )
 
-Higher-priority jobs are executed before lower-priority ones.
+    // Low priority job (executed later)
+    lowPriorityJob, err := NewJob(
+        WithKind("background-task"),
+        WithPriority(1), // lower number = higher priority
+        WithExecutor(func() { fmt.Println("Background task executing") }),
+    )
 
-You can also override a job’s default priority at scheduling time by using `WithPriority()`.
+##### Override Priority at Schedule Time
 
-    mgr.ScheduleJob(job, WithPriority(0)) // high-priority
+You can override a job’s default priority when scheduling:
 
-#### Dynamic Worker Pool
+    // Schedule with custom priority (overrides job's default priority)
+    mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 
-`go-job` supports dynamic worker pools to handle varying workloads.
+    // Schedule with default priority
+    mgr.ScheduleJob(normalJob) // uses job's configured priority
 
-    mgr, _ := NewManager(WithNumWorkers(5))
+#### Dynamic Worker Pool Management
+
+Scale your worker pool up or down based on workload demands without stopping the manager.
+
+##### Set Initial Worker Count
+
+    // Start with 5 workers
+    mgr, err := NewManager(WithNumWorkers(5))
     mgr.Start()
-    mgr.ResizeWorkers(10)
 
-Allows concurrent execution and real-time scalability.
+##### Scale Workers Dynamically
+
+    // Scale up during high load
+    mgr.ResizeWorkers(10) // increase to 10 workers
+
+    // Scale down during low load
+    mgr.ResizeWorkers(3)  // reduce to 3 workers
+
+    // Get current worker count
+    count := mgr.NumWorkers()
+    fmt.Printf("Current workers: %d\n", count)
+
+##### Real-world Scaling Example
+
+    // Monitor queue size and scale accordingly
+    queueSize := len(mgr.QueuedInstances())
+    currentWorkers := mgr.NumWorkers()
+
+    if queueSize > currentWorkers*2 {
+        // Scale up if queue is getting too long
+        mgr.ResizeWorkers(currentWorkers + 2)
+    } else if queueSize == 0 && currentWorkers > 2 {
+        // Scale down if no jobs queued
+        mgr.ResizeWorkers(currentWorkers - 1)
+    }
+
+This enables efficient resource utilization and responsive performance under varying workloads.
 
 ### Distributed Support via Store Interface
 
