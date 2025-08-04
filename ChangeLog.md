@@ -7,16 +7,16 @@
   - Timeout handling for job instances
   - Executor supports instance arguments
 - Prometheus
-- CLI command
-  - `go-jobctl` for job management
 - Executor
   - Special arguments for job instances
 - Clean before
 
-## 1.0.0 (2025-0X-XX)
+## 1.0.0 (2025-08-XX)
 - gRPC API
 - Distributed Store
   - etcd plugin added
+- CLI command
+  - `go-jobctl` for job management
 
 ## v0.9.3 (2025-07-26)
 ### 🛠 Enhancements
