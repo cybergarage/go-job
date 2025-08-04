@@ -8,89 +8,17 @@ Go offers multiple libraries for scheduling and executing background jobs. This 
 
 The table below highlights core differences between `go-job` and its counterparts:
 
-<table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
-<thead>
-<tr>
-<th style="text-align: left;"><strong>Feature</strong></th>
-<th style="text-align: left;"><strong>go-job</strong></th>
-<th style="text-align: left;"><strong>gocron</strong></th>
-<th style="text-align: left;"><strong>JobRunner</strong></th>
-<th style="text-align: left;"><strong>Machinery</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><p><strong>Design Architecture</strong></p></td>
-<td style="text-align: left;"><p>In-process job manager with pluggable backends and worker pool</p></td>
-<td style="text-align: left;"><p>In-process scheduler (cron-style) with job and executor components</p></td>
-<td style="text-align: left;"><p>In-process cron scheduler with integrated queue and web monitoring</p></td>
-<td style="text-align: left;"><p>Distributed task queue with centralized broker and separate worker processes</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Scheduling Capabilities</strong></p></td>
-<td style="text-align: left;"><p>Immediate, delayed, and recurring (cron) scheduling built-in</p></td>
-<td style="text-align: left;"><p>Rich scheduling intervals: human-friendly every X seconds, daily, weekly, monthly, or cron expressions</p></td>
-<td style="text-align: left;"><p>Cron expressions and time-based schedules (<code>@every</code>, <code>@midnight</code>, etc.), plus immediate or delayed starts</p></td>
-<td style="text-align: left;"><p>On-demand task execution; supports ETA (delayed tasks) but no built-in recurring scheduler (external scheduling needed)</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Task Definition</strong></p></td>
-<td style="text-align: left;"><p>Any function signature (uses <code>any</code> for args/results), jobs registered with custom executors</p></td>
-<td style="text-align: left;"><p>Functions with parameters (supports method chaining for scheduling); simple function calls with optional parameters</p></td>
-<td style="text-align: left;"><p>Tasks as structs with a <code>Run()</code> method (object-oriented jobs)</p></td>
-<td style="text-align: left;"><p>Functions registered by name; arguments/results must be serializable (JSON)</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Concurrency &amp; Execution</strong></p></td>
-<td style="text-align: left;"><p>Configurable worker pool (goroutines) for parallel jobs; dynamic resizing at runtime</p></td>
-<td style="text-align: left;"><p>Runs jobs concurrently by default; can enforce singleton jobs or global limits to prevent overlaps</p></td>
-<td style="text-align: left;"><p>Supports concurrent job execution via internal pool (configurable on start); one job per worker at a time</p></td>
-<td style="text-align: left;"><p>Many workers on many machines can consume tasks concurrently (horizontal scaling via broker)</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Extensibility</strong></p></td>
-<td style="text-align: left;"><p>High – pluggable storage backends, custom handlers for job events, CLI &amp; gRPC API for integrations</p></td>
-<td style="text-align: left;"><p>High – interfaces for custom leader election (Elector), distributed locking (Locker), logging, and metrics monitoring</p></td>
-<td style="text-align: left;"><p>Low/Medium – designed to embed in web frameworks; provides JSON/HTML status output and uses standard Cron library</p></td>
-<td style="text-align: left;"><p>Medium – supports multiple brokers and result backends via configuration; custom logger interface available</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Distributed Model</strong></p></td>
-<td style="text-align: left;"><p><strong>Optional</strong> – Supports distributed storage (e.g. database or external store) so multiple instances can share job state (no built-in broker; relies on shared backend or manual coordination)</p></td>
-<td style="text-align: left;"><p><strong>Optional</strong> – Multiple instances supported via leader election or job-level locks (requires implementing elector/locker using e.g. Redis)</p></td>
-<td style="text-align: left;"><p><strong>No</strong> – Meant for single-instance use (multiple app instances would duplicate jobs unless externally coordinated as a “master”)</p></td>
-<td style="text-align: left;"><p><strong>Yes</strong> – Built for distribution: tasks are sent through a message broker (RabbitMQ, Redis, etc.) to workers, allowing true multi-node execution</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Persistence</strong></p></td>
-<td style="text-align: left;"><p>Pluggable job storage for state, history, and logs (in-memory by default; can attach DB/redis for durability)</p></td>
-<td style="text-align: left;"><p>In-memory scheduling (no built-in persistence of jobs across restarts without external store)</p></td>
-<td style="text-align: left;"><p>In-memory (jobs lost on restart; meant to run as part of app runtime)</p></td>
-<td style="text-align: left;"><p>Task queue and state persisted if using durable broker and result backend (e.g. RabbitMQ + Redis for results)</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Observability</strong></p></td>
-<td style="text-align: left;"><p>Built-in tracking of job state transitions and logs; queryable history of each job instance</p></td>
-<td style="text-align: left;"><p>Event listeners and custom monitors can be attached to collect metrics or trigger actions on job events</p></td>
-<td style="text-align: left;"><p>Live monitoring endpoints for current schedule and job statuses (JSON API or HTML dashboard)</p></td>
-<td style="text-align: left;"><p>Tracks task status (success/failure) via result backend; supports retries and error callbacks. No default GUI, but third-party monitoring can be used</p></td>
-</tr>
-<tr>
-<td style="text-align: left;"><p><strong>Maturity &amp; Community</strong></p></td>
-<td style="text-align: left;"><p>New (v0.x, 2025) – Very flexible, but not yet widely adopted (still evolving and being tested)</p></td>
-<td style="text-align: left;"><p>Mature (6k+ stars) – Actively maintained fork of <code>jasonlvhit/gocron</code> with wide usage and community</p></td>
-<td style="text-align: left;"><p>Established (1k+ stars) – Used in some projects, but fewer updates; originally from Revel framework’s jobs module</p></td>
-<td style="text-align: left;"><p>Mature (7k+ stars) – Inspired by Celery, widely used for heavy async processing; has known issues (e.g. handling worker crashes requires careful setup)</p></td>
-</tr>
-</tbody>
-</table>
+| **Feature** | **go-job** | **gocron** | **JobRunner** | **Machinery** |
+|----|----|----|----|----|
+| **Design Architecture** | In-process job manager with pluggable backends and worker pool | In-process scheduler (cron-style) with job and executor components | In-process cron scheduler with integrated queue and web monitoring | Distributed task queue with centralized broker and separate worker processes |
+| **Scheduling Capabilities** | Immediate, delayed, and recurring (cron) scheduling built-in | Rich scheduling intervals: human-friendly every X seconds, daily, weekly, monthly, or cron expressions | Cron expressions and time-based schedules (`@every`, `@midnight`, etc.), plus immediate or delayed starts | On-demand task execution; supports ETA (delayed tasks) but no built-in recurring scheduler (external scheduling needed) |
+| **Task Definition** | Any function signature (uses `any` for args/results), jobs registered with custom executors | Functions with parameters (supports method chaining for scheduling); simple function calls with optional parameters | Tasks as structs with a `Run()` method (object-oriented jobs) | Functions registered by name; arguments/results must be serializable (JSON) |
+| **Concurrency & Execution** | Configurable worker pool (goroutines) for parallel jobs; dynamic resizing at runtime | Runs jobs concurrently by default; can enforce singleton jobs or global limits to prevent overlaps | Supports concurrent job execution via internal pool (configurable on start); one job per worker at a time | Many workers on many machines can consume tasks concurrently (horizontal scaling via broker) |
+| **Extensibility** | High – pluggable storage backends, custom handlers for job events, CLI & gRPC API for integrations | High – interfaces for custom leader election (Elector), distributed locking (Locker), logging, and metrics monitoring | Low/Medium – designed to embed in web frameworks; provides JSON/HTML status output and uses standard Cron library | Medium – supports multiple brokers and result backends via configuration; custom logger interface available |
+| **Distributed Model** | **Optional** – Supports distributed storage (e.g. database or external store) so multiple instances can share job state (no built-in broker; relies on shared backend or manual coordination) | **Optional** – Multiple instances supported via leader election or job-level locks (requires implementing elector/locker using e.g. Redis) | **No** – Meant for single-instance use (multiple app instances would duplicate jobs unless externally coordinated as a “master”) | **Yes** – Built for distribution: tasks are sent through a message broker (RabbitMQ, Redis, etc.) to workers, allowing true multi-node execution |
+| **Persistence** | Pluggable job storage for state, history, and logs (in-memory by default; can attach DB/redis for durability) | In-memory scheduling (no built-in persistence of jobs across restarts without external store) | In-memory (jobs lost on restart; meant to run as part of app runtime) | Task queue and state persisted if using durable broker and result backend (e.g. RabbitMQ + Redis for results) |
+| **Observability** | Built-in tracking of job state transitions and logs; queryable history of each job instance | Event listeners and custom monitors can be attached to collect metrics or trigger actions on job events | Live monitoring endpoints for current schedule and job statuses (JSON API or HTML dashboard) | Tracks task status (success/failure) via result backend; supports retries and error callbacks. No default GUI, but third-party monitoring can be used |
+| **Maturity & Community** | New (v0.x, 2025) – Very flexible, but not yet widely adopted (still evolving and being tested) | Mature (6k+ stars) – Actively maintained fork of `jasonlvhit/gocron` with wide usage and community | Established (1k+ stars) – Used in some projects, but fewer updates; originally from Revel framework’s jobs module | Mature (7k+ stars) – Inspired by Celery, widely used for heavy async processing; has known issues (e.g. handling worker crashes requires careful setup) |
 
 The table above shows that **`go-job`** combines flexible scheduling and execution in one package, with features like job prioritization and history tracking that stand out. **gocron** excels at simple scheduling with a fluent API and supports some distributed patterns (elector/locker) but relies on in-memory operation. **JobRunner** integrates cron scheduling into web apps easily and even provides a lightweight UI for monitoring, at the cost of limited scalability. **Machinery**, by contrast, is a full-fledged distributed task queue requiring external infrastructure (brokers/backends), suitable for high-scale asynchronous processing.
 
