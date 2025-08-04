@@ -58,12 +58,12 @@ proto/job/v1/job_service.proto
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| kind | [string](#string) |  | Kind |
+| kind | [string](#string) |  | Kind of the job (e.g., &#34;email&#34;, &#34;data_processing&#34;) |
 | uuid | [string](#string) |  | Unique instance identifier |
 | state | [JobState](#job-v1-JobState) |  | Current state |
 | arguments | [string](#string) | repeated | Job arguments |
 | results | [string](#string) | repeated | Execution results (if completed) |
-| error | [string](#string) | optional | Error information (if failed) |
+| error | [string](#string) | optional | Error information (if terminated) |
 | created_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | scheduled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | processed_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
@@ -71,7 +71,7 @@ proto/job/v1/job_service.proto
 | terminated_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | cancelled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | timed_out_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
-| attempt_count | [int32](#int32) | optional |  |
+| attempt_count | [int32](#int32) | optional | Total attempt count (initial execution &#43; retries) |
 
 
 
