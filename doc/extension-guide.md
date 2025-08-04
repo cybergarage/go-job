@@ -1,6 +1,5 @@
 # Extension Guide 
 ---
-generator: Asciidoctor 2.0.23
 lang: en
 title: Extension Guide
 viewport: width=device-width, initial-scale=1.0
@@ -138,7 +137,7 @@ type LogStore interface {
 
 <div id="footer-text">
 
-Last updated 2025-08-04 22:15:12 +0900
+Last updated 2025-08-04 22:16:03 +0900
 
 </div>
 
