@@ -202,8 +202,6 @@ proto/job/v1/job_service.proto
 | ----- | ---- | ----- | ----------- |
 | version | [string](#string) |  |  |
 | api_version | [string](#string) |  |  |
-| revision | [string](#string) | optional |  |
-| build_date | [string](#string) | optional |  |
 
 
 
