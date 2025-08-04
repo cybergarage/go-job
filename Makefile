@@ -93,6 +93,7 @@ protopkg:
 
 %.pb.go : %.proto protopkg
 	protoc -I=${PKG_PROTO_ROOT}/proto/v1 --go_out=paths=source_relative:${PKG_PROTO_ROOT}/gen/go/v1 --go-grpc_out=paths=source_relative:${PKG_PROTO_ROOT}/gen/go/v1 --plugin=protoc-gen-go=${GOBIN}/protoc-gen-go --plugin=protoc-gen-go-grpc=${GOBIN}/protoc-gen-go-grpc $<
+	git commit ${PKG_PROTO_ROOT} -m "feat: update $(notdir $<)"
 protos=$(shell find ${PKG_PROTO_ROOT} -name '*.proto')
 pbs=$(protos:.proto=.pb.go)
 proto: protopkg $(pbs)
