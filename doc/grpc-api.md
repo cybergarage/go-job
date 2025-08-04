@@ -34,8 +34,7 @@ proto/job/v1/job_service.proto
 <a name="job-v1-Job"></a>
 
 ### Job
-@private Basic information: 1-10
-////////////////////////////
+
 
 
 | Field | Type | Label | Description |
@@ -54,8 +53,7 @@ proto/job/v1/job_service.proto
 <a name="job-v1-JobInstance"></a>
 
 ### JobInstance
-Basic information: 1-10
-////////////////////////////
+
 
 
 | Field | Type | Label | Description |
@@ -155,8 +153,7 @@ Basic information: 1-10
 <a name="job-v1-ScheduleJobRequest"></a>
 
 ### ScheduleJobRequest
-Basic information: 1-10
-////////////////////////////
+
 
 
 | Field | Type | Label | Description |
@@ -203,9 +200,9 @@ Basic information: 1-10
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  | Basic information: 1-10 //////////////////////////// |
+| version | [string](#string) |  |  |
 | api_version | [string](#string) |  |  |
-| revision | [string](#string) | optional | Execution information: 11-20 //////////////////////////// |
+| revision | [string](#string) | optional |  |
 | build_date | [string](#string) | optional |  |
 
 
