@@ -8,20 +8,17 @@ import "google/protobuf/timestamp.proto";
 
 //////////////////////////////
 // Version
+// Basic information: 1-10
+// Execution information: 11-20
 //////////////////////////////
 
 message VersionRequest {  
 }
 
 message VersionResponse {
-  //////////////////////////////
-  // Basic information: 1-10
-  //////////////////////////////
   string version = 1;
   string api_version = 2;
-  //////////////////////////////
-  // Execution information: 11-20
-  //////////////////////////////
+
   optional string revision = 11;
   optional string build_date = 12;
 }
@@ -43,23 +40,17 @@ enum JobState {
 
 //////////////////////////////
 // Job representation
+// Basic information: 1-10
+// Execution information: 11-20
 //////////////////////////////
 
 message Job {
-  //////////////////////////////
-  // Basic information: 1-10
-  //////////////////////////////
-
   // Kind of the job (e.g., "email", "data_processing")
   string kind = 1;  
   // Description of the job
   string description = 2;
   // Registered at timestamp
   google.protobuf.Timestamp registered_at = 3;
-
-  //////////////////////////////
-  // Execution information: 11-20
-  //////////////////////////////
 
   // Schedule using cron expression
   optional string cron_spec = 11;
@@ -69,21 +60,17 @@ message Job {
 
 //////////////////////////////
 // Job instance representation
+// Basic information: 1-10
+// Execution information: 11-20
+// Timestamps: 21-30
+// Runtime information: 31-40
 //////////////////////////////
 
 message JobInstance {
-  //////////////////////////////
-  // Basic information: 1-10
-  //////////////////////////////
-
   // Kind
   string kind = 1;
   // Unique instance identifier
   string uuid = 2;
-
-  //////////////////////////////
-  // Execution information: 11-20
-  //////////////////////////////
 
   // Current state
   JobState state =11;  
@@ -94,10 +81,6 @@ message JobInstance {
   // Error information (if failed)
   optional string error = 14;
 
-  //////////////////////////////
-  // Timestamps: 21-30
-  //////////////////////////////
-
   optional google.protobuf.Timestamp created_at = 21;
   optional google.protobuf.Timestamp scheduled_at = 22;
   optional google.protobuf.Timestamp processed_at = 23;
@@ -106,28 +89,18 @@ message JobInstance {
   optional google.protobuf.Timestamp cancelled_at = 26;
   optional google.protobuf.Timestamp timed_out_at = 27;
 
-  //////////////////////////////
-  // Runtime information: 31-40
-  //////////////////////////////
-
   optional int32 attempt_count = 31;
 }
 
 //////////////////////////////
 // ScheduleJobRequest/Response
+// Basic information: 1-10
+// Execution options: 11-20
 //////////////////////////////
 
 message ScheduleJobRequest {
-  //////////////////////////////
-  // Basic information: 1-10
-  //////////////////////////////
-  
   // Kind to schedule (must be pre-registered)
   string kind = 1;  
-
-  //////////////////////////////
-  // Execution options: 11-20
-  //////////////////////////////
 
   // Arguments to pass to the job executor
   repeated string arguments = 11;

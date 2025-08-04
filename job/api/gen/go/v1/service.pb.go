@@ -125,17 +125,11 @@ func (*VersionRequest) Descriptor() ([]byte, []int) {
 }
 
 type VersionResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// ////////////////////////////
-	// Basic information: 1-10
-	// ////////////////////////////
-	Version    string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	ApiVersion string `protobuf:"bytes,2,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
-	// ////////////////////////////
-	// Execution information: 11-20
-	// ////////////////////////////
-	Revision      *string `protobuf:"bytes,11,opt,name=revision,proto3,oneof" json:"revision,omitempty"`
-	BuildDate     *string `protobuf:"bytes,12,opt,name=build_date,json=buildDate,proto3,oneof" json:"build_date,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Version       string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	ApiVersion    string                 `protobuf:"bytes,2,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
+	Revision      *string                `protobuf:"bytes,11,opt,name=revision,proto3,oneof" json:"revision,omitempty"`
+	BuildDate     *string                `protobuf:"bytes,12,opt,name=build_date,json=buildDate,proto3,oneof" json:"build_date,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
