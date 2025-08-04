@@ -1,7 +1,4 @@
----
-date: 2025-08-04
-title: Feature Overview and Usage Guide
----
+# Feature Overview and Usage Guide
 
 `go-job` is a flexible and extensible job scheduling and execution library for Go that supports arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
 
@@ -11,7 +8,7 @@ title: Feature Overview and Usage Guide
 
 This document provides a comprehensive overview of the features and usage of `go-job`.
 
-# Features
+## Features
 
 `go-job` provides:
 
@@ -27,7 +24,7 @@ This document provides a comprehensive overview of the features and usage of `go
 
 Use it to build robust, scalable job systems in Go.
 
-## Arbitrary Function Execution
+### Arbitrary Function Execution
 
 `go-job` allows you to register and execute **any Go function** as a job. You can use functions with different signatures - from simple functions with no parameters to complex functions with multiple inputs and outputs.
 
@@ -56,7 +53,7 @@ This flexibility means you can:
 
 The `any` type allows `go-job` to work with your existing functions without requiring special interfaces or wrapper code.
 
-### Simple Function Example
+#### Simple Function Example
 
 A job with no input parameters and no return value can be defined as follows:
 
@@ -75,7 +72,7 @@ Then schedule this job with no arguments simply by:
 mgr.ScheduleJob(job)
 ```
 
-### Function with Arguments Example
+#### Function with Arguments Example
 
 A job with two input parameters and no return value can be defined like this:
 
@@ -94,7 +91,7 @@ Then schedule jobs with arguments:
 mgr.ScheduleJob(job, WithArguments(42, 58))
 ```
 
-### Function with Arguments and Result Example
+#### Function with Arguments and Result Example
 
 A job with two input parameters and one output can be defined like this:
 
@@ -119,7 +116,7 @@ Then schedule jobs with arguments:
 mgr.ScheduleJob(job, WithArguments("Hello", "world"))
 ```
 
-### Function with Struct Input and Output
+#### Function with Struct Input and Output
 
 A job with one struct input and one struct output can be defined like this:
 
@@ -159,7 +156,7 @@ mgr.ScheduleJob(job, WithArguments(arg))
 
 This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
 
-## Job Scheduling
+### Job Scheduling
 
 `go-job` provides flexible scheduling options to run jobs when you need them:
 
@@ -171,7 +168,7 @@ This approach supports diverse function signatures and is ideal for both simple 
 
 - **On a recurring schedule** - Use cron expressions for repeated execution
 
-### Execute Jobs Immediately
+#### Execute Jobs Immediately
 
 By default, jobs are scheduled for immediate execution:
 
@@ -180,7 +177,7 @@ By default, jobs are scheduled for immediate execution:
 mgr.ScheduleJob(job)
 ```
 
-### Schedule at a Specific Time
+#### Schedule at a Specific Time
 
 Set an exact time for job execution:
 
@@ -194,7 +191,7 @@ specificTime := time.Date(2025, 12, 25, 9, 0, 0, 0, time.UTC)
 mgr.ScheduleJob(job, WithScheduleAt(specificTime))
 ```
 
-### Delay Execution
+#### Delay Execution
 
 Add a delay before the job starts:
 
@@ -206,7 +203,7 @@ mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
 ```
 
-### Recurring Cron Scheduling
+#### Recurring Cron Scheduling
 
 Use cron expressions for repeated job execution:
 
@@ -223,15 +220,15 @@ mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 
 Cron format: `minute hour day-of-month month day-of-week`
 
-## Job Monitoring and Observability
+### Job Monitoring and Observability
 
 `go-job` provides comprehensive monitoring capabilities to track job execution and understand system behavior. You can monitor jobs in real-time using event handlers, or query historical data using manager methods.
 
-### Real-time Monitoring with Event Handlers
+#### Real-time Monitoring with Event Handlers
 
 Monitor job execution as it happens by registering event handlers that respond to completion, termination, and state changes.
 
-#### Completion and Termination Handlers
+##### Completion and Termination Handlers
 
 Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successful completion and error termination:
 
@@ -247,7 +244,7 @@ job, err := NewJob(
 )
 ```
 
-#### State Change Monitoring
+##### State Change Monitoring
 
 Use `WithStateChangeProcessor()` to track every state transition throughout a job’s lifecycle:
 
@@ -263,15 +260,15 @@ job, err := NewJob(
 
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-### Historical Data Queries
+#### Historical Data Queries
 
 Query job instances and their execution history using manager methods.
 
-#### List All job Instances
+##### List All job Instances
 
 With `Manager::LookupInstances()`, you can retrieve any job instance—whether it is scheduled, in progress, or already executed.
 
-##### List All Queued and Executed Job Instances
+###### List All Queued and Executed Job Instances
 
 ``` go
    query := job.NewQuery() // queries all job instances (any state)
@@ -284,7 +281,7 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
     }
 ```
 
-##### List Terminated Job Instances
+###### List Terminated Job Instances
 
 ``` go
     query := job.NewQuery(
@@ -300,11 +297,11 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
     }
 ```
 
-#### Retrieve History and Logs for Job Instances
+##### Retrieve History and Logs for Job Instances
 
 You can use manager methods to access the processing history and logs of any specified job instance.
 
-##### State History
+###### State History
 
 With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
 
@@ -317,7 +314,7 @@ for _, s := range states {
 
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-##### Log History
+###### Log History
 
 With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
 
@@ -330,15 +327,15 @@ for _, log := range logs {
 
 Provides auditability and debugging capability for each job instance.
 
-## Priority Management & Worker Scaling
+### Priority Management & Worker Scaling
 
 `go-job` allows you to control job execution order through priorities and dynamically scale workers to handle varying workloads.
 
-### Job Priority Control
+#### Job Priority Control
 
 Assign priorities to jobs to control their execution order. Higher priority jobs are executed before lower priority ones. The priority value is an integer where lower values indicate higher priority (similar to Unix nice values).
 
-#### Set Priority During Job Creation
+##### Set Priority During Job Creation
 
 ``` go
 // High priority job (executed first)
@@ -356,7 +353,7 @@ lowPriorityJob, err := NewJob(
 )
 ```
 
-#### Override Priority at Schedule Time
+##### Override Priority at Schedule Time
 
 You can override a job’s default priority when scheduling:
 
@@ -368,11 +365,11 @@ mgr.ScheduleJob(normalJob) // uses job's configured priority
 mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 ```
 
-### Dynamic Worker Pool Management
+#### Dynamic Worker Pool Management
 
 Scale your worker pool up or down based on workload demands without stopping the manager.
 
-#### Set Initial Worker Count
+##### Set Initial Worker Count
 
 ``` go
 // Start with 5 workers
@@ -380,7 +377,7 @@ mgr, err := NewManager(WithNumWorkers(5))
 mgr.Start()
 ```
 
-#### Scale Workers Dynamically
+##### Scale Workers Dynamically
 
 ``` go
 // Scale up during high load
@@ -394,7 +391,7 @@ count := mgr.NumWorkers()
 fmt.Printf("Current workers: %d\n", count)
 ```
 
-#### Real-world Scaling Example
+##### Real-world Scaling Example
 
 ``` go
 // Monitor queue size and scale accordingly
@@ -415,11 +412,11 @@ if queueSize > currentWorkers*2 {
 
 This enables efficient resource utilization and responsive performance under varying workloads.
 
-## Remote Management with gRPC API
+### Remote Management with gRPC API
 
 `go-job` provides a comprehensive gRPC API for remote job management, enabling you to schedule, monitor, and control jobs from external systems or distributed environments. This allows seamless integration with microservices, orchestration platforms, and remote applications.
 
-## Remote Operation with gRPC API
+### Remote Operation with gRPC API
 
 `go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration. The gRPC API offers full programmatic access to all core `go-job` functionality:
 
@@ -435,7 +432,7 @@ This enables efficient resource utilization and responsive performance under var
 
 The gRPC API uses protobuf messages for job definitions, arguments, and results. For more details, see the [grpc.proto](grpc-api.md) definition.
 
-### Command-Line Interface (jobctl)
+#### Command-Line Interface (jobctl)
 
 `go-job` provides a command-line interface called [jobctl](./cmd/cli/jobctl.md) to interact with the gRPC API. The following methods are available:
 
@@ -447,7 +444,7 @@ The gRPC API uses protobuf messages for job definitions, arguments, and results.
 
 For more details, see the [Command-Line Interface (jobctl)](./cmd/cli/jobctl.md) documentation.
 
-## Distributed Support via Store Interface
+### Distributed Support via Store Interface
 
 `go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
 
