@@ -352,14 +352,14 @@ Assign priorities to jobs to control their execution order. Higher priority jobs
 // High priority job (executed first)
 highPriorityJob, err := NewJob(
     WithKind("urgent-task"),
-    WithPriority(100), // higher number = lower priority
+    WithPriority(100), // lower number = higher priority like Unix nice values
     WithExecutor(func() { fmt.Println("Urgent task executing") }),
 )
 
 // Low priority job (executed later)
 lowPriorityJob, err := NewJob(
     WithKind("background-task"),
-    WithPriority(1), // lower number = higher priority
+    WithPriority(200), // higher number = lower priority like Unix nice values
     WithExecutor(func() { fmt.Println("Background task executing") }),
 )
 ----
@@ -370,11 +370,11 @@ You can override a job's default priority when scheduling:
 
 [source,go]
 ----
-// Schedule with custom priority (overrides job's default priority)
-mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
-
 // Schedule with default priority
 mgr.ScheduleJob(normalJob) // uses job's configured priority
+
+// Schedule with custom priority (overrides job's default priority)
+mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 ----
 
 ==== Dynamic Worker Pool Management
