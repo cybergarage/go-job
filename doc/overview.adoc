@@ -343,7 +343,7 @@ Provides auditability and debugging capability for each job instance.
 
 ==== Job Priority Control
 
-Assign priorities to jobs to control their execution order. Higher priority jobs are executed before lower priority ones.
+Assign priorities to jobs to control their execution order. Higher priority jobs are executed before lower priority ones. The priority value is an integer where lower values indicate higher priority (similar to Unix nice values).
 
 ===== Set Priority During Job Creation
 
