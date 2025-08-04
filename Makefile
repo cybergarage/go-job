@@ -121,7 +121,7 @@ cmd-docs: doc-cmd-cli
 
 %.md : %.adoc
 	asciidoctor -b docbook -a leveloffset=+1 -o - $< | \
-	pandoc -t markdown_strict --wrap=none -f docbook > $@
+	pandoc -t gfm --wrap=none -f docbook > $@
 	git commit $@ $< -m "docs: update $(notdir $<)"
 
 %.png : %.pu
