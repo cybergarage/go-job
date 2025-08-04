@@ -1,11 +1,8 @@
----
-date: 2025-08-04
-title: Design and Architecture
----
+# Design and Architecture
 
 This document provides a detailed overview of \`go-job’s design and architecture, including future plans.
 
-# Design Concept
+## Design Concept
 
 These design choices position `go-job` as a scalable, flexible, and production-grade job management framework for Go applications that require robust orchestration of asynchronous or scheduled tasks.
 
@@ -21,7 +18,7 @@ The core design principles of `go-job` are:
 
 For a comparison of design concepts with other OSS job frameworks, see [go-job Comparison (OpenAI Research](https://github.com/cybergarage/go-job/blob/main/doc/design.md).
 
-# Terminology
+## Terminology
 
 This section defines the key terms and concepts used throughout the `go-job` system. Understanding these terms is essential for working effectively with the job scheduling and execution framework.
 
@@ -33,7 +30,7 @@ This section defines the key terms and concepts used throughout the `go-job` sys
 | Processor | A function that processes job instances, including completion and termination logic. |
 | Worker | A component that executes job instances by invoking the registered executors, handling retries, and managing state transitions. |
 
-# Key Components
+## Key Components
 
 `go-job` is designed to handle job scheduling and execution efficiently. The architecture consists of several key components that work together to provide a robust job processing system.
 
@@ -54,19 +51,19 @@ The main components of `go-job` are:
 | Log | Captures logs for each job instance, providing detailed execution information. |
 | Store | Provides abstracted persistence for job metadata and execution state, enabling distributed operation and fault tolerance. |
 
-## Selecting Manager Usage
+### Selecting Manager Usage
 
 To use go-job, you can embed the manager directly in your Go application to schedule jobs, manage job instances, and process their states and logs. This approach allows you to handle all job management tasks easily within your application.
 
 For more information about embedding the manager in your Go application, see the [Quick Start](quick-start.md) and [Go Reference](https://pkg.go.dev/github.com/cybergarage/go-job) documentation.
 
-## Selecting Server Usage
+### Selecting Server Usage
 
 Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
 
 For more information about the server component, see the [gRPC API](grpc-api.md) and [CLI (jobctl)](cmd/cli/jobctl.md) documentation.
 
-# Job State Lifecycle
+## Job State Lifecycle
 
 The job state in `go-job` is managed through a combination of job instances and their associated states. The state of a job instance is crucial for understanding its lifecycle and for debugging purposes.
 
@@ -86,7 +83,7 @@ The job state in `go-job` is managed through a combination of job instances and 
 
 Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, and `Terminated`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
 
-# Job Registration and Processing Flow
+## Job Registration and Processing Flow
 
 The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained.
 
@@ -96,7 +93,7 @@ The following sequence diagram illustrates the flow of job registration, schedul
 <img src="img/job-seqdgm.png" alt="job seqdgm" />
 </figure>
 
-## Store Plugins and Registry Sharing Limitations
+### Store Plugins and Registry Sharing Limitations
 
 Currently, the registry that holds job definitions cannot be shared between go-job servers. Because Go does not support serializing or transmitting function pointers (executors) over RPC, each go-job server must maintain its own local registry of job definitions.
 
