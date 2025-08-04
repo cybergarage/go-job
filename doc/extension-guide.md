@@ -6,11 +6,15 @@ This guide provides an overview of how to extend `go-job` with custom plugins, a
 
 ### Store Plugin
 
-#### Store Interface
+The `go-job` framework supports custom store plugins that can be used to manage job instances, their states, and logs. A store plugin must implement the `Store` interface, which defines methods for managing job instances and their histories.
 
 <figure>
 <img src="img/job-store.png" alt="job store" />
 </figure>
+
+#### Store Interface
+
+The Store interface specifies the required methods that every store plugin must implement to manage job instances, their states, and logs:
 
 ``` go
 // Store defines the interface for job queue, history, and logging.
