@@ -1,6 +1,5 @@
 # Design and Architecture 
 ---
-generator: Asciidoctor 2.0.23
 lang: en
 title: Design and Architecture
 viewport: width=device-width, initial-scale=1.0
@@ -297,7 +296,7 @@ The queue, history, and log components can be shared between go-job servers usin
 
 <div id="footer-text">
 
-Last updated 2025-08-04 22:15:12 +0900
+Last updated 2025-08-04 22:16:03 +0900
 
 </div>
 
