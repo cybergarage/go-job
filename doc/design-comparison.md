@@ -1,6 +1,5 @@
 # Comparison of go-job with Other OSS Go Job Libraries
 ---
-generator: Asciidoctor 2.0.23
 lang: en
 title: Comparison of go-job with Other OSS Go Job Libraries
 viewport: width=device-width, initial-scale=1.0
@@ -507,7 +506,7 @@ When evaluating which scheduler to use, consider factors like: **Does it need to
 
 <div id="footer-text">
 
-Last updated 2025-08-04 22:15:12 +0900
+Last updated 2025-08-04 22:16:03 +0900
 
 </div>
 
