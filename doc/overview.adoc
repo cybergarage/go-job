@@ -352,7 +352,7 @@ Assign priorities to jobs to control their execution order. Higher priority jobs
 // High priority job (executed first)
 highPriorityJob, err := NewJob(
     WithKind("urgent-task"),
-    WithPriority(100), // lower number = higher priority like Unix nice values
+    WithPriority(0), // lower number = higher priority like Unix nice values
     WithExecutor(func() { fmt.Println("Urgent task executing") }),
 )
 
@@ -410,9 +410,12 @@ fmt.Printf("Current workers: %d\n", count)
 [source,go]
 ----
 // Monitor queue size and scale accordingly
-queueSize := len(mgr.QueuedInstances())
+query := job.NewQuery(
+    job.WithQueryState(job.JobScheduled), // filter by scheduled state
+)
+jobs, _ := mgr.LookupInstances(query)
+queueSize := len(jobs)
 currentWorkers := mgr.NumWorkers()
-
 if queueSize > currentWorkers*2 {
     // Scale up if queue is getting too long
     mgr.ResizeWorkers(currentWorkers + 2)
@@ -429,16 +432,6 @@ This enables efficient resource utilization and responsive performance under var
 
 `go-job` provides a comprehensive gRPC API for remote job management, enabling you to schedule, monitor, and control jobs from external systems or distributed environments. This allows seamless integration with microservices, orchestration platforms, and remote applications.
 
-The gRPC API offers full programmatic access to all core `go-job` functionality:
-
-* Remote job scheduling with arguments and timing options
-* Real-time job monitoring and status queries  
-* Dynamic worker pool management
-* Cross-platform compatibility through protocol buffers
-* Secure communication with authentication support
-
-This makes `go-job` suitable for cloud-native architectures and distributed systems where job coordination spans multiple services or nodes.
-
 === Remote Operation with gRPC API
 
 `go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration. The gRPC API offers full programmatic access to all core `go-job` functionality:
@@ -451,15 +444,15 @@ This makes `go-job` suitable for cloud-native architectures and distributed syst
 
 The gRPC API uses protobuf messages for job definitions, arguments, and results. For more details, see the link:grpc-api.md[grpc.proto] definition.
 
-==== CLI (jobctl)
+==== Command-Line Interface (jobctl)
 
-The link:./cmd/cli/jobctl.md[Jobctl CLI] provides a command-line interface to interact with the gRPC API. The following methods are available:
+`go-job` provides a command-line interface called link:./cmd/cli/jobctl.md[jobctl] to interact with the gRPC API. The following methods are available:
 
 * `ScheduleJob` - Schedule a new job remotely with arguments and scheduling options
 * `ListJobs` - List all registered jobs and their metadata
 * `ListInstances` - Query job instances by kind, state, or time range
 
-For more details, see the link:./cmd/cli/jobctl.md[Jobctl CLI] documentation.
+For more details, see the link:./cmd/cli/jobctl.md[Command-Line Interface (jobctl)] documentation.
 
 === Distributed Support via Store Interface
 
