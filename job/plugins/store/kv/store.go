@@ -14,17 +14,27 @@
 
 package kv
 
+import "context"
+
 // Option represents a option.
 type Option = any
 
-// Store represents a store interface.
+// Store represents a key-value store interface.
 type Store interface {
 	// Config defines the store configuration.
 	Config
-	// Transaction defines the transaction interface.
-	Transaction
 	// Name returns the name of the store.
 	Name() string
+	// Set stores a key-value object. If the key already holds some value, it is overwritten.
+	Set(ctx context.Context, obj Object) error
+	// Get returns a key-value object of the specified key.
+	Get(ctx context.Context, key Key) (Object, error)
+	// Scan returns a result set of all key-value objects whose keys have the specified prefix.
+	Scan(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
+	// Remove removes and returns the key-value object of the specified key.
+	Remove(ctx context.Context, key Key) (Object, error)
+	// Delete deletes all key-value objects whose keys have the specified prefix.
+	Delete(ctx context.Context, key Key) error
 	// Start starts the store.
 	Start() error
 	// Stop stops the store.

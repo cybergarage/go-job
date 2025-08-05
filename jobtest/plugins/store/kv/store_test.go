@@ -84,7 +84,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 		})
 	}
 
-	// Set / GetRange tests
+	// Set / Scan tests
 
 	rangeKey := kv.Key("range1")
 	rangeTests := []struct {
@@ -115,8 +115,8 @@ func StoreTest(t *testing.T, store kv.Store) {
 				t.Fatalf("failed to set object: %v", err)
 			}
 		})
-		t.Run(fmt.Sprintf("GetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
-			rs, err := store.GetRange(context.Background(), test.key)
+		t.Run(fmt.Sprintf("Scan %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
+			rs, err := store.Scan(context.Background(), test.key)
 			if err != nil {
 				t.Fatalf("failed to get range: %v", err)
 			}
@@ -142,12 +142,12 @@ func StoreTest(t *testing.T, store kv.Store) {
 		})
 	}
 
-	t.Run("RemoveRange "+rangeKey.String(), func(t *testing.T) {
-		if err := store.RemoveRange(context.Background(), rangeKey); err != nil {
+	t.Run("Delete "+rangeKey.String(), func(t *testing.T) {
+		if err := store.Delete(context.Background(), rangeKey); err != nil {
 			t.Fatalf("failed to remove object: %v", err)
 		}
 
-		rs, err := store.GetRange(context.Background(), rangeKey)
+		rs, err := store.Scan(context.Background(), rangeKey)
 		if err != nil {
 			t.Fatalf("expected error when getting removed object, got nil")
 		}

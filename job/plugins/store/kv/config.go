@@ -16,6 +16,7 @@ package kv
 
 // Config defines the configuration for the key-value store.
 type Config interface {
+	// UniqueKeys returns whether keys should be unique.
 	UniqueKeys() bool
 }
 

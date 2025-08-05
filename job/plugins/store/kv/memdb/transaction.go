@@ -66,8 +66,8 @@ func (db *Database) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
 	return obj, nil
 }
 
-// GetRange returns a result set of the specified key.
-func (db *Database) GetRange(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
+// Scan returns a result set of all key-value objects whose keys have the specified prefix.
+func (db *Database) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
 	txn := db.MemDB.Txn(false)
 	it, err := txn.Get(tableName, idName+prefix, key.Bytes())
 	if err != nil {
@@ -104,8 +104,8 @@ func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
 	return obj, nil
 }
 
-// RemoveRange removes the specified key-value object.
-func (db *Database) RemoveRange(ctx context.Context, key kv.Key) error {
+// Delete deletes all key-value objects whose keys have the specified prefix.
+func (db *Database) Delete(ctx context.Context, key kv.Key) error {
 	txn := db.MemDB.Txn(true)
 	_, err := txn.DeleteAll(tableName, idName+prefix, key.Bytes())
 	if err != nil {

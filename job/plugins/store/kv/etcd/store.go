@@ -78,8 +78,8 @@ func (store *Store) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
 	return nil, nil
 }
 
-// GetRange returns a result set of the specified key.
-func (store *Store) GetRange(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
+// Scan returns a result set of all key-value objects whose keys have the specified prefix.
+func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
 	return nil, nil
 }
 
@@ -88,8 +88,8 @@ func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
 	return nil, nil
 }
 
-// RemoveRange removes the specified key-value object.
-func (store *Store) RemoveRange(ctx context.Context, key kv.Key) error {
+// Delete deletes all key-value objects whose keys have the specified prefix.
+func (store *Store) Delete(ctx context.Context, key kv.Key) error {
 	return nil
 }
 
