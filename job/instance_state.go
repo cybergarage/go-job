@@ -140,6 +140,8 @@ func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
 				return nil, err
 			}
 			opts = append(opts, WithStateJobState(state))
+		default:
+			opts = append(opts, WithStateOption(map[string]any{key: value}))
 		}
 	}
 	return newInstanceState(opts...), nil
