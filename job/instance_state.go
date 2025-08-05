@@ -98,7 +98,7 @@ func NewInstanceState(opts ...InstanceStateOption) InstanceState {
 
 // newInstanceState creates a new job state record with the current timestamp and the given state.
 func newInstanceState(opts ...InstanceStateOption) InstanceState {
-	is := &instanceState{
+	state := &instanceState{
 		kind:  "",
 		uuid:  uuid.Nil,
 		ts:    time.Now(),
@@ -106,9 +106,9 @@ func newInstanceState(opts ...InstanceStateOption) InstanceState {
 		opts:  make(map[string]any),
 	}
 	for _, opt := range opts {
-		opt(is)
+		opt(state)
 	}
-	return is
+	return state
 }
 
 // NewInstanceStateFromMap creates a new instance state from a map representation.
