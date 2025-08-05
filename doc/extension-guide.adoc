@@ -79,6 +79,8 @@ type LogStore interface {
 
 === kv.Store Interface
 
+`go-job` provides a key-value store interface for implementing custom store plugins easily.
+
 [source,go]
 ----
 // Store represents a key-value store interface.

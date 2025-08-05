@@ -80,6 +80,8 @@ type LogStore interface {
 
 ### kv.Store Interface
 
+`go-job` provides a key-value store interface for implementing custom store plugins easily.
+
 ``` go
 // Store represents a key-value store interface.
 type Store interface {
@@ -95,7 +97,7 @@ type Store interface {
     Scan(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
     // Remove removes and returns the key-value object of the specified key.
     Remove(ctx context.Context, key Key) (Object, error)
-    // Delete deletes the specified key-value objects.
+    // Delete deletes all key-value objects whose keys have the specified prefix.
     Delete(ctx context.Context, key Key) error
     // Start starts the store.
     Start() error
