@@ -50,7 +50,6 @@ func (store *localStore) EnqueueInstance(ctx context.Context, job Instance) erro
 // DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
 func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, error) {
 	now := time.Now()
-
 	var nextJob Instance
 	store.jobs.Range(func(key, value interface{}) bool {
 		if job, ok := value.(Instance); ok {
