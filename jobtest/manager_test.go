@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
 	// "github.com/cybergarage/go-job/job/plugins/store"
 )
 
@@ -161,7 +162,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				t.Errorf("Failed to lookup job instance: %v", err)
 				return
 			}
-			if len(instances) == 1 {
+			switch len(instances) {
+			case 1:
 				if instances[0].UUID() != ji.UUID() {
 					t.Errorf("Expected job instance UUID %s, but got %s", ji.UUID(), instances[0].UUID())
 				}
@@ -177,7 +179,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				if attempt != 1 {
 					t.Errorf("Expected job instance to have 1 attempt, but got %d", attempt)
 				}
-			} else {
+			default:
 				t.Errorf("Expected exactly one job instance, but got %d", len(instances))
 			}
 
@@ -287,8 +289,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	stores := []job.Store{
-		job.NewLocalStore(),
-		// store.NewMemdbStore(),
+		// job.NewLocalStore(),
+		store.NewMemdbStore(),
 	}
 
 	for _, store := range stores {
