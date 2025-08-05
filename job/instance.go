@@ -461,6 +461,9 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 		ji.terminatedAt = time.Now()
 	}
 
+	opts = append(opts,
+		NewArgumentsWith(ji.Arguments()).Map())
+
 	optMap := ji.OptionMap()
 	for _, opt := range opts {
 		switch opt := opt.(type) {
