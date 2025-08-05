@@ -462,7 +462,8 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	}
 
 	opts = append(opts,
-		NewArgumentsWith(ji.Arguments()).Map())
+		ji.arguments.Map(),
+	)
 
 	optMap := ji.OptionMap()
 	for _, opt := range opts {
