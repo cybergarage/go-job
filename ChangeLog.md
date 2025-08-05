@@ -12,14 +12,27 @@
 - Clean before
 
 ## 1.0.0 (2025-08-XX)
+### ✨ Features
+- **gRPC API**: Added full-featured gRPC service enabling remote job operations
+  - Job scheduling and execution management
+  - Real-time job monitoring and status tracking
+  - Cross-platform client support
+- **CLI Tool**: Introduced `jobctl` for command-line job administration
+  - Schedule jobs remotely with arguments and timing options
+  - Query job instances by kind, state, or time range
+  - List and monitor registered jobs
+- **Store Interface**: Introduced Store interface for better abstraction and flexibility in distributed job management
+  - **kv.Store interface**: Introduced a new `kv.Store` interface for key-value storage operations, allowing for flexible backend implementations.
+    - Added etcd and valkey plugins for distributed job management.
+
+### 🛠 Enhancements
 - gRPC API
-- Distributed Store
-  - etcd plugin added
 - CLI command
   - `go-jobctl` for job management
 
 ## v0.9.3 (2025-07-26)
 ### 🛠 Enhancements
+- **Store Interface**: Introduced pluggable Store interface enabling flexible distributed job management across different storage backends
 - Updated scheduling logic to automatically schedule jobs with timing configuration upon registration.
 - Improved QueueStore interface with `DequeueNextInstance` for priority-based job retrieval.
 
