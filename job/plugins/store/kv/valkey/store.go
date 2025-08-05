@@ -60,7 +60,39 @@ func (store *Store) Stop() error {
 	return nil
 }
 
-// Transact returns a new transaction instance.
-func (store *Store) Transact(ctx context.Context, write bool) (kv.Transaction, error) {
-	return newTransaction(store.Client, write), nil
+// Set stores a key-value object. If the key already holds some value, it is overwritten.
+func (store *Store) Set(ctx context.Context, obj kv.Object) error {
+	/*
+		store.cmds = append(store.cmds,
+			store.Client.B().Set().Key(obj.Key().String()).Value(string(obj.Bytes())).Build(),
+			store.Client.B().Exec().Build())
+		var errs error
+		for _, resp := range store.DoMulti(ctx, store.cmds...) {
+			if err := resp.Error(); err != nil {
+				errs = errors.Join(errs, err)
+			}
+		}
+		return errs
+	*/
+	return nil
+}
+
+// Get returns a key-value object of the specified key.
+func (store *Store) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
+	return nil, nil
+}
+
+// GetRange returns a result set of the specified key.
+func (store *Store) GetRange(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
+	return nil, nil
+}
+
+// Remove removes and returns the key-value object of the specified key.
+func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+	return nil, nil
+}
+
+// RemoveRange removes the specified key-value object.
+func (store *Store) RemoveRange(ctx context.Context, key kv.Key) error {
+	return nil
 }

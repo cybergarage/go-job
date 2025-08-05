@@ -23,31 +23,27 @@ import (
 	"github.com/hashicorp/go-memdb"
 )
 
-// transaction represents a Memdb transaction instance.
-type transaction struct {
-	*memdb.Txn
-}
-
-func newTransaction(txn *memdb.Txn) *transaction {
-	return &transaction{
-		Txn: txn,
-	}
-}
-
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
-func (txn *transaction) Set(ctx context.Context, obj kv.Object) error {
-	return txn.Txn.Insert(
+func (db *Database) Set(ctx context.Context, obj kv.Object) error {
+	txn := db.MemDB.Txn(true)
+	err := txn.Insert(
 		tableName,
 		&Object{
 			Key:   obj.Key().Bytes(),
 			Value: obj.Bytes(),
 		},
 	)
+	if err != nil {
+		txn.Abort()
+		return err
+	}
+	txn.Commit()
+	return nil
 }
 
 // Get returns a key-value object of the specified key.
-func (txn *transaction) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
-	it, err := txn.Txn.Get(tableName, idName, key.Bytes())
+func (db *Database) get(ctx context.Context, txn *memdb.Txn, key kv.Key) (kv.Object, error) {
+	it, err := txn.Get(tableName, idName, key.Bytes())
 	if err != nil {
 		return nil, err
 	}
@@ -58,62 +54,72 @@ func (txn *transaction) Get(ctx context.Context, key kv.Key) (kv.Object, error) 
 	return rs.Object()
 }
 
-// GetRange returns a result set of the specified key.
-func (txn *transaction) GetRange(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
-	it, err := txn.Txn.Get(tableName, idName+prefix, key.Bytes())
+// Get returns a key-value object of the specified key.
+func (db *Database) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
+	txn := db.MemDB.Txn(false)
+	obj, err := db.get(ctx, txn, key)
 	if err != nil {
+		txn.Abort()
+		return nil, err
+	}
+	txn.Commit()
+	return obj, nil
+}
+
+// GetRange returns a result set of the specified key.
+func (db *Database) GetRange(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
+	txn := db.MemDB.Txn(false)
+	it, err := txn.Get(tableName, idName+prefix, key.Bytes())
+	if err != nil {
+		txn.Abort()
 		return nil, err
 	}
 	return newResultSetWith(it), nil
 }
 
-// Remove removes the specified key-value object.
-func (txn *transaction) Remove(ctx context.Context, key kv.Key) error {
-	obj, err := txn.Get(ctx, key)
-	if err != nil {
-		return err
-	}
-	err = txn.Txn.Delete(
+func (db *Database) remove(ctx context.Context, txn *memdb.Txn, kvObj kv.Object) error {
+	return txn.Delete(
 		tableName,
 		&Object{
-			Key:   key.Bytes(),
-			Value: obj.Bytes(),
+			Key:   kvObj.Key().Bytes(),
+			Value: kvObj.Bytes(),
 		},
 	)
+}
+
+// Remove removes and returns the key-value object of the specified key.
+func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+	txn := db.MemDB.Txn(true)
+	obj, err := db.get(ctx, txn, key)
 	if err != nil {
-		if errors.Is(err, memdb.ErrNotFound) {
-			return kv.NewErrObjectNotExist(key)
-		}
-		return err
+		txn.Abort()
+		return nil, err
 	}
-	return nil
+	err = db.remove(ctx, txn, obj)
+	if err != nil {
+		txn.Abort()
+		return nil, err
+	}
+	txn.Commit()
+	return obj, nil
 }
 
 // RemoveRange removes the specified key-value object.
-func (txn *transaction) RemoveRange(ctx context.Context, key kv.Key) error {
-	_, err := txn.Txn.DeleteAll(tableName, idName+prefix, key.Bytes())
+func (db *Database) RemoveRange(ctx context.Context, key kv.Key) error {
+	txn := db.MemDB.Txn(true)
+	_, err := txn.DeleteAll(tableName, idName+prefix, key.Bytes())
 	if err != nil {
+		txn.Abort()
 		if errors.Is(err, memdb.ErrNotFound) {
 			return kv.NewErrObjectNotExist(key)
 		}
 		return err
 	}
-	return nil
-}
-
-// Commit commits this transaction.
-func (txn *transaction) Commit(ctx context.Context) error {
-	txn.Txn.Commit()
-	return nil
-}
-
-// Cancel cancels this transaction.
-func (txn *transaction) Cancel(ctx context.Context) error {
-	txn.Txn.Abort()
+	txn.Commit()
 	return nil
 }
 
 // SetTimeout sets the timeout of this transaction.
-func (txn *transaction) SetTimeout(t time.Duration) error {
+func (db *Database) SetTimeout(t time.Duration) error {
 	return nil
 }

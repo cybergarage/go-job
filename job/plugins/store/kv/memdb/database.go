@@ -15,9 +15,6 @@
 package memdb
 
 import (
-	"context"
-
-	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/hashicorp/go-memdb"
 )
 
@@ -57,9 +54,4 @@ func NewDatabase() (*Database, error) {
 	return &Database{
 		MemDB: memDB,
 	}, nil
-}
-
-// Transact begin a new transaction.
-func (db *Database) Transact(ctx context.Context, write bool) (kv.Transaction, error) {
-	return newTransaction(db.MemDB.Txn(write)), nil
 }

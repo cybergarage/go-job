@@ -14,21 +14,17 @@
 
 package kv
 
-import (
-	"context"
-)
-
 // Option represents a option.
 type Option = any
 
 // Store represents a store interface.
 type Store interface {
-	// Config returns the store configuration.
+	// Config defines the store configuration.
 	Config
+	// Transaction defines the transaction interface.
+	Transaction
 	// Name returns the name of the store.
 	Name() string
-	// Transact begin a new transaction.
-	Transact(ctx context.Context, write bool) (Transaction, error)
 	// Start starts the store.
 	Start() error
 	// Stop stops the store.

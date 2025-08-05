@@ -16,6 +16,7 @@ package etcd
 
 import (
 	"context"
+	"time"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	v3 "go.etcd.io/etcd/client/v3"
@@ -67,7 +68,32 @@ func (store *Store) Stop() error {
 	return err
 }
 
-// Transact returns a new transaction instance.
-func (store *Store) Transact(ctx context.Context, write bool) (kv.Transaction, error) {
-	return newTransaction(store.Client, write), nil
+// Set stores a key-value object. If the key already holds some value, it is overwritten.
+func (store *Store) Set(ctx context.Context, obj kv.Object) error {
+	return nil
+}
+
+// Get returns a key-value object of the specified key.
+func (store *Store) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
+	return nil, nil
+}
+
+// GetRange returns a result set of the specified key.
+func (store *Store) GetRange(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
+	return nil, nil
+}
+
+// Remove removes and returns the key-value object of the specified key.
+func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+	return nil, nil
+}
+
+// RemoveRange removes the specified key-value object.
+func (store *Store) RemoveRange(ctx context.Context, key kv.Key) error {
+	return nil
+}
+
+// SetTimeout sets the timeout of this transaction.
+func (store *Store) SetTimeout(t time.Duration) error {
+	return nil
 }

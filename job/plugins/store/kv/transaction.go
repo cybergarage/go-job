@@ -26,12 +26,8 @@ type Transaction interface {
 	Get(ctx context.Context, key Key) (Object, error)
 	// GetRange returns a result set of the specified key.
 	GetRange(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
-	// Remove removes the specified key-value object.
-	Remove(ctx context.Context, key Key) error
+	// Remove removes and returns the key-value object of the specified key.
+	Remove(ctx context.Context, key Key) (Object, error)
 	// RemoveRange removes the specified key-value objects.
 	RemoveRange(ctx context.Context, key Key) error
-	// Commit commits this transaction.
-	Commit(ctx context.Context) error
-	// Cancel cancels this transaction.
-	Cancel(ctx context.Context) error
 }

@@ -16,7 +16,6 @@ package store
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -42,26 +41,14 @@ func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) err
 	if err != nil {
 		return err
 	}
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-	if err := tx.Set(ctx, obj); err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit(ctx)
+	return store.Set(ctx, obj)
 }
 
 // DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
 func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, error) {
 	now := time.Now()
 
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return nil, err
-	}
-
-	rs, err := tx.GetRange(ctx, kv.NewInstanceListKey())
+	rs, err := store.GetRange(ctx, kv.NewInstanceListKey())
 	if err != nil {
 		return nil, err
 	}
@@ -70,11 +57,11 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 	for rs.Next() {
 		obj, err := rs.Object()
 		if err != nil {
-			return nil, errors.Join(err, tx.Cancel(ctx))
+			return nil, err
 		}
 		job, err := kv.NewInstanceFromBytes(obj.Bytes())
 		if err != nil {
-			return nil, errors.Join(err, tx.Cancel(ctx))
+			return nil, err
 		}
 		scheduledAt := job.ScheduledAt()
 		if scheduledAt.After(now) {
@@ -89,48 +76,31 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 	}
 
 	if nextJob == nil {
-		return nil, tx.Commit(ctx)
+		return nil, nil
 	}
 
 	key := kv.NewInstanceKeyFrom(nextJob)
-
-	err = tx.Remove(ctx, key)
+	_, err = store.Remove(ctx, key)
 	if err != nil {
-		return nil, errors.Join(err, tx.Cancel(ctx))
+		return nil, err
 	}
 
-	return nextJob, tx.Commit(ctx)
+	return nextJob, nil
 }
 
 // DequeueInstance removes a job instance from the store by its unique identifier.
 func (store *kvStore) DequeueInstance(ctx context.Context, job job.Instance) error {
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-
 	key := kv.NewInstanceKeyFrom(job)
-
-	err = tx.Remove(ctx, key)
-	if err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-
-	return tx.Commit(ctx)
+	_, err := store.Remove(ctx, key)
+	return err
 }
 
 // ListInstances lists all job instances in the store.
 func (store *kvStore) ListInstances(ctx context.Context) ([]job.Instance, error) {
-	tx, err := store.Transact(ctx, true)
+	rs, err := store.GetRange(ctx, kv.NewInstanceListKey())
 	if err != nil {
 		return nil, err
 	}
-
-	rs, err := tx.GetRange(ctx, kv.NewInstanceListKey())
-	if err != nil {
-		return nil, err
-	}
-
 	jobs := make([]job.Instance, 0)
 	for rs.Next() {
 		obj, err := rs.Object()
@@ -143,21 +113,12 @@ func (store *kvStore) ListInstances(ctx context.Context) ([]job.Instance, error)
 		}
 		jobs = append(jobs, job)
 	}
-
 	return jobs, nil
 }
 
 // ClearInstances clears all job instances in the store.
 func (store *kvStore) ClearInstances(ctx context.Context) error {
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-	err = tx.RemoveRange(ctx, kv.NewInstanceListKey())
-	if err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit(ctx)
+	return store.RemoveRange(ctx, kv.NewInstanceListKey())
 }
 
 // LogInstanceState adds a new state record for a job instance.
@@ -170,29 +131,15 @@ func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceSt
 	if err != nil {
 		return err
 	}
-
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-	if err := tx.Set(ctx, obj); err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit(ctx)
+	return store.Set(ctx, obj)
 }
 
 // LookupInstanceHistory lists all state records for a job instance.
 func (store *kvStore) LookupInstanceHistory(ctx context.Context, ji job.Instance) (job.InstanceHistory, error) {
-	tx, err := store.Transact(ctx, true)
+	rs, err := store.GetRange(ctx, kv.NewInstanceStateKeyFrom(ji.UUID()))
 	if err != nil {
 		return nil, err
 	}
-
-	rs, err := tx.GetRange(ctx, kv.NewInstanceStateKeyFrom(ji.UUID()))
-	if err != nil {
-		return nil, err
-	}
-
 	states := make([]job.InstanceState, 0)
 	for rs.Next() {
 		obj, err := rs.Object()
@@ -205,26 +152,18 @@ func (store *kvStore) LookupInstanceHistory(ctx context.Context, ji job.Instance
 		}
 		states = append(states, state)
 	}
-
 	sort.Slice(states, func(i, j int) bool {
 		return states[i].Timestamp().Before(states[j].Timestamp())
 	})
-
 	return states, nil
 }
 
 // ListInstanceHistory lists all state records for all job instances. The returned history is sorted by their timestamp.
 func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHistory, error) {
-	tx, err := store.Transact(ctx, true)
+	rs, err := store.GetRange(ctx, kv.NewInstanceStateListKey())
 	if err != nil {
 		return nil, err
 	}
-
-	rs, err := tx.GetRange(ctx, kv.NewInstanceStateListKey())
-	if err != nil {
-		return nil, err
-	}
-
 	states := make([]job.InstanceState, 0)
 	for rs.Next() {
 		obj, err := rs.Object()
@@ -237,25 +176,15 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHist
 		}
 		states = append(states, state)
 	}
-
 	sort.Slice(states, func(i, j int) bool {
 		return states[i].Timestamp().Before(states[j].Timestamp())
 	})
-
 	return states, nil
 }
 
 // ClearInstanceHistory clears all state records for a job instance.
 func (store *kvStore) ClearInstanceHistory(ctx context.Context) error {
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-	err = tx.RemoveRange(ctx, kv.NewInstanceStateListKey())
-	if err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit(ctx)
+	return store.RemoveRange(ctx, kv.NewInstanceStateListKey())
 }
 
 // Logf logs a formatted message at the specified log level.
@@ -266,7 +195,6 @@ func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.Lo
 		job.WithLogLevel(logLevel),
 		job.WithLogMessage(fmt.Sprintf(format, args...)),
 	)
-
 	keySuffixes := []string{}
 	if store.UniqueKeys() {
 		keySuffixes = append(keySuffixes, log.Timestamp().String())
@@ -275,15 +203,7 @@ func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.Lo
 	if err != nil {
 		return err
 	}
-
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-	if err := tx.Set(ctx, obj); err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit(ctx)
+	return store.Set(ctx, obj)
 }
 
 // Infof logs an informational message for a job instance.
@@ -303,16 +223,10 @@ func (store *kvStore) Errorf(ctx context.Context, ji job.Instance, format string
 
 // LookupInstanceLogs lists all log entries for a job instance. The returned logs are sorted by their timestamp.
 func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) ([]job.Log, error) {
-	tx, err := store.Transact(ctx, true)
+	rs, err := store.GetRange(ctx, kv.NewLogKeyFrom(ji.UUID()))
 	if err != nil {
 		return nil, err
 	}
-
-	rs, err := tx.GetRange(ctx, kv.NewLogKeyFrom(ji.UUID()))
-	if err != nil {
-		return nil, err
-	}
-
 	logs := make([]job.Log, 0)
 	for rs.Next() {
 		obj, err := rs.Object()
@@ -325,23 +239,13 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 		}
 		logs = append(logs, log)
 	}
-
 	sort.Slice(logs, func(i, j int) bool {
 		return logs[i].Timestamp().Before(logs[j].Timestamp())
 	})
-
 	return logs, nil
 }
 
 // ClearInstanceLogs clears all log entries for a job instance.
 func (store *kvStore) ClearInstanceLogs(ctx context.Context) error {
-	tx, err := store.Transact(ctx, true)
-	if err != nil {
-		return err
-	}
-	err = tx.RemoveRange(ctx, kv.NewLogListKey())
-	if err != nil {
-		return errors.Join(err, tx.Cancel(ctx))
-	}
-	return tx.Commit(ctx)
+	return store.RemoveRange(ctx, kv.NewLogListKey())
 }
