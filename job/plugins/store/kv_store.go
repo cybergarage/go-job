@@ -165,17 +165,17 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHist
 	if err != nil {
 		return nil, err
 	}
-	states := make([]job.InstanceState, 0)
-	for rs.Next() {
-		obj, err := rs.Object()
-		if err != nil {
-			return nil, err
-		}
+	objs, err := kvutil.ReadAll(rs)
+	if err != nil {
+		return nil, err
+	}
+	states := make([]job.InstanceState, 0, len(objs))
+	for n, obj := range objs {
 		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
 		if err != nil {
 			return nil, err
 		}
-		states = append(states, state)
+		states[n] = state
 	}
 	sort.Slice(states, func(i, j int) bool {
 		return states[i].Timestamp().Before(states[j].Timestamp())
@@ -183,9 +183,33 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHist
 	return states, nil
 }
 
-// ClearInstanceHistory clears all state records for a job instance.
-func (store *kvStore) ClearInstanceHistory(ctx context.Context) error {
-	return store.Delete(ctx, kv.NewInstanceStateListKey())
+// ClearInstanceHistory clears all state records for a job instance that match the specified filter.
+func (store *kvStore) ClearInstanceHistory(ctx context.Context, filter job.Filter) error {
+	if filter == nil || filter.IsUnset() {
+		return store.Delete(ctx, kv.NewInstanceStateListKey())
+	}
+	rs, err := store.Scan(ctx, kv.NewInstanceStateListKey())
+	if err != nil {
+		return err
+	}
+	objs, err := kvutil.ReadAll(rs)
+	if err != nil {
+		return err
+	}
+	for _, obj := range objs {
+		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
+		if err != nil {
+			return err
+		}
+		if !filter.Matches(state) {
+			continue
+		}
+		err = store.Delete(ctx, kv.NewInstanceStateKeyFrom(state.UUID()))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Logf logs a formatted message at the specified log level.
@@ -232,13 +256,13 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 	if err != nil {
 		return nil, err
 	}
-	logs := make([]job.Log, 0)
-	for _, obj := range objs {
+	logs := make([]job.Log, 0, len(objs))
+	for n, obj := range objs {
 		log, err := kv.NewLogFromBytes(obj.Bytes())
 		if err != nil {
 			return nil, err
 		}
-		logs = append(logs, log)
+		logs[n] = log
 	}
 	sort.Slice(logs, func(i, j int) bool {
 		return logs[i].Timestamp().Before(logs[j].Timestamp())

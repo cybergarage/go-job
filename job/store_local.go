@@ -129,9 +129,18 @@ func (store *localStore) ListInstanceHistory(ctx context.Context) (InstanceHisto
 	return store.history, nil
 }
 
-// ClearInstanceHistory clears all state records for a job instance.
-func (store *localStore) ClearInstanceHistory(ctx context.Context) error {
-	store.history = []InstanceState{}
+// ClearInstanceHistory clears all state records for a job instance that match the specified filter.
+func (store *localStore) ClearInstanceHistory(ctx context.Context, filter Filter) error {
+	store.Lock()
+	defer store.Unlock()
+	states := make([]InstanceState, 0)
+	for _, state := range store.history {
+		if filter == nil || filter.Matches(state) {
+			continue
+		}
+		states = append(states, state)
+	}
+	store.history = states
 	return nil
 }
 
@@ -183,7 +192,7 @@ func (store *localStore) ClearInstanceLogs(ctx context.Context, filter Filter) e
 	defer store.Unlock()
 	var logs []Log
 	for _, log := range store.logs {
-		if filter == nil || !filter.Matches(log) {
+		if filter == nil || filter.Matches(log) {
 			continue
 		}
 		logs = append(logs, log)
