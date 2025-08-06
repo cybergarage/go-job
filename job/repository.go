@@ -54,6 +54,7 @@ func NewRepository(opts ...RepositoryOption) *repository {
 		store:     NewLocalStore(),
 		Scheduler: nil,
 		Registry:  nil,
+		History:   nil,
 	}
 
 	for _, opt := range opts {

@@ -89,6 +89,7 @@ func WithLogTimestamp(ts time.Time) LogOption {
 // NewLog creates a new log entry with the specified options.
 func NewLog(opts ...LogOption) Log {
 	l := &log{
+		kind:  "",
 		uuid:  uuid.Nil,
 		ts:    time.Now(),
 		level: LogInfo,

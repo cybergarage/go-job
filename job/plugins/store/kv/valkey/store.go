@@ -27,7 +27,6 @@ type StoreOption = valkey.ClientOption
 // Store represents a Memdb store service instance.
 type Store struct {
 	kv.Config
-	cofig StoreOption
 	valkey.Client
 }
 

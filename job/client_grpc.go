@@ -152,7 +152,11 @@ func (client *grpcClient) ListRegisteredJobs() ([]Job, error) {
 func (client *grpcClient) LookupInstances(query Query) ([]Instance, error) {
 	c := v1.NewJobServiceClient(client.conn)
 
-	pbQuery := &v1.Query{}
+	pbQuery := &v1.Query{
+		Kind:  nil,
+		Uuid:  nil,
+		State: nil,
+	}
 	kind, ok := query.Kind()
 	if ok {
 		pbQuery.Kind = &kind

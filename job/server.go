@@ -53,9 +53,11 @@ func NewServer(opts ...any) (Server, error) {
 		return nil, err
 	}
 	return &server{
-		manager: mgr,
-		addr:    DefaultGrpcAddr,
-		port:    DefaultGrpcPort,
+		manager:                       mgr,
+		addr:                          DefaultGrpcAddr,
+		port:                          DefaultGrpcPort,
+		grpcServer:                    nil,
+		UnimplementedJobServiceServer: v1.UnimplementedJobServiceServer{},
 	}, nil
 }
 
@@ -192,9 +194,20 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 
 	return &v1.ScheduleJobResponse{
 		Instance: &v1.JobInstance{
-			Kind:  kind,
-			Uuid:  postJob.UUID().String(),
-			State: v1.JobState_JOB_STATE_SCHEDULED,
+			Kind:         kind,
+			Uuid:         postJob.UUID().String(),
+			State:        v1.JobState_JOB_STATE_SCHEDULED,
+			Arguments:    nil,
+			Results:      nil,
+			Error:        nil,
+			CreatedAt:    nil,
+			ScheduledAt:  nil,
+			ProcessedAt:  nil,
+			CompletedAt:  nil,
+			TerminatedAt: nil,
+			CancelledAt:  nil,
+			TimedOutAt:   nil,
+			AttemptCount: nil,
 		},
 	}, nil
 }
@@ -212,6 +225,8 @@ func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegist
 			Kind:         job.Kind(),
 			Description:  job.Description(),
 			RegisteredAt: timestamppb.New(job.RegisteredAt()),
+			CronSpec:     nil,
+			ScheduleAt:   nil,
 		})
 	}
 
@@ -256,10 +271,20 @@ func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstanc
 			return nil, err
 		}
 		instances = append(instances, &v1.JobInstance{
-			Kind:  instance.Kind(),
-			Uuid:  instance.UUID().String(),
-			State: state,
-		})
+			Kind:         instance.Kind(),
+			Uuid:         instance.UUID().String(),
+			State:        state,
+			Arguments:    nil,
+			Results:      nil,
+			Error:        nil,
+			CreatedAt:    nil,
+			ScheduledAt:  nil,
+			ProcessedAt:  nil,
+			CompletedAt:  nil,
+			TerminatedAt: nil,
+			CancelledAt:  nil,
+			TimedOutAt:   nil,
+			AttemptCount: nil})
 	}
 
 	return &v1.LookupInstancesResponse{
