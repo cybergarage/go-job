@@ -54,10 +54,8 @@ type HistoryStore interface {
 type StateStore interface {
     // LogInstanceState adds a new state record for a job instance.
     LogInstanceState(ctx context.Context, state InstanceState) error
-    // LookupInstanceHistory lists all state records for a job instance. The returned history is sorted by their timestamp.
-    LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error)
-    // ListInstanceHistory lists all state records for all job instances. The returned history is sorted by their timestamp.
-    ListInstanceHistory(ctx context.Context) (InstanceHistory, error)
+	// LookupInstanceHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
+	LookupInstanceHistory(ctx context.Context, query Query) (InstanceHistory, error)
 	// ClearInstanceHistory clears all state records for a job instance that match the specified filter.
 	ClearInstanceHistory(ctx context.Context, filter Filter) error
 }
@@ -70,8 +68,8 @@ type LogStore interface {
     Warnf(ctx context.Context, job Instance, format string, args ...any) error
     // Errorf logs an error message for a job instance.
     Errorf(ctx context.Context, job Instance, format string, args ...any) error
-    // LookupInstanceLogs lists all log entries for a job instance. The returned logs are sorted by their timestamp.
-    LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error)
+	// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+	LookupInstanceLogs(ctx context.Context, query Query) ([]Log, error)
 	// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
 	ClearInstanceLogs(ctx context.Context, filter Filter) error
 }
