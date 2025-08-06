@@ -40,8 +40,7 @@ linters:
     - varnamelen
     - wrapcheck
     - wsl
-    - testableexamples
-    - funcorder
+    - maintidx
   settings:
     gocritic:
       disabled-checks:
@@ -80,6 +79,7 @@ linters:
           - exhaustruct
           - goconst
           - gosec
+          - forcetypeassert
         path: _test\.go
     paths:
       - third_party$
