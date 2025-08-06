@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-job/job/encoding"
-
 	"github.com/google/uuid"
 )
 

@@ -24,7 +24,6 @@ import (
 )
 
 func TestExecutor(t *testing.T) {
-
 	type concatString struct {
 		a string
 		b string

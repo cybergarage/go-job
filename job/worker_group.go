@@ -96,7 +96,7 @@ func (g *workerGroup) Start() error {
 
 // Stop stops all workers in the group.
 func (g *workerGroup) Stop() error {
-	for i := 0; i < len(g.workers); i++ {
+	for i := range len(g.workers) {
 		if err := g.workers[i].Stop(); err != nil {
 			return err
 		}

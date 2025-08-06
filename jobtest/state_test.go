@@ -21,7 +21,6 @@ import (
 )
 
 func TestJobState(t *testing.T) {
-
 	tests := []struct {
 		state job.JobState
 	}{

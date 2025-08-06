@@ -151,10 +151,7 @@ func (w *worker) Run() error {
 
 // StopWithWait stops the worker and waits for it to finish processing jobs.
 func (w *worker) StopWithWait() error {
-	for {
-		if !w.IsProcessing() {
-			break
-		}
+	for w.IsProcessing() {
 		time.Sleep(1 * time.Second) // Wait for worker to finish processing
 	}
 	return w.Stop()

@@ -60,7 +60,7 @@ func (store *Store) Stop() error {
 	if store.Client == nil {
 		return nil
 	}
-	err := store.Client.Close()
+	err := store.Close()
 	if err == nil {
 		store.Client = nil
 		return nil

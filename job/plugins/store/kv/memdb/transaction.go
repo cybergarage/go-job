@@ -25,7 +25,7 @@ import (
 
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (db *Database) Set(ctx context.Context, obj kv.Object) error {
-	txn := db.MemDB.Txn(true)
+	txn := db.Txn(true)
 	err := txn.Insert(
 		tableName,
 		&Object{
@@ -56,7 +56,7 @@ func (db *Database) get(ctx context.Context, txn *memdb.Txn, key kv.Key) (kv.Obj
 
 // Get returns a key-value object of the specified key.
 func (db *Database) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
-	txn := db.MemDB.Txn(false)
+	txn := db.Txn(false)
 	obj, err := db.get(ctx, txn, key)
 	if err != nil {
 		txn.Abort()
@@ -68,7 +68,7 @@ func (db *Database) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
 
 // Scan returns a result set of all key-value objects whose keys have the specified prefix.
 func (db *Database) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
-	txn := db.MemDB.Txn(false)
+	txn := db.Txn(false)
 	it, err := txn.Get(tableName, idName+prefix, key.Bytes())
 	if err != nil {
 		txn.Abort()
@@ -89,7 +89,7 @@ func (db *Database) remove(ctx context.Context, txn *memdb.Txn, kvObj kv.Object)
 
 // Remove removes and returns the key-value object of the specified key.
 func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
-	txn := db.MemDB.Txn(true)
+	txn := db.Txn(true)
 	obj, err := db.get(ctx, txn, key)
 	if err != nil {
 		txn.Abort()
@@ -106,7 +106,7 @@ func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
 func (db *Database) Delete(ctx context.Context, key kv.Key) error {
-	txn := db.MemDB.Txn(true)
+	txn := db.Txn(true)
 	_, err := txn.DeleteAll(tableName, idName+prefix, key.Bytes())
 	if err != nil {
 		txn.Abort()
