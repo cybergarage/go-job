@@ -1,7 +1,6 @@
 # ChangeLog
 
 ## 1.1.0 (2025-0X-XX)
-- Job client
 - Support 
   - Cancellation of job instances
   - Timeout handling for job instances
@@ -9,7 +8,10 @@
 - Prometheus
 - Executor
   - Special arguments for job instances
-- Clean before
+- Cleaner worker
+- Query 
+  - limit and offset
+  - before and after filters
 
 ## 1.0.0 (2025-08-XX)
 ### ✨ Features
@@ -24,11 +26,6 @@
 - **Store Interface**: Introduced Store interface for better abstraction and flexibility in distributed job management
   - **kv.Store interface**: Introduced a new `kv.Store` interface for key-value storage operations, allowing for flexible backend implementations.
     - Added etcd and valkey plugins for distributed job management.
-
-### 🛠 Enhancements
-- gRPC API
-- CLI command
-  - `go-jobctl` for job management
 
 ## v0.9.3 (2025-07-26)
 ### 🛠 Enhancements
