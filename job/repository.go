@@ -72,10 +72,13 @@ func (repo *repository) Clear() error {
 	registryCleaner := func(ctx context.Context) error {
 		return repo.Registry.Clear()
 	}
+	logCleaner := func(ctx context.Context) error {
+		return repo.store.ClearInstanceLogs(ctx, NewFilter())
+	}
 	clearners := []func(context.Context) error{
 		registryCleaner,
 		repo.store.ClearInstanceHistory,
-		repo.store.ClearInstanceLogs,
+		logCleaner,
 		repo.store.ClearInstances,
 	}
 	for _, clear := range clearners {

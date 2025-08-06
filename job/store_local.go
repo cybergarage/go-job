@@ -22,6 +22,7 @@ import (
 )
 
 type localStore struct {
+	sync.Mutex
 	jobs    sync.Map
 	history []InstanceState
 	logs    []Log
@@ -30,6 +31,7 @@ type localStore struct {
 // NewLocalStore creates a new in-memory job store.
 func NewLocalStore() Store {
 	return &localStore{
+		Mutex:   sync.Mutex{},
 		jobs:    sync.Map{},
 		history: []InstanceState{},
 		logs:    []Log{},
@@ -135,6 +137,8 @@ func (store *localStore) ClearInstanceHistory(ctx context.Context) error {
 
 // Logf logs a formatted message at the specified log level.
 func (store *localStore) Logf(ctx context.Context, job Instance, logLevel LogLevel, format string, args ...any) error {
+	store.Lock()
+	defer store.Unlock()
 	log := NewLog(
 		WithLogKind(job.Kind()),
 		WithLogUUID(job.UUID()),
@@ -162,6 +166,8 @@ func (store *localStore) Errorf(ctx context.Context, job Instance, format string
 
 // LookupInstanceLogs lists all log entries for a job instance.
 func (store *localStore) LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
+	store.Lock()
+	defer store.Unlock()
 	var logs []Log
 	for _, log := range store.logs {
 		if log.UUID() == job.UUID() {
@@ -171,9 +177,18 @@ func (store *localStore) LookupInstanceLogs(ctx context.Context, job Instance) (
 	return logs, nil
 }
 
-// ClearInstanceLogs clears all log entries for a job instance.
-func (store *localStore) ClearInstanceLogs(ctx context.Context) error {
-	store.logs = []Log{}
+// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
+func (store *localStore) ClearInstanceLogs(ctx context.Context, filter Filter) error {
+	store.Lock()
+	defer store.Unlock()
+	var logs []Log
+	for _, log := range store.logs {
+		if filter == nil || !filter.Matches(log) {
+			continue
+		}
+		logs = append(logs, log)
+	}
+	store.logs = logs
 	return nil
 }
 

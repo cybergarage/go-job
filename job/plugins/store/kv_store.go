@@ -22,6 +22,7 @@ import (
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
+	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
 
 type kvStore struct {
@@ -227,12 +228,12 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 	if err != nil {
 		return nil, err
 	}
+	objs, err := kvutil.ReadAll(rs)
+	if err != nil {
+		return nil, err
+	}
 	logs := make([]job.Log, 0)
-	for rs.Next() {
-		obj, err := rs.Object()
-		if err != nil {
-			return nil, err
-		}
+	for _, obj := range objs {
 		log, err := kv.NewLogFromBytes(obj.Bytes())
 		if err != nil {
 			return nil, err
@@ -245,7 +246,32 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 	return logs, nil
 }
 
-// ClearInstanceLogs clears all log entries for a job instance.
-func (store *kvStore) ClearInstanceLogs(ctx context.Context) error {
-	return store.Delete(ctx, kv.NewLogListKey())
+// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
+func (store *kvStore) ClearInstanceLogs(ctx context.Context, filter job.Filter) error {
+	if filter == nil || filter.IsUnset() {
+		return store.Delete(ctx, kv.NewLogListKey())
+	}
+
+	rs, err := store.Scan(ctx, kv.NewLogListKey())
+	if err != nil {
+		return err
+	}
+	objs, err := kvutil.ReadAll(rs)
+	if err != nil {
+		return err
+	}
+	for _, obj := range objs {
+		log, err := kv.NewLogFromBytes(obj.Bytes())
+		if err != nil {
+			return err
+		}
+		if !filter.Matches(log) {
+			continue
+		}
+		err = store.Delete(ctx, kv.NewLogKeyFrom(log.UUID()))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
