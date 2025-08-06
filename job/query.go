@@ -112,6 +112,9 @@ func (q *query) State() (JobState, bool) {
 
 // IsAll returns true if the query matches all objects (no query criteria set).
 func (q *query) IsAll() bool {
+	if q == nil {
+		return true
+	}
 	_, hasUUID := q.UUID()
 	_, hasKind := q.Kind()
 	_, hasState := q.State()
@@ -120,6 +123,9 @@ func (q *query) IsAll() bool {
 
 // Matches checks if the specified object matches the query criteria.
 func (q *query) Matches(v any) bool {
+	if q.IsAll() {
+		return true
+	}
 	switch v := v.(type) {
 	case Instance:
 		if uuid, ok := q.UUID(); ok && uuid != v.UUID() {
@@ -129,6 +135,25 @@ func (q *query) Matches(v any) bool {
 			return false
 		}
 		if state, ok := q.State(); ok && state != v.State() {
+			return false
+		}
+		return true
+	case InstanceState:
+		if uuid, ok := q.UUID(); ok && uuid != v.UUID() {
+			return false
+		}
+		if kind, ok := q.Kind(); ok && kind != v.Kind() {
+			return false
+		}
+		if state, ok := q.State(); ok && state != v.State() {
+			return false
+		}
+		return true
+	case Log:
+		if uuid, ok := q.UUID(); ok && uuid != v.UUID() {
+			return false
+		}
+		if kind, ok := q.Kind(); ok && kind != v.Kind() {
 			return false
 		}
 		return true
