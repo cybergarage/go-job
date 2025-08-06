@@ -23,7 +23,7 @@ import (
 func MapFrom(s any) (map[string]any, error) {
 	jsonData, err := json.Marshal(s)
 	if err != nil {
-		return nil, fmt.Errorf("JSON marshal error: %v", err)
+		return nil, fmt.Errorf("JSON marshal error: %w", err)
 	}
 
 	var m map[string]any
@@ -61,7 +61,7 @@ func MergeMaps(m1, m2 map[string]any) map[string]any {
 func MapToJSON(m map[string]any) (string, error) {
 	jsonData, err := json.Marshal(m)
 	if err != nil {
-		return "", fmt.Errorf("JSON marshal error: %v", err)
+		return "", fmt.Errorf("JSON marshal error: %w", err)
 	}
 	return string(jsonData), nil
 }
