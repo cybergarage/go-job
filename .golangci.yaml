@@ -40,6 +40,8 @@ linters:
     - varnamelen
     - wrapcheck
     - wsl
+    - testableexamples
+    - funcorder
   settings:
     gocritic:
       disabled-checks:
