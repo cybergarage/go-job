@@ -24,6 +24,6 @@ const (
 	DefaultGrpcAddr = ""
 	// DefaultGrpcPort is the default port number of the gRPC server.
 	DefaultGrpcPort = 50053
-	// DefaultApiVersion is the default API version.
-	DefaultApiVersion = "v1"
+	// DefaultAPIVersion is the default API version.
+	DefaultAPIVersion = "v1"
 )
