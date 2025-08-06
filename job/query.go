@@ -26,10 +26,15 @@ type Query interface {
 	Kind() (string, bool)
 	// State returns the state of the job instance.
 	State() (JobState, bool)
+	// IsAll returns true if the query matches all objects (no query criteria set).
+	IsAll() bool
+	// Matches checks if the specified object matches the query criteria.
+	Matches(v any) bool
 }
 
 // QueryOption is a function that configures a job query.
 type QueryOption func(*query)
+
 type query struct {
 	uuid  uuid.UUID
 	kind  string
@@ -92,4 +97,30 @@ func (q *query) State() (JobState, bool) {
 		return JobStateUnset, false
 	}
 	return q.state, true
+}
+
+// IsAll returns true if the query matches all objects (no query criteria set).
+func (q *query) IsAll() bool {
+	_, hasUUID := q.UUID()
+	_, hasKind := q.Kind()
+	_, hasState := q.State()
+	return !hasUUID && !hasKind && !hasState
+}
+
+// Matches checks if the specified object matches the query criteria.
+func (q *query) Matches(v any) bool {
+	switch v := v.(type) {
+	case Instance:
+		if uuid, ok := q.UUID(); ok && uuid != v.UUID() {
+			return false
+		}
+		if kind, ok := q.Kind(); ok && kind != v.Kind() {
+			return false
+		}
+		if state, ok := q.State(); ok && state != v.State() {
+			return false
+		}
+		return true
+	}
+	return false
 }

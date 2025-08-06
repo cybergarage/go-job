@@ -245,19 +245,7 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 		if query == nil {
 			return true // No query means match all
 		}
-		uuid, ok := query.UUID()
-		if ok && (instance.UUID() != uuid) {
-			return false
-		}
-		kind, ok := query.Kind()
-		if ok && (instance.Kind() != kind) {
-			return false
-		}
-		state, ok := query.State()
-		if ok && (instance.State() != state) {
-			return false
-		}
-		return true
+		return query.Matches(instance)
 	}
 
 	var instances []Instance
