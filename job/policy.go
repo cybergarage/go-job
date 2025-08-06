@@ -124,6 +124,7 @@ func WithBackoffStrategy(fn BackoffStrategy) PolicyOption {
 func WithBackoffDuration(duration time.Duration) PolicyOption {
 	return func(s *policy) {
 		s.backoffFn = func() time.Duration {
+			// #nosec G404 - jitter calculation doesn't require cryptographic randomness
 			return time.Duration(float64(duration) * (0.8 + 0.4*(rand.Float64())))
 		}
 	}
