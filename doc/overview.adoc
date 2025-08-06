@@ -315,7 +315,10 @@ With `Manager::LookupInstanceHistory`, you can retrieve the state history for th
 
 [source,go]
 ----
-states := mgr.LookupInstanceHistory(ji)
+query := job.NewQuery(
+    job.WithQueryInstance(ji), // filter by specific job instance
+)
+states := mgr.LookupInstanceHistory(query)
 for _, s := range states {
     fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
 }
@@ -329,7 +332,10 @@ With `Manager::LookupInstanceLogs`, you can retrieve the log history for the spe
 
 [source,go]
 ----
-logs := mgr.LookupInstanceLogs(ji)
+query := job.NewQuery(
+    job.WithQueryInstance(ji), // filter by specific job instance
+)
+logs := mgr.LookupInstanceLogs(query)
 for _, log := range logs {
     fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
 }

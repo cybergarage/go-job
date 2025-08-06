@@ -306,7 +306,10 @@ You can use manager methods to access the processing history and logs of any spe
 With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
 
 ``` go
-states := mgr.LookupInstanceHistory(ji)
+query := job.NewQuery(
+    job.WithQueryInstance(ji), // filter by specific job instance
+)
+states := mgr.LookupInstanceHistory(query)
 for _, s := range states {
     fmt.Printf("State: %s at %v\n", s.State(), s.Timestamp())
 }
@@ -319,7 +322,10 @@ For details on job state transitions, refer to [Design and Architecture](design.
 With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
 
 ``` go
-logs := mgr.LookupInstanceLogs(ji)
+query := job.NewQuery(
+    job.WithQueryInstance(ji), // filter by specific job instance
+)
+logs := mgr.LookupInstanceLogs(query)
 for _, log := range logs {
     fmt.Printf("[%s] %v: %s\n", log.Level(), log.Timestamp(), log.Message())
 }
