@@ -62,6 +62,17 @@ func WithQueryState(state JobState) QueryOption {
 	}
 }
 
+// WithQueryInstance sets the job query UUID and kind based on an existing job instance.
+func WithQueryInstance(instance Instance) QueryOption {
+	return func(q *query) {
+		if instance == nil {
+			return
+		}
+		q.uuid = instance.UUID()
+		q.kind = instance.Kind()
+	}
+}
+
 // NewQuery creates a new instance of Query with the given options.
 func NewQuery(opts ...QueryOption) Query {
 	q := &query{
