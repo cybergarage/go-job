@@ -135,10 +135,8 @@ func (w *worker) Run() error {
 					}
 					if ji.IsRetriable() {
 						retryInstance(ji)
-					} else {
-						if ji.IsRecurring() {
-							rescheduleInstance(ji)
-						}
+					} else if ji.IsRecurring() {
+						rescheduleInstance(ji)
 					}
 				}
 				w.processing = false
