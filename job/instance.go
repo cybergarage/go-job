@@ -396,7 +396,7 @@ func (ji *jobInstance) CreatedAt() time.Time {
 
 // ScheduledAt returns the time when the job instance was scheduled.
 func (ji *jobInstance) ScheduledAt() time.Time {
-	return ji.schedule.Next()
+	return ji.Next()
 }
 
 // ProcessedAt returns the time when the job instance started processing.
@@ -435,9 +435,9 @@ func (ji *jobInstance) Process() ([]any, error) {
 		return nil, fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
 	ji.attempt++
-	ji.resultSet, ji.resultError = ji.handler.Execute(ji.Arguments()...)
+	ji.resultSet, ji.resultError = ji.Execute(ji.Arguments()...)
 	if ji.resultError != nil {
-		ji.resultError = ji.handler.HandleTerminated(ji, ji.resultError)
+		ji.resultError = ji.HandleTerminated(ji, ji.resultError)
 	}
 	return ji.resultSet, ji.resultError
 }
@@ -492,12 +492,12 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 
 // History returns the history of state changes for the job instance.
 func (ji *jobInstance) History() (InstanceHistory, error) {
-	return ji.history.LookupHistory(ji)
+	return ji.history.LookupHistory(NewQuery(WithQueryInstance(ji)))
 }
 
 // Logs returns the logs for the job instance.
 func (ji *jobInstance) Logs() ([]Log, error) {
-	return ji.history.LookupLogs(ji)
+	return ji.history.LookupLogs(NewQuery(WithQueryInstance(ji)))
 }
 
 // State returns the current state of the job instance.
@@ -512,7 +512,7 @@ func (ji *jobInstance) AttemptCount() int {
 
 // IsRetriable checks if the job instance can be retried based on its policy.
 func (ji *jobInstance) IsRetriable() bool {
-	maxRetries := ji.policy.MaxRetries()
+	maxRetries := ji.MaxRetries()
 	return maxRetries > 0 && ji.attempt < maxRetries
 }
 

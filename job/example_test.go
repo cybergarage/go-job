@@ -48,13 +48,19 @@ func Example() {
 	mgr.StopWithWait()
 
 	// Retrieve and print the job instance state history
-	history, _ := mgr.LookupInstanceHistory(ji)
+	query := NewQuery(
+		WithQueryInstance(ji), // filter by specific job instance
+	)
+	history, _ := mgr.LookupInstanceHistory(query)
 	for _, record := range history {
 		fmt.Println(record.State())
 	}
 
 	// Retrieve and print the job instance logs
-	logs, _ := mgr.LookupInstanceLogs(ji)
+	query = NewQuery(
+		WithQueryInstance(ji), // filter by specific job instance
+	)
+	logs, _ := mgr.LookupInstanceLogs(query)
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}

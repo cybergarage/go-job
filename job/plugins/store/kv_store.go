@@ -135,32 +135,9 @@ func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceSt
 	return store.Set(ctx, obj)
 }
 
-// LookupInstanceHistory lists all state records for a job instance.
-func (store *kvStore) LookupInstanceHistory(ctx context.Context, ji job.Instance) (job.InstanceHistory, error) {
-	rs, err := store.Scan(ctx, kv.NewInstanceStateKeyFrom(ji.UUID()))
-	if err != nil {
-		return nil, err
-	}
-	states := make([]job.InstanceState, 0)
-	for rs.Next() {
-		obj, err := rs.Object()
-		if err != nil {
-			return nil, err
-		}
-		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
-		if err != nil {
-			return nil, err
-		}
-		states = append(states, state)
-	}
-	sort.Slice(states, func(i, j int) bool {
-		return states[i].Timestamp().Before(states[j].Timestamp())
-	})
-	return states, nil
-}
+// LookupInstanceHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
 
-// ListInstanceHistory lists all state records for all job instances. The returned history is sorted by their timestamp.
-func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHistory, error) {
+func (store *kvStore) LookupInstanceHistory(ctx context.Context, query job.Query) (job.InstanceHistory, error) {
 	rs, err := store.Scan(ctx, kv.NewInstanceStateListKey())
 	if err != nil {
 		return nil, err
@@ -169,13 +146,15 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHist
 	if err != nil {
 		return nil, err
 	}
-	states := make([]job.InstanceState, 0, len(objs))
-	for n, obj := range objs {
+	states := make([]job.InstanceState, 0)
+	for _, obj := range objs {
 		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
 		if err != nil {
 			return nil, err
 		}
-		states[n] = state
+		if query.Matches(state) {
+			states = append(states, state)
+		}
 	}
 	sort.Slice(states, func(i, j int) bool {
 		return states[i].Timestamp().Before(states[j].Timestamp())
@@ -185,7 +164,7 @@ func (store *kvStore) ListInstanceHistory(ctx context.Context) (job.InstanceHist
 
 // ClearInstanceHistory clears all state records for a job instance that match the specified filter.
 func (store *kvStore) ClearInstanceHistory(ctx context.Context, filter job.Filter) error {
-	if filter == nil || filter.IsUnset() {
+	if filter.IsUnset() {
 		return store.Delete(ctx, kv.NewInstanceStateListKey())
 	}
 	rs, err := store.Scan(ctx, kv.NewInstanceStateListKey())
@@ -247,8 +226,8 @@ func (store *kvStore) Errorf(ctx context.Context, ji job.Instance, format string
 }
 
 // LookupInstanceLogs lists all log entries for a job instance. The returned logs are sorted by their timestamp.
-func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) ([]job.Log, error) {
-	rs, err := store.Scan(ctx, kv.NewLogKeyFrom(ji.UUID()))
+func (store *kvStore) LookupInstanceLogs(ctx context.Context, query job.Query) ([]job.Log, error) {
+	rs, err := store.Scan(ctx, kv.NewLogListKey())
 	if err != nil {
 		return nil, err
 	}
@@ -256,13 +235,15 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 	if err != nil {
 		return nil, err
 	}
-	logs := make([]job.Log, 0, len(objs))
-	for n, obj := range objs {
+	logs := make([]job.Log, 0)
+	for _, obj := range objs {
 		log, err := kv.NewLogFromBytes(obj.Bytes())
 		if err != nil {
 			return nil, err
 		}
-		logs[n] = log
+		if query.Matches(log) {
+			logs = append(logs, log)
+		}
 	}
 	sort.Slice(logs, func(i, j int) bool {
 		return logs[i].Timestamp().Before(logs[j].Timestamp())
@@ -272,7 +253,7 @@ func (store *kvStore) LookupInstanceLogs(ctx context.Context, ji job.Instance) (
 
 // ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
 func (store *kvStore) ClearInstanceLogs(ctx context.Context, filter job.Filter) error {
-	if filter == nil || filter.IsUnset() {
+	if filter.IsUnset() {
 		return store.Delete(ctx, kv.NewLogListKey())
 	}
 

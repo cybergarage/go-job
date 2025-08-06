@@ -55,9 +55,9 @@ type Manager interface {
 	// LookupInstances looks up all job instances which match the specified query.
 	LookupInstances(query Query) ([]Instance, error)
 	// LookupHistory retrieves all state records for a job instance, sorted by timestamp.
-	LookupInstanceHistory(job Instance) (InstanceHistory, error)
+	LookupInstanceHistory(query Query) (InstanceHistory, error)
 	// LookupLogs retrieves all logs for a job instance.
-	LookupInstanceLogs(job Instance) ([]Log, error)
+	LookupInstanceLogs(query Query) ([]Log, error)
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
@@ -100,6 +100,7 @@ func newManager(opts ...any) (*manager, error) {
 	mgr := &manager{
 		store:       NewLocalStore(),
 		workerGroup: newWorkerGroup(WithNumWorkers(DefaultWorkerNum)),
+		Repository:  nil,
 	}
 
 	for _, opt := range opts {
@@ -241,13 +242,6 @@ func (mgr *manager) ListInstances() ([]Instance, error) {
 
 // LookupInstances looks up all job instances which match the specified query.
 func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
-	matchQuery := func(instance Instance, query Query) bool {
-		if query == nil {
-			return true // No query means match all
-		}
-		return query.Matches(instance)
-	}
-
 	var instances []Instance
 
 	queueInstances, err := NewInstancesFromQueue(mgr.Queue())
@@ -255,12 +249,12 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 		return nil, err
 	}
 	for _, instance := range queueInstances {
-		if matchQuery(instance, query) {
+		if query.Matches(instance) {
 			instances = append(instances, instance)
 		}
 	}
 
-	history, err := mgr.ListHistory()
+	history, err := mgr.LookupHistory(query)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +263,7 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 		return nil, err
 	}
 	for _, instance := range historyInstances {
-		if matchQuery(instance, query) {
+		if query.Matches(instance) {
 			instances = append(instances, instance)
 		}
 	}
@@ -278,13 +272,13 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 }
 
 // LookupHistory retrieves all state records for a job instance, sorted by timestamp.
-func (mgr *manager) LookupInstanceHistory(job Instance) (InstanceHistory, error) {
-	return mgr.Repository.LookupHistory(job)
+func (mgr *manager) LookupInstanceHistory(query Query) (InstanceHistory, error) {
+	return mgr.LookupHistory(query)
 }
 
 // LookupLogs retrieves all logs for a job instance.
-func (mgr *manager) LookupInstanceLogs(job Instance) ([]Log, error) {
-	return mgr.Repository.LookupLogs(job)
+func (mgr *manager) LookupInstanceLogs(query Query) ([]Log, error) {
+	return mgr.LookupLogs(query)
 }
 
 // Start starts the job manager.
@@ -343,7 +337,7 @@ func (mgr *manager) StopWithWait() error {
 
 	err := mgr.workerGroup.StopWithWait()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return mgr.Stop()

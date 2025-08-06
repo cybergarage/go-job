@@ -15,7 +15,6 @@
 package jobtest
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -59,11 +58,11 @@ func StoreTest(t *testing.T, store kv.Store) {
 	for _, test := range setterTests {
 		t.Run("Set "+test.key.String(), func(t *testing.T) {
 			obj := kv.NewObject(test.key, test.val)
-			if err := store.Set(context.Background(), obj); err != nil {
+			if err := store.Set(t.Context(), obj); err != nil {
 				t.Fatalf("failed to set object: %v", err)
 			}
 
-			retrievedObj, err := store.Get(context.Background(), test.key)
+			retrievedObj, err := store.Get(t.Context(), test.key)
 			if err != nil {
 				t.Fatalf("failed to get object: %v", err)
 			}
@@ -73,11 +72,11 @@ func StoreTest(t *testing.T, store kv.Store) {
 			}
 		})
 		t.Run("Remove "+test.key.String(), func(t *testing.T) {
-			if _, err := store.Remove(context.Background(), test.key); err != nil {
+			if _, err := store.Remove(t.Context(), test.key); err != nil {
 				t.Fatalf("failed to remove object: %v", err)
 			}
 
-			_, err := store.Get(context.Background(), test.key)
+			_, err := store.Get(t.Context(), test.key)
 			if err == nil {
 				t.Errorf("expected error when getting removed object, got nil")
 			}
@@ -111,12 +110,12 @@ func StoreTest(t *testing.T, store kv.Store) {
 		keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
 		objs[i] = kv.NewObject(keys[i], test.val)
 		t.Run(fmt.Sprintf("SetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
-			if err := store.Set(context.Background(), objs[i]); err != nil {
+			if err := store.Set(t.Context(), objs[i]); err != nil {
 				t.Fatalf("failed to set object: %v", err)
 			}
 		})
 		t.Run(fmt.Sprintf("Scan %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
-			rs, err := store.Scan(context.Background(), test.key)
+			rs, err := store.Scan(t.Context(), test.key)
 			if err != nil {
 				t.Fatalf("failed to get range: %v", err)
 			}
@@ -143,11 +142,11 @@ func StoreTest(t *testing.T, store kv.Store) {
 	}
 
 	t.Run("Delete "+rangeKey.String(), func(t *testing.T) {
-		if err := store.Delete(context.Background(), rangeKey); err != nil {
+		if err := store.Delete(t.Context(), rangeKey); err != nil {
 			t.Fatalf("failed to remove object: %v", err)
 		}
 
-		rs, err := store.Scan(context.Background(), rangeKey)
+		rs, err := store.Scan(t.Context(), rangeKey)
 		if err != nil {
 			t.Fatalf("expected error when getting removed object, got nil")
 		}

@@ -31,10 +31,8 @@ type History interface {
 type StateHistory interface {
 	// LogProcessState logs a state change for a job instance.
 	LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error
-	// LookupHistory retrieves all state records for a job instance, sorted by timestamp.
-	LookupHistory(job Instance) (InstanceHistory, error)
-	// ListHistory retrieves all state records for all job instances.
-	ListHistory() (InstanceHistory, error)
+	// LookupHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
+	LookupHistory(query Query) (InstanceHistory, error)
 }
 
 // LogHistory is an interface that defines methods for logging messages related to job instances.
@@ -45,8 +43,8 @@ type LogHistory interface {
 	Warnf(job Instance, format string, args ...any) error
 	// Errorf logs an error message for a job instance.
 	Errorf(job Instance, format string, args ...any) error
-	// LookupLogs retrieves all logs for a job instance.
-	LookupLogs(job Instance) ([]Log, error)
+	// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+	LookupLogs(query Query) ([]Log, error)
 }
 
 // HistoryOption is a function that configures the job history.
@@ -89,20 +87,9 @@ func (history *history) LogProcessState(job Instance, state JobState, opts ...In
 	return history.store.LogInstanceState(context.Background(), record)
 }
 
-// LookupHistory retrieves all state records for a job instance, sorted by timestamp.
-func (history *history) LookupHistory(job Instance) (InstanceHistory, error) {
-	records, err := history.store.LookupInstanceHistory(context.Background(), job)
-	if err != nil {
-		return nil, err
-	}
-	sort.Slice(records, func(i, j int) bool {
-		return records[i].Timestamp().Before(records[j].Timestamp())
-	})
-	return records, nil
-}
-
-func (history *history) ListHistory() (InstanceHistory, error) {
-	records, err := history.store.ListInstanceHistory(context.Background())
+// LookupHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
+func (history *history) LookupHistory(query Query) (InstanceHistory, error) {
+	records, err := history.store.LookupInstanceHistory(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +114,7 @@ func (history *history) Errorf(job Instance, format string, args ...any) error {
 	return history.store.Errorf(context.Background(), job, format, args...)
 }
 
-// LookupLogs retrieves all logs for a job instance.
-func (history *history) LookupLogs(job Instance) ([]Log, error) {
-	return history.store.LookupInstanceLogs(context.Background(), job)
+// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+func (history *history) LookupLogs(query Query) ([]Log, error) {
+	return history.store.LookupInstanceLogs(context.Background(), query)
 }

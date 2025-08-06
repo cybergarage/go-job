@@ -19,9 +19,9 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
-	// "github.com/cybergarage/go-job/job/plugins/store"
 )
 
+// nolint: maintidx
 func ManagerTest(t *testing.T, mgr job.Manager) {
 	t.Helper()
 
@@ -99,8 +99,9 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				return err
 			}
 
-			opts := append(
-				tt.opts,
+			opts := tt.opts
+			opts = append(
+				opts,
 				job.WithKind(tt.kind),
 				job.WithStateChangeProcessor(stateHandler),
 				job.WithCompleteProcessor(processHandler),
@@ -184,7 +185,10 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			// Check instance history
 
-			history, err := mgr.LookupInstanceHistory(ji)
+			query := job.NewQuery(
+				job.WithQueryInstance(ji), // filter by specific job instance
+			)
+			history, err := mgr.LookupInstanceHistory(query)
 			if err == nil {
 				if len(history) == 0 {
 					t.Errorf("Expected at least one history record for job instance")
@@ -216,7 +220,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				t.Errorf("Expected %d history records, but got %d", len(expectedStateOrders), len(history))
 			}
 
-			for i := 0; i < len(history); i++ {
+			for i := range history {
 				if history[i].State() != expectedStateOrders[i] {
 					t.Errorf("Expected state %s at index %d, but got %s", expectedStateOrders[i], i, history[i].State())
 				}
@@ -237,7 +241,10 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				"[3]",
 			}
 
-			logs, err := mgr.LookupInstanceLogs(ji)
+			query = job.NewQuery(
+				job.WithQueryInstance(ji), // filter by specific job instance
+			)
+			logs, err := mgr.LookupInstanceLogs(query)
 			if err == nil {
 				if len(logs) != len(expectedLogs) {
 					t.Errorf("Expected %d logs, but got %d", len(expectedLogs), len(logs))
@@ -264,7 +271,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				t.Errorf("Failed to clear job manager: %v", err)
 			}
 
-			history, err = mgr.LookupInstanceHistory(ji)
+			history, err = mgr.LookupInstanceHistory(query)
 			if err == nil {
 				if len(history) != 0 {
 					t.Errorf("Expected no history records after clearing, but got %d records", len(history))
@@ -273,7 +280,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				t.Errorf("Failed to retrieve instance history: %v", err)
 			}
 
-			logs, err = mgr.LookupInstanceLogs(ji)
+			logs, err = mgr.LookupInstanceLogs(query)
 			if err == nil {
 				if len(logs) != 0 {
 					t.Errorf("Expected no logs after clearing, but got %d logs", len(logs))

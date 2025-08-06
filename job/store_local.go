@@ -103,30 +103,23 @@ func (store *localStore) ClearInstances(ctx context.Context) error {
 
 // LogInstanceState adds a new state record for a job instance.
 func (store *localStore) LogInstanceState(ctx context.Context, state InstanceState) error {
+	store.Lock()
+	defer store.Unlock()
 	store.history = append(store.history, state)
 	return nil
 }
 
-// LookupInstanceHistory lists all state records for a job instance.
-func (store *localStore) LookupInstanceHistory(ctx context.Context, job Instance) (InstanceHistory, error) {
-	if job == nil {
-		return nil, nil
-	}
+// LookupInstanceHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
+func (store *localStore) LookupInstanceHistory(ctx context.Context, query Query) (InstanceHistory, error) {
+	store.Lock()
+	defer store.Unlock()
 	var records []InstanceState
 	for _, record := range store.history {
-		if record.UUID() == job.UUID() {
+		if query.Matches(record) {
 			records = append(records, record)
 		}
 	}
 	return records, nil
-}
-
-// ListInstanceHistory lists all state records for all job instances.
-func (store *localStore) ListInstanceHistory(ctx context.Context) (InstanceHistory, error) {
-	if len(store.history) == 0 {
-		return nil, nil
-	}
-	return store.history, nil
 }
 
 // ClearInstanceHistory clears all state records for a job instance that match the specified filter.
@@ -135,7 +128,7 @@ func (store *localStore) ClearInstanceHistory(ctx context.Context, filter Filter
 	defer store.Unlock()
 	states := make([]InstanceState, 0)
 	for _, state := range store.history {
-		if filter == nil || filter.Matches(state) {
+		if filter.Matches(state) {
 			continue
 		}
 		states = append(states, state)
@@ -173,13 +166,13 @@ func (store *localStore) Errorf(ctx context.Context, job Instance, format string
 	return store.Logf(ctx, job, LogError, format, args...)
 }
 
-// LookupInstanceLogs lists all log entries for a job instance.
-func (store *localStore) LookupInstanceLogs(ctx context.Context, job Instance) ([]Log, error) {
+// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+func (store *localStore) LookupInstanceLogs(ctx context.Context, query Query) ([]Log, error) {
 	store.Lock()
 	defer store.Unlock()
 	var logs []Log
 	for _, log := range store.logs {
-		if log.UUID() == job.UUID() {
+		if query.Matches(log) {
 			logs = append(logs, log)
 		}
 	}
@@ -190,9 +183,9 @@ func (store *localStore) LookupInstanceLogs(ctx context.Context, job Instance) (
 func (store *localStore) ClearInstanceLogs(ctx context.Context, filter Filter) error {
 	store.Lock()
 	defer store.Unlock()
-	var logs []Log
+	logs := []Log{}
 	for _, log := range store.logs {
-		if filter == nil || filter.Matches(log) {
+		if filter.Matches(log) {
 			continue
 		}
 		logs = append(logs, log)
