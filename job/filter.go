@@ -63,22 +63,29 @@ func (f *filter) Before() (time.Time, bool) {
 
 // IsUnset returns true if no filter criteria are configured.
 func (f *filter) IsUnset() bool {
+	if f == nil {
+		return true
+	}
 	_, ok := f.Before()
 	return !ok
 }
 
 // Matches checks if the specified object matches the filter criteria.
 func (f *filter) Matches(v any) bool {
+	if f.IsUnset() {
+		return true
+	}
 	switch v := v.(type) {
 	case Instance:
 		if before, ok := f.Before(); ok && !v.CreatedAt().Before(before) {
-			return true
+			return false
 		}
-		return false
+		return true
 	case instanceState:
 		if before, ok := f.Before(); ok && !v.Timestamp().Before(before) {
-			return true
+			return false
 		}
+		return true
 	}
 	return false
 }
