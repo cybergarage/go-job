@@ -96,7 +96,7 @@ func (cli *cliClient) GetVersion() (string, error) {
 // ScheduleJob schedules a job with the specified kind, priority, and arguments.
 // The priority is lower for higher priority jobs, similar to Unix nice values.
 func (cli *cliClient) ScheduleJob(kind string, args ...any) (Instance, error) {
-	var cmdArgs []string
+	cmdArgs := []string{}
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "schedule", kind)
 	for _, arg := range args {
