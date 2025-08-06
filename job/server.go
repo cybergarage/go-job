@@ -39,11 +39,12 @@ type Server interface {
 }
 
 type server struct {
+	v1.UnimplementedJobServiceServer
+
+	grpcServer *grpc.Server
 	manager    Manager
 	addr       string
 	port       int
-	grpcServer *grpc.Server
-	v1.UnimplementedJobServiceServer
 }
 
 // NewServer returns a new job server instance.

@@ -23,6 +23,7 @@ import (
 
 type localStore struct {
 	sync.Mutex
+
 	jobs    sync.Map
 	history []InstanceState
 	logs    []Log

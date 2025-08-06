@@ -62,6 +62,7 @@ func NewWorkerGroup(opts ...WorkerGroupOption) WorkerGroup {
 
 type workerGroup struct {
 	sync.Mutex
+
 	manager Manager
 	workers []Worker
 }

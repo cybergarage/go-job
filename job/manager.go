@@ -75,9 +75,10 @@ type Manager interface {
 }
 
 type manager struct {
-	store Store
 	*workerGroup
 	Repository
+
+	store Store
 }
 
 // ManagerOption is a function that configures a job manager.

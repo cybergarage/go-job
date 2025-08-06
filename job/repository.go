@@ -42,10 +42,11 @@ func WithRepositoryStore(store Store) RepositoryOption {
 }
 
 type repository struct {
-	store Store
 	Registry
 	Scheduler
 	History
+
+	store Store
 }
 
 // NewRepository creates a new instance of Repository with the given options.

@@ -82,15 +82,16 @@ type Instance interface {
 }
 
 type jobInstance struct {
-	job     *job
-	uuid    UUID
-	state   JobState
-	attempt int
-	history History
 	*handler
 	*schedule
 	*policy
 	*arguments
+
+	job          *job
+	uuid         UUID
+	state        JobState
+	attempt      int
+	history      History
 	createdAt    time.Time
 	completedAt  time.Time
 	terminatedAt time.Time
