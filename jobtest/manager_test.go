@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
-	"github.com/cybergarage/go-job/job/plugins/store"
 	// "github.com/cybergarage/go-job/job/plugins/store"
 )
 
@@ -289,8 +288,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	stores := []job.Store{
-		// job.NewLocalStore(),
-		store.NewMemdbStore(),
+		job.NewLocalStore(),
+		// store.NewMemdbStore(),
 	}
 
 	for _, store := range stores {
