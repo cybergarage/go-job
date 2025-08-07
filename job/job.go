@@ -74,8 +74,8 @@ func NewJob(opts ...any) (Job, error) {
 	return newJob(opts...)
 }
 
-// NewJobFromMap creates a new job from a map representation.
-func NewJobFromMap(m map[string]any) (Job, error) {
+// newJobFromMap creates a new job from a map representation.
+func newJobFromMap(m map[string]any) (Job, error) {
 	opts := []any{}
 	for k, v := range m {
 		switch k {

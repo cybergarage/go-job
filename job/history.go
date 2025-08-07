@@ -30,7 +30,7 @@ type History interface {
 // StateHistory is an interface that defines methods for managing the state history of job instances.
 type StateHistory interface {
 	// LogProcessState logs a state change for a job instance.
-	LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error
+	LogProcessState(job Instance, state JobState, opts ...instanceStateOption) error
 	// LookupHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
 	LookupHistory(query Query) (InstanceHistory, error)
 }
@@ -79,10 +79,10 @@ func newHistory(opts ...HistoryOption) *history {
 }
 
 // LogProcessState logs a state change for a job instance.
-func (history *history) LogProcessState(job Instance, state JobState, opts ...InstanceStateOption) error {
-	opts = append(opts, WithStateKind(job.Kind()))
-	opts = append(opts, WithStateUUID(job.UUID()))
-	opts = append(opts, WithStateJobState(state))
+func (history *history) LogProcessState(job Instance, state JobState, opts ...instanceStateOption) error {
+	opts = append(opts, withStateKind(job.Kind()))
+	opts = append(opts, withStateUUID(job.UUID()))
+	opts = append(opts, withStateJobState(state))
 	record := newInstanceState(opts...)
 	return history.store.LogInstanceState(context.Background(), record)
 }

@@ -319,7 +319,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			kind, err := NewKindFrom(value)
+			kind, err := newKindFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -331,7 +331,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 			}
 			opts = append(opts, WithUUID(uuid))
 		case stateKey:
-			state, err := NewStateFrom(value)
+			state, err := newStateFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -343,7 +343,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 			}
 			opts = append(opts, WithArguments(args.Arguments()...))
 		case crontabKey:
-			crontabSpec, err := NewCrontabSpecFrom(value)
+			crontabSpec, err := newCrontabSpecFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -355,7 +355,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 			}
 			opts = append(opts, WithScheduleAt(scheduleAt.Time()))
 		case maxRetriesKey:
-			maxRetries, err := NewMaxRetriesFrom(value)
+			maxRetries, err := newMaxRetriesFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -367,7 +367,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 			}
 			opts = append(opts, WithPriority(priority))
 		case timeoutKey:
-			timeout, err := NewTimeoutFrom(value)
+			timeout, err := newTimeoutFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -496,7 +496,7 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 		}
 	}
 
-	err := ji.history.LogProcessState(ji, state, WithStateOption(optMap))
+	err := ji.history.LogProcessState(ji, state, withStateOption(optMap))
 	if err != nil {
 		return err
 	}

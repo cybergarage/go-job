@@ -132,7 +132,7 @@ func (cli *cliClient) ListRegisteredJobs() ([]Job, error) {
 	}
 	jobs := make([]Job, len(maps))
 	for n, m := range maps {
-		j, err := NewJobFromMap(m)
+		j, err := newJobFromMap(m)
 		if err != nil {
 			return nil, err
 		}

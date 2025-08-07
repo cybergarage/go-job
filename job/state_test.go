@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package jobtest
+package job
 
 import (
 	"testing"
-
-	"github.com/cybergarage/go-job/job"
 )
 
 func TestJobState(t *testing.T) {
 	tests := []struct {
-		state job.JobState
+		state JobState
 	}{
-		{state: job.JobCreated},
-		{state: job.JobScheduled},
-		{state: job.JobProcessing},
-		{state: job.JobCancelled},
-		{state: job.JobTimedOut},
-		{state: job.JobCompleted},
-		{state: job.JobTerminated},
+		{state: JobCreated},
+		{state: JobScheduled},
+		{state: JobProcessing},
+		{state: JobCancelled},
+		{state: JobTimedOut},
+		{state: JobCompleted},
+		{state: JobTerminated},
 	}
 
 	for _, tt := range tests {
@@ -38,14 +36,14 @@ func TestJobState(t *testing.T) {
 			if !tt.state.Is(tt.state) {
 				t.Errorf("expected JobState %s to be equal to itself", tt.state.String())
 			}
-			if !tt.state.Is(job.JobStateAll) {
+			if !tt.state.Is(JobStateAll) {
 				t.Errorf("expected JobState %s to be part of JobStateAll", tt.state.String())
 			}
 			stateStr := tt.state.String()
 			if stateStr == "" {
 				t.Errorf("expected JobState %s to have a string representation", tt.state)
 			}
-			parsedState, err := job.NewStateFrom(stateStr)
+			parsedState, err := newStateFrom(stateStr)
 			if err != nil {
 				t.Errorf("failed to parse JobState from string: %v", err)
 			}

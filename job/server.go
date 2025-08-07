@@ -253,7 +253,7 @@ func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstanc
 	}
 	queryState := req.GetQuery().State
 	if queryState != nil {
-		state, err := NewStateFrom(*queryState)
+		state, err := newStateFrom(*queryState)
 		if err != nil {
 			return nil, err
 		}

@@ -42,39 +42,39 @@ type InstanceState interface {
 	String() string
 }
 
-// InstanceStateOption is a function that configures the job instance state.
-type InstanceStateOption func(*instanceState)
+// instanceStateOption is a function that configures the job instance state.
+type instanceStateOption func(*instanceState)
 
-// WithStateKind is a functional option to set the kind of the instance state.
-func WithStateKind(kind string) InstanceStateOption {
+// withStateKind is a functional option to set the kind of the instance state.
+func withStateKind(kind string) instanceStateOption {
 	return func(state *instanceState) {
 		state.kind = kind
 	}
 }
 
-// WithStateUUID is a functional option to set the UUID of the instance state.
-func WithStateUUID(uuid uuid.UUID) InstanceStateOption {
+// withStateUUID is a functional option to set the UUID of the instance state.
+func withStateUUID(uuid uuid.UUID) instanceStateOption {
 	return func(state *instanceState) {
 		state.uuid = uuid
 	}
 }
 
-// WithStateJobState is a functional option to set the state of the instance state.
-func WithStateJobState(s JobState) InstanceStateOption {
+// withStateJobState is a functional option to set the state of the instance state.
+func withStateJobState(s JobState) instanceStateOption {
 	return func(state *instanceState) {
 		state.state = s
 	}
 }
 
-// WithStateTimestamp is a functional option to set the timestamp of the instance state.
-func WithStateTimestamp(ts time.Time) InstanceStateOption {
+// withStateTimestamp is a functional option to set the timestamp of the instance state.
+func withStateTimestamp(ts time.Time) instanceStateOption {
 	return func(state *instanceState) {
 		state.ts = ts
 	}
 }
 
-// WithStateOption is a functional option to set additional options for the instance state.
-func WithStateOption(opts map[string]any) func(*instanceState) {
+// withStateOption is a functional option to set additional options for the instance state.
+func withStateOption(opts map[string]any) func(*instanceState) {
 	return func(state *instanceState) {
 		for k, v := range opts {
 			state.opts[k] = v
@@ -90,13 +90,8 @@ type instanceState struct {
 	opts  map[string]any
 }
 
-// NewInstanceState creates a new job instance state with the provided options.
-func NewInstanceState(opts ...InstanceStateOption) InstanceState {
-	return newInstanceState(opts...)
-}
-
 // newInstanceState creates a new job state record with the current timestamp and the given state.
-func newInstanceState(opts ...InstanceStateOption) InstanceState {
+func newInstanceState(opts ...instanceStateOption) InstanceState {
 	state := &instanceState{
 		kind:  "",
 		uuid:  uuid.Nil,
@@ -112,35 +107,35 @@ func newInstanceState(opts ...InstanceStateOption) InstanceState {
 
 // NewInstanceStateFromMap creates a new instance state from a map representation.
 func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
-	opts := make([]InstanceStateOption, 0, len(m))
+	opts := make([]instanceStateOption, 0, len(m))
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			kind, err := NewKindFrom(value)
+			kind, err := newKindFrom(value)
 			if err != nil {
 				return nil, err
 			}
-			opts = append(opts, WithStateKind(kind))
+			opts = append(opts, withStateKind(kind))
 		case uuidKey:
 			uuid, err := NewUUIDFrom(value)
 			if err != nil {
 				return nil, err
 			}
-			opts = append(opts, WithStateUUID(uuid))
+			opts = append(opts, withStateUUID(uuid))
 		case timestampKey:
 			ts, err := NewTimeFrom(value)
 			if err != nil {
 				return nil, err
 			}
-			opts = append(opts, WithStateTimestamp(ts.Time()))
+			opts = append(opts, withStateTimestamp(ts.Time()))
 		case stateKey:
-			state, err := NewStateFrom(value)
+			state, err := newStateFrom(value)
 			if err != nil {
 				return nil, err
 			}
-			opts = append(opts, WithStateJobState(state))
+			opts = append(opts, withStateJobState(state))
 		default:
-			opts = append(opts, WithStateOption(map[string]any{key: value}))
+			opts = append(opts, withStateOption(map[string]any{key: value}))
 		}
 	}
 	return newInstanceState(opts...), nil

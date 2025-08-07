@@ -76,7 +76,7 @@ type Manager interface {
 
 type manager struct {
 	*workerGroup
-	Repository
+	repository
 
 	store Store
 }
@@ -101,7 +101,7 @@ func newManager(opts ...any) (*manager, error) {
 	mgr := &manager{
 		store:       NewLocalStore(),
 		workerGroup: newWorkerGroup(WithNumWorkers(DefaultWorkerNum)),
-		Repository:  nil,
+		repository:  nil,
 	}
 
 	for _, opt := range opts {
@@ -115,8 +115,8 @@ func newManager(opts ...any) (*manager, error) {
 		}
 	}
 
-	mgr.Repository = NewRepository(
-		WithRepositoryStore(mgr.store),
+	mgr.repository = newRepository(
+		withRepositoryStore(mgr.store),
 	)
 	WithWorkerGroupManager(mgr)(mgr.workerGroup)
 
@@ -134,7 +134,7 @@ func (mgr *manager) Store() Store {
 // the resulting job instance will be returned.
 // If the job has no schedule configuration, nil will be returned for the instance.
 func (mgr *manager) RegisterJob(job Job) (Instance, error) {
-	err := mgr.Repository.RegisterJob(job)
+	err := mgr.repository.RegisterJob(job)
 	if err != nil {
 		return nil, fmt.Errorf("failed to register job: %w", err)
 	}
@@ -162,7 +162,7 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	jobOpts := []any{
 		WithJob(job),
-		WithInstanceHistory(mgr.Repository),
+		WithInstanceHistory(mgr.repository),
 	}
 	jobOpts = append(jobOpts, opts...)
 	ji, err := NewInstance(jobOpts...)
@@ -316,7 +316,7 @@ func (mgr *manager) Stop() error {
 // Clear clears all jobs and history from the job manager without registered jobs.
 func (mgr *manager) Clear() error {
 	cleaners := []func() error{
-		mgr.Repository.Clear,
+		mgr.repository.Clear,
 	}
 	for _, cleaner := range cleaners {
 		if err := cleaner(); err != nil {

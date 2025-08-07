@@ -130,8 +130,8 @@ func WithBackoffDuration(duration time.Duration) PolicyOption {
 	}
 }
 
-func newPolicy() *policy {
-	return &policy{
+func newPolicy(opts ...PolicyOption) *policy {
+	polycy := &policy{
 		maxRetries: NoRetry,         // Default to no retries
 		priority:   DefaultPriority, // Default priority
 		timeout:    DefaultTimeout,  // Default timeout
@@ -139,10 +139,14 @@ func newPolicy() *policy {
 			return time.Duration(0)
 		},
 	}
+	for _, opt := range opts {
+		opt(polycy)
+	}
+	return polycy
 }
 
-// NewMaxRetriesFrom creates a maximum retries value from various input types.
-func NewMaxRetriesFrom(a any) (int, error) {
+// newMaxRetriesFrom creates a maximum retries value from various input types.
+func newMaxRetriesFrom(a any) (int, error) {
 	var maxRetries int
 	err := safecast.ToInt(a, &maxRetries)
 	if err != nil {
@@ -151,8 +155,8 @@ func NewMaxRetriesFrom(a any) (int, error) {
 	return maxRetries, nil
 }
 
-// NewTimeoutFrom creates a timeout duration from various input types.
-func NewTimeoutFrom(a any) (time.Duration, error) {
+// newTimeoutFrom creates a timeout duration from various input types.
+func newTimeoutFrom(a any) (time.Duration, error) {
 	switch v := a.(type) {
 	case time.Duration:
 		return v, nil
@@ -165,15 +169,6 @@ func NewTimeoutFrom(a any) (time.Duration, error) {
 	default:
 		return 0, fmt.Errorf("invalid timeout value: %v", a)
 	}
-}
-
-// NewPolicy creates a new JobPolicy instance from a crontab spec string.
-func NewPolicy(opts ...PolicyOption) (*policy, error) {
-	js := newPolicy()
-	for _, opt := range opts {
-		opt(js)
-	}
-	return js, nil
 }
 
 // MaxRetries returns the maximum number of retries allowed for the job.

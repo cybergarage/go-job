@@ -19,41 +19,41 @@ import (
 	"fmt"
 )
 
-// Repository is an interface that defines methods for managing job registrations and scheduling.
-type Repository interface {
+// repository is an interface that defines methods for managing job registrations and scheduling.
+type repository interface {
 	// Registry defines the methods for managing job registrations.
 	Registry
 	// Scheduler defines the methods for scheduling jobs.
-	Scheduler
+	scheduler
 	// History defines the methods for managing job history.
 	History
 	// Clear clears all job queues, history, and logs.
 	Clear() error
 }
 
-// RepositoryOption is a function that configures a job repository.
-type RepositoryOption func(*repository)
+// repositoryOption is a function that configures a job repository.
+type repositoryOption func(*repositoryImpl)
 
-// WithRepositoryStore sets the store for the job repository.
-func WithRepositoryStore(store Store) RepositoryOption {
-	return func(r *repository) {
+// withRepositoryStore sets the store for the job repository.
+func withRepositoryStore(store Store) repositoryOption {
+	return func(r *repositoryImpl) {
 		r.store = store
 	}
 }
 
-type repository struct {
+type repositoryImpl struct {
 	Registry
-	Scheduler
+	scheduler
 	History
 
 	store Store
 }
 
-// NewRepository creates a new instance of Repository with the given options.
-func NewRepository(opts ...RepositoryOption) *repository {
-	repo := &repository{
+// newRepository creates a new instance of Repository with the given options.
+func newRepository(opts ...repositoryOption) *repositoryImpl {
+	repo := &repositoryImpl{
 		store:     NewLocalStore(),
-		Scheduler: nil,
+		scheduler: nil,
 		Registry:  nil,
 		History:   nil,
 	}
@@ -63,14 +63,14 @@ func NewRepository(opts ...RepositoryOption) *repository {
 	}
 
 	repo.Registry = NewRegistry()
-	repo.Scheduler = NewScheduler(WithSchedulerStore(repo.store))
+	repo.scheduler = newScheduler(WithSchedulerStore(repo.store))
 	repo.History = NewHistory(WithHistoryStore(repo.store))
 
 	return repo
 }
 
 // Clear clears all job queues, history, and logs.
-func (repo *repository) Clear() error {
+func (repo *repositoryImpl) Clear() error {
 	registryCleaner := func(ctx context.Context) error {
 		return repo.Registry.Clear()
 	}

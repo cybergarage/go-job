@@ -107,7 +107,7 @@ func NewLogFromMap(m map[string]any) (Log, error) {
 	for key, value := range m {
 		switch key {
 		case kindKey:
-			kind, err := NewKindFrom(value)
+			kind, err := newKindFrom(value)
 			if err != nil {
 				return nil, err
 			}

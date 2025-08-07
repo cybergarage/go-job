@@ -79,8 +79,8 @@ func WithScheduleAfter(d time.Duration) ScheduleOption {
 	}
 }
 
-// NewCrontabSpecFrom creates a crontab spec string from various input types.
-func NewCrontabSpecFrom(a any) (string, error) {
+// newCrontabSpecFrom creates a crontab spec string from various input types.
+func newCrontabSpecFrom(a any) (string, error) {
 	switch v := a.(type) {
 	case string:
 		return v, nil

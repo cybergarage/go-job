@@ -114,7 +114,7 @@ func (client *grpcClient) ScheduleJob(kind string, args ...any) (Instance, error
 	if err != nil {
 		return nil, err
 	}
-	state, err := NewStateFrom(ji.GetState())
+	state, err := newStateFrom(ji.GetState())
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func (client *grpcClient) LookupInstances(query Query) ([]Instance, error) {
 		if err != nil {
 			return nil, err
 		}
-		state, err := NewStateFrom(pbInstance.GetState())
+		state, err := newStateFrom(pbInstance.GetState())
 		if err != nil {
 			return nil, err
 		}
