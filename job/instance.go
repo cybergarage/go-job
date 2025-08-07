@@ -24,6 +24,15 @@ import (
 
 // Instance represents a specific instance of a job that has been scheduled or executed.
 type Instance interface {
+	// Schedule defines the scheduling interface for the job instance.
+	Schedule
+	// Handler defines the handler interface for the job instance.
+	Handler
+	// Policy defines the policy interface for the job instance.
+	Policy
+	// Arguments defines the arguments interface for the job instance.
+	Arguments
+
 	// Job returns the job associated with this job instance.
 	Job() Job
 	// Kind returns the kind of job this instance represents.

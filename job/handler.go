@@ -43,21 +43,24 @@ func WithExecutor(executor Executor) HandlerOption {
 	}
 }
 
-// WithStateChangeProcessor sets the state change handler function for the job handler.
+// WithStateChangeProcessor sets a handler function that is invoked each time the state of a job instance changes while being processed by the local worker.
+// NOTE: In a distributed environment with multiple worker groups, the worker that schedules a job instance may not receive all status updates for that instance.
 func WithStateChangeProcessor(fn StateChangeProcessor) HandlerOption {
 	return func(h *handler) {
 		h.stateChgProcessor = fn
 	}
 }
 
-// WithTerminateProcessor sets the error handler function for the job handler.
+// WithTerminateProcessor sets a handler function that is called if a job instance ends with an error during execution by the local worker.
+// NOTE: In a distributed environment with multiple worker groups, the worker that schedules a job instance may be different from the worker that actually executes it.
 func WithTerminateProcessor(fn TerminateProcessor) HandlerOption {
 	return func(h *handler) {
 		h.terminateProcessor = fn
 	}
 }
 
-// WithCompleteProcessor sets the response handler function for the job handler.
+// WithCompleteProcessor sets a handler function that is called when a job instance completes successfully during execution by the local worker.
+// NOTE: In a distributed environment with multiple worker groups, the worker that schedules a job instance may be different from the worker that actually executes it.
 func WithCompleteProcessor(fn CompleteProcessor) HandlerOption {
 	return func(h *handler) {
 		h.completeProcessor = fn
@@ -70,7 +73,7 @@ type Handler interface {
 	Executor() Executor
 	// StateChangeProcessor returns the state change handler function set for the job handler.
 	StateChangeProcessor() StateChangeProcessor
-	// CompleteProcessor returns the response handler function set for the job handler.
+	// CompleteProcessor returns the completion handler function set for the job handler.
 	CompleteProcessor() CompleteProcessor
 	// TerminateProcessor returns the error processor function set for the job handler.
 	TerminateProcessor() TerminateProcessor
