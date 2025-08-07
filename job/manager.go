@@ -224,6 +224,7 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 		WithCreatedAt(instance.CreatedAt()),
 		WithState(instance.State()),
 		WithArguments(instance.Arguments()...),
+		WithInstanceStore(mgr.store),
 	)
 	if err != nil {
 		return nil, err
