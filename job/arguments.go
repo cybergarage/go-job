@@ -28,28 +28,28 @@ type Arguments interface {
 	String() string
 }
 
-type arguments struct {
+type argumentsImpl struct {
 	Args []any `json:"args"`
 }
 
 // ArgumentsOption defines a function that configures the arguments for a job.
-type ArgumentsOption func(*arguments)
+type ArgumentsOption func(*argumentsImpl)
 
 // WithArguments sets the arguments for a job.
 func WithArguments(args ...any) ArgumentsOption {
-	return func(a *arguments) {
+	return func(a *argumentsImpl) {
 		a.Args = args
 	}
 }
 
-// NewArgumentsWith creates a new Arguments instance with the provided arguments.
-func NewArgumentsWith(args ...any) Arguments {
+// newArgumentsWith creates a new Arguments instance with the provided arguments.
+func newArgumentsWith(args ...any) Arguments {
 	return newArguments(WithArguments(args...))
 }
 
-// NewArgumentsWithStrings creates a new Arguments instance with the provided string arguments.
+// newArgumentsWithStrings creates a new Arguments instance with the provided string arguments.
 // It converts the strings to any type for compatibility with the Arguments interface.
-func NewArgumentsWithStrings(args ...string) Arguments {
+func newArgumentsWithStrings(args ...string) Arguments {
 	anyArgs := make([]any, len(args))
 	for i, arg := range args {
 		anyArgs[i] = arg
@@ -57,42 +57,36 @@ func NewArgumentsWithStrings(args ...string) Arguments {
 	return newArguments(WithArguments(anyArgs...))
 }
 
-// NewArgumentsFromString creates a new Arguments instance from a JSON string representation of arguments.
-func NewArgumentsFromString(s string) (Arguments, error) {
+// newArgumentsFromString creates a new Arguments instance from a JSON string representation of arguments.
+func newArgumentsFromString(s string) (Arguments, error) {
 	var arr []any
 	err := json.Unmarshal([]byte(s), &arr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal arguments: %w", err)
 	}
-	return NewArgumentsWith(arr...), nil
+	return newArgumentsWith(arr...), nil
 }
 
-// NewArgumentsFrom creates a new Arguments instance from the provided arguments.
+// newArgumentsFrom creates a new Arguments instance from the provided arguments.
 // It supports various types such as nil, []any, and string.
-func NewArgumentsFrom(args any) (Arguments, error) {
+func newArgumentsFrom(args any) (Arguments, error) {
 	switch v := args.(type) {
 	case nil:
-		return NewArguments(), nil
+		return newArguments(), nil
 	case Arguments:
 		return v, nil
 	case []any:
-		return NewArgumentsWith(v...), nil
+		return newArgumentsWith(v...), nil
 	case []string:
-		return NewArgumentsWithStrings(v...), nil
+		return newArgumentsWithStrings(v...), nil
 	case string:
-		return NewArgumentsFromString(v)
+		return newArgumentsFromString(v)
 	}
 	return nil, fmt.Errorf("unsupported type for arguments: %T", args)
 }
 
-// NewArguments creates a new Arguments instance with the provided options.
-// It allows for flexible configuration of the arguments.
-func NewArguments(opts ...ArgumentsOption) Arguments {
-	return newArguments(opts...)
-}
-
-func newArguments(opts ...ArgumentsOption) *arguments {
-	args := &arguments{
+func newArguments(opts ...ArgumentsOption) *argumentsImpl {
+	args := &argumentsImpl{
 		Args: make([]any, 0),
 	}
 	for _, opt := range opts {
@@ -102,19 +96,19 @@ func newArguments(opts ...ArgumentsOption) *arguments {
 }
 
 // Arguments returns the underlying arguments.
-func (args *arguments) Arguments() []any {
+func (args *argumentsImpl) Arguments() []any {
 	return args.Args
 }
 
 // Map returns the arguments as a map.
-func (args *arguments) Map() map[string]any {
+func (args *argumentsImpl) Map() map[string]any {
 	return map[string]any{
 		argumentsKey: args.String(),
 	}
 }
 
 // JSONString returns the arguments as a JSON string.
-func (args *arguments) JSONString() (string, error) {
+func (args *argumentsImpl) JSONString() (string, error) {
 	b, err := json.Marshal(args.Args)
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal arguments to JSON: %w", err)
@@ -123,7 +117,7 @@ func (args *arguments) JSONString() (string, error) {
 }
 
 // String returns a string representation of the arguments.
-func (args *arguments) String() string {
+func (args *argumentsImpl) String() string {
 	jsonStr, err := args.JSONString()
 	if err == nil {
 		return jsonStr

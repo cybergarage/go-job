@@ -94,7 +94,7 @@ type jobInstance struct {
 	*handler
 	*schedule
 	*policy
-	*arguments
+	*argumentsImpl
 
 	job          *job
 	uuid         UUID
@@ -269,23 +269,23 @@ func NewInstance(opts ...any) (Instance, error) {
 	}
 
 	ji := &jobInstance{
-		job:          job,
-		uuid:         NewUUID(),
-		state:        JobStateUnset,
-		attempt:      0,
-		history:      newHistory(),
-		handler:      newHandler(),
-		schedule:     schedule,
-		policy:       newPolicy(),
-		arguments:    newArguments(),
-		createdAt:    time.Now(),
-		completedAt:  time.Time{},
-		terminatedAt: time.Time{},
-		processedAt:  time.Time{},
-		cancelledAt:  time.Time{},
-		timedoutAt:   time.Time{},
-		resultSet:    nil,
-		resultError:  nil,
+		job:           job,
+		uuid:          NewUUID(),
+		state:         JobStateUnset,
+		attempt:       0,
+		history:       newHistory(),
+		handler:       newHandler(),
+		schedule:      schedule,
+		policy:        newPolicy(),
+		argumentsImpl: newArguments(),
+		createdAt:     time.Now(),
+		completedAt:   time.Time{},
+		terminatedAt:  time.Time{},
+		processedAt:   time.Time{},
+		cancelledAt:   time.Time{},
+		timedoutAt:    time.Time{},
+		resultSet:     nil,
+		resultError:   nil,
 	}
 
 	for _, opt := range opts {
@@ -303,9 +303,9 @@ func NewInstance(opts ...any) (Instance, error) {
 		case PolicyOption:
 			opt(ji.policy)
 		case ArgumentsOption:
-			opt(ji.arguments)
-		case *arguments:
-			ji.arguments = opt
+			opt(ji.argumentsImpl)
+		case *argumentsImpl:
+			ji.argumentsImpl = opt
 		default:
 			return nil, fmt.Errorf("invalid job instance option type: %T", opt)
 		}
@@ -337,7 +337,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 			}
 			opts = append(opts, WithState(state))
 		case argumentsKey:
-			args, err := NewArgumentsFrom(value)
+			args, err := newArgumentsFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -397,10 +397,10 @@ func (ji *jobInstance) UUID() uuid.UUID {
 
 // Arguments returns the arguments for the job instance.
 func (ji *jobInstance) Arguments() []any {
-	if ji.arguments == nil {
+	if ji.argumentsImpl == nil {
 		return nil
 	}
-	return ji.arguments.Arguments()
+	return ji.argumentsImpl.Arguments()
 }
 
 // Policy returns the policy associated with the job instance.
@@ -481,7 +481,7 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	}
 
 	opts = append(opts,
-		ji.arguments.Map(),
+		ji.argumentsImpl.Map(),
 	)
 
 	optMap := ji.OptionMap()
@@ -550,7 +550,7 @@ func (ji *jobInstance) Map() map[string]any {
 func (ji *jobInstance) OptionMap() map[string]any {
 	mergedMap := map[string]any{}
 	maps := []map[string]any{
-		ji.arguments.Map(),
+		ji.argumentsImpl.Map(),
 		ji.schedule.Map(),
 		ji.Policy().Map(),
 	}

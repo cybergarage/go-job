@@ -34,7 +34,7 @@ func NewInstanceMapWith(m map[string]any) InstanceMap {
 // Arguments returns the arguments from the instance map if they exist.
 func (im InstanceMap) Arguments() (Arguments, bool) {
 	if args, ok := im[argumentsKey]; ok {
-		v, err := NewArgumentsFrom(args)
+		v, err := newArgumentsFrom(args)
 		if err != nil {
 			return nil, false
 		}

@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package jobtest
+package job
 
 import (
 	"fmt"
 	"testing"
-
-	"github.com/cybergarage/go-job/job"
 )
 
 func TestArgumentsFrom(t *testing.T) {
@@ -35,7 +33,7 @@ func TestArgumentsFrom(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("ArgumentsFrom %T", tt.v), func(t *testing.T) {
-			_, err := job.NewArgumentsFrom(tt.v)
+			_, err := newArgumentsFrom(tt.v)
 			if err != nil {
 				t.Errorf("NewArgumentsFrom(%T) returned error: %v", tt.v, err)
 			}

@@ -92,11 +92,6 @@ type handler struct {
 	completeProcessor  CompleteProcessor
 }
 
-// NewHandler creates a new instance of a job handler with the provided options.
-func NewHandler(opts ...HandlerOption) Handler {
-	return newHandler(opts...)
-}
-
 func newHandler(opts ...HandlerOption) *handler {
 	h := &handler{
 		executor:           nil,
