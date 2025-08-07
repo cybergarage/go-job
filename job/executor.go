@@ -15,6 +15,7 @@
 package job
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -38,18 +39,74 @@ func Execute(fn any, args ...any) (ResultSet, error) {
 	}
 
 	assignTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
+
+		assignMapTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
+			var argMap map[string]any
+
+			switch arg := arg.(type) {
+			case map[string]any:
+				argMap = arg
+			case string: /* JSON string */
+				if err := json.Unmarshal([]byte(arg), &argMap); err != nil {
+					return reflect.Value{}, false
+				}
+			case []byte: /* JSON bytes */
+				if err := json.Unmarshal(arg, &argMap); err != nil {
+					return reflect.Value{}, false
+				}
+			default:
+				return reflect.Value{}, false
+			}
+
+			structValue := reflect.New(fnType).Elem()
+			for mapKey, mapValue := range argMap {
+				field := structValue.FieldByName(mapKey)
+				if !field.IsValid() {
+					return reflect.Value{}, false // Invalid field name
+				}
+				if !field.CanSet() {
+					return reflect.Value{}, false
+				}
+				mapValue := reflect.ValueOf(mapValue)
+				if mapValue.Type().ConvertibleTo(field.Type()) {
+					field.Set(mapValue.Convert(field.Type()))
+					continue
+				}
+				return reflect.Value{}, false
+			}
+			return structValue, true
+		}
+
 		argValue := reflect.ValueOf(arg)
 		if argValue.Type().AssignableTo(fnType) {
 			return argValue, true
 		}
 
-		fnVal := reflect.New(fnType).Interface()
-		err := safecast.To(argValue.Interface(), fnVal)
-		if err == nil {
-			return reflect.ValueOf(fnVal).Elem(), true
+		switch fnType.Kind() {
+		case reflect.Struct:
+			return assignMapTo(arg, fnType)
+		case reflect.Ptr:
+			switch fnType.Elem().Kind() {
+			case reflect.Struct:
+				structValue, ok := assignMapTo(arg, fnType.Elem())
+				if !ok {
+					return reflect.Value{}, false
+				}
+				ptrValue := reflect.New(fnType.Elem())
+				ptrValue.Elem().Set(structValue)
+				return ptrValue, true
+			}
+		case reflect.Array, reflect.Slice:
+			return reflect.Value{}, false
+		default:
+			fnVal := reflect.New(fnType).Interface()
+			err := safecast.To(argValue.Interface(), fnVal)
+			if err == nil {
+				return reflect.ValueOf(fnVal).Elem(), true
+			}
 		}
 
-		return reflect.ValueOf(fnVal).Elem(), false
+		return reflect.Value{}, false
 	}
 
 	fnArgs := make([]reflect.Value, len(args))

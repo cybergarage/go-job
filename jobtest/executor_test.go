@@ -25,9 +25,9 @@ import (
 
 func TestExecutor(t *testing.T) {
 	type concatString struct {
-		a string
-		b string
-		s string
+		A string
+		B string
+		S string
 	}
 
 	tests := []struct {
@@ -125,12 +125,36 @@ func TestExecutor(t *testing.T) {
 			expected: []any{},
 		},
 		{
+			fn: func(param concatString) concatString {
+				param.S = param.A + " " + param.B
+				return param
+			},
+			params:   []any{concatString{"Hello", "world!", ""}},
+			expected: []any{concatString{"Hello", "world!", "Hello world!"}},
+		},
+		{
 			fn: func(param *concatString) *concatString {
-				param.s = param.a + " " + param.b
+				param.S = param.A + " " + param.B
 				return param
 			},
 			params:   []any{&concatString{"Hello", "world!", ""}},
 			expected: []any{&concatString{"Hello", "world!", "Hello world!"}},
+		},
+		{
+			fn: func(param concatString) concatString {
+				param.S = param.A + " " + param.B
+				return param
+			},
+			params:   []any{"{\"A\": \"Hello\",\"B\": \"world!\"}"},
+			expected: []any{concatString{"Hello", "world!", "Hello world!"}},
+		},
+		{
+			fn: func(param *concatString) concatString {
+				param.S = param.A + " " + param.B
+				return *param
+			},
+			params:   []any{"{\"A\": \"Hello\",\"B\": \"world!\"}"},
+			expected: []any{concatString{"Hello", "world!", "Hello world!"}},
 		},
 	}
 
