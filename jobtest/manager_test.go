@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
 )
 
 // nolint: maintidx
@@ -26,8 +27,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 	t.Helper()
 
 	type sumOpt struct {
-		a int
-		b int
+		A int
+		B int
 	}
 
 	tests := []struct {
@@ -52,14 +53,14 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 		{
 			kind: "sum (struct)",
 			opts: []any{
-				job.WithExecutor(func(opt sumOpt) int { return opt.a + opt.b }),
+				job.WithExecutor(func(opt sumOpt) int { return opt.A + opt.B }),
 			},
 			args: []any{sumOpt{1, 2}},
 		},
 		{
 			kind: "sum (*struct)",
 			opts: []any{
-				job.WithExecutor(func(opt *sumOpt) int { return opt.a + opt.b }),
+				job.WithExecutor(func(opt *sumOpt) int { return opt.A + opt.B }),
 			},
 			args: []any{&sumOpt{1, 2}},
 		},
@@ -296,7 +297,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 func TestManager(t *testing.T) {
 	stores := []job.Store{
 		job.NewLocalStore(),
-		// store.NewMemdbStore(),
+		store.NewMemdbStore(),
 	}
 
 	for _, store := range stores {
