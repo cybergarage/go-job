@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
@@ -27,6 +28,10 @@ import (
 
 type kvStore struct {
 	kv.Store
+}
+
+func nowTimestampSuffix() string {
+	return strconv.FormatInt(time.Now().UnixMicro(), 10)
 }
 
 // NewKvStoreWith creates a new key-value store instance.
@@ -60,7 +65,10 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 		if err != nil {
 			return nil, err
 		}
-		job, err := kv.NewInstanceFromBytes(obj.Bytes())
+		job, err := kv.NewInstanceFromBytes(
+			obj.Bytes(),
+			job.WithInstanceStore(store),
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -102,12 +110,12 @@ func (store *kvStore) ListInstances(ctx context.Context) ([]job.Instance, error)
 	if err != nil {
 		return nil, err
 	}
-	jobs := make([]job.Instance, 0)
-	for rs.Next() {
-		obj, err := rs.Object()
-		if err != nil {
-			return nil, err
-		}
+	objs, err := kvutil.ReadAll(rs)
+	if err != nil {
+		return nil, err
+	}
+	jobs := []job.Instance{}
+	for _, obj := range objs {
 		job, err := kv.NewInstanceFromBytes(obj.Bytes())
 		if err != nil {
 			return nil, err
@@ -126,7 +134,7 @@ func (store *kvStore) ClearInstances(ctx context.Context) error {
 func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceState) error {
 	keySuffixes := []string{}
 	if store.UniqueKeys() {
-		keySuffixes = append(keySuffixes, state.Timestamp().String())
+		keySuffixes = append(keySuffixes, nowTimestampSuffix())
 	}
 	obj, err := kv.NewObjectFromInstanceState(state, keySuffixes...)
 	if err != nil {
@@ -146,7 +154,7 @@ func (store *kvStore) LookupInstanceHistory(ctx context.Context, query job.Query
 	if err != nil {
 		return nil, err
 	}
-	states := make([]job.InstanceState, 0)
+	states := []job.InstanceState{}
 	for _, obj := range objs {
 		state, err := kv.NewInstanceStateFromBytes(obj.Bytes())
 		if err != nil {
@@ -201,7 +209,7 @@ func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.Lo
 	)
 	keySuffixes := []string{}
 	if store.UniqueKeys() {
-		keySuffixes = append(keySuffixes, log.Timestamp().String())
+		keySuffixes = append(keySuffixes, nowTimestampSuffix())
 	}
 	obj, err := kv.NewObjectFromLog(log, keySuffixes...)
 	if err != nil {
