@@ -20,8 +20,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// NewInstancesFromQueue creates a list of job instances from the provided queue.
-func NewInstancesFromQueue(queue Queue) ([]Instance, error) {
+// newInstancesFromQueue creates a list of job instances from the provided queue.
+func newInstancesFromQueue(queue Queue) ([]Instance, error) {
 	list, err := queue.List(context.Background())
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func NewInstancesFromQueue(queue Queue) ([]Instance, error) {
 }
 
 // NewInstancesFromStore creates a list of job instances from the provided store.
-func NewInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
+func newInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 	attempt := 0
 	jiOptsMap := make(map[uuid.UUID][]any)
 	for _, state := range history {

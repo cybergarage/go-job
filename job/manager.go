@@ -246,7 +246,7 @@ func (mgr *manager) ListInstances() ([]Instance, error) {
 func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 	var instances []Instance
 
-	queueInstances, err := NewInstancesFromQueue(mgr.Queue())
+	queueInstances, err := newInstancesFromQueue(mgr.Queue())
 	if err != nil {
 		return nil, err
 	}
@@ -260,7 +260,7 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	historyInstances, err := NewInstancesFromHistory(history)
+	historyInstances, err := newInstancesFromHistory(history)
 	if err != nil {
 		return nil, err
 	}
