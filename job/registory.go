@@ -18,8 +18,8 @@ import (
 	"fmt"
 )
 
-// Registry is an interface that defines methods for managing job instances.
-type Registry interface {
+// registry is an interface that defines methods for managing job instances.
+type registry interface {
 	// RegisterJob registers a job in the registry.
 	RegisterJob(job Job) error
 	// UnregisterJob removes a job from the registry by its kind.
@@ -32,20 +32,20 @@ type Registry interface {
 	Clear() error
 }
 
-// registry is responsible for managing job instances.
-type registry struct {
+// registryImpl is responsible for managing job instances.
+type registryImpl struct {
 	jobs map[string]Job
 }
 
-// NewRegistry creates a new instance of Registry.
-func NewRegistry() Registry {
-	return &registry{
+// newRegistry creates a new instance of Registry.
+func newRegistry() registry {
+	return &registryImpl{
 		jobs: make(map[string]Job),
 	}
 }
 
 // RegisterJob registers a job in the registry.
-func (reg *registry) RegisterJob(job Job) error {
+func (reg *registryImpl) RegisterJob(job Job) error {
 	if _, exists := reg.jobs[job.Kind()]; exists {
 		return fmt.Errorf("job with kind %q is already registered", job.Kind())
 	}
@@ -54,7 +54,7 @@ func (reg *registry) RegisterJob(job Job) error {
 }
 
 // UnregisterJob removes a job from the registry by its kind.
-func (reg *registry) UnregisterJob(kind Kind) error {
+func (reg *registryImpl) UnregisterJob(kind Kind) error {
 	if _, exists := reg.jobs[kind]; !exists {
 		return fmt.Errorf("job with kind %q is not registered", kind)
 	}
@@ -63,7 +63,7 @@ func (reg *registry) UnregisterJob(kind Kind) error {
 }
 
 // ListJobs returns a slice of all registered jobs.
-func (reg *registry) ListJobs() ([]Job, error) {
+func (reg *registryImpl) ListJobs() ([]Job, error) {
 	jobs := make([]Job, 0, len(reg.jobs))
 	for _, job := range reg.jobs {
 		jobs = append(jobs, job)
@@ -72,13 +72,13 @@ func (reg *registry) ListJobs() ([]Job, error) {
 }
 
 // LookupJob looks up a job by its kind in the registry.
-func (reg *registry) LookupJob(kind Kind) (Job, bool) {
+func (reg *registryImpl) LookupJob(kind Kind) (Job, bool) {
 	job, exists := reg.jobs[kind]
 	return job, exists
 }
 
 // Clear clears all registered jobs.
-func (reg *registry) Clear() error {
+func (reg *registryImpl) Clear() error {
 	reg.jobs = make(map[string]Job)
 	return nil
 }

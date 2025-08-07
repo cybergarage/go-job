@@ -20,8 +20,8 @@ import (
 	"time"
 )
 
-// Queue is an interface that defines methods for managing a job queue.
-type Queue interface {
+// queue is an interface that defines methods for managing a job queue.
+type queue interface {
 	// Enqueue adds a job to the queue.
 	Enqueue(ctx context.Context, job Instance) error
 	// Dequeue removes and returns a job from the queue.
@@ -36,23 +36,23 @@ type Queue interface {
 	Clear(ctx context.Context) error
 }
 
-type queue struct {
+type queueImpl struct {
 	store Store
 }
 
-// QueueOption is a function that configures a job queue.
-type QueueOption func(*queue)
+// queueOption is a function that configures a job queue.
+type queueOption func(*queueImpl)
 
 // WithQueueStore sets the store for the job queue.
-func WithQueueStore(store Store) QueueOption {
-	return func(q *queue) {
+func WithQueueStore(store Store) queueOption {
+	return func(q *queueImpl) {
 		q.store = store
 	}
 }
 
 // NewQueue creates a new instance of the job queue.
-func NewQueue(opts ...QueueOption) Queue {
-	queue := &queue{
+func NewQueue(opts ...queueOption) queue {
+	queue := &queueImpl{
 		store: nil,
 	}
 	for _, opt := range opts {
@@ -62,12 +62,12 @@ func NewQueue(opts ...QueueOption) Queue {
 }
 
 // Enqueue adds a job to the queue.
-func (q *queue) Enqueue(ctx context.Context, job Instance) error {
+func (q *queueImpl) Enqueue(ctx context.Context, job Instance) error {
 	return q.store.EnqueueInstance(ctx, job)
 }
 
 // Dequeue removes and returns a job from the queue.
-func (q *queue) Dequeue(ctx context.Context) (Instance, error) {
+func (q *queueImpl) Dequeue(ctx context.Context) (Instance, error) {
 	for {
 		job, err := q.store.DequeueNextInstance(ctx)
 		if err != nil {
@@ -81,7 +81,7 @@ func (q *queue) Dequeue(ctx context.Context) (Instance, error) {
 }
 
 // List returns a list of all jobs in the queue.
-func (q *queue) List(ctx context.Context) ([]Instance, error) {
+func (q *queueImpl) List(ctx context.Context) ([]Instance, error) {
 	jobs, err := q.store.ListInstances(ctx)
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (q *queue) List(ctx context.Context) ([]Instance, error) {
 }
 
 // Size returns the number of jobs in the queue.
-func (q *queue) Size(ctx context.Context) (int, error) {
+func (q *queueImpl) Size(ctx context.Context) (int, error) {
 	jobs, err := q.store.ListInstances(ctx)
 	if err != nil {
 		return 0, err
@@ -102,12 +102,12 @@ func (q *queue) Size(ctx context.Context) (int, error) {
 }
 
 // Empty checks if the queue is empty.
-func (q *queue) Empty(ctx context.Context) (bool, error) {
+func (q *queueImpl) Empty(ctx context.Context) (bool, error) {
 	size, err := q.Size(ctx)
 	return size == 0, err
 }
 
 // Clear clears all jobs in the queue.
-func (q *queue) Clear(ctx context.Context) error {
+func (q *queueImpl) Clear(ctx context.Context) error {
 	return q.store.ClearInstances(ctx)
 }

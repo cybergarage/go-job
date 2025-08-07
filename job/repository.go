@@ -22,7 +22,7 @@ import (
 // repository is an interface that defines methods for managing job registrations and scheduling.
 type repository interface {
 	// Registry defines the methods for managing job registrations.
-	Registry
+	registry
 	// Scheduler defines the methods for scheduling jobs.
 	scheduler
 	// History defines the methods for managing job history.
@@ -42,7 +42,7 @@ func withRepositoryStore(store Store) repositoryOption {
 }
 
 type repositoryImpl struct {
-	Registry
+	registry
 	scheduler
 	History
 
@@ -54,7 +54,7 @@ func newRepository(opts ...repositoryOption) *repositoryImpl {
 	repo := &repositoryImpl{
 		store:     NewLocalStore(),
 		scheduler: nil,
-		Registry:  nil,
+		registry:  nil,
 		History:   nil,
 	}
 
@@ -62,7 +62,7 @@ func newRepository(opts ...repositoryOption) *repositoryImpl {
 		opt(repo)
 	}
 
-	repo.Registry = NewRegistry()
+	repo.registry = newRegistry()
 	repo.scheduler = newScheduler(withSchedulerStore(repo.store))
 	repo.History = newHistory(WithHistoryStore(repo.store))
 
@@ -72,7 +72,7 @@ func newRepository(opts ...repositoryOption) *repositoryImpl {
 // Clear clears all job queues, history, and logs.
 func (repo *repositoryImpl) Clear() error {
 	registryCleaner := func(ctx context.Context) error {
-		return repo.Registry.Clear()
+		return repo.registry.Clear()
 	}
 	historyCleaner := func(ctx context.Context) error {
 		return repo.store.ClearInstanceHistory(ctx, NewFilter())
