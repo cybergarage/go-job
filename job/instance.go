@@ -295,9 +295,8 @@ func NewInstance(opts ...any) (Instance, error) {
 	return ji, nil
 }
 
-// NewInstanceFromMap creates a new job instance from the provided map.
-func NewInstanceFromMap(m map[string]any) (Instance, error) {
-	opts := []any{}
+// NewInstanceFromMap creates a new job instance from the provided map and options.
+func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 	for key, value := range m {
 		switch key {
 		case kindKey:

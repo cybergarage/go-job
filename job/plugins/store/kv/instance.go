@@ -44,10 +44,10 @@ func NewObjectFromInstance(ji job.Instance) (Object, error) {
 }
 
 // NewInstanceFromBytes creates a job instance from a byte slice.
-func NewInstanceFromBytes(b []byte) (job.Instance, error) {
+func NewInstanceFromBytes(b []byte, opts ...any) (job.Instance, error) {
 	m, err := encoding.MapFromJSON(string(b))
 	if err != nil {
 		return nil, err
 	}
-	return job.NewInstanceFromMap(m)
+	return job.NewInstanceFromMap(m, opts...)
 }
