@@ -39,8 +39,8 @@ const (
 	logWarnString  = "WARN"
 )
 
-// NewLogLevelFrom creates a new LogLevel from a specified value.
-func NewLogLevelFrom(a any) (LogLevel, error) {
+// newLogLevelFrom creates a new LogLevel from a specified value.
+func newLogLevelFrom(a any) (LogLevel, error) {
 	switch v := a.(type) {
 	case LogLevel:
 		return v, nil
