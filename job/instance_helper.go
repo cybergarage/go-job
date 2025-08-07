@@ -14,8 +14,8 @@
 
 package job
 
-// InstanceHelper defines methods that can be used to perform actions before and after processing a job instance.
-type InstanceHelper interface {
+// instanceHelper defines methods that can be used to perform actions before and after processing a job instance.
+type instanceHelper interface {
 	// Before checks if the job instance should be processed before the given instance.
 	Before(Instance) bool
 	// After checks if the job instance should be processed after the given instance.

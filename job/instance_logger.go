@@ -14,8 +14,8 @@
 
 package job
 
-// InstanceLogger is an interface that defines methods for logging messages.
-type InstanceLogger interface {
+// instanceLogger is an interface that defines methods for logging messages.
+type instanceLogger interface {
 	// Info logs an informational message.
 	Info(msg string)
 	// Warn logs a warning message.

@@ -85,9 +85,9 @@ type Instance interface {
 	// String returns a string representation of the job instance.
 	String() string
 	// InstanceLogger provides methods for logging messages related to the job instance.
-	InstanceLogger
+	instanceLogger
 	// InstanceHelper provides methods to check if the job instance should be processed before or after another instance.
-	InstanceHelper
+	instanceHelper
 }
 
 type jobInstance struct {
