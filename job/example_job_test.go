@@ -111,13 +111,13 @@ func ExampleNewJob_sum() {
 
 func ExampleNewJob_struct() {
 	type SumOpt struct {
-		a int
-		b int
+		A int
+		B int
 	}
 	job, err := NewJob(
 		WithKind("sum (struct arg and one return)"),
 		WithDescription("Returns the sum of two integers from a struct"),
-		WithExecutor(func(opt SumOpt) int { return opt.a + opt.b }),
+		WithExecutor(func(opt SumOpt) int { return opt.A + opt.B }),
 		WithCompleteProcessor(func(ji Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0])
@@ -132,17 +132,17 @@ func ExampleNewJob_struct() {
 }
 
 func ExampleNewJob_mutatingStruct() {
-	type concatString struct {
-		a string
-		b string
-		s string
+	type ConcatString struct {
+		A string
+		B string
+		S string
 	}
 	job, err := NewJob(
 		WithKind("concat (one struct input and one struct output)"),
 		WithDescription("Concatenates two strings from a struct"),
-		WithExecutor(func(param *concatString) *concatString {
+		WithExecutor(func(param *ConcatString) *ConcatString {
 			// Store the concatenated string result in the input struct
-			param.s = param.a + " " + param.b
+			param.S = param.A + " " + param.B
 			return param
 		}),
 		WithCompleteProcessor(func(ji Instance, res []any) {
