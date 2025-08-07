@@ -28,6 +28,10 @@ type Object interface {
 	Equal(other Object) bool
 	// Bytes returns the bytes of the object.
 	Bytes() []byte
+	// Map returns the object as a map.
+	Map() (map[string]any, error)
+	// String returns a string representation of the object.
+	String() string
 }
 
 type object struct {
@@ -67,4 +71,9 @@ func (obj *object) Bytes() []byte {
 // Map returns the object as a map.
 func (obj *object) Map() (map[string]any, error) {
 	return encoding.MapFromJSON(string(obj.value))
+}
+
+// String returns a string representation of the object.
+func (obj *object) String() string {
+	return obj.key.String() + ": " + string(obj.value)
 }

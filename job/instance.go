@@ -157,6 +157,16 @@ func WithInstanceHistory(history History) InstanceOption {
 	}
 }
 
+// WithInstanceStore sets the store for the job instance history.
+func WithInstanceStore(store Store) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.history = NewHistory(
+			WithHistoryStore(store),
+		)
+		return nil
+	}
+}
+
 // WithAttemptCount sets the number of attempts made to process the job instance.
 func WithAttemptCount(attempt int) InstanceOption {
 	return func(ji *jobInstance) error {
