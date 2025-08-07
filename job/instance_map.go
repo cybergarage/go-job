@@ -18,21 +18,21 @@ import (
 	"fmt"
 )
 
-// InstanceMap is a map representation of a job instance.
-type InstanceMap map[string]any
+// instanceMap is a map representation of a job instance.
+type instanceMap map[string]any
 
-// NewInstanceMap creates a new empty instance map.
-func NewInstanceMap() InstanceMap {
-	return make(InstanceMap)
+// newInstanceMap creates a new empty instance map.
+func newInstanceMap() instanceMap {
+	return make(instanceMap)
 }
 
 // NewInstanceMap creates a new instance with the provideed map.
-func NewInstanceMapWith(m map[string]any) InstanceMap {
-	return InstanceMap(m)
+func newInstanceMapWith(m map[string]any) instanceMap {
+	return instanceMap(m)
 }
 
 // Arguments returns the arguments from the instance map if they exist.
-func (im InstanceMap) Arguments() (Arguments, bool) {
+func (im instanceMap) Arguments() (Arguments, bool) {
 	if args, ok := im[argumentsKey]; ok {
 		v, err := newArgumentsFrom(args)
 		if err != nil {
@@ -44,7 +44,7 @@ func (im InstanceMap) Arguments() (Arguments, bool) {
 }
 
 // ResultSet returns the result set from the instance map if it exists.
-func (im InstanceMap) ResultSet() (ResultSet, bool) {
+func (im instanceMap) ResultSet() (ResultSet, bool) {
 	if rs, ok := im[resultSetKey]; ok {
 		if resultSet, ok := rs.(ResultSet); ok {
 			return resultSet, true
@@ -54,7 +54,7 @@ func (im InstanceMap) ResultSet() (ResultSet, bool) {
 }
 
 // Error returns the error from the instance map if it exists.
-func (im InstanceMap) Error() (error, bool) {
+func (im instanceMap) Error() (error, bool) {
 	if err, ok := im[errorKey]; ok {
 		if errVal, ok := err.(error); ok {
 			return errVal, true
@@ -67,6 +67,6 @@ func (im InstanceMap) Error() (error, bool) {
 }
 
 // Map returns a map representation of the instance map.
-func (im InstanceMap) Map() map[string]any {
+func (im instanceMap) Map() map[string]any {
 	return map[string]any(im)
 }
