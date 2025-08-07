@@ -32,25 +32,35 @@ func Execute(fn any, args ...any) (ResultSet, error) {
 	if fnType.Kind() != reflect.Func {
 		return nil, fmt.Errorf("executor is not a function (%s)", fnType)
 	}
+
 	if fnType.NumIn() != len(args) {
 		return nil, fmt.Errorf("argument count mismatch for function %s: want %d, got %d", fnType, fnType.NumIn(), len(args))
 	}
-	fnArgs := make([]reflect.Value, len(args))
-	for i, arg := range args {
-		fnParamType := fnType.In(i)
+
+	assignTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
 		argValue := reflect.ValueOf(arg)
-		if argValue.Type().AssignableTo(fnParamType) {
-			fnArgs[i] = argValue
-			continue
+		if argValue.Type().AssignableTo(fnType) {
+			return argValue, true
 		}
-		v := reflect.New(fnParamType).Interface()
-		err := safecast.To(argValue.Interface(), v)
+
+		fnVal := reflect.New(fnType).Interface()
+		err := safecast.To(argValue.Interface(), fnVal)
 		if err == nil {
-			fnArgs[i] = reflect.ValueOf(v).Elem()
-			continue
+			return reflect.ValueOf(fnVal).Elem(), true
 		}
-		return nil, fmt.Errorf("argument[%d] type mismatch: want %v, got %v (%v)", i, fnParamType, argValue.Type(), arg)
+
+		return reflect.ValueOf(fnVal).Elem(), false
 	}
+
+	fnArgs := make([]reflect.Value, len(args))
+	for i := range fnArgs {
+		fnVal, ok := assignTo(args[i], fnType.In(i))
+		if !ok {
+			return nil, fmt.Errorf("argument[%d] type mismatch: want %v, got %v (%v)", i, fnType.In(i), reflect.TypeOf(args[i]), args[i])
+		}
+		fnArgs[i] = fnVal
+	}
+
 	reflectResults := fnObj.Call(fnArgs)
 	results := make([]any, len(reflectResults))
 	for i, r := range reflectResults {
