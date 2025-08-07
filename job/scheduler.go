@@ -24,18 +24,18 @@ type scheduler interface {
 	ScheduleJobInstance(job Instance, opts ...any) error
 }
 
-// SchedulerOption is a function that configures a job scheduler.
-type SchedulerOption func(*schedulerImpl)
+// schedulerOption is a function that configures a job scheduler.
+type schedulerOption func(*schedulerImpl)
 
-// WithSchedulerQueue sets the job queue for the scheduler.
-func WithSchedulerQueue(queue Queue) SchedulerOption {
+// withSchedulerQueue sets the job queue for the scheduler.
+func withSchedulerQueue(queue Queue) schedulerOption {
 	return func(s *schedulerImpl) {
 		s.queue = queue
 	}
 }
 
-// WithSchedulerStore sets the store for the scheduler.
-func WithSchedulerStore(store Store) SchedulerOption {
+// withSchedulerStore sets the store for the scheduler.
+func withSchedulerStore(store Store) schedulerOption {
 	return func(s *schedulerImpl) {
 		s.store = store
 	}
@@ -47,7 +47,7 @@ type schedulerImpl struct {
 }
 
 // newScheduler creates a new instance of Scheduler.
-func newScheduler(opts ...SchedulerOption) *schedulerImpl {
+func newScheduler(opts ...schedulerOption) *schedulerImpl {
 	s := &schedulerImpl{
 		store: NewLocalStore(),
 		queue: nil,
