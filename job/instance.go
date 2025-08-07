@@ -490,7 +490,7 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 		case error:
 			optMap[errorKey] = opt.Error()
 		case ResultSet:
-			optMap[resultSetKey] = NewResultWith(opt).String()
+			optMap[resultSetKey] = newResultWith(opt).String()
 		case map[string]any:
 			optMap = encoding.MergeMaps(optMap, opt)
 		}

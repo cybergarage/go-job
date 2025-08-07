@@ -21,8 +21,8 @@ import (
 // ResultSet represents the result of a job execution.
 type ResultSet []any
 
-// NewResultWith creates a new Result instance with the provided values.
-func NewResultWith(values []any) ResultSet {
+// newResultWith creates a new Result instance with the provided values.
+func newResultWith(values []any) ResultSet {
 	return ResultSet(values)
 }
 

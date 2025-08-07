@@ -120,7 +120,7 @@ func (w *worker) Run() error {
 				w.processing = true
 				res, err := ji.Process()
 				if err == nil {
-					err = ji.UpdateState(JobCompleted, NewResultWith(res))
+					err = ji.UpdateState(JobCompleted, newResultWith(res))
 					if err != nil {
 						logError(ji, err)
 					}
