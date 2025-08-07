@@ -169,7 +169,7 @@ func WithInstanceHistory(history History) InstanceOption {
 // WithInstanceStore sets the store for the job instance history.
 func WithInstanceStore(store Store) InstanceOption {
 	return func(ji *jobInstance) error {
-		ji.history = NewHistory(
+		ji.history = newHistory(
 			WithHistoryStore(store),
 		)
 		return nil

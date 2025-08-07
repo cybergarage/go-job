@@ -62,11 +62,6 @@ type history struct {
 	store HistoryStore
 }
 
-// NewHistory creates a new instance of the job history.
-func NewHistory(opts ...HistoryOption) History {
-	return newHistory(opts...)
-}
-
 // newHistory creates a new job state history.
 func newHistory(opts ...HistoryOption) *history {
 	history := &history{
