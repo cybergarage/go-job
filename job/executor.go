@@ -39,7 +39,6 @@ func Execute(fn any, args ...any) (ResultSet, error) {
 	}
 
 	assignTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
-
 		assignMapTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
 			var argMap map[string]any
 
