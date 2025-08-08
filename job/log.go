@@ -48,7 +48,7 @@ type log struct {
 	msg   string
 }
 
-// NewLog creates a new log entry.
+// LogOption defines a function that configures a log entry.
 type LogOption func(*log)
 
 // WithLogKind sets the type of the log entry.

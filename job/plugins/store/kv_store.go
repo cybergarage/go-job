@@ -67,7 +67,6 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 		}
 		job, err := kv.NewInstanceFromBytes(
 			obj.Bytes(),
-			job.WithInstanceStore(store),
 		)
 		if err != nil {
 			return nil, err

@@ -62,8 +62,8 @@ func WithDescription(desc string) JobOption {
 	}
 }
 
-// WithHandler sets the handler for the job.
-func WithRegisteredAt(t time.Time) JobOption {
+// withRegisteredAt sets the time when the job was registered.
+func withRegisteredAt(t time.Time) JobOption {
 	return func(j *job) {
 		j.registeredAt = t
 	}

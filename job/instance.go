@@ -120,7 +120,7 @@ func WithJob(job Job) InstanceOption {
 		jobOpts := []JobOption{
 			WithKind(job.Kind()),
 			WithDescription(job.Description()),
-			WithRegisteredAt(job.RegisteredAt()),
+			withRegisteredAt(job.RegisteredAt()),
 		}
 		for _, opt := range jobOpts {
 			opt(ji.job)
@@ -166,8 +166,8 @@ func WithInstanceHistory(history History) InstanceOption {
 	}
 }
 
-// WithInstanceStore sets the store for the job instance history.
-func WithInstanceStore(store Store) InstanceOption {
+// withInstanceStore sets the store for the job instance history.
+func withInstanceStore(store Store) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.history = newHistory(
 			withHistoryStore(store),
