@@ -23,53 +23,53 @@ const (
 	timestampFormat = time.RFC3339Nano
 )
 
-// Time represents a point in time.
-type Time time.Time
+// Timestamp represents a point in time.
+type Timestamp time.Time
 
-// NewTime creates a new Timestamp from the current time.
-func NewTime() Time {
-	return Time(time.Now())
+// NewTimestamp creates a new Timestamp from the current time.
+func NewTimestamp() Timestamp {
+	return Timestamp(time.Now())
 }
 
-// NewTimeFrom creates a new Timestamp from a given value.
-func NewTimeFrom(a any) (Time, error) {
+// NewTimestampFrom creates a new Timestamp from a given value.
+func NewTimestampFrom(a any) (Timestamp, error) {
 	switch v := a.(type) {
-	case Time:
+	case Timestamp:
 		return v, nil
 	case time.Time:
-		return NewTimeFromTime(v), nil
+		return NewTimestampFromTime(v), nil
 	case string:
-		return NewTimeFromString(v)
+		return NewTimestampFromString(v)
 	default:
-		return Time{}, fmt.Errorf("invalid timestamp value: %v", a)
+		return Timestamp{}, fmt.Errorf("invalid timestamp value: %v", a)
 	}
 }
 
-// NewTimeFromTime creates a new Timestamp from a time.Time value.
-func NewTimeFromTime(t time.Time) Time {
-	return Time(t)
+// NewTimestampFromTime creates a new Timestamp from a time.Time value.
+func NewTimestampFromTime(t time.Time) Timestamp {
+	return Timestamp(t)
 }
 
-// NewTimeFromString creates a new Timestamp from a string representation of time.
-func NewTimeFromString(s string) (Time, error) {
+// NewTimestampFromString creates a new Timestamp from a string representation of time.
+func NewTimestampFromString(s string) (Timestamp, error) {
 	t, err := time.Parse(timestampFormat, s)
 	if err != nil {
-		return Time{}, err
+		return Timestamp{}, err
 	}
-	return Time(t), nil
+	return Timestamp(t), nil
 }
 
 // Time returns the time.Time representation of the Timestamp.
-func (t Time) Time() time.Time {
+func (t Timestamp) Time() time.Time {
 	return time.Time(t)
 }
 
 // Equal checks if two Timestamps are equal.
-func (t Time) Equal(other Time) bool {
+func (t Timestamp) Equal(other Timestamp) bool {
 	return time.Time(t).Equal(time.Time(other))
 }
 
 // String returns the string representation of the Timestamp in RFC3339 format.
-func (t Time) String() string {
+func (t Timestamp) String() string {
 	return time.Time(t).Format(timestampFormat)
 }

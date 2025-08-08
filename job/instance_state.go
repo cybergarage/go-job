@@ -123,7 +123,7 @@ func NewInstanceStateFromMap(m map[string]any) (InstanceState, error) {
 			}
 			opts = append(opts, withStateUUID(uuid))
 		case timestampKey:
-			ts, err := NewTimeFrom(value)
+			ts, err := NewTimestampFrom(value)
 			if err != nil {
 				return nil, err
 			}
@@ -171,7 +171,7 @@ func (state *instanceState) Map() map[string]any {
 	m := map[string]any{
 		kindKey:      state.kind,
 		uuidKey:      state.uuid.String(),
-		timestampKey: NewTimeFromTime(state.ts).String(),
+		timestampKey: NewTimestampFromTime(state.ts).String(),
 		stateKey:     state.state.String(),
 	}
 	m = encoding.MergeMaps(m, state.opts)

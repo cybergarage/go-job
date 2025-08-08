@@ -349,7 +349,7 @@ func NewInstanceFromMap(m map[string]any, opts ...any) (Instance, error) {
 			}
 			opts = append(opts, WithCrontabSpec(crontabSpec))
 		case scheduleAtKey:
-			scheduleAt, err := NewTimeFrom(value)
+			scheduleAt, err := NewTimestampFrom(value)
 			if err != nil {
 				return nil, err
 			}

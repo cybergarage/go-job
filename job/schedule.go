@@ -140,7 +140,7 @@ func (js *schedule) Map() map[string]any {
 		m[crontabKey] = js.crontabSpec
 	}
 	if !js.scheduleAt.IsZero() {
-		m[scheduleAtKey] = NewTimeFromTime(js.scheduleAt).String()
+		m[scheduleAtKey] = NewTimestampFromTime(js.scheduleAt).String()
 	}
 	return m
 }
