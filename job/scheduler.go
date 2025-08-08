@@ -56,7 +56,7 @@ func newScheduler(opts ...schedulerOption) *schedulerImpl {
 		opt(s)
 	}
 	if s.queue == nil {
-		s.queue = NewQueue(WithQueueStore(s.store))
+		s.queue = newQueue(withQueueStore(s.store))
 	}
 	return s
 }

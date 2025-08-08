@@ -43,15 +43,15 @@ type queueImpl struct {
 // queueOption is a function that configures a job queue.
 type queueOption func(*queueImpl)
 
-// WithQueueStore sets the store for the job queue.
-func WithQueueStore(store Store) queueOption {
+// withQueueStore sets the store for the job queue.
+func withQueueStore(store Store) queueOption {
 	return func(q *queueImpl) {
 		q.store = store
 	}
 }
 
-// NewQueue creates a new instance of the job queue.
-func NewQueue(opts ...queueOption) queue {
+// newQueue creates a new instance of the job queue.
+func newQueue(opts ...queueOption) queue {
 	queue := &queueImpl{
 		store: nil,
 	}

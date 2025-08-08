@@ -113,7 +113,7 @@ func QueueStoreTest(t *testing.T, store Store) {
 		jobs = append(jobs, job)
 	}
 
-	q := NewQueue(WithQueueStore(store))
+	q := newQueue(withQueueStore(store))
 
 	for _, job := range jobs {
 		if err := q.Enqueue(ctx, job); err != nil {
