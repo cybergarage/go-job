@@ -43,17 +43,17 @@ func (w *worker) IsProcessing() bool {
 	return w.processing
 }
 
-// WorkerOption is a function that configures a job worker.
-type WorkerOption func(*worker)
+// workerOption is a function that configures a job worker.
+type workerOption func(*worker)
 
-func WithWorkerManager(mgr Manager) WorkerOption {
+func withWorkerManager(mgr Manager) workerOption {
 	return func(w *worker) {
 		w.manager = mgr
 	}
 }
 
-// NewWorker creates a new instance of the job worker.
-func NewWorker(opts ...WorkerOption) Worker {
+// newWorker creates a new instance of the job worker.
+func newWorker(opts ...workerOption) Worker {
 	w := &worker{
 		manager:    nil,
 		done:       make(chan struct{}),

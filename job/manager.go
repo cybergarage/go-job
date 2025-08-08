@@ -118,7 +118,7 @@ func newManager(opts ...any) (*manager, error) {
 	mgr.repository = newRepository(
 		withRepositoryStore(mgr.store),
 	)
-	WithWorkerGroupManager(mgr)(mgr.workerGroup)
+	withWorkerGroupManager(mgr)(mgr.workerGroup)
 
 	return mgr, nil
 }

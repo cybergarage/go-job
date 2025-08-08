@@ -48,16 +48,11 @@ func WithNumWorkers(number int) WorkerGroupOption {
 	}
 }
 
-// WithWorkerGroupManager sets the job manager for the worker group.
-func WithWorkerGroupManager(mgr Manager) WorkerGroupOption {
+// withWorkerGroupManager sets the job manager for the worker group.
+func withWorkerGroupManager(mgr Manager) WorkerGroupOption {
 	return func(g *workerGroup) {
 		g.manager = mgr
 	}
-}
-
-// NewWorkerGroup creates a new instance of the worker group with the provided options.
-func NewWorkerGroup(opts ...WorkerGroupOption) WorkerGroup {
-	return newWorkerGroup(opts...)
 }
 
 type workerGroup struct {
@@ -85,7 +80,7 @@ func (g *workerGroup) Start() error {
 		return errors.New("worker group manager is not set")
 	}
 	for i := 0; i < len(g.workers); i++ {
-		g.workers[i] = NewWorker(WithWorkerManager(g.manager))
+		g.workers[i] = newWorker(withWorkerManager(g.manager))
 	}
 	for _, w := range g.workers {
 		if err := w.Start(); err != nil {
@@ -131,7 +126,7 @@ func (g *workerGroup) ResizeWorkers(num int) error {
 
 	if len(g.workers) < num {
 		for i := len(g.workers); i < num; i++ {
-			worker := NewWorker(WithWorkerManager(g.manager))
+			worker := newWorker(withWorkerManager(g.manager))
 			if err := worker.Start(); err != nil {
 				return err
 			}
