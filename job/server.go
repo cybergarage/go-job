@@ -267,7 +267,7 @@ func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstanc
 
 	instances := []*v1.JobInstance{}
 	for _, instance := range allInstances {
-		state, err := instance.State().ProtoState()
+		state, err := instance.State().protoState()
 		if err != nil {
 			return nil, err
 		}

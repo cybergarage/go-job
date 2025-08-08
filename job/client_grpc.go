@@ -168,7 +168,7 @@ func (client *grpcClient) LookupInstances(query Query) ([]Instance, error) {
 	}
 	state, ok := query.State()
 	if ok {
-		pbState, err := state.ProtoState()
+		pbState, err := state.protoState()
 		if err != nil {
 			return nil, err
 		}

@@ -149,8 +149,8 @@ func (s JobState) String() string {
 	}
 }
 
-// ProtoState converts the JobState to its corresponding protobuf representation.
-func (s JobState) ProtoState() (v1.JobState, error) {
+// protoState converts the JobState to its corresponding protobuf representation.
+func (s JobState) protoState() (v1.JobState, error) {
 	switch s {
 	case JobStateUnset:
 		return v1.JobState_JOB_STATE_UNSET, nil
