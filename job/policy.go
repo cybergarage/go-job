@@ -27,7 +27,9 @@ const (
 	NoRetry = 0
 	// RetryForever is a constant indicating that a job should retry indefinitely.
 	RetryForever = -1
+)
 
+const (
 	// NoTimeout indicates no timeout limit.
 	NoTimeout = 0
 	// DefaultTimeout is the default timeout for jobs.
