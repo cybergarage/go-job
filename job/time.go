@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	TimestampFormat = time.RFC3339Nano
+	timestampFormat = time.RFC3339Nano
 )
 
 // Time represents a point in time.
@@ -52,7 +52,7 @@ func NewTimeFromTime(t time.Time) Time {
 
 // NewTimeFromString creates a new Timestamp from a string representation of time.
 func NewTimeFromString(s string) (Time, error) {
-	t, err := time.Parse(TimestampFormat, s)
+	t, err := time.Parse(timestampFormat, s)
 	if err != nil {
 		return Time{}, err
 	}
@@ -71,5 +71,5 @@ func (t Time) Equal(other Time) bool {
 
 // String returns the string representation of the Timestamp in RFC3339 format.
 func (t Time) String() string {
-	return time.Time(t).Format(TimestampFormat)
+	return time.Time(t).Format(timestampFormat)
 }
