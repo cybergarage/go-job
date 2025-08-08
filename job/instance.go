@@ -170,7 +170,7 @@ func WithInstanceHistory(history History) InstanceOption {
 func WithInstanceStore(store Store) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.history = newHistory(
-			WithHistoryStore(store),
+			withHistoryStore(store),
 		)
 		return nil
 	}

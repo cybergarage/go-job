@@ -47,11 +47,11 @@ type LogHistory interface {
 	LookupLogs(query Query) ([]Log, error)
 }
 
-// HistoryOption is a function that configures the job history.
-type HistoryOption func(*history)
+// historyOption is a function that configures the job history.
+type historyOption func(*history)
 
-// WithHistoryStore sets the store for the job history.
-func WithHistoryStore(store HistoryStore) HistoryOption {
+// withHistoryStore sets the store for the job history.
+func withHistoryStore(store HistoryStore) historyOption {
 	return func(h *history) {
 		h.store = store
 	}
@@ -63,7 +63,7 @@ type history struct {
 }
 
 // newHistory creates a new job state history.
-func newHistory(opts ...HistoryOption) *history {
+func newHistory(opts ...historyOption) *history {
 	history := &history{
 		store: NewLocalStore(),
 	}

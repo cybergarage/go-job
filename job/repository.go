@@ -64,7 +64,7 @@ func newRepository(opts ...repositoryOption) *repositoryImpl {
 
 	repo.registry = newRegistry()
 	repo.scheduler = newScheduler(withSchedulerStore(repo.store))
-	repo.History = newHistory(WithHistoryStore(repo.store))
+	repo.History = newHistory(withHistoryStore(repo.store))
 
 	return repo
 }
