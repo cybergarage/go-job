@@ -16,7 +16,6 @@ package jobtest
 
 import (
 	"fmt"
-	"net"
 	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
@@ -217,16 +216,9 @@ func StoreTest(t *testing.T, store kv.Store) {
 }
 
 func TestStores(t *testing.T) {
-	valkeyStore, err := valkey.NewStore(valkey.StoreOption{
-		InitAddress: []string{net.JoinHostPort(valkey.DefaultHost, valkey.DefaultPort)},
-	})
-	if err != nil {
-		t.Skipf("failed to create valkey store: %v", err)
-		return
-	}
 	stores := []kv.Store{
 		memdb.NewStore(),
-		valkeyStore,
+		valkey.NewStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {

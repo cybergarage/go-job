@@ -26,20 +26,19 @@ import (
 type Store struct {
 	kv.Config
 	valkey.Client
+
+	opt StoreOption
 }
 
 // NewStore returns a new memdb store instance.
-func NewStore(option StoreOption) (kv.Store, error) {
-	client, err := valkey.NewClient(option)
-	if err != nil {
-		return nil, err
-	}
+func NewStore(option StoreOption) kv.Store {
 	return &Store{
 		Config: kv.NewConfig(
 			kv.WithUniqueKeys(false), // Use list commands
 		),
-		Client: client,
-	}, nil
+		Client: nil,
+		opt:    option,
+	}
 }
 
 // Name returns the name of this memdb store.
@@ -49,6 +48,11 @@ func (store *Store) Name() string {
 
 // Start starts this memdb.
 func (store *Store) Start() error {
+	var err error
+	store.Client, err = valkey.NewClient(store.opt)
+	if err != nil {
+		return err
+	}
 	cmd := store.B().Hello()
 	return store.Do(context.Background(), cmd.Build()).Error()
 }
