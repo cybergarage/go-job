@@ -142,8 +142,30 @@ VALKEY_IMAGE ?= valkey/valkey:$(VALKEY_VERSION)
 VALKEY_PORT ?= 6379
 
 valkey-start:
-	docker run -d --name $(VALKEY_CONTAINER_NAME) -p $(VALKEY_PORT):6379 $(VALKEY_IMAGE)
+	docker run -d --name $(VALKEY_CONTAINER_NAME) -p $(VALKEY_PORT):$(VALKEY_PORT) $(VALKEY_IMAGE)
 
 valkey-stop:
 	@docker stop $(VALKEY_CONTAINER_NAME) || true
 	@docker rm $(VALKEY_CONTAINER_NAME) || true
+
+# etcd container management
+
+ETCD_CONTAINER_NAME ?= etcd
+ETCD_VERSION ?= 3.5.13
+ETCD_IMAGE ?= quay.io/coreos/etcd:$(ETCD_VERSION)
+ETCD_PORT ?= 2379
+ETCD_PEER_PORT ?= 2380
+
+etcd-start:
+	docker run -d --name $(ETCD_CONTAINER_NAME) -p $(ETCD_PORT):$(ETCD_PORT) -p $(ETCD_PEER_PORT):$(ETCD_PEER_PORT) \
+	  $(ETCD_IMAGE) \
+	  /usr/local/bin/etcd \
+	  --name test-etcd \
+  --data-dir /etcd-data \
+  --advertise-client-urls http://0.0.0.0:2379 \
+  --listen-client-urls http://0.0.0.0:2379 \
+  --listen-peer-urls http://0.0.0.0:2380
+
+etcd-stop:
+	@docker stop etcd || true
+	@docker rm etcd || true
