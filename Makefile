@@ -145,5 +145,5 @@ valkey-start:
 	docker run -d --name $(VALKEY_CONTAINER_NAME) -p $(VALKEY_PORT):6379 $(VALKEY_IMAGE)
 
 valkey-stop:
-	-docker stop $(VALKEY_CONTAINER_NAME) || true
-	-docker rm $(VALKEY_CONTAINER_NAME) || true
+	@docker stop $(VALKEY_CONTAINER_NAME) || true
+	@docker rm $(VALKEY_CONTAINER_NAME) || true
