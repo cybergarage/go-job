@@ -46,25 +46,25 @@ func StoreTest(t *testing.T, store kv.Store) {
 
 	// Set / Get tests
 
-	setterTests := []struct {
+	setTests := []struct {
 		key kv.Key
 		val []byte
 	}{
 		{
-			key: kv.Key("test1"),
+			key: kv.Key("set1"),
 			val: []byte("value1"),
 		},
 		{
-			key: kv.Key("test2"),
+			key: kv.Key("set2"),
 			val: []byte("value2"),
 		},
 		{
-			key: kv.Key("test3"),
+			key: kv.Key("set3"),
 			val: []byte("value3"),
 		},
 	}
 
-	for _, test := range setterTests {
+	for _, test := range setTests {
 		t.Run("Set "+test.key.String(), func(t *testing.T) {
 			obj := kv.NewObject(test.key, test.val)
 			if err := store.Set(t.Context(), obj); err != nil {
@@ -86,6 +86,49 @@ func StoreTest(t *testing.T, store kv.Store) {
 			}
 
 			_, err := store.Get(t.Context(), test.key)
+			if err == nil {
+				t.Errorf("expected error when getting removed object, got nil")
+			}
+		})
+	}
+
+	// Set / Remove tests
+
+	removeTests := []struct {
+		key kv.Key
+		val []byte
+	}{
+		{
+			key: kv.Key("remove1"),
+			val: []byte("value1"),
+		},
+		{
+			key: kv.Key("remove2"),
+			val: []byte("value2"),
+		},
+		{
+			key: kv.Key("remove3"),
+			val: []byte("value3"),
+		},
+	}
+
+	for _, test := range removeTests {
+		t.Run("Set "+test.key.String(), func(t *testing.T) {
+			obj := kv.NewObject(test.key, test.val)
+			if err := store.Set(t.Context(), obj); err != nil {
+				t.Fatalf("failed to set object: %v", err)
+			}
+
+			retrievedObj, err := store.Remove(t.Context(), test.key)
+			if err != nil {
+				t.Fatalf("failed to get object: %v", err)
+			}
+
+			if !retrievedObj.Equal(obj) {
+				t.Errorf("expected %v, got %v", obj, retrievedObj)
+			}
+
+			_, err = store.Get(t.Context(), test.key)
 			if err == nil {
 				t.Errorf("expected error when getting removed object, got nil")
 			}
