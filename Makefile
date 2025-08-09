@@ -151,8 +151,8 @@ valkey-stop:
 # etcd container management
 
 ETCD_CONTAINER_NAME ?= etcd
-ETCD_VERSION ?= 3.5.13
-ETCD_IMAGE ?= quay.io/coreos/etcd:$(ETCD_VERSION)
+ETCD_VERSION ?= 3.6.4
+ETCD_IMAGE ?= gcr.io/etcd-development/etcd:v$(ETCD_VERSION)
 ETCD_PORT ?= 2379
 ETCD_PEER_PORT ?= 2380
 
