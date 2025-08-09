@@ -91,7 +91,7 @@ func (store *Store) Range(ctx context.Context, key kv.Key, limit int64) ([]strin
 
 // Get returns a key-value object of the specified key.
 func (store *Store) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
-	elems, err := store.Range(ctx, key, 1)
+	elems, err := store.Range(ctx, key, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -116,43 +116,23 @@ func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv
 
 // Remove removes and returns the key-value object of the specified key.
 func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
-	var obj kv.Object
-
-	err := store.Do(ctx, store.B().Multi().Build()).Error()
-	if err != nil {
-		return nil, err
-	}
-
-	// Pop the first element
-
-	cmdLpop := store.B().Lpop().Key(key.String())
-	resp := store.Do(ctx, cmdLpop.Build())
+	listKey := key.String()
+	cmd := store.B().Lpop().Key(listKey)
+	resp := store.Do(ctx, cmd.Build())
 	if resp.Error() != nil {
-		// Discard transaction if error
-		store.Do(ctx, store.B().Discard().Build())
 		return nil, resp.Error()
 	}
-
 	val, err := resp.AsBytes()
 	if err != nil {
-		store.Do(ctx, store.B().Discard().Build())
 		return nil, err
 	}
-
-	// Execute transaction
-
-	err = store.Do(ctx, store.B().Exec().Build()).Error()
-	if err != nil {
-		return nil, err
-	}
-
-	obj = kv.NewObject(key, []byte(val))
-	return obj, nil
+	return kv.NewObject(key, []byte(val)), nil
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
 func (store *Store) Delete(ctx context.Context, key kv.Key) error {
-	cmd := store.B().Del().Key(key.String())
+	listKey := key.String()
+	cmd := store.B().Del().Key(listKey)
 	err := store.Do(ctx, cmd.Build()).Error()
 	if err != nil {
 		return err
