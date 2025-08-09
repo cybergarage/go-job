@@ -39,4 +39,6 @@ type Store interface {
 	Start() error
 	// Stop stops the store.
 	Stop() error
+	// Clear removes all key-value objects from the store.
+	Clear() error
 }

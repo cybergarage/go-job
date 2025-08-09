@@ -57,6 +57,12 @@ func (store *Store) Stop() error {
 	return nil
 }
 
+// Clear removes all key-value objects from the store.
+func (store *Store) Clear() error {
+	cmd := store.B().Flushall()
+	return store.Do(context.Background(), cmd.Build()).Error()
+}
+
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (store *Store) Set(ctx context.Context, obj kv.Object) error {
 	cmd := store.B().Set().Key(obj.Key().String()).Value(string(obj.Bytes()))

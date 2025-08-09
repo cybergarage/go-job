@@ -41,15 +41,23 @@ func (store *Store) Name() string {
 
 // Start starts this memdb.
 func (store *Store) Start() error {
-	db, err := NewDatabase()
-	if err != nil {
+	if err := store.Clear(); err != nil {
 		return err
 	}
-	store.Database = db
 	return nil
 }
 
 // Stop stops this memdb.
 func (store *Store) Stop() error {
+	return nil
+}
+
+// Clear removes all key-value objects from the store.
+func (store *Store) Clear() error {
+	db, err := NewDatabase()
+	if err != nil {
+		return err
+	}
+	store.Database = db
 	return nil
 }

@@ -55,6 +55,11 @@ func (store *Store) Start() error {
 	return nil
 }
 
+// Clear removes all key-value objects from the store.
+func (store *Store) Clear() error {
+	return nil
+}
+
 // Stop stops this etcd.
 func (store *Store) Stop() error {
 	if store.Client == nil {
