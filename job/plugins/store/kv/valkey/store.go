@@ -18,6 +18,7 @@ import (
 	"context"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
+	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	"github.com/valkey-io/valkey-go"
 )
 
@@ -59,32 +60,102 @@ func (store *Store) Stop() error {
 
 // Clear removes all key-value objects from the store.
 func (store *Store) Clear() error {
-	cmd := store.B().Flushall()
-	return store.Do(context.Background(), cmd.Build()).Error()
+	cmdList := store.B().Flushall()
+	err := store.Do(context.Background(), cmdList.Build()).Error()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (store *Store) Set(ctx context.Context, obj kv.Object) error {
-	cmd := store.B().Set().Key(obj.Key().String()).Value(string(obj.Bytes()))
-	return store.Do(ctx, cmd.Build()).Error()
+	listKey := obj.Key().String()
+	cmdList := store.B().Rpush().Key(listKey).Element(string(obj.Bytes()))
+	err := store.Do(context.Background(), cmdList.Build()).Error()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (store *Store) Range(ctx context.Context, key kv.Key, limit int64) ([]string, error) {
+	listKey := key.String()
+	cmd := store.B().Lrange().Key(listKey).Start(0).Stop(limit)
+	resp := store.Do(ctx, cmd.Build())
+	if resp.Error() != nil {
+		return nil, resp.Error()
+	}
+	return resp.AsStrSlice()
 }
 
 // Get returns a key-value object of the specified key.
 func (store *Store) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
-	return nil, nil
+	elems, err := store.Range(ctx, key, 1)
+	if err != nil {
+		return nil, err
+	}
+	if len(elems) == 0 {
+		return nil, kv.ErrNotExist
+	}
+	return kv.NewObject(key, []byte(elems[0])), nil
 }
 
 // Scan returns a result set of all key-value objects whose keys have the specified prefix.
 func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
-	return nil, nil
+	elems, err := store.Range(ctx, key, -1)
+	if err != nil {
+		return nil, err
+	}
+	objs := make([]kv.Object, len(elems))
+	for i, elem := range elems {
+		objs[i] = kv.NewObject(key, []byte(elem))
+	}
+	return kvutil.NewResultSetWithObjects(objs), nil
 }
 
 // Remove removes and returns the key-value object of the specified key.
 func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
-	return nil, nil
+	var obj kv.Object
+
+	err := store.Do(ctx, store.B().Multi().Build()).Error()
+	if err != nil {
+		return nil, err
+	}
+
+	// Pop the first element
+
+	cmdLpop := store.B().Lpop().Key(key.String())
+	resp := store.Do(ctx, cmdLpop.Build())
+	if resp.Error() != nil {
+		// Discard transaction if error
+		store.Do(ctx, store.B().Discard().Build())
+		return nil, resp.Error()
+	}
+
+	val, err := resp.AsBytes()
+	if err != nil {
+		store.Do(ctx, store.B().Discard().Build())
+		return nil, err
+	}
+
+	// Execute transaction
+
+	err = store.Do(ctx, store.B().Exec().Build()).Error()
+	if err != nil {
+		return nil, err
+	}
+
+	obj = kv.NewObject(key, []byte(val))
+	return obj, nil
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
 func (store *Store) Delete(ctx context.Context, key kv.Key) error {
+	cmd := store.B().Del().Key(key.String())
+	err := store.Do(ctx, cmd.Build()).Error()
+	if err != nil {
+		return err
+	}
 	return nil
 }
