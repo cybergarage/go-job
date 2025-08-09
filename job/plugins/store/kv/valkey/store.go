@@ -21,9 +21,6 @@ import (
 	"github.com/valkey-io/valkey-go"
 )
 
-// StoreOption is an alias for valkey.ClientOption, used for configuring the Valkey store.
-type StoreOption = valkey.ClientOption
-
 // Store represents a Memdb store service instance.
 type Store struct {
 	kv.Config
@@ -51,7 +48,8 @@ func (store *Store) Name() string {
 
 // Start starts this memdb.
 func (store *Store) Start() error {
-	return nil
+	cmd := store.B().Hello()
+	return store.Do(context.Background(), cmd.Build()).Error()
 }
 
 // Stop stops this memdb.
@@ -61,19 +59,8 @@ func (store *Store) Stop() error {
 
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (store *Store) Set(ctx context.Context, obj kv.Object) error {
-	/*
-		store.cmds = append(store.cmds,
-			store.Client.B().Set().Key(obj.Key().String()).Value(string(obj.Bytes())).Build(),
-			store.Client.B().Exec().Build())
-		var errs error
-		for _, resp := range store.DoMulti(ctx, store.cmds...) {
-			if err := resp.Error(); err != nil {
-				errs = errors.Join(errs, err)
-			}
-		}
-		return errs
-	*/
-	return nil
+	cmd := store.B().Set().Key(obj.Key().String()).Value(string(obj.Bytes()))
+	return store.Do(ctx, cmd.Build()).Error()
 }
 
 // Get returns a key-value object of the specified key.
