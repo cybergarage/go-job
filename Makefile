@@ -131,3 +131,19 @@ cmd-docs: doc-cmd-cli
 images := $(wildcard doc/img/*.png)
 docs := $(wildcard doc/*.md)
 doc: $(docs) $(images) cmd-docs doc-proto
+
+# Valkey container management
+
+.PHONY: valkey-start valkey-stop
+
+VALKEY_CONTAINER_NAME ?= valkey
+VALKEY_VERSION ?= 8.1.3
+VALKEY_IMAGE ?= valkey/valkey:$(VALKEY_VERSION)
+VALKEY_PORT ?= 6379
+
+valkey-start:
+	docker run -d --name $(VALKEY_CONTAINER_NAME) -p $(VALKEY_PORT):6379 $(VALKEY_IMAGE)
+
+valkey-stop:
+	-docker stop $(VALKEY_CONTAINER_NAME) || true
+	-docker rm $(VALKEY_CONTAINER_NAME) || true
