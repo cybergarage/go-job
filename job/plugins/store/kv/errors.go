@@ -21,6 +21,7 @@ import (
 
 var (
 	ErrNotExist = errors.New("not exist")
+	ErrNotReady = errors.New("not ready")
 )
 
 // NewErrObjectNotExist returns a new error that the object is not exist.
