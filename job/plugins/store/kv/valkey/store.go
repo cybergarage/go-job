@@ -76,7 +76,7 @@ func (store *Store) Clear() error {
 func (store *Store) Set(ctx context.Context, obj kv.Object) error {
 	listKey := obj.Key().String()
 	cmdList := store.B().Rpush().Key(listKey).Element(string(obj.Bytes()))
-	err := store.Do(context.Background(), cmdList.Build()).Error()
+	err := store.Do(ctx, cmdList.Build()).Error()
 	if err != nil {
 		return err
 	}

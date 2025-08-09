@@ -206,3 +206,12 @@ func (store *localStore) Stop() error {
 	// No specific stop logic for local store
 	return nil
 }
+
+// Clear removes all key-value objects from the store.
+func (store *localStore) Clear() error {
+	store.Lock()
+	defer store.Unlock()
+	store.history = []InstanceState{}
+	store.logs = []Log{}
+	return nil
+}

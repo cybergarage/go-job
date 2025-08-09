@@ -20,6 +20,7 @@ import (
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
 // nolint: maintidx
@@ -296,9 +297,9 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	stores := []job.Store{
-		job.NewLocalStore(),
-		store.NewMemdbStore(),
-		// store.NewValkeyStore(valkey.NewStoreOption()),
+		// job.NewLocalStore(),
+		// store.NewMemdbStore(),
+		store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {

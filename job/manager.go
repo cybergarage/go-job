@@ -316,6 +316,7 @@ func (mgr *manager) Stop() error {
 // Clear clears all jobs and history from the job manager without registered jobs.
 func (mgr *manager) Clear() error {
 	cleaners := []func() error{
+		mgr.store.Clear,
 		mgr.repository.Clear,
 	}
 	for _, cleaner := range cleaners {

@@ -287,3 +287,18 @@ func (store *kvStore) ClearInstanceLogs(ctx context.Context, filter job.Filter) 
 	}
 	return nil
 }
+
+// Start starts the kv store.
+func (store *kvStore) Start() error {
+	return store.Store.Start()
+}
+
+// Stop stops the kv store.
+func (store *kvStore) Stop() error {
+	return store.Store.Stop()
+}
+
+// Clear clears all data in the kv store.
+func (store *kvStore) Clear() error {
+	return store.Store.Clear()
+}

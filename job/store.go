@@ -30,6 +30,8 @@ type Store interface {
 	Start() error
 	// Stop stops the store.
 	Stop() error
+	// Clear clears all data in the store.
+	Clear() error
 }
 
 // QueueStore is an interface that defines methods for managing job instances in a pending state.
