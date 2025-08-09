@@ -32,11 +32,17 @@ func StoreTest(t *testing.T, store kv.Store) {
 		t.Skipf("failed to start store: %v", err)
 		return
 	}
+
 	defer func() {
 		if err := store.Stop(); err != nil {
 			t.Fatalf("failed to stop store: %v", err)
 		}
 	}()
+
+	if err := store.Clear(); err != nil {
+		t.Errorf("failed to clear store: %v", err)
+		return
+	}
 
 	// Set / Get tests
 
@@ -110,7 +116,10 @@ func StoreTest(t *testing.T, store kv.Store) {
 	keys := make([]kv.Key, len(rangeTests))
 	objs := make([]kv.Object, len(rangeTests))
 	for i, test := range rangeTests {
-		keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
+		keys[i] = test.key
+		if store.UniqueKeys() {
+			keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
+		}
 		objs[i] = kv.NewObject(keys[i], test.val)
 		t.Run(fmt.Sprintf("SetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
 			if err := store.Set(t.Context(), objs[i]); err != nil {
