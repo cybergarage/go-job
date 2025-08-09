@@ -64,6 +64,9 @@ func (store *Store) Stop() error {
 
 // Clear removes all key-value objects from the store.
 func (store *Store) Clear() error {
+	if store.Client == nil {
+		return kv.ErrNotReady
+	}
 	cmdList := store.B().Flushall()
 	err := store.Do(context.Background(), cmdList.Build()).Error()
 	if err != nil {
@@ -74,6 +77,9 @@ func (store *Store) Clear() error {
 
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (store *Store) Set(ctx context.Context, obj kv.Object) error {
+	if store.Client == nil {
+		return kv.ErrNotReady
+	}
 	listKey := obj.Key().String()
 	cmdList := store.B().Rpush().Key(listKey).Element(string(obj.Bytes()))
 	err := store.Do(ctx, cmdList.Build()).Error()
@@ -84,6 +90,9 @@ func (store *Store) Set(ctx context.Context, obj kv.Object) error {
 }
 
 func (store *Store) Range(ctx context.Context, key kv.Key, limit int64) ([]string, error) {
+	if store.Client == nil {
+		return nil, kv.ErrNotReady
+	}
 	listKey := key.String()
 	cmd := store.B().Lrange().Key(listKey).Start(0).Stop(limit)
 	resp := store.Do(ctx, cmd.Build())
@@ -120,6 +129,9 @@ func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv
 
 // Remove removes and returns the key-value object of the specified key.
 func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+	if store.Client == nil {
+		return nil, kv.ErrNotReady
+	}
 	listKey := key.String()
 	cmd := store.B().Lpop().Key(listKey)
 	resp := store.Do(ctx, cmd.Build())
@@ -135,6 +147,9 @@ func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
 func (store *Store) Delete(ctx context.Context, key kv.Key) error {
+	if store.Client == nil {
+		return kv.ErrNotReady
+	}
 	listKey := key.String()
 	cmd := store.B().Del().Key(listKey)
 	err := store.Do(ctx, cmd.Build()).Error()
@@ -146,6 +161,9 @@ func (store *Store) Delete(ctx context.Context, key kv.Key) error {
 
 // Dump returns all key-value objects in the store.
 func (store *Store) Dump(ctx context.Context) ([]kv.Object, error) {
+	if store.Client == nil {
+		return nil, kv.ErrNotReady
+	}
 	cmd := store.B().Keys().Pattern("*")
 	resp := store.Do(ctx, cmd.Build())
 	if resp.Error() != nil {
