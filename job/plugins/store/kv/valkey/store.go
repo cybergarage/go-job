@@ -143,3 +143,27 @@ func (store *Store) Delete(ctx context.Context, key kv.Key) error {
 	}
 	return nil
 }
+
+// Dump returns all key-value objects in the store.
+func (store *Store) Dump(ctx context.Context) ([]kv.Object, error) {
+	cmd := store.B().Keys().Pattern("*")
+	resp := store.Do(ctx, cmd.Build())
+	if resp.Error() != nil {
+		return nil, resp.Error()
+	}
+	keys, err := resp.AsStrSlice()
+	if err != nil {
+		return nil, err
+	}
+
+	objs := []kv.Object{}
+	for _, key := range keys {
+		obj, err := store.Get(ctx, kv.Key(key))
+		if err != nil {
+			return nil, err
+		}
+		objs = append(objs, obj)
+	}
+
+	return objs, nil
+}

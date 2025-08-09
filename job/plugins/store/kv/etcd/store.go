@@ -16,7 +16,6 @@ package etcd
 
 import (
 	"context"
-	"time"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	v3 "go.etcd.io/etcd/client/v3"
@@ -98,7 +97,7 @@ func (store *Store) Delete(ctx context.Context, key kv.Key) error {
 	return nil
 }
 
-// SetTimeout sets the timeout of this transaction.
-func (store *Store) SetTimeout(t time.Duration) error {
-	return nil
+// Dump returns all key-value objects in the store.
+func (store *Store) Dump(ctx context.Context) ([]kv.Object, error) {
+	return nil, nil
 }

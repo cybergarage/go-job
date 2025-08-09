@@ -33,6 +33,8 @@ type Store interface {
 	Scan(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
 	// Remove removes and returns the key-value object of the specified key.
 	Remove(ctx context.Context, key Key) (Object, error)
+	// Dump returns all key-value objects in the store.
+	Dump(ctx context.Context) ([]Object, error)
 	// Delete deletes all key-value objects whose keys have the specified prefix.
 	Delete(ctx context.Context, key Key) error
 	// Start starts the store.

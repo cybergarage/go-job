@@ -119,6 +119,28 @@ func (db *Database) Delete(ctx context.Context, key kv.Key) error {
 	return nil
 }
 
+// Dump returns all key-value objects in the store.
+func (db *Database) Dump(ctx context.Context) ([]kv.Object, error) {
+	txn := db.Txn(false)
+	it, err := txn.Get(tableName, idName)
+	if err != nil {
+		txn.Abort()
+		return nil, err
+	}
+	rs := newResultSetWith(it)
+	var objs []kv.Object
+	for rs.Next() {
+		obj, err := rs.Object()
+		if err != nil {
+			txn.Abort()
+			return nil, err
+		}
+		objs = append(objs, obj)
+	}
+	txn.Commit()
+	return objs, nil
+}
+
 // SetTimeout sets the timeout of this transaction.
 func (db *Database) SetTimeout(t time.Duration) error {
 	return nil

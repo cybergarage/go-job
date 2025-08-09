@@ -78,6 +78,11 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 		}
 	}()
 
+	if err := mgr.Clear(); err != nil {
+		t.Errorf("Failed to clear job manager: %v", err)
+		return
+	}
+
 	for _, tt := range tests {
 		t.Run(tt.kind, func(t *testing.T) {
 			var wg sync.WaitGroup
