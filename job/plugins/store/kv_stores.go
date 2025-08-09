@@ -17,9 +17,15 @@ package store
 import (
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
 // NewMemdbStore creates a new in-memory key-value store instance.
 func NewMemdbStore() job.Store {
 	return NewKvStoreWith(memdb.NewStore())
+}
+
+// NewValkeyStore creates a new Valkey key-value store instance.
+func NewValkeyStore(option valkey.StoreOption) job.Store {
+	return NewKvStoreWith(valkey.NewStore(option))
 }
