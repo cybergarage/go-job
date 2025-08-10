@@ -22,7 +22,8 @@ import (
 
 // LogObjects logs all key-value objects.
 func LogObjects(t *testing.T, objects []kv.Object) {
+	t.Helper()
 	for n, obj := range objects {
-		t.Logf("[%d] %s: %s\n", n, obj.Key().String(), string(obj.Bytes()))
+		t.Logf("[%d] %s", n, obj.String())
 	}
 }
