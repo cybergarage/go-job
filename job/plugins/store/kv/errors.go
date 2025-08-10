@@ -24,7 +24,12 @@ var (
 	ErrNotReady = errors.New("not ready")
 )
 
-// NewErrObjectNotExist returns a new error that the object is not exist.
-func NewErrObjectNotExist(key Key) error {
+// NewErrKeyObjectNotExist returns a new error that the object is not exist.
+func NewErrKeyObjectNotExist(key Key) error {
 	return fmt.Errorf("object (%s) is %w ", key.String(), ErrNotExist)
+}
+
+// NewErrObjectNotExist returns a new error that the object is not exist.
+func NewErrObjectNotExist(obj Object) error {
+	return fmt.Errorf("object (%s) is %w ", obj.String(), ErrNotExist)
 }
