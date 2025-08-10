@@ -75,12 +75,6 @@ func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, err
 	return nextJob, nil
 }
 
-// DequeueInstance removes a job instance from the store by its unique identifier.
-func (store *localStore) DequeueInstance(ctx context.Context, job Instance) error {
-	store.jobs.Delete(job.UUID())
-	return nil
-}
-
 // ListInstances lists all job instances in the store.
 func (store *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	jobs := make([]Instance, 0)

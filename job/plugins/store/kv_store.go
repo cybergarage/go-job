@@ -102,14 +102,6 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 	return nextJob, nil
 }
 
-// DequeueInstance removes a job instance from the store by its unique identifier.
-func (store *kvStore) DequeueInstance(ctx context.Context, job job.Instance) error {
-	// key := kv.NewInstanceKeyFrom(job)
-	// _, err := store.Remove(ctx, key)
-	// return err
-	return nil
-}
-
 // ListInstances lists all job instances in the store.
 func (store *kvStore) ListInstances(ctx context.Context) ([]job.Instance, error) {
 	rs, err := store.Scan(ctx, kv.NewInstanceListKey())
