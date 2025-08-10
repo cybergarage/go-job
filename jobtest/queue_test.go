@@ -19,10 +19,29 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
+	// "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
 func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 	t.Helper()
+
+	if err := store.Start(); err != nil {
+		t.Errorf("Failed to start store: %v", err)
+		return
+	}
+
+	defer func() {
+		if err := store.Stop(); err != nil {
+			t.Errorf("Failed to stop store: %v", err)
+			return
+		}
+	}()
+
+	if err := store.Clear(); err != nil {
+		t.Errorf("Failed to clear store: %v", err)
+		return
+	}
 
 	now := time.Now()
 
@@ -159,6 +178,8 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 func TestInstanceQueue(t *testing.T) {
 	stores := []job.Store{
 		job.NewLocalStore(),
+		store.NewMemdbStore(),
+		// store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {
