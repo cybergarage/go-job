@@ -23,6 +23,6 @@ import (
 // PrintObjects prints all key-value objects.
 func PrintObjects(objects []kv.Object) {
 	for n, obj := range objects {
-		fmt.Printf("[%d] %s: %s\n", n, obj.Key().String(), string(obj.Bytes()))
+		fmt.Printf("[%d] %s\n", n, obj.String())
 	}
 }
