@@ -51,7 +51,7 @@ func (db *Database) get(ctx context.Context, txn *memdb.Txn, key kv.Key) (kv.Obj
 	}
 	rs := newResultSetWith(it)
 	if !rs.Next() {
-		return nil, kv.NewErrObjectNotExist(key)
+		return nil, kv.NewErrKeyObjectNotExist(key)
 	}
 	return rs.Object()
 }
@@ -100,23 +100,38 @@ func (db *Database) Remove(ctx context.Context, obj kv.Object) error {
 	if db == nil {
 		return kv.ErrNotReady
 	}
-	key := obj.Key()
+
 	txn := db.Txn(true)
-	getObj, err := db.get(ctx, txn, key)
+
+	key := obj.Key()
+	it, err := txn.Get(tableName, idName, key.Bytes())
 	if err != nil {
 		txn.Abort()
 		return err
 	}
-	if !obj.Equal(getObj) {
-		return kv.NewErrObjectNotExist(key)
+
+	rs := newResultSetWith(it)
+	for rs.Next() {
+		rsObj, err := rs.Object()
+		if err != nil {
+			txn.Abort()
+			return err
+		}
+		if !obj.Equal(rsObj) {
+			continue
+		}
+		err = db.remove(ctx, txn, rsObj)
+		if err != nil {
+			txn.Abort()
+			return err
+		}
+		txn.Commit()
+		return nil
 	}
-	err = db.remove(ctx, txn, getObj)
-	if err != nil {
-		txn.Abort()
-		return err
-	}
-	txn.Commit()
-	return nil
+
+	txn.Abort()
+
+	return kv.NewErrObjectNotExist(obj)
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
@@ -129,7 +144,7 @@ func (db *Database) Delete(ctx context.Context, key kv.Key) error {
 	if err != nil {
 		txn.Abort()
 		if errors.Is(err, memdb.ErrNotFound) {
-			return kv.NewErrObjectNotExist(key)
+			return kv.NewErrKeyObjectNotExist(key)
 		}
 		return err
 	}
