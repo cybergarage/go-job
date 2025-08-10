@@ -127,22 +127,27 @@ func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv
 	return kvutil.NewResultSetWithObjects(objs), nil
 }
 
-// Remove removes and returns the key-value object of the specified key.
-func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+// Remove removes the specified key-value object.
+func (store *Store) Remove(ctx context.Context, obj kv.Object) error {
 	if store.Client == nil {
-		return nil, kv.ErrNotReady
+		return kv.ErrNotReady
 	}
+	key := obj.Key()
 	listKey := key.String()
 	cmd := store.B().Lpop().Key(listKey)
 	resp := store.Do(ctx, cmd.Build())
 	if resp.Error() != nil {
-		return nil, resp.Error()
+		return resp.Error()
 	}
 	val, err := resp.AsBytes()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return kv.NewObject(key, []byte(val)), nil
+	popObj := kv.NewObject(key, []byte(val))
+	if !popObj.Equal(obj) {
+		return kv.NewErrObjectNotExist(key)
+	}
+	return nil
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.

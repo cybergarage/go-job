@@ -87,9 +87,9 @@ func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv
 	return nil, nil
 }
 
-// Remove removes and returns the key-value object of the specified key.
-func (store *Store) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
-	return nil, nil
+// Remove removes the specified key-value object.
+func (store *Store) Remove(ctx context.Context, obj kv.Object) error {
+	return nil
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.

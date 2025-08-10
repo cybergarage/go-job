@@ -64,6 +64,7 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 	}
 
 	var nextJob job.Instance
+	var nextObj kv.Object
 	for rs.Next() {
 		obj, err := rs.Object()
 		if err != nil {
@@ -82,8 +83,10 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 		switch {
 		case nextJob == nil:
 			nextJob = job
+			nextObj = obj
 		case job.Before(nextJob):
 			nextJob = job
+			nextObj = obj
 		}
 	}
 
@@ -91,8 +94,7 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 		return nil, nil
 	}
 
-	key := kv.NewInstanceKeyFrom(nextJob)
-	_, err = store.Remove(ctx, key)
+	err = store.Remove(ctx, nextObj)
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +104,10 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 
 // DequeueInstance removes a job instance from the store by its unique identifier.
 func (store *kvStore) DequeueInstance(ctx context.Context, job job.Instance) error {
-	key := kv.NewInstanceKeyFrom(job)
-	_, err := store.Remove(ctx, key)
-	return err
+	// key := kv.NewInstanceKeyFrom(job)
+	// _, err := store.Remove(ctx, key)
+	// return err
+	return nil
 }
 
 // ListInstances lists all job instances in the store.

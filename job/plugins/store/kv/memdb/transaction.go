@@ -95,24 +95,28 @@ func (db *Database) remove(ctx context.Context, txn *memdb.Txn, kvObj kv.Object)
 	)
 }
 
-// Remove removes and returns the key-value object of the specified key.
-func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+// Remove removes the specified key-value object.
+func (db *Database) Remove(ctx context.Context, obj kv.Object) error {
 	if db == nil {
-		return nil, kv.ErrNotReady
+		return kv.ErrNotReady
 	}
+	key := obj.Key()
 	txn := db.Txn(true)
-	obj, err := db.get(ctx, txn, key)
+	getObj, err := db.get(ctx, txn, key)
 	if err != nil {
 		txn.Abort()
-		return nil, err
+		return err
 	}
-	err = db.remove(ctx, txn, obj)
+	if !obj.Equal(getObj) {
+		return kv.NewErrObjectNotExist(key)
+	}
+	err = db.remove(ctx, txn, getObj)
 	if err != nil {
 		txn.Abort()
-		return nil, err
+		return err
 	}
 	txn.Commit()
-	return obj, nil
+	return nil
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.

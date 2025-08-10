@@ -80,7 +80,8 @@ func StoreTest(t *testing.T, store kv.Store) {
 			}
 		})
 		t.Run("Remove "+test.key.String(), func(t *testing.T) {
-			if _, err := store.Remove(t.Context(), test.key); err != nil {
+			obj := kv.NewObject(test.key, test.val)
+			if err := store.Remove(t.Context(), obj); err != nil {
 				t.Fatalf("failed to remove object: %v", err)
 			}
 
@@ -118,13 +119,9 @@ func StoreTest(t *testing.T, store kv.Store) {
 				t.Fatalf("failed to set object: %v", err)
 			}
 
-			retrievedObj, err := store.Remove(t.Context(), test.key)
+			err := store.Remove(t.Context(), obj)
 			if err != nil {
 				t.Fatalf("failed to get object: %v", err)
-			}
-
-			if !retrievedObj.Equal(obj) {
-				t.Errorf("expected %v, got %v", obj, retrievedObj)
 			}
 
 			_, err = store.Get(t.Context(), test.key)
