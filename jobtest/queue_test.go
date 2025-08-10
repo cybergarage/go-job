@@ -21,7 +21,6 @@ import (
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	// "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
@@ -139,10 +138,10 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 		jobs = append(jobs, job)
 	}
 
-	q := job.NewInstanceQueue(job.WithInstanceQueueStore(store))
+	queue := job.NewInstanceQueue(job.WithInstanceQueueStore(store))
 
 	for _, job := range jobs {
-		if err := q.Enqueue(ctx, job); err != nil {
+		if err := queue.Enqueue(ctx, job); err != nil {
 			t.Errorf("Failed to enqueue job: %v", err)
 			return
 		}
@@ -161,7 +160,7 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 
 	var lastJob job.Instance
 	for range jobs {
-		job, err := q.Dequeue(ctx)
+		job, err := queue.Dequeue(ctx)
 		if err != nil {
 			t.Fatalf("Failed to dequeue job: %v", err)
 			return
@@ -193,9 +192,9 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 
 func TestInstanceQueue(t *testing.T) {
 	stores := []job.Store{
-		// job.NewLocalStore(),
-		// store.NewMemdbStore(),
-		store.NewValkeyStore(valkey.NewStoreOption()),
+		job.NewLocalStore(),
+		store.NewMemdbStore(),
+		// store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {

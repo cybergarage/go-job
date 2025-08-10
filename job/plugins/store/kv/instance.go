@@ -22,8 +22,8 @@ import (
 )
 
 // NewInstanceKeyFromUUID creates a new key from a UUID string.
-func NewInstanceKeyFrom(ji job.Instance) Key {
-	return newKeyFromUUID(instancePrefix, ji.UUID())
+func NewInstanceKeyFrom(ji job.Instance, suffixes ...string) Key {
+	return newKeyFrom(instancePrefix, suffixes...)
 }
 
 // NewInstanceListKey creates a new list key for a list of job instances.
@@ -32,13 +32,13 @@ func NewInstanceListKey() Key {
 }
 
 // NewObjectFromInstance creates a new Object from a job instance.
-func NewObjectFromInstance(ji job.Instance) (Object, error) {
+func NewObjectFromInstance(ji job.Instance, suffixes ...string) (Object, error) {
 	data, err := encoding.MapToJSON(ji.Map())
 	if err != nil {
 		return nil, fmt.Errorf("failed to get JSON string from job instance: %w", err)
 	}
 	return &object{
-		key:   NewInstanceKeyFrom(ji),
+		key:   NewInstanceKeyFrom(ji, suffixes...),
 		value: []byte(data),
 	}, nil
 }

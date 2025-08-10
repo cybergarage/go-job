@@ -27,17 +27,22 @@ type Key string
 type KeyTypePrefix = string
 
 const (
-	instancePrefix      KeyTypePrefix = "i:"
-	instanceStatePrefix KeyTypePrefix = "s:"
-	instanceLogPrefix   KeyTypePrefix = "l:"
+	instancePrefix      KeyTypePrefix = "i"
+	instanceStatePrefix KeyTypePrefix = "s"
+	instanceLogPrefix   KeyTypePrefix = "l"
 )
 
-func newKeyFromUUID(prefix string, uuid uuid.UUID, suffixes ...string) Key {
-	key := Key(prefix + uuid.String())
+func newKeyFrom(prefix string, suffixes ...string) Key {
+	key := Key(prefix)
 	for _, suffix := range suffixes {
 		key += Key(":" + suffix)
 	}
 	return key
+}
+
+func newKeyFromUUID(prefix string, uuid uuid.UUID, suffixes ...string) Key {
+	suffixes = append([]string{uuid.String()}, suffixes...)
+	return newKeyFrom(prefix, suffixes...)
 }
 
 // UUID returns the UUID representation of the key.

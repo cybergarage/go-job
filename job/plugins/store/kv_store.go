@@ -43,7 +43,11 @@ func NewKvStoreWith(store kv.Store) job.Store {
 
 // EnqueueInstance stores a job instance in the store.
 func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) error {
-	obj, err := kv.NewObjectFromInstance(job)
+	keySuffixes := []string{}
+	if store.UniqueKeys() {
+		keySuffixes = append(keySuffixes, nowTimestampSuffix())
+	}
+	obj, err := kv.NewObjectFromInstance(job, keySuffixes...)
 	if err != nil {
 		return err
 	}
