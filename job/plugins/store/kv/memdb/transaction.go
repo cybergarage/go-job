@@ -17,7 +17,6 @@ package memdb
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/hashicorp/go-memdb"
@@ -25,6 +24,9 @@ import (
 
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (db *Database) Set(ctx context.Context, obj kv.Object) error {
+	if db == nil {
+		return kv.ErrNotReady
+	}
 	txn := db.Txn(true)
 	err := txn.Insert(
 		tableName,
@@ -56,6 +58,9 @@ func (db *Database) get(ctx context.Context, txn *memdb.Txn, key kv.Key) (kv.Obj
 
 // Get returns a key-value object of the specified key.
 func (db *Database) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
+	if db == nil {
+		return nil, kv.ErrNotReady
+	}
 	txn := db.Txn(false)
 	obj, err := db.get(ctx, txn, key)
 	if err != nil {
@@ -68,6 +73,9 @@ func (db *Database) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
 
 // Scan returns a result set of all key-value objects whose keys have the specified prefix.
 func (db *Database) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
+	if db == nil {
+		return nil, kv.ErrNotReady
+	}
 	txn := db.Txn(false)
 	it, err := txn.Get(tableName, idName+prefix, key.Bytes())
 	if err != nil {
@@ -89,6 +97,9 @@ func (db *Database) remove(ctx context.Context, txn *memdb.Txn, kvObj kv.Object)
 
 // Remove removes and returns the key-value object of the specified key.
 func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
+	if db == nil {
+		return nil, kv.ErrNotReady
+	}
 	txn := db.Txn(true)
 	obj, err := db.get(ctx, txn, key)
 	if err != nil {
@@ -106,6 +117,9 @@ func (db *Database) Remove(ctx context.Context, key kv.Key) (kv.Object, error) {
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
 func (db *Database) Delete(ctx context.Context, key kv.Key) error {
+	if db == nil {
+		return kv.ErrNotReady
+	}
 	txn := db.Txn(true)
 	_, err := txn.DeleteAll(tableName, idName+prefix, key.Bytes())
 	if err != nil {
@@ -121,6 +135,9 @@ func (db *Database) Delete(ctx context.Context, key kv.Key) error {
 
 // Dump returns all key-value objects in the store.
 func (db *Database) Dump(ctx context.Context) ([]kv.Object, error) {
+	if db == nil {
+		return nil, kv.ErrNotReady
+	}
 	txn := db.Txn(false)
 	it, err := txn.Get(tableName, idName)
 	if err != nil {
@@ -139,9 +156,4 @@ func (db *Database) Dump(ctx context.Context) ([]kv.Object, error) {
 	}
 	txn.Commit()
 	return objs, nil
-}
-
-// SetTimeout sets the timeout of this transaction.
-func (db *Database) SetTimeout(t time.Duration) error {
-	return nil
 }
