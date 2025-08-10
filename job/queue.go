@@ -20,8 +20,8 @@ import (
 	"time"
 )
 
-// queue is an interface that defines methods for managing a job queue.
-type queue interface {
+// InstanceQueue is an interface that defines methods for managing a job scheduled instance queue.
+type InstanceQueue interface {
 	// Enqueue adds a job to the queue.
 	Enqueue(ctx context.Context, job Instance) error
 	// Dequeue removes and returns a job from the queue.
@@ -40,18 +40,18 @@ type queueImpl struct {
 	store Store
 }
 
-// queueOption is a function that configures a job queue.
-type queueOption func(*queueImpl)
+// InstanceQueueOption is a function that configures a job queue.
+type InstanceQueueOption func(*queueImpl)
 
-// withQueueStore sets the store for the job queue.
-func withQueueStore(store Store) queueOption {
+// WithInstanceQueueStore sets the store for the job queue.
+func WithInstanceQueueStore(store Store) InstanceQueueOption {
 	return func(q *queueImpl) {
 		q.store = store
 	}
 }
 
-// newQueue creates a new instance of the job queue.
-func newQueue(opts ...queueOption) queue {
+// NewInstanceQueue creates a new instance of the job queue.
+func NewInstanceQueue(opts ...InstanceQueueOption) InstanceQueue {
 	queue := &queueImpl{
 		store: nil,
 	}

@@ -19,7 +19,7 @@ import "context"
 // scheduler is responsible for scheduling jobs.
 type scheduler interface {
 	// Queue returns the job queue used by the scheduler.
-	Queue() queue
+	Queue() InstanceQueue
 	// ScheduleJobInstance schedules a job instance with the given options.
 	ScheduleJobInstance(job Instance, opts ...any) error
 }
@@ -28,7 +28,7 @@ type scheduler interface {
 type schedulerOption func(*schedulerImpl)
 
 // withSchedulerQueue sets the job queue for the scheduler.
-func withSchedulerQueue(queue queue) schedulerOption {
+func withSchedulerQueue(queue InstanceQueue) schedulerOption {
 	return func(s *schedulerImpl) {
 		s.queue = queue
 	}
@@ -43,7 +43,7 @@ func withSchedulerStore(store Store) schedulerOption {
 
 type schedulerImpl struct {
 	store Store
-	queue queue
+	queue InstanceQueue
 }
 
 // newScheduler creates a new instance of Scheduler.
@@ -56,13 +56,13 @@ func newScheduler(opts ...schedulerOption) *schedulerImpl {
 		opt(s)
 	}
 	if s.queue == nil {
-		s.queue = newQueue(withQueueStore(s.store))
+		s.queue = NewInstanceQueue(WithInstanceQueueStore(s.store))
 	}
 	return s
 }
 
 // Queue returns the job queue used by the scheduler.
-func (s *schedulerImpl) Queue() queue {
+func (s *schedulerImpl) Queue() InstanceQueue {
 	return s.queue
 }
 

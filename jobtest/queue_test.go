@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package jobtest
 
 import (
 	"testing"
 	"time"
+
+	"github.com/cybergarage/go-job/job"
 )
 
-func QueueStoreTest(t *testing.T, store Store) {
+func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 	t.Helper()
 
 	now := time.Now()
@@ -29,83 +31,83 @@ func QueueStoreTest(t *testing.T, store Store) {
 	}{
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-10 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-10 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(HighPriority),
-				WithScheduleAt(now.Add(-10 * time.Hour)),
+				job.WithPriority(job.HighPriority),
+				job.WithScheduleAt(now.Add(-10 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-5 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-5 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-1 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-1 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(DefaultPriority),
-				WithScheduleAt(now.Add(-1 * time.Hour)),
+				job.WithPriority(job.DefaultPriority),
+				job.WithScheduleAt(now.Add(-1 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-500 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-500 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(HighPriority),
-				WithScheduleAt(now.Add(-500 * time.Hour)),
+				job.WithPriority(job.HighPriority),
+				job.WithScheduleAt(now.Add(-500 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-2 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-2 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(DefaultPriority),
-				WithScheduleAt(now.Add(-2 * time.Hour)),
+				job.WithPriority(job.DefaultPriority),
+				job.WithScheduleAt(now.Add(-2 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-100 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-100 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(HighPriority),
-				WithScheduleAt(now.Add(-3 * time.Hour)),
+				job.WithPriority(job.HighPriority),
+				job.WithScheduleAt(now.Add(-3 * time.Hour)),
 			},
 		},
 		{
 			opts: []any{
-				WithPriority(LowPriority),
-				WithScheduleAt(now.Add(-700 * time.Hour)),
+				job.WithPriority(job.LowPriority),
+				job.WithScheduleAt(now.Add(-700 * time.Hour)),
 			},
 		},
 	}
 
 	ctx := t.Context()
 
-	jobs := []Instance{}
+	jobs := []job.Instance{}
 	for _, tt := range tests {
-		job, err := NewInstance(tt.opts...)
+		job, err := job.NewInstance(tt.opts...)
 		if err != nil {
 			t.Errorf("Failed to create job: %v", err)
 			return
@@ -113,7 +115,7 @@ func QueueStoreTest(t *testing.T, store Store) {
 		jobs = append(jobs, job)
 	}
 
-	q := newQueue(withQueueStore(store))
+	q := job.NewInstanceQueue(job.WithInstanceQueueStore(store))
 
 	for _, job := range jobs {
 		if err := q.Enqueue(ctx, job); err != nil {
@@ -122,7 +124,7 @@ func QueueStoreTest(t *testing.T, store Store) {
 		}
 	}
 
-	var lastJob Instance
+	var lastJob job.Instance
 	for range jobs {
 		job, err := q.Dequeue(ctx)
 		if err != nil {
@@ -154,14 +156,14 @@ func QueueStoreTest(t *testing.T, store Store) {
 	}
 }
 
-func TestQueue(t *testing.T) {
-	stores := []Store{
-		NewLocalStore(),
+func TestInstanceQueue(t *testing.T) {
+	stores := []job.Store{
+		job.NewLocalStore(),
 	}
 
 	for _, store := range stores {
 		t.Run(store.Name(), func(t *testing.T) {
-			QueueStoreTest(t, store)
+			InstanceQueueStoreTest(t, store)
 		})
 	}
 }

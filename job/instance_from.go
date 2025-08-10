@@ -21,7 +21,7 @@ import (
 )
 
 // newInstancesFromQueue creates a list of job instances from the provided queue.
-func newInstancesFromQueue(queue queue) ([]Instance, error) {
+func newInstancesFromQueue(queue InstanceQueue) ([]Instance, error) {
 	list, err := queue.List(context.Background())
 	if err != nil {
 		return nil, err

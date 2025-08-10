@@ -15,17 +15,36 @@
 package jobtest
 
 import (
+	"context"
 	"sync"
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
+	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
+	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
 
 // nolint: maintidx
 func ManagerTest(t *testing.T, mgr job.Manager) {
 	t.Helper()
+
+	if err := mgr.Start(); err != nil {
+		t.Skipf("Failed to start job manager: %v", err)
+		return
+	}
+
+	defer func() {
+		if err := mgr.Stop(); err != nil {
+			t.Errorf("Failed to stop job manager: %v", err)
+		}
+	}()
+
+	if err := mgr.Clear(); err != nil {
+		t.Errorf("Failed to clear job manager: %v", err)
+		return
+	}
 
 	type sumOpt struct {
 		A int
@@ -67,22 +86,6 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 		},
 	}
 
-	if err := mgr.Start(); err != nil {
-		t.Skipf("Failed to start job manager: %v", err)
-		return
-	}
-
-	defer func() {
-		if err := mgr.Stop(); err != nil {
-			t.Errorf("Failed to stop job manager: %v", err)
-		}
-	}()
-
-	if err := mgr.Clear(); err != nil {
-		t.Errorf("Failed to clear job manager: %v", err)
-		return
-	}
-
 	for _, tt := range tests {
 		t.Run(tt.kind, func(t *testing.T) {
 			var wg sync.WaitGroup
@@ -92,6 +95,15 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			stateHandler := func(ji job.Instance, state job.JobState) {
 				t.Logf("State changed to: %s (%s) %v", ji.Kind(), ji.UUID(), state)
+				store := mgr.Store()
+				switch store := store.(type) {
+				case kv.Store:
+					objs, err := store.Dump(context.Background())
+					if err != nil {
+						t.Errorf("Failed to dump store: %v", err)
+					}
+					kvutil.PrintAll(objs)
+				}
 			}
 
 			processHandler := func(ji job.Instance, responses []any) {
@@ -302,7 +314,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	stores := []job.Store{
-		// job.NewLocalStore(),
+		job.NewLocalStore(),
 		// store.NewMemdbStore(),
 		store.NewValkeyStore(valkey.NewStoreOption()),
 	}
