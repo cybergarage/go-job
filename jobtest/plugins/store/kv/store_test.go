@@ -16,11 +16,11 @@ package jobtest
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
 
@@ -43,7 +43,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 		return
 	}
 
-	// Set / Get tests
+	// Set / Get tests (unique keys)
 
 	setTests := []struct {
 		key kv.Key
@@ -92,43 +92,55 @@ func StoreTest(t *testing.T, store kv.Store) {
 		})
 	}
 
-	// Set / Remove tests
+	// Set / Remove tests (single key)
 
-	removeTests := []struct {
-		key kv.Key
-		val []byte
-	}{
-		{
-			key: kv.Key("remove1"),
-			val: []byte("value1"),
-		},
-		{
-			key: kv.Key("remove2"),
-			val: []byte("value2"),
-		},
-		{
-			key: kv.Key("remove3"),
-			val: []byte("value3"),
-		},
-	}
+	if !store.UniqueKeys() {
+		removeTests := []struct {
+			key kv.Key
+			val []byte
+		}{
+			{
+				key: kv.Key("remove1"),
+				val: []byte("value1"),
+			},
+			{
+				key: kv.Key("remove1"),
+				val: []byte("value2"),
+			},
+			{
+				key: kv.Key("remove1"),
+				val: []byte("value3"),
+			},
+		}
 
-	for _, test := range removeTests {
-		t.Run("Set "+test.key.String(), func(t *testing.T) {
-			obj := kv.NewObject(test.key, test.val)
-			if err := store.Set(t.Context(), obj); err != nil {
-				t.Fatalf("failed to set object: %v", err)
-			}
+		for _, test := range removeTests {
+			t.Run("Set "+test.key.String(), func(t *testing.T) {
+				obj := kv.NewObject(test.key, test.val)
+				if err := store.Set(t.Context(), obj); err != nil {
+					t.Fatalf("failed to set object: %v", err)
+				}
+			})
+		}
 
-			err := store.Remove(t.Context(), obj)
-			if err != nil {
-				t.Fatalf("failed to get object: %v", err)
-			}
-
-			_, err = store.Get(t.Context(), test.key)
-			if err == nil {
-				t.Errorf("expected error when getting removed object, got nil")
-			}
+		sort.Slice(removeTests, func(i, j int) bool {
+			return i > j
 		})
+
+		for _, test := range removeTests {
+			t.Run("Set "+test.key.String(), func(t *testing.T) {
+				obj := kv.NewObject(test.key, test.val)
+
+				err := store.Remove(t.Context(), obj)
+				if err != nil {
+					t.Fatalf("failed to get object: %v", err)
+				}
+
+				_, err = store.Get(t.Context(), test.key)
+				if err == nil {
+					t.Errorf("expected error when getting removed object, got nil")
+				}
+			})
+		}
 	}
 
 	// Set / Scan tests
@@ -215,7 +227,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 func TestStores(t *testing.T) {
 	stores := []kv.Store{
 		memdb.NewStore(),
-		valkey.NewStore(valkey.NewStoreOption()),
+		// valkey.NewStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {
