@@ -93,8 +93,8 @@ type Store interface {
 	Get(ctx context.Context, key Key) (Object, error)
 	// Scan returns a result set of all key-value objects whose keys have the specified prefix.
 	Scan(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
-	// Remove removes and returns the key-value object of the specified key.
-	Remove(ctx context.Context, key Key) (Object, error)
+	// Remove removes the specified key-value object.
+	Remove(ctx context.Context, obj Object) error
 	// Delete deletes all key-value objects whose keys have the specified prefix.
 	Delete(ctx context.Context, key Key) error
 	// Start starts the store.
