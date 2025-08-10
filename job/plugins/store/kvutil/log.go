@@ -15,14 +15,14 @@
 package kvutil
 
 import (
-	"fmt"
+	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 )
 
-// PrintObjects prints all key-value objects.
-func PrintObjects(objects []kv.Object) {
+// LogObjects logs all key-value objects.
+func LogObjects(t *testing.T, objects []kv.Object) {
 	for n, obj := range objects {
-		fmt.Printf("[%d] %s: %s\n", n, obj.Key().String(), string(obj.Bytes()))
+		t.Logf("[%d] %s: %s\n", n, obj.Key().String(), string(obj.Bytes()))
 	}
 }

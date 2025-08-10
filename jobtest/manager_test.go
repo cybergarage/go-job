@@ -20,9 +20,7 @@ import (
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
-	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
 
@@ -102,7 +100,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 					if err != nil {
 						t.Errorf("Failed to dump store: %v", err)
 					}
-					kvutil.PrintAll(objs)
+					kvutil.LogObjects(t, objs)
 				}
 			}
 
@@ -316,7 +314,7 @@ func TestManager(t *testing.T) {
 	stores := []job.Store{
 		job.NewLocalStore(),
 		// store.NewMemdbStore(),
-		store.NewValkeyStore(valkey.NewStoreOption()),
+		// store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {

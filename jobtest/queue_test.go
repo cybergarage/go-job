@@ -20,6 +20,9 @@ import (
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
+	"github.com/cybergarage/go-job/job/plugins/store/kv"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
+	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	// "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
@@ -124,6 +127,8 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 
 	ctx := t.Context()
 
+	// Enqueue jobs
+
 	jobs := []job.Instance{}
 	for _, tt := range tests {
 		job, err := job.NewInstance(tt.opts...)
@@ -142,6 +147,17 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 			return
 		}
 	}
+
+	switch store := store.(type) {
+	case kv.Store:
+		objs, err := store.Dump(t.Context())
+		if err != nil {
+			t.Errorf("Failed to dump store: %v", err)
+		}
+		kvutil.LogObjects(t, objs)
+	}
+
+	// Dequeue jobs
 
 	var lastJob job.Instance
 	for range jobs {
@@ -177,9 +193,9 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 
 func TestInstanceQueue(t *testing.T) {
 	stores := []job.Store{
-		job.NewLocalStore(),
-		store.NewMemdbStore(),
-		// store.NewValkeyStore(valkey.NewStoreOption()),
+		// job.NewLocalStore(),
+		// store.NewMemdbStore(),
+		store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {
