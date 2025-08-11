@@ -314,8 +314,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	stores := []job.Store{
-		// job.NewLocalStore(),
-		// store.NewMemdbStore(),
+		job.NewLocalStore(),
+		store.NewMemdbStore(),
 		store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
