@@ -24,20 +24,35 @@ const (
 	jobctl = "jobctl"
 )
 
+type CLIClient interface {
+	Client
+	// SetCommandExecutor sets the command executor.
+	SetCommandExecutor(executor CommandExecutor)
+}
+
+// CommandExecutor defines a function type for executing commands.
+type CommandExecutor func(name string, args ...string) ([]byte, error)
+
 // shell client implementation for client.
 type cliClient struct {
-	args []string
-	host string
-	port int
+	args     []string
+	host     string
+	port     int
+	executor CommandExecutor
 }
 
 // NewCliClient returns a new cli client.
-func NewCliClient(args ...string) Client {
+func NewCliClient(args ...string) CLIClient {
 	client := &cliClient{
-		args: args,
-		host: "",
-		port: DefaultGrpcPort,
+		args:     args,
+		host:     "",
+		port:     DefaultGrpcPort,
+		executor: nil,
 	}
+	client.SetCommandExecutor(func(name string, args ...string) ([]byte, error) {
+		cmd := exec.Command(name, args...)
+		return cmd.CombinedOutput()
+	})
 	return client
 }
 
@@ -56,6 +71,11 @@ func (cli *cliClient) SetHost(host string) {
 	cli.host = host
 }
 
+// SetCommandExecutor sets the command executor.
+func (cli *cliClient) SetCommandExecutor(executor CommandExecutor) {
+	cli.executor = executor
+}
+
 // Open opens a shell connection.
 func (cli *cliClient) Open() error {
 	_, err := exec.LookPath(jobctl)
@@ -70,6 +90,11 @@ func (cli *cliClient) Close() error {
 	return nil
 }
 
+// Execute executes a command and returns the output.
+func (cli *cliClient) Execute(name string, args ...string) ([]byte, error) {
+	return cli.executor(name, args...)
+}
+
 func (cli *cliClient) trimOutput(out []byte) string {
 	if len(out) > 0 && out[len(out)-1] == '\n' {
 		return string(out[:len(out)-1])
@@ -82,7 +107,7 @@ func (cli *cliClient) GetVersion() (string, error) {
 	var cmdArgs []string
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "get", "version")
-	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	out, err := cli.Execute(jobctl, cmdArgs...)
 	if err != nil {
 		return "", err
 	}
@@ -98,7 +123,7 @@ func (cli *cliClient) ScheduleJob(kind string, args ...any) (Instance, error) {
 	for _, arg := range args {
 		cmdArgs = append(cmdArgs, fmt.Sprintf("%v", arg))
 	}
-	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	out, err := cli.Execute(jobctl, cmdArgs...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +143,7 @@ func (cli *cliClient) ListRegisteredJobs() ([]Job, error) {
 	var cmdArgs []string
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "list", "jobs")
-	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	out, err := cli.Execute(jobctl, cmdArgs...)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +167,7 @@ func (cli *cliClient) LookupInstances(query Query) ([]Instance, error) {
 	var cmdArgs []string
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "list", "instances")
-	out, err := exec.Command(jobctl, cmdArgs...).CombinedOutput()
+	out, err := cli.Execute(jobctl, cmdArgs...)
 	if err != nil {
 		return nil, err
 	}
