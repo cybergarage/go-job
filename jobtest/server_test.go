@@ -144,12 +144,29 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 }
 
 func TestServerAPIs(t *testing.T) {
+	// newCmdClient := func(args ...string) job.Client {
+	// 	client := job.NewCliClient()
+	// 	client.SetCommandExecutor(func(name string, args ...string) ([]byte, error) {
+	// 		rootCmd := cli.GetRootCommand()
+	// 		buf := new(bytes.Buffer)
+	// 		rootCmd.SetOut(buf)
+	// 		rootCmd.SetArgs(args)
+	// 		err := rootCmd.Execute()
+	// 		if err != nil {
+	// 			return nil, err
+	// 		}
+	// 		return buf.Bytes(), nil
+	// 	})
+	// 	return client
+	// }
+
 	t.Setenv("PATH", fmt.Sprintf("%s/bin:%s", os.Getenv("GOPATH"),
 		os.Getenv("PATH")))
 
 	clients := []job.Client{
 		job.NewGrpcClient(),
 		job.NewCliClient(),
+		// newCmdClient(),
 	}
 
 	serversConstructors := []func(opts ...any) (job.Server, error){
