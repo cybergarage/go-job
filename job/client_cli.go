@@ -18,8 +18,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
-
-	"google.golang.org/grpc"
 )
 
 const (
@@ -31,7 +29,6 @@ type cliClient struct {
 	args []string
 	host string
 	port int
-	conn *grpc.ClientConn
 }
 
 // NewCliClient returns a new cli client.
@@ -40,7 +37,6 @@ func NewCliClient(args ...string) Client {
 		args: args,
 		host: "",
 		port: DefaultGrpcPort,
-		conn: nil,
 	}
 	return client
 }
