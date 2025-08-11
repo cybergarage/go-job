@@ -21,7 +21,7 @@ import (
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
-	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	// "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
@@ -149,11 +149,11 @@ func InstanceQueueStoreTest(t *testing.T, store job.Store) {
 
 	switch store := store.(type) {
 	case kv.Store:
-		objs, err := store.Dump(t.Context())
+		/*objs*/ _, err := store.Dump(t.Context())
 		if err != nil {
 			t.Errorf("Failed to dump store: %v", err)
 		}
-		kvutil.LogObjects(t, objs)
+		// kvutil.LogObjects(t, objs)
 	}
 
 	// Dequeue jobs
@@ -194,7 +194,7 @@ func TestInstanceQueue(t *testing.T) {
 	stores := []job.Store{
 		job.NewLocalStore(),
 		store.NewMemdbStore(),
-		// store.NewValkeyStore(valkey.NewStoreOption()),
+		store.NewValkeyStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {
