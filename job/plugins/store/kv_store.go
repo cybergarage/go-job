@@ -132,6 +132,7 @@ func (store *kvStore) ClearInstances(ctx context.Context) error {
 func (store *kvStore) LogInstanceState(ctx context.Context, state job.InstanceState) error {
 	keySuffixes := []string{}
 	if store.UniqueKeys() {
+		keySuffixes = append(keySuffixes, state.UUID().String())
 		keySuffixes = append(keySuffixes, nowTimestampSuffix())
 	}
 	obj, err := kv.NewObjectFromInstanceState(state, keySuffixes...)
@@ -189,7 +190,7 @@ func (store *kvStore) ClearInstanceHistory(ctx context.Context, filter job.Filte
 		if !filter.Matches(state) {
 			continue
 		}
-		err = store.Delete(ctx, kv.NewInstanceStateKeyFrom(state.UUID()))
+		err = store.Remove(ctx, obj)
 		if err != nil {
 			return err
 		}
