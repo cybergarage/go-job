@@ -40,11 +40,6 @@ func newKeyFrom(prefix string, suffixes ...string) Key {
 	return key
 }
 
-func newKeyFromUUID(prefix string, uuid uuid.UUID, suffixes ...string) Key {
-	suffixes = append([]string{uuid.String()}, suffixes...)
-	return newKeyFrom(prefix, suffixes...)
-}
-
 // UUID returns the UUID representation of the key.
 func (k Key) UUID() (uuid.UUID, error) {
 	return uuid.Parse(string(k)[len(instancePrefix):])

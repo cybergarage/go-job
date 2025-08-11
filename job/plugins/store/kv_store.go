@@ -208,6 +208,7 @@ func (store *kvStore) Logf(ctx context.Context, ji job.Instance, logLevel job.Lo
 	)
 	keySuffixes := []string{}
 	if store.UniqueKeys() {
+		keySuffixes = append(keySuffixes, log.UUID().String())
 		keySuffixes = append(keySuffixes, nowTimestampSuffix())
 	}
 	obj, err := kv.NewObjectFromLog(log, keySuffixes...)
@@ -280,7 +281,7 @@ func (store *kvStore) ClearInstanceLogs(ctx context.Context, filter job.Filter) 
 		if !filter.Matches(log) {
 			continue
 		}
-		err = store.Delete(ctx, kv.NewLogKeyFrom(log.UUID()))
+		err = store.Remove(ctx, obj)
 		if err != nil {
 			return err
 		}
