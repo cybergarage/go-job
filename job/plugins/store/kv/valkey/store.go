@@ -89,6 +89,7 @@ func (store *Store) Set(ctx context.Context, obj kv.Object) error {
 	return nil
 }
 
+// Range returns a list of values for the specified key.
 func (store *Store) Range(ctx context.Context, key kv.Key, limit int64) ([]string, error) {
 	if store.Client == nil {
 		return nil, kv.ErrNotReady
@@ -134,18 +135,18 @@ func (store *Store) Remove(ctx context.Context, obj kv.Object) error {
 	}
 	key := obj.Key()
 	listKey := key.String()
-	cmd := store.B().Lpop().Key(listKey)
+	listValue := string(obj.Bytes())
+	cmd := store.B().Lrem().Key(listKey).Count(0).Element(listValue)
 	resp := store.Do(ctx, cmd.Build())
 	if resp.Error() != nil {
 		return resp.Error()
 	}
-	val, err := resp.AsBytes()
+	cnt, err := resp.AsInt64()
 	if err != nil {
 		return err
 	}
-	popObj := kv.NewObject(key, []byte(val))
-	if !popObj.Equal(obj) {
-		return kv.NewErrObjectNotExist(key)
+	if cnt < 1 {
+		return kv.NewErrKeyObjectNotExist(key)
 	}
 	return nil
 }
