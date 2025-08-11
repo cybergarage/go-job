@@ -16,11 +16,11 @@ package jobtest
 
 import (
 	"fmt"
-	"sort"
 	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
 
@@ -43,191 +43,263 @@ func StoreTest(t *testing.T, store kv.Store) {
 		return
 	}
 
-	// Set / Get tests (unique keys)
+	// Unique Key Test
 
-	setTests := []struct {
-		key kv.Key
-		val []byte
-	}{
-		{
-			key: kv.Key("set1"),
-			val: []byte("value1"),
-		},
-		{
-			key: kv.Key("set2"),
-			val: []byte("value2"),
-		},
-		{
-			key: kv.Key("set3"),
-			val: []byte("value3"),
-		},
-	}
+	t.Run("UniqueKey", func(t *testing.T) {
 
-	for _, test := range setTests {
-		t.Run("Set "+test.key.String(), func(t *testing.T) {
-			obj := kv.NewObject(test.key, test.val)
-			if err := store.Set(t.Context(), obj); err != nil {
-				t.Fatalf("failed to set object: %v", err)
+		// Set / Get tests
+
+		t.Run("Set-Get", func(t *testing.T) {
+
+			setTests := []struct {
+				key kv.Key
+				val []byte
+			}{
+				{
+					key: kv.Key("set1"),
+					val: []byte("value1"),
+				},
+				{
+					key: kv.Key("set2"),
+					val: []byte("value2"),
+				},
+				{
+					key: kv.Key("set3"),
+					val: []byte("value3"),
+				},
 			}
 
-			retrievedObj, err := store.Get(t.Context(), test.key)
-			if err != nil {
-				t.Fatalf("failed to get object: %v", err)
-			}
-
-			if !retrievedObj.Equal(obj) {
-				t.Errorf("expected %v, got %v", obj, retrievedObj)
-			}
-		})
-		t.Run("Remove "+test.key.String(), func(t *testing.T) {
-			obj := kv.NewObject(test.key, test.val)
-			if err := store.Remove(t.Context(), obj); err != nil {
-				t.Fatalf("failed to remove object: %v", err)
-			}
-
-			_, err := store.Get(t.Context(), test.key)
-			if err == nil {
-				t.Errorf("expected error when getting removed object, got nil")
-			}
-		})
-	}
-
-	// Set / Remove tests (single key)
-
-	if !store.UniqueKeys() {
-		removeTests := []struct {
-			key kv.Key
-			val []byte
-		}{
-			{
-				key: kv.Key("remove1"),
-				val: []byte("value1"),
-			},
-			{
-				key: kv.Key("remove1"),
-				val: []byte("value2"),
-			},
-			{
-				key: kv.Key("remove1"),
-				val: []byte("value3"),
-			},
-		}
-
-		for _, test := range removeTests {
-			t.Run("Set "+test.key.String(), func(t *testing.T) {
-				obj := kv.NewObject(test.key, test.val)
-				if err := store.Set(t.Context(), obj); err != nil {
-					t.Fatalf("failed to set object: %v", err)
-				}
-			})
-		}
-
-		sort.Slice(removeTests, func(i, j int) bool {
-			return i > j
-		})
-
-		for _, test := range removeTests {
-			t.Run("Set "+test.key.String(), func(t *testing.T) {
-				obj := kv.NewObject(test.key, test.val)
-
-				err := store.Remove(t.Context(), obj)
-				if err != nil {
-					t.Fatalf("failed to get object: %v", err)
-				}
-
-				_, err = store.Get(t.Context(), test.key)
-				if err == nil {
-					t.Errorf("expected error when getting removed object, got nil")
-				}
-			})
-		}
-	}
-
-	// Set / Scan tests
-
-	rangeKey := kv.Key("range1")
-	rangeTests := []struct {
-		key kv.Key
-		val []byte
-	}{
-		{
-			key: rangeKey,
-			val: []byte("value1"),
-		},
-		{
-			key: rangeKey,
-			val: []byte("value2"),
-		},
-		{
-			key: rangeKey,
-			val: []byte("value3"),
-		},
-	}
-
-	keys := make([]kv.Key, len(rangeTests))
-	objs := make([]kv.Object, len(rangeTests))
-	for i, test := range rangeTests {
-		keys[i] = test.key
-		if store.UniqueKeys() {
-			keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
-		}
-		objs[i] = kv.NewObject(keys[i], test.val)
-		t.Run(fmt.Sprintf("SetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
-			if err := store.Set(t.Context(), objs[i]); err != nil {
-				t.Fatalf("failed to set object: %v", err)
-			}
-		})
-		t.Run(fmt.Sprintf("Scan %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
-			rs, err := store.Scan(t.Context(), test.key)
-			if err != nil {
-				t.Fatalf("failed to get range: %v", err)
-			}
-			retrievedObjs, err := kvutil.ReadAll(rs)
-			if err != nil {
-				t.Fatalf("failed to read all objects from range: %v", err)
-			}
-			if len(retrievedObjs) != i+1 {
-				t.Fatalf("expected %d objects, got %d", i+1, len(retrievedObjs))
-			}
-			for _, obj := range retrievedObjs {
-				found := false
-				for _, expectedObj := range objs[:i+1] {
-					if obj.Equal(expectedObj) {
-						found = true
-						break
+			for _, test := range setTests {
+				t.Run("Set "+test.key.String(), func(t *testing.T) {
+					obj := kv.NewObject(test.key, test.val)
+					if err := store.Set(t.Context(), obj); err != nil {
+						t.Fatalf("failed to set object: %v", err)
 					}
-				}
-				if !found {
-					t.Errorf("unexpected object: %v", obj)
-				}
+
+					retrievedObj, err := store.Get(t.Context(), test.key)
+					if err != nil {
+						t.Fatalf("failed to get object: %v", err)
+					}
+
+					if !retrievedObj.Equal(obj) {
+						t.Errorf("expected %v, got %v", obj, retrievedObj)
+					}
+				})
+				t.Run("Remove "+test.key.String(), func(t *testing.T) {
+					obj := kv.NewObject(test.key, test.val)
+					if err := store.Remove(t.Context(), obj); err != nil {
+						t.Fatalf("failed to remove object: %v", err)
+					}
+
+					_, err := store.Get(t.Context(), test.key)
+					if err == nil {
+						t.Errorf("expected error when getting removed object, got nil")
+					}
+				})
 			}
 		})
-	}
+	})
 
-	t.Run("Delete "+rangeKey.String(), func(t *testing.T) {
-		if err := store.Delete(t.Context(), rangeKey); err != nil {
-			t.Fatalf("failed to remove object: %v", err)
-		}
+	// Single key
 
-		rs, err := store.Scan(t.Context(), rangeKey)
-		if err != nil {
-			t.Fatalf("expected error when getting removed object, got nil")
-		}
+	t.Run("SingleKey", func(t *testing.T) {
 
-		retrievedObjs, err := kvutil.ReadAll(rs)
-		if err != nil {
-			t.Fatalf("failed to read all objects from range: %v", err)
-		}
-		if 0 < len(retrievedObjs) {
-			t.Errorf("expected no objects after removal, got %d", len(retrievedObjs))
-		}
+		// Set / Scan / Remove tests (single key)
+
+		t.Run("Set-Scan-Remove", func(t *testing.T) {
+
+			rangeKey := kv.Key("range1")
+			rangeTests := []struct {
+				key kv.Key
+				val []byte
+			}{
+				{
+					key: rangeKey,
+					val: []byte("value1"),
+				},
+				{
+					key: rangeKey,
+					val: []byte("value2"),
+				},
+				{
+					key: rangeKey,
+					val: []byte("value3"),
+				},
+			}
+
+			keys := make([]kv.Key, len(rangeTests))
+			objs := make([]kv.Object, len(rangeTests))
+
+			for i, test := range rangeTests {
+				keys[i] = test.key
+				if store.UniqueKeys() {
+					keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
+				}
+				objs[i] = kv.NewObject(keys[i], test.val)
+			}
+
+			for i, test := range rangeTests {
+				t.Run(fmt.Sprintf("SetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
+					if err := store.Set(t.Context(), objs[i]); err != nil {
+						t.Fatalf("failed to set object: %v", err)
+					}
+				})
+				t.Run(fmt.Sprintf("Scan %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
+					rs, err := store.Scan(t.Context(), test.key)
+					if err != nil {
+						t.Fatalf("failed to get range: %v", err)
+					}
+					retrievedObjs, err := kvutil.ReadAll(rs)
+					if err != nil {
+						t.Fatalf("failed to read all objects from range: %v", err)
+					}
+					if len(retrievedObjs) != i+1 {
+						t.Fatalf("expected %d objects, got %d", i+1, len(retrievedObjs))
+					}
+					for _, obj := range retrievedObjs {
+						found := false
+						for _, expectedObj := range objs[:i+1] {
+							if obj.Equal(expectedObj) {
+								found = true
+								break
+							}
+						}
+						if !found {
+							t.Errorf("unexpected object: %v", obj)
+						}
+					}
+				})
+			}
+
+			for n, test := range rangeTests {
+				t.Run("Remove "+test.key.String(), func(t *testing.T) {
+					removeObj := objs[n]
+
+					err := store.Remove(t.Context(), removeObj)
+					if err != nil {
+						t.Fatalf("failed to get object: %v", err)
+					}
+
+					rs, err := store.Scan(t.Context(), rangeKey)
+					if err != nil {
+						t.Fatalf("expected error when getting removed object, got nil")
+					}
+
+					retrievedObjs, err := kvutil.ReadAll(rs)
+					if err != nil {
+						t.Fatalf("failed to read all objects from range: %v", err)
+					}
+
+					if len(retrievedObjs) != (len(rangeTests) - n - 1) {
+						t.Errorf("expected no objects after removal, got %d", len(retrievedObjs))
+					}
+
+					found := false
+					for _, retrievedObj := range retrievedObjs {
+						if retrievedObj.Equal(removeObj) {
+							found = true
+							break
+						}
+					}
+					if found {
+						t.Errorf("unexpected object: %v", removeObj)
+					}
+				})
+			}
+		})
+
+		// Set / Scan / Delete tests
+
+		t.Run("Set-Scan-Delete", func(t *testing.T) {
+
+			rangeKey := kv.Key("range1")
+			rangeTests := []struct {
+				key kv.Key
+				val []byte
+			}{
+				{
+					key: rangeKey,
+					val: []byte("value1"),
+				},
+				{
+					key: rangeKey,
+					val: []byte("value2"),
+				},
+				{
+					key: rangeKey,
+					val: []byte("value3"),
+				},
+			}
+
+			keys := make([]kv.Key, len(rangeTests))
+			objs := make([]kv.Object, len(rangeTests))
+			for i, test := range rangeTests {
+				keys[i] = test.key
+				if store.UniqueKeys() {
+					keys[i] = kv.Key(fmt.Sprintf("%s%d", test.key, i))
+				}
+				objs[i] = kv.NewObject(keys[i], test.val)
+			}
+
+			for i, test := range rangeTests {
+				t.Run(fmt.Sprintf("SetRange %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
+					if err := store.Set(t.Context(), objs[i]); err != nil {
+						t.Fatalf("failed to set object: %v", err)
+					}
+				})
+				t.Run(fmt.Sprintf("Scan %s %s", test.key.String(), string(test.val)), func(t *testing.T) {
+					rs, err := store.Scan(t.Context(), test.key)
+					if err != nil {
+						t.Fatalf("failed to get range: %v", err)
+					}
+					retrievedObjs, err := kvutil.ReadAll(rs)
+					if err != nil {
+						t.Fatalf("failed to read all objects from range: %v", err)
+					}
+					if len(retrievedObjs) != i+1 {
+						t.Fatalf("expected %d objects, got %d", i+1, len(retrievedObjs))
+					}
+					for _, obj := range retrievedObjs {
+						found := false
+						for _, expectedObj := range objs[:i+1] {
+							if obj.Equal(expectedObj) {
+								found = true
+								break
+							}
+						}
+						if !found {
+							t.Errorf("unexpected object: %v", obj)
+						}
+					}
+				})
+			}
+
+			t.Run("Delete "+rangeKey.String(), func(t *testing.T) {
+				if err := store.Delete(t.Context(), rangeKey); err != nil {
+					t.Fatalf("failed to remove object: %v", err)
+				}
+
+				rs, err := store.Scan(t.Context(), rangeKey)
+				if err != nil {
+					t.Fatalf("expected error when getting removed object, got nil")
+				}
+
+				retrievedObjs, err := kvutil.ReadAll(rs)
+				if err != nil {
+					t.Fatalf("failed to read all objects from range: %v", err)
+				}
+				if 0 < len(retrievedObjs) {
+					t.Errorf("expected no objects after removal, got %d", len(retrievedObjs))
+				}
+			})
+		})
 	})
 }
 
 func TestStores(t *testing.T) {
 	stores := []kv.Store{
 		memdb.NewStore(),
-		// valkey.NewStore(valkey.NewStoreOption()),
+		valkey.NewStore(valkey.NewStoreOption()),
 	}
 
 	for _, store := range stores {
