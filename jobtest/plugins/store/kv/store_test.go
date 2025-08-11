@@ -46,11 +46,9 @@ func StoreTest(t *testing.T, store kv.Store) {
 	// Unique Key Test
 
 	t.Run("UniqueKey", func(t *testing.T) {
-
 		// Set / Get tests
 
 		t.Run("Set-Get", func(t *testing.T) {
-
 			setTests := []struct {
 				key kv.Key
 				val []byte
@@ -103,11 +101,9 @@ func StoreTest(t *testing.T, store kv.Store) {
 	// Single key
 
 	t.Run("SingleKey", func(t *testing.T) {
-
 		// Set / Scan / Remove tests (single key)
 
 		t.Run("Set-Scan-Remove", func(t *testing.T) {
-
 			rangeKey := kv.Key("range1")
 			rangeTests := []struct {
 				key kv.Key
@@ -211,7 +207,6 @@ func StoreTest(t *testing.T, store kv.Store) {
 		// Set / Scan / Delete tests
 
 		t.Run("Set-Scan-Delete", func(t *testing.T) {
-
 			rangeKey := kv.Key("range1")
 			rangeTests := []struct {
 				key kv.Key

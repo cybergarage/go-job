@@ -22,7 +22,6 @@ import (
 	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
-	// "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
 func InstanceQueueStoreTest(t *testing.T, store job.Store) {
