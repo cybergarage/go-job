@@ -161,10 +161,10 @@ etcd-start:
 	  $(ETCD_IMAGE) \
 	  /usr/local/bin/etcd \
 	  --name test-etcd \
-  --data-dir /etcd-data \
-  --advertise-client-urls http://0.0.0.0:2379 \
-  --listen-client-urls http://0.0.0.0:2379 \
-  --listen-peer-urls http://0.0.0.0:2380
+	  --data-dir /etcd-data \
+	  --advertise-client-urls http://0.0.0.0:2379 \
+	  --listen-client-urls http://0.0.0.0:2379 \
+	  --listen-peer-urls http://0.0.0.0:2380
 
 etcd-stop:
 	@docker stop etcd || true
