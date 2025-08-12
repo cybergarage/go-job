@@ -1,17 +1,17 @@
 # ChangeLog
 
 ## 1.1.0 (2025-0X-XX)
-- Support 
-  - Cancellation of job instances
+### ✨ New Features
+- **Job Management**
+  - Executor supports special instance arguments
+  - Job instance cancellation
   - Timeout handling for job instances
-  - Executor supports instance arguments
-- Prometheus
-- Executor
-  - Special arguments for job instances
-- Cleaner worker
-- Query 
-  - limit and offset
-  - before and after filters
+- **System Worker**
+  - Store cleaner support
+### 🛠 Enhancements
+- **Query**
+  - Limit and offset support
+  - Before and after filters
 
 ## 1.0.0 (2025-08-XX)
 ### ✨ Features
