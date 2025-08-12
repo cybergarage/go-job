@@ -16,6 +16,7 @@ package etcd
 
 import (
 	"context"
+	"errors"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
@@ -52,6 +53,12 @@ func (store *Store) Start() error {
 	store.Client, err = v3.New(store.opt)
 	if err != nil {
 		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), store.opt.DialTimeout)
+	defer cancel()
+	_, err = store.Client.Status(ctx, store.opt.Endpoints[0])
+	if err != nil {
+		return errors.Join(err, store.Stop())
 	}
 	return nil
 }
