@@ -76,7 +76,9 @@ type LogStore interface {
 
 ### kv.Store Interface
 
-`go-job` provides a key-value store interface for implementing custom store plugins easily.
+To create a custom store plugin using a key-value store, `go-job` provides a straightforward key-value store interface.
+
+This interface makes it easy to build your own plugins for storing and managing job data.
 
 ``` go
 // Store represents a key-value store interface.
@@ -95,9 +97,15 @@ type Store interface {
     Remove(ctx context.Context, obj Object) error
     // Delete deletes all key-value objects whose keys have the specified prefix.
     Delete(ctx context.Context, key Key) error
+    // Dump returns all key-value objects in the store.
+    Dump(ctx context.Context) ([]Object, error)
     // Start starts the store.
     Start() error
     // Stop stops the store.
     Stop() error
-}
+    // Clear removes all key-value objects from the store.
+    Clear() error
+}}
 ```
+
+Both the `valkey` and `etcd` store plugins are implemented using this interface, so you can use it as a foundation for your own custom　plugins.
