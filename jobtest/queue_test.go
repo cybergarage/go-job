@@ -21,8 +21,8 @@ import (
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/valkey"
 )
 
 func InstanceQueueStoreTest(t *testing.T, store job.Store) {
@@ -194,7 +194,7 @@ func TestInstanceQueue(t *testing.T) {
 	stores := []job.Store{
 		job.NewLocalStore(),
 		store.NewMemdbStore(),
-		store.NewValkeyStore(valkey.NewStoreOption()),
+		store.NewKvStoreWith(valkey.NewStore()),
 		store.NewKvStoreWith(etcd.NewStore()),
 	}
 

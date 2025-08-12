@@ -20,9 +20,9 @@ import (
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/valkey"
 )
 
 func StoreTest(t *testing.T, store kv.Store) {
@@ -295,7 +295,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 func TestStores(t *testing.T) {
 	stores := []kv.Store{
 		memdb.NewStore(),
-		valkey.NewStore(valkey.NewStoreOption()),
+		valkey.NewStore(),
 		etcd.NewStore(),
 	}
 
