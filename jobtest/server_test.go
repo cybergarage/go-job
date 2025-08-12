@@ -15,12 +15,14 @@
 package jobtest
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"sync"
 	"testing"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/cmd/cli"
 )
 
 func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
@@ -144,21 +146,22 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 }
 
 func TestServerAPIs(t *testing.T) {
-	// newCmdClient := func(args ...string) job.Client {
-	// 	client := job.NewCliClient()
-	// 	client.SetCommandExecutor(func(name string, args ...string) ([]byte, error) {
-	// 		rootCmd := cli.GetRootCommand()
-	// 		buf := new(bytes.Buffer)
-	// 		rootCmd.SetOut(buf)
-	// 		rootCmd.SetArgs(args)
-	// 		err := rootCmd.Execute()
-	// 		if err != nil {
-	// 			return nil, err
-	// 		}
-	// 		return buf.Bytes(), nil
-	// 	})
-	// 	return client
-	// }
+	newCmdClient := func() job.Client {
+		client := job.NewCliClient()
+		client.SetCommandExecutor(func(name string, args ...string) ([]byte, error) {
+			rootCmd := cli.GetRootCommand()
+			buf := new(bytes.Buffer)
+			rootCmd.SetOut(buf)
+			rootCmd.SetArgs(args)
+			err := cli.Execute()
+			if err != nil {
+				return nil, err
+			}
+			return buf.Bytes(), nil
+		})
+		cli.SetClient(client)
+		return client
+	}
 
 	t.Setenv("PATH", fmt.Sprintf("%s/bin:%s", os.Getenv("GOPATH"),
 		os.Getenv("PATH")))
@@ -166,7 +169,7 @@ func TestServerAPIs(t *testing.T) {
 	clients := []job.Client{
 		job.NewGrpcClient(),
 		job.NewCliClient(),
-		// newCmdClient(),
+		newCmdClient(),
 	}
 
 	serversConstructors := []func(opts ...any) (job.Server, error){
