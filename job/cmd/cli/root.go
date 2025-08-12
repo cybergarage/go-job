@@ -49,7 +49,7 @@ func Execute() error {
 
 	defer func() {
 		if err := client.Close(); err != nil {
-			fmt.Println(err)
+			fmt.Fprintf(rootCmd.OutOrStderr(), "%s\n", err)
 			return
 		}
 	}()

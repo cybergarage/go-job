@@ -15,8 +15,6 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/spf13/cobra"
@@ -43,20 +41,20 @@ var listJobsCmd = &cobra.Command{ // nolint:exhaustruct
 		if err != nil {
 			return err
 		}
-		fmt.Printf("[\n")
+		cmd.Printf("[\n")
 		for n, job := range jobs {
 			json, err := encoding.MapToJSON(job.Map())
 			if err != nil {
 				return err
 			}
-			fmt.Printf("  %s", json)
+			cmd.Printf("  %s", json)
 			if n < len(jobs)-1 {
-				fmt.Printf(",\n")
+				cmd.Printf(",\n")
 			} else {
-				fmt.Printf("\n")
+				cmd.Printf("\n")
 			}
 		}
-		fmt.Printf("]\n")
+		cmd.Printf("]\n")
 		return nil
 	},
 }
@@ -71,20 +69,20 @@ var listInstancesCmd = &cobra.Command{ // nolint:exhaustruct
 		if err != nil {
 			return err
 		}
-		fmt.Printf("[\n")
+		cmd.Printf("[\n")
 		for n, instance := range instances {
 			json, err := encoding.MapToJSON(instance.Map())
 			if err != nil {
 				return err
 			}
-			fmt.Printf("  %s", json)
+			cmd.Printf("  %s", json)
 			if n < len(instances)-1 {
-				fmt.Printf(",\n")
+				cmd.Printf(",\n")
 			} else {
-				fmt.Printf("\n")
+				cmd.Printf("\n")
 			}
 		}
-		fmt.Printf("]\n")
+		cmd.Printf("]\n")
 		return nil
 	},
 }

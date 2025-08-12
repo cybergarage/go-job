@@ -15,8 +15,6 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/spf13/cobra"
 )
@@ -50,7 +48,7 @@ var scheduleCmd = &cobra.Command{ // nolint:exhaustruct
 		if err != nil {
 			return err
 		}
-		fmt.Println(json)
+		cmd.Println(json)
 
 		return nil
 	},

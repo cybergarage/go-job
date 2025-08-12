@@ -15,8 +15,6 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +38,7 @@ var getVersionCmd = &cobra.Command{ // nolint:exhaustruct
 		if err != nil {
 			return err
 		}
-		fmt.Println(ver)
+		cmd.Println(ver)
 		return nil
 	},
 }
