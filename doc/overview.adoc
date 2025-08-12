@@ -123,17 +123,17 @@ A job with one struct input and one struct output can be defined like this:
 
 [source,go]
 ----
-type concatString struct {
-    a string
-    b string
-    s string
+type ConcatString struct {
+    A string
+    B string
+    S string
 }   
 
 job, err := NewJob(
     WithKind("concat (one struct input and one struct output)"),
-    WithExecutor(func(param *concatString) *concatString {
+    WithExecutor(func(param *ConcatString) *ConcatString {
         // Store the concatenated string result in the input struct, and return it
-        param.s = param.a + ", " + param.b
+        param.S = param.A + ", " + param.B
         return param
     }),
     WithCompleteProcessor(func(ji Instance, res []any) {
@@ -149,10 +149,10 @@ Then schedule the jobs with arguments by:
 
 [source,go]
 ----
-arg := &concatString{
-    a: "Hello",
-    b: "world!",
-    s: "",
+arg := &ConcatString{
+    A: "Hello",
+    B: "world!",
+    S: "",
 }
 mgr.ScheduleJob(job, WithArguments(arg))
 ----
@@ -475,4 +475,62 @@ This enables:
 * State persistence across restarts
 * Fault-tolerant execution
 
+`go-job` provides the following store plugins:
+
+* `valkey` - A key-value store based on the Valkey library
+* `etcd` - A distributed key-value store based on etcd
+* `memdb` - An in-memory key-value store for testing
+
 To learn more about the `Store` interface, see link:design.md[Design and Architecture] and link:plugin-guide.md[Extension Guide ] documentation.
+
+===== Valkey Store Plugin
+
+`valkey` is a fast and lightweight key-value store built on the Valkey library.  
+It offers a simple and efficient way to store and retrieve job metadata and state in `go-job`.
+
+To use the Valkey store plugin, create a manager instance with Valkey as the backend:
+
+```go
+import (
+	"net"
+
+	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
+	"github.com/valkey-io/valkey-go"
+)
+
+func main() {
+	valkeyOpt := valkey.ClientOption{
+		InitAddress: []string{net.JoinHostPort("127.0.0.1", "6379")},
+	}
+	mgr, err := job.NewManager(
+		job.WithStore(store.NewValkeyStore(valkeyOpt)),
+	)
+}
+```
+
+===== Etcd Store Plugin
+
+`etcd` is a distributed key-value store used to manage job metadata and state in `go-job`.  
+It is built on the etcd v3 API and provides advanced features such as lease-based locking and real-time notifications using the watch mechanism.
+
+To use the etcd store plugin, simply create a new manager instance with etcd as the backend:
+
+```go
+import (
+	"net"
+
+	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
+	v3 "go.etcd.io/etcd/client/v3"
+)
+
+func main() {
+	etcdOpt := v3.Config{
+		Endpoints: []string{net.JoinHostPort("127.0.0.1", "6379")},
+	}
+	mgr, err := job.NewManager(
+		job.WithStore(store.NewEtcdStore(etcdOpt)),
+	)
+}
+```
