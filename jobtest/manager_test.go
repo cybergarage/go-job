@@ -24,6 +24,7 @@ import (
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
 )
 
 // nolint: maintidx
@@ -36,7 +37,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 	}
 
 	defer func() {
-		if err := mgr.Stop(); err != nil {
+		if err := mgr.StopWithWait(); err != nil {
 			t.Errorf("Failed to stop job manager: %v", err)
 		}
 	}()
@@ -169,10 +170,6 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			// Wait for the job to be processed
 
 			wg.Wait()
-
-			// Wait for the job to complete
-
-			mgr.StopWithWait()
 
 			// Lookup job instance (from history)
 
@@ -317,6 +314,7 @@ func TestManager(t *testing.T) {
 		job.NewLocalStore(),
 		store.NewMemdbStore(),
 		store.NewValkeyStore(valkey.NewStoreOption()),
+		store.NewKvStoreWith(etcd.NewStore()),
 	}
 
 	for _, store := range stores {

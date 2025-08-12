@@ -12,26 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package store
+package etcd
 
 import (
-	"github.com/cybergarage/go-job/job"
+	"time"
+
+	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kv/etcd"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
-	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
 )
 
-// NewMemdbStore creates a new in-memory key-value store instance.
-func NewMemdbStore() job.Store {
-	return NewKvStoreWith(memdb.NewStore())
-}
-
-// NewValkeyStore creates a new Valkey key-value store instance.
-func NewValkeyStore(option valkey.StoreOption) job.Store {
-	return NewKvStoreWith(valkey.NewStore(option))
-}
-
-// NewEtcdStore creates a new Etcd key-value store instance.
-func NewEtcdStore(option etcd.StoreOption) job.Store {
-	return NewKvStoreWith(etcd.NewStore(option))
+// NewStore creates a new etcd store for testing.
+func NewStore() kv.Store {
+	etcdOpt := etcd.NewStoreOption()
+	etcdOpt.DialTimeout = 1 * time.Second
+	return etcd.NewStore(etcdOpt)
 }

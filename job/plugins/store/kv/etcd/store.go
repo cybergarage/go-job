@@ -18,30 +18,27 @@ import (
 	"context"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
+	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	v3 "go.etcd.io/etcd/client/v3"
 )
-
-// StoreOption is an alias for etcd.ClientOption, used for configuring the etcd store.
-type StoreOption = v3.Config
 
 // Store represents a etcd store service instance.
 type Store struct {
 	kv.Config
 	*v3.Client
+
+	opt StoreOption
 }
 
 // NewStore returns a new etcd store instance.
-func NewStore(option StoreOption) (kv.Store, error) {
-	client, err := v3.New(option)
-	if err != nil {
-		return nil, err
-	}
+func NewStore(option StoreOption) kv.Store {
 	return &Store{
 		Config: kv.NewConfig(
 			kv.WithUniqueKeys(true),
 		),
-		Client: client,
-	}, nil
+		opt:    option,
+		Client: nil,
+	}
 }
 
 // Name returns the name of this etcd store.
@@ -51,12 +48,21 @@ func (store *Store) Name() string {
 
 // Start starts this etcd.
 func (store *Store) Start() error {
+	var err error
+	store.Client, err = v3.New(store.opt)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Clear removes all key-value objects from the store.
 func (store *Store) Clear() error {
-	return nil
+	if store.Client == nil {
+		return nil
+	}
+	_, err := store.Client.Delete(context.Background(), "", v3.WithPrefix())
+	return err
 }
 
 // Stop stops this etcd.
@@ -64,40 +70,94 @@ func (store *Store) Stop() error {
 	if store.Client == nil {
 		return nil
 	}
-	err := store.Close()
-	if err == nil {
-		store.Client = nil
-		return nil
+	err := store.Client.Close()
+	if err != nil {
+		return err
 	}
+	store.Client = nil
 	return err
 }
 
 // Set stores a key-value object. If the key already holds some value, it is overwritten.
 func (store *Store) Set(ctx context.Context, obj kv.Object) error {
-	return nil
+	if store.Client == nil {
+		return kv.ErrNotReady
+	}
+	_, err := store.Client.Put(ctx, obj.Key().String(), string(obj.Bytes()))
+	return err
 }
 
 // Get returns a key-value object of the specified key.
 func (store *Store) Get(ctx context.Context, key kv.Key) (kv.Object, error) {
-	return nil, nil
+	if store.Client == nil {
+		return nil, kv.ErrNotReady
+	}
+	resp, err := store.Client.Get(ctx, key.String())
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.Kvs) == 0 {
+		return nil, kv.ErrNotExist
+	}
+	return kv.NewObject(
+		kv.Key(resp.Kvs[0].Key),
+		resp.Kvs[0].Value), nil
 }
 
 // Scan returns a result set of all key-value objects whose keys have the specified prefix.
 func (store *Store) Scan(ctx context.Context, key kv.Key, opts ...kv.Option) (kv.ResultSet, error) {
-	return nil, nil
+	if store.Client == nil {
+		return nil, kv.ErrNotReady
+	}
+	resp, err := store.Client.Get(ctx, key.String(), v3.WithPrefix())
+	if err != nil {
+		return nil, err
+	}
+	objs := []kv.Object{}
+	for _, kvs := range resp.Kvs {
+		objs = append(objs,
+			kv.NewObject(
+				kv.Key(kvs.Key),
+				kvs.Value,
+			))
+	}
+	return kvutil.NewResultSetWithObjects(objs), nil
 }
 
 // Remove removes the specified key-value object.
 func (store *Store) Remove(ctx context.Context, obj kv.Object) error {
-	return nil
+	if store.Client == nil {
+		return kv.ErrNotReady
+	}
+	_, err := store.Client.Delete(ctx, obj.Key().String())
+	return err
 }
 
 // Delete deletes all key-value objects whose keys have the specified prefix.
 func (store *Store) Delete(ctx context.Context, key kv.Key) error {
-	return nil
+	if store.Client == nil {
+		return kv.ErrNotReady
+	}
+	_, err := store.Client.Delete(ctx, key.String(), v3.WithPrefix())
+	return err
 }
 
 // Dump returns all key-value objects in the store.
 func (store *Store) Dump(ctx context.Context) ([]kv.Object, error) {
-	return nil, nil
+	if store.Client == nil {
+		return nil, kv.ErrNotReady
+	}
+	resp, err := store.Client.Get(ctx, "", v3.WithPrefix())
+	if err != nil {
+		return nil, err
+	}
+	objs := []kv.Object{}
+	for _, kvs := range resp.Kvs {
+		objs = append(objs,
+			kv.NewObject(
+				kv.Key(kvs.Key),
+				kvs.Value,
+			))
+	}
+	return objs, nil
 }

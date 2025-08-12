@@ -12,36 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package valkey
+package etcd
 
 import (
+	"context"
 	"net"
+	"time"
 
-	"github.com/valkey-io/valkey-go"
+	v3 "go.etcd.io/etcd/client/v3"
 )
 
 const (
-	// DefaultPort is the default port for the Valkey store.
-	DefaultPort = "6379"
+	// DefaultPort is the default port for the etcd store.
+	DefaultPort = "2379"
 
-	// DefaultHost is the default host for the Valkey store.
+	// DefaultHost is the default host for the etcd store.
 	DefaultHost = "127.0.0.1"
+
+	// DefaultDialTimeout is the default dial timeout for the etcd store.
+	DefaultDialTimeout = 5 * time.Second
 )
 
-// StoreOption is an alias for valkey.ClientOption, used for configuring the Valkey store.
-type StoreOption = valkey.ClientOption
+// StoreOption is an alias for v3.Config, used for configuring the etcd store.
+type StoreOption = v3.Config
 
-// NewStoreOption creates a new StoreOption with the specified options.
+// NewStoreOption creates a new StoreOption with the default values.
 func NewStoreOption(opts ...any) StoreOption {
 	defaultAddr := net.JoinHostPort(DefaultHost, DefaultPort)
 	// nolint:exhaustruct
-	sopt := valkey.ClientOption{
-		InitAddress: []string{defaultAddr},
+	sopt := v3.Config{
+		Context:     context.Background(),
+		Endpoints:   []string{defaultAddr},
+		DialTimeout: DefaultDialTimeout,
 	}
 	for _, opt := range opts {
 		switch v := opt.(type) {
 		case net.Addr:
-			sopt.InitAddress = []string{v.String()}
+			sopt.Endpoints = []string{v.String()}
 		}
 	}
 	return sopt
