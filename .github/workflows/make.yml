@@ -26,11 +26,6 @@ jobs:
           ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
           ETCD_ADVERTISE_CLIENT_URLS: http://127.0.0.1:2379
           ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
-        options: >-
-          --health-cmd "ETCDCTL_API=3 etcdctl endpoint health --endpoints=http://127.0.0.1:2379"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
