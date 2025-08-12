@@ -16,7 +16,7 @@ jobs:
         ports:
           - 6379:6379
       etcd:
-        image: quay.io/coreos/etcd:latest
+        image: gcr.io/etcd-development/etcd:latest
         ports:
           - 2379:2379
           - 2380:2380
