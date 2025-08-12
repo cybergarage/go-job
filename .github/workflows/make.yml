@@ -20,6 +20,18 @@ jobs:
         ports:
           - 2379:2379
           - 2380:2380
+        options: >-
+          --health-cmd "ETCDCTL_API=3 etcdctl endpoint health --endpoints=http://127.0.0.1:2379"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        command: >
+          etcd
+          --name etcd0
+          --data-dir /etcd-data
+          --listen-client-urls http://0.0.0.0:2379
+          --advertise-client-urls http://127.0.0.1:2379
+          --listen-peer-urls http://0.0.0.0:2380
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
