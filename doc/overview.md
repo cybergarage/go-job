@@ -31,11 +31,27 @@ This document provides a comprehensive overview of the features and usage of `go
     - [Pluggable, distributed storage](#_pluggable_distributed_storage)
   - [Usage Guide](#_usage_guide)
     - [Arbitrary Function Execution](#_arbitrary_function_execution)
+      - [Simple Function Example](#_simple_function_example)
+      - [Function with Arguments Example](#_function_with_arguments_example)
+      - [Function with Arguments and Result Example](#_function_with_arguments_and_result_example)
+      - [Function with Struct Input and Output](#_function_with_struct_input_and_output)
     - [Job Scheduling](#_job_scheduling)
+      - [Execute Jobs Immediately](#_execute_jobs_immediately)
+      - [Schedule at a Specific Time](#_schedule_at_a_specific_time)
+      - [Delay Execution](#_delay_execution)
+      - [Recurring Cron Scheduling](#_recurring_cron_scheduling)
     - [Job Monitoring and Observability](#_job_monitoring_and_observability)
+      - [Real-time Monitoring with Event Handlers](#_real_time_monitoring_with_event_handlers)
+      - [Historical Data Queries](#_historical_data_queries)
     - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
+      - [Job Priority Control](#_job_priority_control)
+      - [Dynamic Worker Pool Management](#_dynamic_worker_pool_management)
     - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
+      - [Remote Operation with gRPC API](#_remote_operation_with_grpc_api)
+      - [Command-Line Interface (jobctl)](#_command_line_interface_jobctl)
     - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
+      - [Valkey Store Plugin](#_valkey_store_plugin)
+      - [Etcd Store Plugin](#_etcd_store_plugin)
 
 </div>
 
@@ -1284,7 +1300,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 18:18:30 +0900
+Last updated 2025-08-13 20:00:18 +0900
 
 </div>
 
