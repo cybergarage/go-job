@@ -120,7 +120,7 @@ doc-proto:
 cmd-docs: doc-cmd-cli
 
 %.md : %.adoc
-	asciidoctor -b html5 -a leveloffset=+1 -o - $< | \
+	asciidoctor -b html5 -o - $< | \
 	pandoc -t gfm --wrap=none -f html > $@
 	git commit $@ $< -m "docs: update $(notdir $<)"
 
