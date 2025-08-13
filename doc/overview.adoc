@@ -565,11 +565,11 @@ import (
 )
 
 func main() {
-    etcdOpt := v3.Config{
-        Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
-    }
-    mgr, err := job.NewManager(
-        job.WithStore(store.NewEtcdStore(etcdOpt)),
-    )
+	etcdOpt := v3.Config{
+		Endpoints: []string{net.JoinHostPort("10.0.0.10", "2379")},
+	}
+	mgr, err := job.NewManager(
+		job.WithStore(store.NewEtcdStore(etcdOpt)),
+	)
 }
 ```
