@@ -1,7 +1,7 @@
 :toc: macro
 :toclevels: 3
 :toc-title: Table of Contents:
-:source-highlighter: coderay
+:source-highlighter: rouge
 = Extension Guide 
 
 This guide provides an overview of how to extend `go-job` with custom plugins, allowing you to add new functionality or integrate with external systems.

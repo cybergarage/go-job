@@ -72,7 +72,7 @@ The Store interface specifies the required methods that every store plugin must 
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Store defines the interface for job queue, history, and logging.
 type Store interface {
     // Name returns the name of the store.
@@ -158,7 +158,7 @@ This interface makes it easy to build your own plugins for storing and managing 
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Store represents a key-value store interface.
 type Store interface {
     // UniqueKeys returns whether keys should be unique.
@@ -222,7 +222,7 @@ To use the Valkey store plugin, simply create a manager instance with Valkey as 
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 import (
     "net"
 
@@ -262,7 +262,7 @@ To use the etcd store plugin, simply create a new manager instance with etcd as 
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 import (
     "net"
 
@@ -300,7 +300,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 23:11:57 +0900
+Last updated 2025-08-13 23:16:28 +0900
 
 </div>
 
