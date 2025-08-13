@@ -1,6 +1,6 @@
 :toc: macro
 :toclevels: 3
-:toc-title:
+:toc-title: Table of Contents
 :source-highlighter: coderay
 = Extension Guide 
 
