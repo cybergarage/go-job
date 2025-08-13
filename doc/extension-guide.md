@@ -1,20 +1,69 @@
-# Extension Guide
+<div id="header">
+
+</div>
+
+<div id="content">
+
+<div class="sect1">
+
+## Extension Guide
+
+<div class="sectionbody">
+
+<div class="paragraph">
 
 This guide provides an overview of how to extend `go-job` with custom plugins, allowing you to add new functionality or integrate with external systems.
 
-## Plugin Development
+</div>
+
+<div id="toc" class="toc">
+
+<div id="toctitle" class="title">
+
+</div>
+
+- [Extension Guide](#_extension_guide)
+  - [Store Plugin Development](#_store_plugin_development)
+    - [Store Interface](#_store_interface)
+    - [kv.Store Interface](#_kv_store_interface)
+
+</div>
+
+<div class="sect2">
+
+### Store Plugin Development
+
+<div class="paragraph">
 
 The `go-job` framework supports custom store plugins that can be used to manage job instances, their states, and logs. A store plugin must implement the `Store` interface, which defines methods for managing job instances and their histories.
 
-<figure>
-<img src="img/job-store.png" alt="job store" />
-</figure>
+</div>
 
-### Store Interface
+<div class="imageblock">
+
+<div class="content">
+
+![job store](img/job-store.png)
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Store Interface
+
+<div class="paragraph">
 
 The Store interface specifies the required methods that every store plugin must implement to manage job instances, their states, and logs:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Store defines the interface for job queue, history, and logging.
 type Store interface {
     // Name returns the name of the store.
@@ -74,13 +123,33 @@ type LogStore interface {
 }
 ```
 
-### kv.Store Interface
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### kv.Store Interface
+
+<div class="paragraph">
 
 To create a custom store plugin using a key-value store, `go-job` provides a straightforward key-value store interface.
 
+</div>
+
+<div class="paragraph">
+
 This interface makes it easy to build your own plugins for storing and managing job data.
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Store represents a key-value store interface.
 type Store interface {
     // UniqueKeys returns whether keys should be unique.
@@ -108,4 +177,124 @@ type Store interface {
 }}
 ```
 
-Both the `valkey` and `etcd` store plugins are implemented using this interface, so you can use it as a foundation for your own custom　plugins.
+</div>
+
+</div>
+
+<div class="paragraph">
+
+By default, `go-job` provides ready-to-use key-value store implementations for both Valkey and Etcd.
+
+</div>
+
+<div class="paragraph">
+
+These store plugins are built on top of the `kv.Store` interface, making it easy to use them out of the box or to develop your own custom store plugins based on the same interface.
+
+</div>
+
+<div class="paragraph">
+
+To use one of these built-in stores, simply create a manager instance and specify the desired backend (Valkey or Etcd) when configuring the store:
+
+</div>
+
+<div class="sect5">
+
+###### Valkey Store Plugin
+
+<div class="paragraph">
+
+To use the Valkey store plugin, simply create a manager instance with Valkey as the backend:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+import (
+    "net"
+
+    "github.com/cybergarage/go-job/job"
+    "github.com/cybergarage/go-job/job/plugins/store"
+    "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
+    v1 "github.com/valkey-io/valkey-go"
+)
+
+func main() {
+    valkeyOpt := v1.ClientOption{
+        InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
+    }
+    mgr, err := job.NewManager(
+        job.WithStore(store.NewKvStoreWith(valkey.NewStore(valkeyOpt))),
+    )
+}
+```
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### Etcd Store Plugin
+
+<div class="paragraph">
+
+To use the etcd store plugin, simply create a new manager instance with etcd as the backend:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+import (
+    "net"
+
+    "github.com/cybergarage/go-job/job"
+    "github.com/cybergarage/go-job/job/plugins/store"
+    "github.com/cybergarage/go-job/job/plugins/store/kv/etcd"
+    v3 "go.etcd.io/etcd/client/v3"
+)
+
+func main() {
+    etcdOpt := v3.Config{
+        Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
+    }
+    mgr, err := job.NewManager(
+        job.WithStore(store.NewKvStoreWith(etcd.NewStore(etcdOpt))),
+    )
+}
+```
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="footer">
+
+<div id="footer-text">
+
+Last updated 2025-08-13 18:18:30 +0900
+
+</div>
+
+</div>
