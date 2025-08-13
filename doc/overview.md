@@ -1,34 +1,157 @@
-# Feature Overview and Usage Guide
+<div id="header">
 
-`go-job` is a flexible and extensible job scheduling and execution library for Go that supports arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
+</div>
 
-<figure>
-<img src="img/job-framework.png" alt="job framework" />
-</figure>
+<div id="content">
+
+<div class="sect1">
+
+## Feature Overview and Usage Guide
+
+<div class="sectionbody">
+
+<div class="paragraph">
 
 This document provides a comprehensive overview of the features and usage of `go-job`.
 
-## Features
+</div>
 
-`go-job` provides:
+<div id="toc" class="toc">
 
-- Arbitrary function registration
+<div id="toctitle" class="title">
 
-- Rich scheduling options
+</div>
 
-- Strong observability
+- [Feature Overview and Usage Guide](#_feature_overview_and_usage_guide)
+  - [Features](#_features)
+    - [Arbitrary function registration](#_arbitrary_function_registration)
+    - [Rich scheduling options](#_rich_scheduling_options)
+    - [Strong observability](#_strong_observability)
+    - [Prioritized and scalable execution](#_prioritized_and_scalable_execution)
+    - [Pluggable, distributed storage](#_pluggable_distributed_storage)
+  - [Usage Guide](#_usage_guide)
+    - [Arbitrary Function Execution](#_arbitrary_function_execution)
+    - [Job Scheduling](#_job_scheduling)
+    - [Job Monitoring and Observability](#_job_monitoring_and_observability)
+    - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
+    - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
+    - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
 
-- Prioritized and scalable execution
+</div>
 
-- Pluggable, distributed storage
+<div class="sect2">
 
-Use it to build robust, scalable job systems in Go.
+### Features
 
-### Arbitrary Function Execution
+<div class="paragraph">
 
-`go-job` allows you to register and execute **any Go function** as a job. You can use functions with different signatures - from simple functions with no parameters to complex functions with multiple inputs and outputs.
+`go-job` is a flexible and extensible job scheduling and execution library for Go that supports arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
 
-``` go
+</div>
+
+<div class="imageblock">
+
+<div class="content">
+
+![job framework](img/job-framework.png)
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+`go-job` offers the following key features:
+
+</div>
+
+<div class="sect3">
+
+#### Arbitrary function registration
+
+<div class="paragraph">
+
+Register any Go function as a job, regardless of its signature. This allows you to schedule and execute a wide variety of tasks, from simple functions to complex business logic, without needing to conform to a specific interface.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Rich scheduling options
+
+<div class="paragraph">
+
+Schedule jobs to run immediately, at a specific time, after a delay, or on a recurring schedule using cron expressions. This flexibility enables you to automate tasks according to your application’s needs.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Strong observability
+
+<div class="paragraph">
+
+Monitor job execution in real time, track state transitions, and access detailed logs and history for each job instance. This provides transparency and makes it easy to debug and audit job processing.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Prioritized and scalable execution
+
+<div class="paragraph">
+
+Assign priorities to jobs to control execution order, and dynamically scale the number of worker processes to handle varying workloads efficiently. This ensures that urgent tasks are handled promptly and resources are used optimally.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Pluggable, distributed storage
+
+<div class="paragraph">
+
+Use a variety of storage backends (such as Valkey, etcd, or in-memory) to persist job metadata and state. Distributed storage support enables robust, fault-tolerant job processing across multiple nodes.
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect2">
+
+### Usage Guide
+
+<div class="paragraph">
+
+This section provides practical guidance on how to use `go-job` in your applications. Follow these examples and explanations to quickly integrate `go-job` into your workflow and take full advantage of its features.
+
+</div>
+
+<div class="sect3">
+
+#### Arbitrary Function Execution
+
+<div class="paragraph">
+
+With `go-job`, you can register and execute **any Go function** as a job—no matter its signature. This means you aren’t limited to a specific interface or function type: you can use anything from simple, no-argument functions to complex functions with multiple parameters and return values.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Executor can be any function type
 type Executor any
 
@@ -39,25 +162,55 @@ type Executor any
 // func(a, b int) (int, error)      // multiple inputs and outputs
 ```
 
-This flexibility means you can:
+</div>
 
-- Use functions with any number of parameters
+</div>
 
-- Return single values or multiple values
+<div class="paragraph">
 
-- Work with primitive types (int, string, bool)
+Thanks to this flexibility, you can:
 
-- Pass complex structs as arguments
+</div>
 
-- Handle errors in your job functions
+<div class="ulist">
 
-The `any` type allows `go-job` to work with your existing functions without requiring special interfaces or wrapper code.
+- Use functions with any number and type of parameters
 
-#### Simple Function Example
+- Return single or multiple values
+
+- Work with basic types (int, string, bool) or complex structs
+
+- Handle errors directly in your job functions
+
+</div>
+
+<div class="paragraph">
+
+Because `go-job` uses the Go `any` type for executors, you don’t need to write adapters or wrappers—just pass your existing functions as they are.
+
+</div>
+
+<div class="paragraph">
+
+This approach makes it easy to use `go-job` for both simple tasks and advanced workflows. For more examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [<span class="image">![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)</span>](https://pkg.go.dev/github.com/cybergarage/go-job).
+
+</div>
+
+<div class="sect4">
+
+##### Simple Function Example
+
+<div class="paragraph">
 
 A job with no input parameters and no return value can be defined as follows:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 job, err := NewJob(
     WithKind("hello (no input and no return)"),
     WithExecutor(func()  {
@@ -66,17 +219,45 @@ job, err := NewJob(
 )
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 Then schedule this job with no arguments simply by:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 mgr.ScheduleJob(job)
 ```
 
-#### Function with Arguments Example
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Function with Arguments Example
+
+<div class="paragraph">
 
 A job with two input parameters and no return value can be defined like this:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 job, err := NewJob(
     WithKind("sum (two input and no output)"),
     WithExecutor(func(x int, y int) {
@@ -85,17 +266,69 @@ job, err := NewJob(
 )
 ```
 
-Then schedule jobs with arguments:
+</div>
 
-``` go
+</div>
+
+<div class="paragraph">
+
+You can schedule jobs by passing arguments of any type. For example, to schedule a job with integer arguments:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 mgr.ScheduleJob(job, WithArguments(42, 58))
 ```
 
-#### Function with Arguments and Result Example
+</div>
+
+</div>
+
+<div class="paragraph">
+
+Or, to schedule a job with string arguments:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithArguments("42", "58"))
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+`go-job` will automatically convert the provided arguments to match the types expected by the job function, so you can use the most convenient format for your use case.
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Function with Arguments and Result Example
+
+<div class="paragraph">
 
 A job with two input parameters and one output can be defined like this:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 job, err := NewJob(
     WithKind("concat (two input and one output)"),
     WithExecutor(func(a string, b string) string {
@@ -108,19 +341,51 @@ job, err := NewJob(
 )
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 Use `WithCompleteProcessor()` to capture the result of a job execution. This is useful when the job has a return value.
+
+</div>
+
+<div class="paragraph">
 
 Then schedule jobs with arguments:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 mgr.ScheduleJob(job, WithArguments("Hello", "world"))
 ```
 
-#### Function with Struct Input and Output
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Function with Struct Input and Output
+
+<div class="paragraph">
 
 A job with one struct input and one struct output can be defined like this:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 type ConcatString struct {
     A string
     B string
@@ -141,11 +406,27 @@ job, err := NewJob(
 )
 ```
 
-In this case, the result is also stored in the struct field `s`.
+</div>
 
-Then schedule the jobs with arguments by:
+</div>
 
-``` go
+<div class="paragraph">
+
+In this example, the result is also saved in the `S` field of the struct.
+
+</div>
+
+<div class="paragraph">
+
+You can schedule jobs by passing arguments in various formats. For instance, to schedule a job using a struct as an argument:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 arg := &ConcatString{
     A: "Hello",
     B: "world!",
@@ -154,11 +435,50 @@ arg := &ConcatString{
 mgr.ScheduleJob(job, WithArguments(arg))
 ```
 
-This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the [Examples](https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob) section in the [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job).
+</div>
 
-### Job Scheduling
+</div>
+
+<div class="paragraph">
+
+Alternatively, you can pass arguments as a JSON string:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+jsonArg := `{"A": "Hello", "B": "world!"}`
+mgr.ScheduleJob(job, WithArguments(jsonArg))
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+`go-job` will automatically convert the provided arguments to the types expected by your job function. This means you can use the format that is most convenient for your application, whether it’s a struct, JSON, or other supported types.
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Job Scheduling
+
+<div class="paragraph">
 
 `go-job` provides flexible scheduling options to run jobs when you need them:
+
+</div>
+
+<div class="ulist">
 
 - **Immediately** - Jobs start executing right away (default behavior)
 
@@ -168,20 +488,48 @@ This approach supports diverse function signatures and is ideal for both simple 
 
 - **On a recurring schedule** - Use cron expressions for repeated execution
 
-#### Execute Jobs Immediately
+</div>
+
+<div class="sect4">
+
+##### Execute Jobs Immediately
+
+<div class="paragraph">
 
 By default, jobs are scheduled for immediate execution:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Runs immediately
 mgr.ScheduleJob(job)
 ```
 
-#### Schedule at a Specific Time
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Schedule at a Specific Time
+
+<div class="paragraph">
 
 Set an exact time for job execution:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Run 10 minutes from now
 futureTime := time.Now().Add(10 * time.Minute)
 mgr.ScheduleJob(job, WithScheduleAt(futureTime))
@@ -191,11 +539,27 @@ specificTime := time.Date(2025, 12, 25, 9, 0, 0, 0, time.UTC)
 mgr.ScheduleJob(job, WithScheduleAt(specificTime))
 ```
 
-#### Delay Execution
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Delay Execution
+
+<div class="paragraph">
 
 Add a delay before the job starts:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Wait 5 seconds before execution
 mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 
@@ -203,11 +567,27 @@ mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
 ```
 
-#### Recurring Cron Scheduling
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Recurring Cron Scheduling
+
+<div class="paragraph">
 
 Use cron expressions for repeated job execution:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Run daily at midnight
 mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *"))
 
@@ -218,21 +598,55 @@ mgr.ScheduleJob(job, WithCrontabSpec("0 9 * * 1-5"))
 mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 Cron format: `minute hour day-of-month month day-of-week`
 
-### Job Monitoring and Observability
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Job Monitoring and Observability
+
+<div class="paragraph">
 
 `go-job` provides comprehensive monitoring capabilities to track job execution and understand system behavior. You can monitor jobs in real-time using event handlers, or query historical data using manager methods.
 
-#### Real-time Monitoring with Event Handlers
+</div>
+
+<div class="sect4">
+
+##### Real-time Monitoring with Event Handlers
+
+<div class="paragraph">
 
 Monitor job execution as it happens by registering event handlers that respond to completion, termination, and state changes.
 
-##### Completion and Termination Handlers
+</div>
+
+<div class="sect5">
+
+###### Completion and Termination Handlers
+
+<div class="paragraph">
 
 Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successful completion and error termination:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 job, err := NewJob(
     ....,
     WithCompleteProcessor(func(inst Instance, res []any) {
@@ -244,11 +658,27 @@ job, err := NewJob(
 )
 ```
 
-##### State Change Monitoring
+</div>
+
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### State Change Monitoring
+
+<div class="paragraph">
 
 Use `WithStateChangeProcessor()` to track every state transition throughout a job’s lifecycle:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 job, err := NewJob(
     ....,
     WithStateChangeProcessor(func(inst Instance, state JobState) error {
@@ -258,20 +688,50 @@ job, err := NewJob(
 )
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-#### Historical Data Queries
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Historical Data Queries
+
+<div class="paragraph">
 
 Query job instances and their execution history using manager methods.
 
-##### List All job Instances
+</div>
+
+<div class="sect5">
+
+###### List All job Instances
+
+<div class="paragraph">
 
 With `Manager::LookupInstances()`, you can retrieve any job instance—whether it is scheduled, in progress, or already executed.
 
-###### List All Queued and Executed Job Instances
+</div>
 
-``` go
-   query := job.NewQuery() // queries all job instances (any state)
+<div class="sect6">
+
+List All Queued and Executed Job Instances
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+    query := job.NewQuery() // queries all job instances (any state)
     jis, err := mgr.LookupInstances(query)
     if err != nil {
         t.Errorf("Failed to lookup job instance: %v", err)
@@ -281,9 +741,21 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
     }
 ```
 
-###### List Terminated Job Instances
+</div>
 
-``` go
+</div>
+
+</div>
+
+<div class="sect6">
+
+List Terminated Job Instances
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
     query := job.NewQuery(
         job.WithQueryKind("sum"), // filter by job kind
         job.WithQueryState(job.JobTerminated), // filter by terminated state
@@ -297,15 +769,39 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
     }
 ```
 
-##### Retrieve History and Logs for Job Instances
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### Retrieve History and Logs for Job Instances
+
+<div class="paragraph">
 
 You can use manager methods to access the processing history and logs of any specified job instance.
 
-###### State History
+</div>
+
+<div class="sect6">
+
+State History
+
+<div class="paragraph">
 
 With `Manager::LookupInstanceHistory`, you can retrieve the state history for the specified job instance.
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 query := job.NewQuery(
     job.WithQueryInstance(ji), // filter by specific job instance
 )
@@ -315,13 +811,33 @@ for _, s := range states {
 }
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 For details on job state transitions, refer to [Design and Architecture](design.md).
 
-###### Log History
+</div>
+
+</div>
+
+<div class="sect6">
+
+Log History
+
+<div class="paragraph">
 
 With `Manager::LookupInstanceLogs`, you can retrieve the log history for the specified job instance.
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 query := job.NewQuery(
     job.WithQueryInstance(ji), // filter by specific job instance
 )
@@ -331,19 +847,53 @@ for _, log := range logs {
 }
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 Provides auditability and debugging capability for each job instance.
 
-### Priority Management & Worker Scaling
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Priority Management & Worker Scaling
+
+<div class="paragraph">
 
 `go-job` allows you to control job execution order through priorities and dynamically scale workers to handle varying workloads.
 
-#### Job Priority Control
+</div>
+
+<div class="sect4">
+
+##### Job Priority Control
+
+<div class="paragraph">
 
 Assign priorities to jobs to control their execution order. Higher priority jobs are executed before lower priority ones. The priority value is an integer where lower values indicate higher priority (similar to Unix nice values).
 
-##### Set Priority During Job Creation
+</div>
 
-``` go
+<div class="sect5">
+
+###### Set Priority During Job Creation
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // High priority job (executed first)
 highPriorityJob, err := NewJob(
     WithKind("urgent-task"),
@@ -359,11 +909,27 @@ lowPriorityJob, err := NewJob(
 )
 ```
 
-##### Override Priority at Schedule Time
+</div>
+
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### Override Priority at Schedule Time
+
+<div class="paragraph">
 
 You can override a job’s default priority when scheduling:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Schedule with default priority
 mgr.ScheduleJob(normalJob) // uses job's configured priority
 
@@ -371,21 +937,53 @@ mgr.ScheduleJob(normalJob) // uses job's configured priority
 mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 ```
 
-#### Dynamic Worker Pool Management
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Dynamic Worker Pool Management
+
+<div class="paragraph">
 
 Scale your worker pool up or down based on workload demands without stopping the manager.
 
-##### Set Initial Worker Count
+</div>
 
-``` go
+<div class="sect5">
+
+###### Set Initial Worker Count
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Start with 5 workers
 mgr, err := NewManager(WithNumWorkers(5))
 mgr.Start()
 ```
 
-##### Scale Workers Dynamically
+</div>
 
-``` go
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### Scale Workers Dynamically
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Scale up during high load
 mgr.ResizeWorkers(10) // increase to 10 workers
 
@@ -397,9 +995,21 @@ count := mgr.NumWorkers()
 fmt.Printf("Current workers: %d\n", count)
 ```
 
-##### Real-world Scaling Example
+</div>
 
-``` go
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### Real-world Scaling Example
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 // Monitor queue size and scale accordingly
 query := job.NewQuery(
     job.WithQueryState(job.JobScheduled), // filter by scheduled state
@@ -416,15 +1026,43 @@ if queueSize > currentWorkers*2 {
 }
 ```
 
+</div>
+
+</div>
+
+<div class="paragraph">
+
 This enables efficient resource utilization and responsive performance under varying workloads.
 
-### Remote Management with gRPC API
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Remote Management with gRPC API
+
+<div class="paragraph">
 
 `go-job` provides a comprehensive gRPC API for remote job management, enabling you to schedule, monitor, and control jobs from external systems or distributed environments. This allows seamless integration with microservices, orchestration platforms, and remote applications.
 
-#### Remote Operation with gRPC API
+</div>
+
+<div class="sect4">
+
+##### Remote Operation with gRPC API
+
+<div class="paragraph">
 
 `go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration. The gRPC API offers full programmatic access to all core `go-job` functionality:
+
+</div>
+
+<div class="ulist">
 
 - Remote job scheduling with arguments and timing options
 
@@ -436,11 +1074,27 @@ This enables efficient resource utilization and responsive performance under var
 
 - Secure communication with authentication support
 
+</div>
+
+<div class="paragraph">
+
 The gRPC API uses protobuf messages for job definitions, arguments, and results. For more details, see the [grpc.proto](grpc-api.md) definition.
 
-#### Command-Line Interface (jobctl)
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Command-Line Interface (jobctl)
+
+<div class="paragraph">
 
 `go-job` provides a command-line interface called [jobctl](./cmd/cli/jobctl.md) to interact with the gRPC API. The following methods are available:
+
+</div>
+
+<div class="ulist">
 
 - `ScheduleJob` - Schedule a new job remotely with arguments and scheduling options
 
@@ -448,19 +1102,51 @@ The gRPC API uses protobuf messages for job definitions, arguments, and results.
 
 - `ListInstances` - Query job instances by kind, state, or time range
 
+</div>
+
+<div class="paragraph">
+
 For more details, see the [Command-Line Interface (jobctl)](./cmd/cli/jobctl.md) documentation.
 
-### Distributed Support via Store Interface
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Distributed Support via Store Interface
+
+<div class="paragraph">
 
 `go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
 
-<figure>
-<img src="img/job-store.png" alt="job store" />
-</figure>
+</div>
+
+<div class="imageblock">
+
+<div class="content">
+
+![job store](img/job-store.png)
+
+</div>
+
+</div>
+
+<div class="paragraph">
 
 By implementing a custom store (e.g., etcd, FoundationDB), job metadata and execution state can be shared across nodes.
 
+</div>
+
+<div class="paragraph">
+
 This enables:
+
+</div>
+
+<div class="ulist">
 
 - Distributed scheduling
 
@@ -470,7 +1156,15 @@ This enables:
 
 - Fault-tolerant execution
 
+</div>
+
+<div class="paragraph">
+
 `go-job` provides the following store plugins:
+
+</div>
+
+<div class="ulist">
 
 - `valkey` - A key-value store based on the Valkey library
 
@@ -478,15 +1172,35 @@ This enables:
 
 - `memdb` - An in-memory key-value store for testing
 
-To learn more about the `Store` interface, see [Design and Architecture](design.md) and [Extension Guide ](plugin-guide.md) documentation.
+</div>
 
-#### Valkey Store Plugin
+<div class="paragraph">
+
+To learn more about the `Store` interface, see [Design and Architecture](design.md) and [Extension Guide](plugin-guide.md) documentation.
+
+</div>
+
+<div class="sect5">
+
+###### Valkey Store Plugin
+
+<div class="paragraph">
 
 `valkey` is a fast and lightweight key-value store built on the Valkey library. It offers a simple and efficient way to store and retrieve job metadata and state in `go-job`.
 
+</div>
+
+<div class="paragraph">
+
 To use the Valkey store plugin, create a manager instance with Valkey as the backend:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 import (
     "net"
 
@@ -497,7 +1211,7 @@ import (
 
 func main() {
     valkeyOpt := valkey.ClientOption{
-        InitAddress: []string{net.JoinHostPort("127.0.0.1", "6379")},
+        InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
     }
     mgr, err := job.NewManager(
         job.WithStore(store.NewValkeyStore(valkeyOpt)),
@@ -505,13 +1219,33 @@ func main() {
 }
 ```
 
-#### Etcd Store Plugin
+</div>
+
+</div>
+
+</div>
+
+<div class="sect5">
+
+###### Etcd Store Plugin
+
+<div class="paragraph">
 
 `etcd` is a distributed key-value store used to manage job metadata and state in `go-job`. It is built on the etcd v3 API and provides advanced features such as lease-based locking and real-time notifications using the watch mechanism.
 
+</div>
+
+<div class="paragraph">
+
 To use the etcd store plugin, simply create a new manager instance with etcd as the backend:
 
-``` go
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
 import (
     "net"
 
@@ -522,10 +1256,36 @@ import (
 
 func main() {
     etcdOpt := v3.Config{
-        Endpoints: []string{net.JoinHostPort("127.0.0.1", "6379")},
+        Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
     }
     mgr, err := job.NewManager(
         job.WithStore(store.NewEtcdStore(etcdOpt)),
     )
 }
 ```
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="footer">
+
+<div id="footer-text">
+
+Last updated 2025-08-13 13:41:00 +0900
+
+</div>
+
+</div>

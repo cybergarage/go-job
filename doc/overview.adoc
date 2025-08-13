@@ -1,30 +1,49 @@
+:toc: macro
+:toclevels: 3
+:toc-title:
+:source-highlighter: coderay
 = Feature Overview and Usage Guide
 
-:toc:
-:toclevels: 2
-:source-highlighter: coderay
+This document provides a comprehensive overview of the features and usage of `go-job`.
+
+toc::[]
+
+== Features
 
 `go-job` is a flexible and extensible job scheduling and execution library for Go that supports arbitrary function execution, custom scheduling, job monitoring, priority queuing, and distributed operation.
 
 image::img/job-framework.png[]
 
-This document provides a comprehensive overview of the features and usage of `go-job`.
+`go-job` offers the following key features:
 
-== Features
+=== Arbitrary function registration
 
-`go-job` provides:
+Register any Go function as a job, regardless of its signature. This allows you to schedule and execute a wide variety of tasks, from simple functions to complex business logic, without needing to conform to a specific interface.
 
-* Arbitrary function registration
-* Rich scheduling options
-* Strong observability
-* Prioritized and scalable execution
-* Pluggable, distributed storage
+=== Rich scheduling options
 
-Use it to build robust, scalable job systems in Go.
+Schedule jobs to run immediately, at a specific time, after a delay, or on a recurring schedule using cron expressions. This flexibility enables you to automate tasks according to your application's needs.
+
+=== Strong observability
+
+Monitor job execution in real time, track state transitions, and access detailed logs and history for each job instance. This provides transparency and makes it easy to debug and audit job processing.
+
+=== Prioritized and scalable execution
+
+Assign priorities to jobs to control execution order, and dynamically scale the number of worker processes to handle varying workloads efficiently. This ensures that urgent tasks are handled promptly and resources are used optimally.
+
+=== Pluggable, distributed storage
+
+Use a variety of storage backends (such as Valkey, etcd, or in-memory) to persist job metadata and state. Distributed storage support enables robust, fault-tolerant job processing across multiple nodes.
+
+== Usage Guide
+
+This section provides practical guidance on how to use `go-job` in your applications.  Follow these examples and explanations to quickly integrate `go-job` into your workflow and take full advantage of its features.
 
 === Arbitrary Function Execution
 
-`go-job` allows you to register and execute *any Go function* as a job. You can use functions with different signatures - from simple functions with no parameters to complex functions with multiple inputs and outputs.
+With `go-job`, you can register and execute *any Go function* as a job—no matter its signature.  
+This means you aren't limited to a specific interface or function type: you can use anything from simple, no-argument functions to complex functions with multiple parameters and return values.
 
 [source,go]
 ----
@@ -38,15 +57,17 @@ type Executor any
 // func(a, b int) (int, error)      // multiple inputs and outputs
 ----
 
-This flexibility means you can:
+Thanks to this flexibility, you can:
 
-* Use functions with any number of parameters
-* Return single values or multiple values
-* Work with primitive types (int, string, bool)
-* Pass complex structs as arguments
-* Handle errors in your job functions
+* Use functions with any number and type of parameters
+* Return single or multiple values
+* Work with basic types (int, string, bool) or complex structs
+* Handle errors directly in your job functions
 
-The `any` type allows `go-job` to work with your existing functions without requiring special interfaces or wrapper code.
+Because `go-job` uses the Go `any` type for executors, you don't need to write adapters or wrappers—just pass your existing functions as they are.
+
+This approach makes it easy to use `go-job` for both simple tasks and advanced workflows.  
+For more examples, see the link:https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob[Examples] section in the link:https://pkg.go.dev/github.com/cybergarage/go-job[image:https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg[Go Reference]].
 
 ==== Simple Function Example
 
@@ -83,12 +104,21 @@ job, err := NewJob(
 )
 ----
 
-Then schedule jobs with arguments:
+You can schedule jobs by passing arguments of any type. For example, to schedule a job with integer arguments:
 
 [source,go]
 ----
 mgr.ScheduleJob(job, WithArguments(42, 58))
 ----
+
+Or, to schedule a job with string arguments:
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithArguments("42", "58"))
+----
+
+`go-job` will automatically convert the provided arguments to match the types expected by the job function, so you can use the most convenient format for your use case.
 
 ==== Function with Arguments and Result Example
 
@@ -143,9 +173,9 @@ job, err := NewJob(
 )
 ----
 
-In this case, the result is also stored in the struct field `s`.
+In this example, the result is also saved in the `S` field of the struct.
 
-Then schedule the jobs with arguments by:
+You can schedule jobs by passing arguments in various formats. For instance, to schedule a job using a struct as an argument:
 
 [source,go]
 ----
@@ -157,7 +187,16 @@ arg := &ConcatString{
 mgr.ScheduleJob(job, WithArguments(arg))
 ----
 
-This approach supports diverse function signatures and is ideal for both simple and complex use cases. For additional examples, see the link:https://pkg.go.dev/github.com/cybergarage/go-job/job#NewJob[Examples] section in the link:https://pkg.go.dev/github.com/cybergarage/go-job[image:https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg[Go Reference]].
+Alternatively, you can pass arguments as a JSON string:
+
+[source,go]
+----
+jsonArg := `{"A": "Hello", "B": "world!"}`
+mgr.ScheduleJob(job, WithArguments(jsonArg))
+----
+
+`go-job` will automatically convert the provided arguments to the types expected by your job function.  
+This means you can use the format that is most convenient for your application, whether it's a struct, JSON, or other supported types.
 
 === Job Scheduling
 
@@ -501,7 +540,7 @@ import (
 
 func main() {
 	valkeyOpt := valkey.ClientOption{
-		InitAddress: []string{net.JoinHostPort("127.0.0.1", "6379")},
+		InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
 	}
 	mgr, err := job.NewManager(
 		job.WithStore(store.NewValkeyStore(valkeyOpt)),
@@ -527,7 +566,7 @@ import (
 
 func main() {
 	etcdOpt := v3.Config{
-		Endpoints: []string{net.JoinHostPort("127.0.0.1", "6379")},
+		Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
 	}
 	mgr, err := job.NewManager(
 		job.WithStore(store.NewEtcdStore(etcdOpt)),
