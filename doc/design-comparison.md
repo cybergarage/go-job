@@ -60,7 +60,7 @@ The table below summarizes the core features of go-job v1.0.0 compared to gocron
 
 </div>
 
-| **Feature** | **go-job v1.0.0** | **gocron** | **JobRunner** | **Machinery** |
+| **Feature** | **go-job v1.0.0** | **gocron v2.16.2** | **JobRunner v1.0.0** | **Machinery v1.10.8** |
 |----|----|----|----|----|
 | **Scheduling Flexibility** | Supports immediate execution, delayed jobs (schedule at a specific time or after a duration), and recurring schedules using cron expressions. Allows one-time and repeated jobs with versatile timing options. | Offers a wide range of intervals (every N seconds/minutes, daily, weekly, monthly, etc.) using a fluent, chainable API. Supports cron-like scheduling and timezone-aware schedules. Can also trigger jobs to run immediately if needed. | Built on cron (uses `robfig/cron` under the hood) allowing standard cron syntax (including macros like @every, @hourly, @midnight). Provides convenience functions: run jobs immediately, after a delay (`In`), or at recurring intervals (`Every`). | Primarily a task queue, but supports scheduling via `RegisterPeriodicTask` with cron expressions. Tasks can be delayed using an ETA timestamp for one-time future execution. Periodic tasks and workflows are supported, though scheduling is not as turnkey as in dedicated in-process schedulers. |
 | **Job Registration Flexibility** | Highly flexible – can register arbitrary functions (any signature) as jobs using Go’s `any` type. Jobs are created with custom executors and options (e.g. priority, state-change handlers), allowing execution of any function with any parameters and return values. | Simple function-based scheduling – jobs are added by specifying a function (and optional parameters) to run at the given schedule. Any function can be scheduled via `Do(…​)`, but return values are not captured (fire-and-forget execution). The API is straightforward but less customizable per job beyond its interval. | Jobs are defined as types with a `Run()` method (no arguments). You schedule an instance of such a struct (e.g. `jobrunner.Schedule("@every 1m", MyJob{})`), and JobRunner automatically calls its `Run()` method at the scheduled times. This pattern works well for embedding tasks (state can be held in struct fields) but is less flexible than passing arbitrary function references. | Requires explicit task registration with the server. Each task function is registered with a name (e.g. `server.RegisterTask("sendEmail", SendEmail)`). Functions must return at least an `error` (they can return multiple values plus an error). Arguments and results must be serializable (JSON by default). This registration step is mandatory for workers to execute tasks, but it allows any function meeting these criteria to be a distributed task. |
@@ -184,7 +184,7 @@ In summary, use **gocron** or **JobRunner** for straightforward scheduling insid
 
 <div id="footer-text">
 
-Last updated 2025-08-13 20:00:18 +0900
+Last updated 2025-08-13 20:10:41 +0900
 
 </div>
 

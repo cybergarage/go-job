@@ -16,7 +16,7 @@ The table below summarizes the core features of go-job v1.0.0 compared to gocron
 
 [cols="1,1,1,1,1", options="header"]
 |===
-| **Feature**                   | **go-job v1.0.0** | **gocron** | **JobRunner** | **Machinery**
+| **Feature**                   | **go-job v1.0.0** | **gocron v2.16.2 ** | **JobRunner v1.0.0** | **Machinery v1.10.8**
 
 | **Scheduling Flexibility**    | Supports immediate execution, delayed jobs (schedule at a specific time or after a duration), and recurring schedules using cron expressions. Allows one-time and repeated jobs with versatile timing options. | Offers a wide range of intervals (every N seconds/minutes, daily, weekly, monthly, etc.) using a fluent, chainable API. Supports cron-like scheduling and timezone-aware schedules. Can also trigger jobs to run immediately if needed. | Built on cron (uses `robfig/cron` under the hood) allowing standard cron syntax (including macros like @every, @hourly, @midnight). Provides convenience functions: run jobs immediately, after a delay (`In`), or at recurring intervals (`Every`). | Primarily a task queue, but supports scheduling via `RegisterPeriodicTask` with cron expressions. Tasks can be delayed using an ETA timestamp for one-time future execution. Periodic tasks and workflows are supported, though scheduling is not as turnkey as in dedicated in-process schedulers.
 
