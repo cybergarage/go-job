@@ -1,12 +1,12 @@
 <div id="header">
 
+# Comparative Analysis: go-job v1.0.0 vs gocron, JobRunner, and Machinery
+
 </div>
 
 <div id="content">
 
-<div class="sect1">
-
-## Comparative Analysis: go-job v1.0.0 vs gocron, JobRunner, and Machinery
+<div id="preamble">
 
 <div class="sectionbody">
 
@@ -41,18 +41,23 @@ Go developers have access to multiple libraries for scheduling and executing bac
 
 </div>
 
-- [Comparative Analysis: go-job v1.0.0 vs gocron, JobRunner, and Machinery](#_comparative_analysis_go_job_v1_0_0_vs_gocron_jobrunner_and_machinery)
-  - [Feature Comparison](#_feature_comparison)
-  - [Design and Architecture Comparison](#_design_and_architecture_comparison)
-  - [Typical Use Cases](#_typical_use_cases)
-  - [Conclusion](#_conclusion)
-  - [References](#_references)
+- [Feature Comparison](#_feature_comparison)
+- [Design and Architecture Comparison](#_design_and_architecture_comparison)
+- [Typical Use Cases](#_typical_use_cases)
+- [Conclusion](#_conclusion)
+- [References](#_references)
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Feature Comparison
+</div>
+
+<div class="sect1">
+
+## Feature Comparison
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -70,9 +75,13 @@ The table below summarizes the core features of go-job v1.0.0 compared to gocron
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Design and Architecture Comparison
+<div class="sect1">
+
+## Design and Architecture Comparison
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -94,9 +103,13 @@ Each library takes a distinct approach in its design and architecture, affecting
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Typical Use Cases
+<div class="sect1">
+
+## Typical Use Cases
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -118,9 +131,13 @@ Given their different designs, each library fits certain scenarios best. Below a
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Conclusion
+<div class="sect1">
+
+## Conclusion
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -148,9 +165,13 @@ In summary, use **gocron** or **JobRunner** for straightforward scheduling insid
 
 </div>
 
-<div class="sect2">
+</div>
 
-### References
+<div class="sect1">
+
+## References
+
+<div class="sectionbody">
 
 <div class="ulist">
 
@@ -178,13 +199,11 @@ In summary, use **gocron** or **JobRunner** for straightforward scheduling insid
 
 </div>
 
-</div>
-
 <div id="footer">
 
 <div id="footer-text">
 
-Last updated 2025-08-13 20:10:41 +0900
+Last updated 2025-08-13 22:52:49 +0900
 
 </div>
 
