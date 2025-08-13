@@ -19,24 +19,26 @@ import (
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
-	"github.com/valkey-io/valkey-go"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/etcd"
+	"github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
+	v1 "github.com/valkey-io/valkey-go"
 	v3 "go.etcd.io/etcd/client/v3"
 )
 
 func ExampleNewManager() {
 	// nolint:exhaustruct
-	valkeyOpt := valkey.ClientOption{
-		InitAddress: []string{net.JoinHostPort("127.0.0.1", "6379")},
+	valkeyOpt := v1.ClientOption{
+		InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
 	}
 	_, _ = job.NewManager(
-		job.WithStore(store.NewValkeyStore(valkeyOpt)),
+		job.WithStore(store.NewKvStoreWith(valkey.NewStore(valkeyOpt))),
 	)
 
 	// nolint:exhaustruct
 	etcdOpt := v3.Config{
-		Endpoints: []string{net.JoinHostPort("127.0.0.1", "6379")},
+		Endpoints: []string{net.JoinHostPort("10.0.0.10", "2379")},
 	}
 	_, _ = job.NewManager(
-		job.WithStore(store.NewEtcdStore(etcdOpt)),
+		job.WithStore(store.NewKvStoreWith(etcd.NewStore(etcdOpt))),
 	)
 }
