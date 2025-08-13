@@ -1,7 +1,7 @@
 :toc: macro
 :toclevels: 1
 :toc-title: Table of Contents:
-:source-highlighter: coderay
+:source-highlighter: rouge
 = Design and Architecture 
 
 This document provides a detailed overview of `go-job`'s design and architecture, including future plans.
