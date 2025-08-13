@@ -274,7 +274,11 @@ import (
 
 func main() {
         etcdOpt := v3.Config{
+<<<<<<< HEAD
                 Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
+=======
+                Endpoints: []string{net.JoinHostPort("10.0.0.10", "2379")},
+>>>>>>> f799e9c (docs: update extension-guide.adoc)
         }
         mgr, err := job.NewManager(
                 job.WithStore(store.NewKvStoreWith(etcd.NewStore(etcdOpt))),
@@ -300,7 +304,11 @@ func main() {
 
 <div id="footer-text">
 
+<<<<<<< HEAD
 Last updated 2025-08-13 23:17:32 +0900
+=======
+Last updated 2025-08-13 22:08:03 +0900
+>>>>>>> f799e9c (docs: update extension-guide.adoc)
 
 </div>
 
