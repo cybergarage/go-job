@@ -1,5 +1,5 @@
 :toc: macro
-:toclevels: 3
+:toclevels: 2
 :toc-title:
 :source-highlighter: coderay
 = Feature Overview and Usage Guide
