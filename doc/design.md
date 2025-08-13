@@ -27,8 +27,11 @@ Table of Contents
 - [Design Concept](#_design_concept)
 - [Terminology](#_terminology)
 - [Key Components](#_key_components)
+  - [Selecting Manager Usage](#_selecting_manager_usage)
+  - [Selecting Server Usage](#_selecting_server_usage)
 - [Job State Lifecycle](#_job_state_lifecycle)
 - [Job Registration and Processing Flow](#_job_registration_and_processing_flow)
+  - [Store Plugins and Registry Sharing Limitations](#_store_plugins_and_registry_sharing_limitations)
 
 </div>
 
@@ -305,7 +308,7 @@ The queue, history, and log components can be shared between go-job servers usin
 
 <div id="footer-text">
 
-Last updated 2025-08-13 22:59:54 +0900
+Last updated 2025-08-13 23:01:20 +0900
 
 </div>
 
