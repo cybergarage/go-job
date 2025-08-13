@@ -1,5 +1,5 @@
 :toc: macro
-:toclevels: 2
+:toclevels: 3
 :toc-title:
 :source-highlighter: coderay
 = Extension Guide 
