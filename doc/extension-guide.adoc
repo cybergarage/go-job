@@ -111,7 +111,7 @@ type Store interface {
 	Stop() error
 	// Clear removes all key-value objects from the store.
 	Clear() error
-}}
+}
 ----
 
 By default, `go-job` provides ready-to-use key-value store implementations for both Valkey and Etcd.
