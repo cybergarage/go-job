@@ -13,7 +13,7 @@
   - Limit and offset support
   - Before and after filters
 
-## 1.0.0 (2025-08-XX)
+## 1.0.0 (2025-08-13)
 ### ✨ Features
 - **gRPC API**: Added full-featured gRPC service enabling remote job operations
   - Job scheduling and execution management
