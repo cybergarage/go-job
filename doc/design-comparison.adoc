@@ -1,5 +1,5 @@
 :toc: macro
-:toclevels: 3
+:toclevels: 2
 :toc-title:
 :source-highlighter: coderay
 = Comparative Analysis: go-job v1.0.0 vs gocron, JobRunner, and Machinery
