@@ -1,12 +1,12 @@
 <div id="header">
 
+# Design and Architecture
+
 </div>
 
 <div id="content">
 
-<div class="sect1">
-
-## Design and Architecture
+<div id="preamble">
 
 <div class="sectionbody">
 
@@ -22,21 +22,26 @@ This document provides a detailed overview of \`go-job’s design and architectu
 
 </div>
 
-- [Design and Architecture](#_design_and_architecture)
-  - [Design Concept](#_design_concept)
-  - [Terminology](#_terminology)
-  - [Key Components](#_key_components)
-    - [Selecting Manager Usage](#_selecting_manager_usage)
-    - [Selecting Server Usage](#_selecting_server_usage)
-  - [Job State Lifecycle](#_job_state_lifecycle)
-  - [Job Registration and Processing Flow](#_job_registration_and_processing_flow)
-    - [Store Plugins and Registry Sharing Limitations](#_store_plugins_and_registry_sharing_limitations)
+- [Design Concept](#_design_concept)
+- [Terminology](#_terminology)
+- [Key Components](#_key_components)
+  - [Selecting Manager Usage](#_selecting_manager_usage)
+  - [Selecting Server Usage](#_selecting_server_usage)
+- [Job State Lifecycle](#_job_state_lifecycle)
+- [Job Registration and Processing Flow](#_job_registration_and_processing_flow)
+  - [Store Plugins and Registry Sharing Limitations](#_store_plugins_and_registry_sharing_limitations)
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Design Concept
+</div>
+
+<div class="sect1">
+
+## Design Concept
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -70,9 +75,13 @@ For a comparison of design concepts with other OSS job frameworks, see [go-job C
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Terminology
+<div class="sect1">
+
+## Terminology
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -90,9 +99,13 @@ This section defines the key terms and concepts used throughout the `go-job` sys
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Key Components
+<div class="sect1">
+
+## Key Components
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -127,9 +140,9 @@ The main components of `go-job` are:
 | Log | Captures logs for each job instance, providing detailed execution information. |
 | Store | Provides abstracted persistence for job metadata and execution state, enabling distributed operation and fault tolerance. |
 
-<div class="sect3">
+<div class="sect2">
 
-#### Selecting Manager Usage
+### Selecting Manager Usage
 
 <div class="paragraph">
 
@@ -145,9 +158,9 @@ For more information about embedding the manager in your Go application, see the
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Selecting Server Usage
+### Selecting Server Usage
 
 <div class="paragraph">
 
@@ -165,9 +178,13 @@ For more information about the server component, see the [gRPC API](grpc-api.md)
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Job State Lifecycle
+<div class="sect1">
+
+## Job State Lifecycle
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -211,9 +228,13 @@ Each job instance can transition through various states, such as `Scheduled`, `P
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Job Registration and Processing Flow
+<div class="sect1">
+
+## Job Registration and Processing Flow
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -237,9 +258,9 @@ The following sequence diagram illustrates the flow of job registration, schedul
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Store Plugins and Registry Sharing Limitations
+### Store Plugins and Registry Sharing Limitations
 
 <div class="paragraph">
 
@@ -281,13 +302,11 @@ The queue, history, and log components can be shared between go-job servers usin
 
 </div>
 
-</div>
-
 <div id="footer">
 
 <div id="footer-text">
 
-Last updated 2025-08-13 20:04:56 +0900
+Last updated 2025-08-13 22:52:49 +0900
 
 </div>
 
