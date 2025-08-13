@@ -39,6 +39,8 @@ Go developers have access to multiple libraries for scheduling and executing bac
 
 <div id="toctitle" class="title">
 
+Table of Contents
+
 </div>
 
 - [Feature Comparison](#_feature_comparison)
@@ -203,7 +205,7 @@ In summary, use **gocron** or **JobRunner** for straightforward scheduling insid
 
 <div id="footer-text">
 
-Last updated 2025-08-13 22:54:48 +0900
+Last updated 2025-08-13 22:59:54 +0900
 
 </div>
 
