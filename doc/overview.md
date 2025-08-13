@@ -1,12 +1,12 @@
 <div id="header">
 
+# Feature Overview and Usage Guide
+
 </div>
 
 <div id="content">
 
-<div class="sect1">
-
-## Feature Overview and Usage Guide
+<div id="preamble">
 
 <div class="sectionbody">
 
@@ -22,42 +22,56 @@ This document provides a comprehensive overview of the features and usage of `go
 
 </div>
 
-- [Feature Overview and Usage Guide](#_feature_overview_and_usage_guide)
-  - [Features](#_features)
-    - [Arbitrary function registration](#_arbitrary_function_registration)
-    - [Rich scheduling options](#_rich_scheduling_options)
-    - [Strong observability](#_strong_observability)
-    - [Prioritized and scalable execution](#_prioritized_and_scalable_execution)
-    - [Pluggable, distributed storage](#_pluggable_distributed_storage)
-  - [Usage Guide](#_usage_guide)
-    - [Arbitrary Function Execution](#_arbitrary_function_execution)
-      - [Simple Function Example](#_simple_function_example)
-      - [Function with Arguments Example](#_function_with_arguments_example)
-      - [Function with Arguments and Result Example](#_function_with_arguments_and_result_example)
-      - [Function with Struct Input and Output](#_function_with_struct_input_and_output)
-    - [Job Scheduling](#_job_scheduling)
-      - [Execute Jobs Immediately](#_execute_jobs_immediately)
-      - [Schedule at a Specific Time](#_schedule_at_a_specific_time)
-      - [Delay Execution](#_delay_execution)
-      - [Recurring Cron Scheduling](#_recurring_cron_scheduling)
-    - [Job Monitoring and Observability](#_job_monitoring_and_observability)
-      - [Real-time Monitoring with Event Handlers](#_real_time_monitoring_with_event_handlers)
-      - [Historical Data Queries](#_historical_data_queries)
-    - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
-      - [Job Priority Control](#_job_priority_control)
-      - [Dynamic Worker Pool Management](#_dynamic_worker_pool_management)
-    - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
-      - [Remote Operation with gRPC API](#_remote_operation_with_grpc_api)
-      - [Command-Line Interface (jobctl)](#_command_line_interface_jobctl)
-    - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
-      - [Valkey Store Plugin](#_valkey_store_plugin)
-      - [Etcd Store Plugin](#_etcd_store_plugin)
+- [Features](#_features)
+  - [Arbitrary function registration](#_arbitrary_function_registration)
+  - [Rich scheduling options](#_rich_scheduling_options)
+  - [Strong observability](#_strong_observability)
+  - [Prioritized and scalable execution](#_prioritized_and_scalable_execution)
+  - [Pluggable, distributed storage](#_pluggable_distributed_storage)
+- [Usage Guide](#_usage_guide)
+  - [Arbitrary Function Execution](#_arbitrary_function_execution)
+    - [Simple Function Example](#_simple_function_example)
+    - [Function with Arguments Example](#_function_with_arguments_example)
+    - [Function with Arguments and Result Example](#_function_with_arguments_and_result_example)
+    - [Function with Struct Input and Output](#_function_with_struct_input_and_output)
+  - [Job Scheduling](#_job_scheduling)
+    - [Execute Jobs Immediately](#_execute_jobs_immediately)
+    - [Schedule at a Specific Time](#_schedule_at_a_specific_time)
+    - [Delay Execution](#_delay_execution)
+    - [Recurring Cron Scheduling](#_recurring_cron_scheduling)
+  - [Job Monitoring and Observability](#_job_monitoring_and_observability)
+    - [Real-time Monitoring with Event Handlers](#_real_time_monitoring_with_event_handlers)
+      - [Completion and Termination Handlers](#_completion_and_termination_handlers)
+      - [State Change Monitoring](#_state_change_monitoring)
+    - [Historical Data Queries](#_historical_data_queries)
+      - [List All job Instances](#_list_all_job_instances)
+      - [Retrieve History and Logs for Job Instances](#_retrieve_history_and_logs_for_job_instances)
+  - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
+    - [Job Priority Control](#_job_priority_control)
+      - [Set Priority During Job Creation](#_set_priority_during_job_creation)
+      - [Override Priority at Schedule Time](#_override_priority_at_schedule_time)
+    - [Dynamic Worker Pool Management](#_dynamic_worker_pool_management)
+      - [Set Initial Worker Count](#_set_initial_worker_count)
+      - [Scale Workers Dynamically](#_scale_workers_dynamically)
+      - [Real-world Scaling Example](#_real_world_scaling_example)
+  - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
+    - [Remote Operation with gRPC API](#_remote_operation_with_grpc_api)
+    - [Command-Line Interface (jobctl)](#_command_line_interface_jobctl)
+  - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
+    - [Valkey Store Plugin](#_valkey_store_plugin)
+    - [Etcd Store Plugin](#_etcd_store_plugin)
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Features
+</div>
+
+<div class="sect1">
+
+## Features
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -81,9 +95,9 @@ This document provides a comprehensive overview of the features and usage of `go
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Arbitrary function registration
+### Arbitrary function registration
 
 <div class="paragraph">
 
@@ -93,9 +107,9 @@ Register any Go function as a job, regardless of its signature. This allows you 
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Rich scheduling options
+### Rich scheduling options
 
 <div class="paragraph">
 
@@ -105,9 +119,9 @@ Schedule jobs to run immediately, at a specific time, after a delay, or on a rec
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Strong observability
+### Strong observability
 
 <div class="paragraph">
 
@@ -117,9 +131,9 @@ Monitor job execution in real time, track state transitions, and access detailed
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Prioritized and scalable execution
+### Prioritized and scalable execution
 
 <div class="paragraph">
 
@@ -129,9 +143,9 @@ Assign priorities to jobs to control execution order, and dynamically scale the 
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Pluggable, distributed storage
+### Pluggable, distributed storage
 
 <div class="paragraph">
 
@@ -143,9 +157,13 @@ Use a variety of storage backends (such as Valkey, etcd, or in-memory) to persis
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Usage Guide
+<div class="sect1">
+
+## Usage Guide
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -153,9 +171,9 @@ This section provides practical guidance on how to use `go-job` in your applicat
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Arbitrary Function Execution
+### Arbitrary Function Execution
 
 <div class="paragraph">
 
@@ -212,9 +230,9 @@ This approach makes it easy to use `go-job` for both simple tasks and advanced w
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Simple Function Example
+#### Simple Function Example
 
 <div class="paragraph">
 
@@ -259,9 +277,9 @@ mgr.ScheduleJob(job)
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Function with Arguments Example
+#### Function with Arguments Example
 
 <div class="paragraph">
 
@@ -330,9 +348,9 @@ mgr.ScheduleJob(job, WithArguments("42", "58"))
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Function with Arguments and Result Example
+#### Function with Arguments and Result Example
 
 <div class="paragraph">
 
@@ -387,9 +405,9 @@ mgr.ScheduleJob(job, WithArguments("Hello", "world"))
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Function with Struct Input and Output
+#### Function with Struct Input and Output
 
 <div class="paragraph">
 
@@ -484,9 +502,9 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Job Scheduling
+### Job Scheduling
 
 <div class="paragraph">
 
@@ -506,9 +524,9 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Execute Jobs Immediately
+#### Execute Jobs Immediately
 
 <div class="paragraph">
 
@@ -531,9 +549,9 @@ mgr.ScheduleJob(job)
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Schedule at a Specific Time
+#### Schedule at a Specific Time
 
 <div class="paragraph">
 
@@ -561,9 +579,9 @@ mgr.ScheduleJob(job, WithScheduleAt(specificTime))
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Delay Execution
+#### Delay Execution
 
 <div class="paragraph">
 
@@ -589,9 +607,9 @@ mgr.ScheduleJob(job, WithScheduleAfter(2 * time.Hour))
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Recurring Cron Scheduling
+#### Recurring Cron Scheduling
 
 <div class="paragraph">
 
@@ -628,9 +646,9 @@ Cron format: `minute hour day-of-month month day-of-week`
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Job Monitoring and Observability
+### Job Monitoring and Observability
 
 <div class="paragraph">
 
@@ -638,9 +656,9 @@ Cron format: `minute hour day-of-month month day-of-week`
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Real-time Monitoring with Event Handlers
+#### Real-time Monitoring with Event Handlers
 
 <div class="paragraph">
 
@@ -648,9 +666,9 @@ Monitor job execution as it happens by registering event handlers that respond t
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Completion and Termination Handlers
+##### Completion and Termination Handlers
 
 <div class="paragraph">
 
@@ -680,9 +698,9 @@ job, err := NewJob(
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### State Change Monitoring
+##### State Change Monitoring
 
 <div class="paragraph">
 
@@ -718,9 +736,9 @@ For details on job state transitions, refer to [Design and Architecture](design.
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Historical Data Queries
+#### Historical Data Queries
 
 <div class="paragraph">
 
@@ -728,9 +746,9 @@ Query job instances and their execution history using manager methods.
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### List All job Instances
+##### List All job Instances
 
 <div class="paragraph">
 
@@ -738,9 +756,9 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
 
 </div>
 
-<div class="sect6">
+<div class="sect5">
 
-List All Queued and Executed Job Instances
+###### List All Queued and Executed Job Instances
 
 <div class="listingblock">
 
@@ -763,9 +781,9 @@ List All Queued and Executed Job Instances
 
 </div>
 
-<div class="sect6">
+<div class="sect5">
 
-List Terminated Job Instances
+###### List Terminated Job Instances
 
 <div class="listingblock">
 
@@ -793,9 +811,9 @@ List Terminated Job Instances
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Retrieve History and Logs for Job Instances
+##### Retrieve History and Logs for Job Instances
 
 <div class="paragraph">
 
@@ -803,9 +821,9 @@ You can use manager methods to access the processing history and logs of any spe
 
 </div>
 
-<div class="sect6">
+<div class="sect5">
 
-State History
+###### State History
 
 <div class="paragraph">
 
@@ -839,9 +857,9 @@ For details on job state transitions, refer to [Design and Architecture](design.
 
 </div>
 
-<div class="sect6">
+<div class="sect5">
 
-Log History
+###### Log History
 
 <div class="paragraph">
 
@@ -881,9 +899,9 @@ Provides auditability and debugging capability for each job instance.
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Priority Management & Worker Scaling
+### Priority Management & Worker Scaling
 
 <div class="paragraph">
 
@@ -891,9 +909,9 @@ Provides auditability and debugging capability for each job instance.
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Job Priority Control
+#### Job Priority Control
 
 <div class="paragraph">
 
@@ -901,9 +919,9 @@ Assign priorities to jobs to control their execution order. Higher priority jobs
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Set Priority During Job Creation
+##### Set Priority During Job Creation
 
 <div class="listingblock">
 
@@ -931,9 +949,9 @@ lowPriorityJob, err := NewJob(
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Override Priority at Schedule Time
+##### Override Priority at Schedule Time
 
 <div class="paragraph">
 
@@ -961,9 +979,9 @@ mgr.ScheduleJob(normalJob, WithPriority(200)) // make this instance low priority
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Dynamic Worker Pool Management
+#### Dynamic Worker Pool Management
 
 <div class="paragraph">
 
@@ -971,9 +989,9 @@ Scale your worker pool up or down based on workload demands without stopping the
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Set Initial Worker Count
+##### Set Initial Worker Count
 
 <div class="listingblock">
 
@@ -991,9 +1009,9 @@ mgr.Start()
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Scale Workers Dynamically
+##### Scale Workers Dynamically
 
 <div class="listingblock">
 
@@ -1017,9 +1035,9 @@ fmt.Printf("Current workers: %d\n", count)
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Real-world Scaling Example
+##### Real-world Scaling Example
 
 <div class="listingblock">
 
@@ -1058,9 +1076,9 @@ This enables efficient resource utilization and responsive performance under var
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Remote Management with gRPC API
+### Remote Management with gRPC API
 
 <div class="paragraph">
 
@@ -1068,9 +1086,9 @@ This enables efficient resource utilization and responsive performance under var
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Remote Operation with gRPC API
+#### Remote Operation with gRPC API
 
 <div class="paragraph">
 
@@ -1100,9 +1118,9 @@ The gRPC API uses protobuf messages for job definitions, arguments, and results.
 
 </div>
 
-<div class="sect4">
+<div class="sect3">
 
-##### Command-Line Interface (jobctl)
+#### Command-Line Interface (jobctl)
 
 <div class="paragraph">
 
@@ -1130,9 +1148,9 @@ For more details, see the [Command-Line Interface (jobctl)](./cmd/cli/jobctl.md)
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Distributed Support via Store Interface
+### Distributed Support via Store Interface
 
 <div class="paragraph">
 
@@ -1196,9 +1214,9 @@ To learn more about the `Store` interface, see [Design and Architecture](design.
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Valkey Store Plugin
+##### Valkey Store Plugin
 
 <div class="paragraph">
 
@@ -1241,9 +1259,9 @@ func main() {
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Etcd Store Plugin
+##### Etcd Store Plugin
 
 <div class="paragraph">
 
@@ -1294,13 +1312,11 @@ func main() {
 
 </div>
 
-</div>
-
 <div id="footer">
 
 <div id="footer-text">
 
-Last updated 2025-08-13 20:00:18 +0900
+Last updated 2025-08-13 22:52:49 +0900
 
 </div>
 
