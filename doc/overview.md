@@ -20,7 +20,7 @@ This document provides a comprehensive overview of the features and usage of `go
 
 <div id="toctitle" class="title">
 
-Table of Contents:
+\*\*Table of Contents:\*\*
 
 </div>
 
@@ -1293,7 +1293,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 23:11:57 +0900
+Last updated 2025-08-13 23:14:30 +0900
 
 </div>
 
