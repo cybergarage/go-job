@@ -1,5 +1,5 @@
 :toc: macro
-:toclevels: 2
+:toclevels: 1
 :toc-title:
 :source-highlighter: coderay
 = Design and Architecture 
