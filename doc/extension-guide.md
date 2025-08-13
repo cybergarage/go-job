@@ -1,12 +1,12 @@
 <div id="header">
 
+# Extension Guide
+
 </div>
 
 <div id="content">
 
-<div class="sect1">
-
-## Extension Guide
+<div id="preamble">
 
 <div class="sectionbody">
 
@@ -22,18 +22,23 @@ This guide provides an overview of how to extend `go-job` with custom plugins, a
 
 </div>
 
-- [Extension Guide](#_extension_guide)
-  - [Store Plugin Development](#_store_plugin_development)
-    - [Store Interface](#_store_interface)
-    - [kv.Store Interface](#_kv_store_interface)
-      - [Valkey Store Plugin](#_valkey_store_plugin)
-      - [Etcd Store Plugin](#_etcd_store_plugin)
+- [Store Plugin Development](#_store_plugin_development)
+  - [Store Interface](#_store_interface)
+  - [kv.Store Interface](#_kv_store_interface)
+    - [Valkey Store Plugin](#_valkey_store_plugin)
+    - [Etcd Store Plugin](#_etcd_store_plugin)
 
 </div>
 
-<div class="sect2">
+</div>
 
-### Store Plugin Development
+</div>
+
+<div class="sect1">
+
+## Store Plugin Development
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -51,9 +56,9 @@ The `go-job` framework supports custom store plugins that can be used to manage 
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### Store Interface
+### Store Interface
 
 <div class="paragraph">
 
@@ -131,9 +136,9 @@ type LogStore interface {
 
 </div>
 
-<div class="sect3">
+<div class="sect2">
 
-#### kv.Store Interface
+### kv.Store Interface
 
 <div class="paragraph">
 
@@ -201,9 +206,9 @@ To use one of these built-in stores, simply create a manager instance and specif
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Valkey Store Plugin
+##### Valkey Store Plugin
 
 <div class="paragraph">
 
@@ -241,9 +246,9 @@ func main() {
 
 </div>
 
-<div class="sect5">
+<div class="sect4">
 
-###### Etcd Store Plugin
+##### Etcd Store Plugin
 
 <div class="paragraph">
 
@@ -289,13 +294,11 @@ func main() {
 
 </div>
 
-</div>
-
 <div id="footer">
 
 <div id="footer-text">
 
-Last updated 2025-08-13 20:00:18 +0900
+Last updated 2025-08-13 22:52:49 +0900
 
 </div>
 
