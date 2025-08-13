@@ -41,19 +41,10 @@ This document provides a comprehensive overview of the features and usage of `go
     - [Recurring Cron Scheduling](#_recurring_cron_scheduling)
   - [Job Monitoring and Observability](#_job_monitoring_and_observability)
     - [Real-time Monitoring with Event Handlers](#_real_time_monitoring_with_event_handlers)
-      - [Completion and Termination Handlers](#_completion_and_termination_handlers)
-      - [State Change Monitoring](#_state_change_monitoring)
     - [Historical Data Queries](#_historical_data_queries)
-      - [List All job Instances](#_list_all_job_instances)
-      - [Retrieve History and Logs for Job Instances](#_retrieve_history_and_logs_for_job_instances)
   - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
     - [Job Priority Control](#_job_priority_control)
-      - [Set Priority During Job Creation](#_set_priority_during_job_creation)
-      - [Override Priority at Schedule Time](#_override_priority_at_schedule_time)
     - [Dynamic Worker Pool Management](#_dynamic_worker_pool_management)
-      - [Set Initial Worker Count](#_set_initial_worker_count)
-      - [Scale Workers Dynamically](#_scale_workers_dynamically)
-      - [Real-world Scaling Example](#_real_world_scaling_example)
   - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
     - [Remote Operation with gRPC API](#_remote_operation_with_grpc_api)
     - [Command-Line Interface (jobctl)](#_command_line_interface_jobctl)
@@ -1316,7 +1307,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 22:52:49 +0900
+Last updated 2025-08-13 22:54:10 +0900
 
 </div>
 
