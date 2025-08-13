@@ -742,14 +742,14 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
 <div class="content">
 
 ``` CodeRay
-        query := job.NewQuery() // queries all job instances (any state)
-        jis, err := mgr.LookupInstances(query)
-        if err != nil {
-                t.Errorf("Failed to lookup job instance: %v", err)
-        }
-    for _, ji := range jis {
-                fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
-    }
+query := job.NewQuery() // queries all job instances (any state)
+jis, err := mgr.LookupInstances(query)
+if err != nil {
+    t.Errorf("Failed to lookup job instance: %v", err)
+}
+for _, ji := range jis {
+    fmt.Printf("Job Instance: %s, UUID: %s, State: %s\n", ji.Kind(), ji.UUID(), ji.State())
+}
 ```
 
 </div>
@@ -767,17 +767,17 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
 <div class="content">
 
 ``` CodeRay
-    query := job.NewQuery(
-        job.WithQueryKind("sum"), // filter by job kind
-        job.WithQueryState(job.JobTerminated), // filter by terminated state
-    )
-        jis, err := mgr.LookupInstances(query)
-        if err != nil {
-                t.Errorf("Failed to lookup job instance: %v", err)
-        }
-    for _, ji := range jis {
-        fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
-    }
+query := job.NewQuery(
+    job.WithQueryKind("sum"), // filter by job kind
+    job.WithQueryState(job.JobTerminated), // filter by terminated state
+)
+jis, err := mgr.LookupInstances(query)
+if err != nil {
+    t.Errorf("Failed to lookup job instance: %v", err)
+}
+for _, ji := range jis {
+    fmt.Printf("Job Instance: %s, State: %s\n", ji.Kind(), ji.State())
+}
 ```
 
 </div>
@@ -1213,20 +1213,20 @@ To use the Valkey store plugin, create a manager instance with Valkey as the bac
 
 ``` CodeRay
 import (
-        "net"
+    "net"
 
-        "github.com/cybergarage/go-job/job"
-        "github.com/cybergarage/go-job/job/plugins/store"
-        "github.com/valkey-io/valkey-go"
+    "github.com/cybergarage/go-job/job"
+    "github.com/cybergarage/go-job/job/plugins/store"
+    "github.com/valkey-io/valkey-go"
 )
 
 func main() {
-        valkeyOpt := valkey.ClientOption{
-                InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
-        }
-        mgr, err := job.NewManager(
-                job.WithStore(store.NewValkeyStore(valkeyOpt)),
-        )
+    valkeyOpt := valkey.ClientOption{
+        InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
+    }
+    mgr, err := job.NewManager(
+        job.WithStore(store.NewValkeyStore(valkeyOpt)),
+    )
 }
 ```
 
@@ -1258,20 +1258,20 @@ To use the etcd store plugin, simply create a new manager instance with etcd as 
 
 ``` CodeRay
 import (
-        "net"
+    "net"
 
-        "github.com/cybergarage/go-job/job"
-        "github.com/cybergarage/go-job/job/plugins/store"
-        v3 "go.etcd.io/etcd/client/v3"
+    "github.com/cybergarage/go-job/job"
+    "github.com/cybergarage/go-job/job/plugins/store"
+    v3 "go.etcd.io/etcd/client/v3"
 )
 
 func main() {
-        etcdOpt := v3.Config{
-                Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
-        }
-        mgr, err := job.NewManager(
-                job.WithStore(store.NewEtcdStore(etcdOpt)),
-        )
+    etcdOpt := v3.Config{
+        Endpoints: []string{net.JoinHostPort("10.0.0.10", "6379")},
+    }
+    mgr, err := job.NewManager(
+        job.WithStore(store.NewEtcdStore(etcdOpt)),
+    )
 }
 ```
 
@@ -1293,7 +1293,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 23:17:32 +0900
+Last updated 2025-08-13 23:29:50 +0900
 
 </div>
 
