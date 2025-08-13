@@ -26,6 +26,8 @@ This guide provides an overview of how to extend `go-job` with custom plugins, a
   - [Store Plugin Development](#_store_plugin_development)
     - [Store Interface](#_store_interface)
     - [kv.Store Interface](#_kv_store_interface)
+      - [Valkey Store Plugin](#_valkey_store_plugin)
+      - [Etcd Store Plugin](#_etcd_store_plugin)
 
 </div>
 
@@ -293,7 +295,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 19:59:35 +0900
+Last updated 2025-08-13 20:00:18 +0900
 
 </div>
 
