@@ -162,7 +162,7 @@ With `go-job`, you can register and execute **any Go function** as a job—no ma
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Executor can be any function type
 type Executor any
 
@@ -221,7 +221,7 @@ A job with no input parameters and no return value can be defined as follows:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 job, err := NewJob(
     WithKind("hello (no input and no return)"),
     WithExecutor(func()  {
@@ -244,7 +244,7 @@ Then schedule this job with no arguments simply by:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 mgr.ScheduleJob(job)
 ```
 
@@ -268,7 +268,7 @@ A job with two input parameters and no return value can be defined like this:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 job, err := NewJob(
     WithKind("sum (two input and no output)"),
     WithExecutor(func(x int, y int) {
@@ -291,7 +291,7 @@ You can schedule jobs by passing arguments of any type. For example, to schedule
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 mgr.ScheduleJob(job, WithArguments(42, 58))
 ```
 
@@ -309,7 +309,7 @@ Or, to schedule a job with string arguments:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 mgr.ScheduleJob(job, WithArguments("42", "58"))
 ```
 
@@ -339,7 +339,7 @@ A job with two input parameters and one output can be defined like this:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 job, err := NewJob(
     WithKind("concat (two input and one output)"),
     WithExecutor(func(a string, b string) string {
@@ -372,7 +372,7 @@ Then schedule jobs with arguments:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 mgr.ScheduleJob(job, WithArguments("Hello", "world"))
 ```
 
@@ -396,7 +396,7 @@ A job with one struct input and one struct output can be defined like this:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 type ConcatString struct {
     A string
     B string
@@ -437,7 +437,7 @@ You can schedule jobs by passing arguments in various formats. For instance, to 
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 arg := &ConcatString{
     A: "Hello",
     B: "world!",
@@ -460,7 +460,7 @@ Alternatively, you can pass arguments as a JSON string:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 jsonArg := `{"A": "Hello", "B": "world!"}`
 mgr.ScheduleJob(job, WithArguments(jsonArg))
 ```
@@ -515,7 +515,7 @@ By default, jobs are scheduled for immediate execution:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Runs immediately
 mgr.ScheduleJob(job)
 ```
@@ -540,7 +540,7 @@ Set an exact time for job execution:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Run 10 minutes from now
 futureTime := time.Now().Add(10 * time.Minute)
 mgr.ScheduleJob(job, WithScheduleAt(futureTime))
@@ -570,7 +570,7 @@ Add a delay before the job starts:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Wait 5 seconds before execution
 mgr.ScheduleJob(job, WithScheduleAfter(5 * time.Second))
 
@@ -598,7 +598,7 @@ Use cron expressions for repeated job execution:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Run daily at midnight
 mgr.ScheduleJob(job, WithCrontabSpec("0 0 * * *"))
 
@@ -657,7 +657,7 @@ Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successfu
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 job, err := NewJob(
     ....,
     WithCompleteProcessor(func(inst Instance, res []any) {
@@ -689,7 +689,7 @@ Use `WithStateChangeProcessor()` to track every state transition throughout a jo
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 job, err := NewJob(
     ....,
     WithStateChangeProcessor(func(inst Instance, state JobState) error {
@@ -741,8 +741,8 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
 
 <div class="content">
 
-``` CodeRay
-    query := job.NewQuery() // queries all job instances (any state)
+``` rouge
+  query := job.NewQuery() // queries all job instances (any state)
     jis, err := mgr.LookupInstances(query)
     if err != nil {
         t.Errorf("Failed to lookup job instance: %v", err)
@@ -766,7 +766,7 @@ With `Manager::LookupInstances()`, you can retrieve any job instance—whether i
 
 <div class="content">
 
-``` CodeRay
+``` rouge
     query := job.NewQuery(
         job.WithQueryKind("sum"), // filter by job kind
         job.WithQueryState(job.JobTerminated), // filter by terminated state
@@ -812,7 +812,7 @@ With `Manager::LookupInstanceHistory`, you can retrieve the state history for th
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 query := job.NewQuery(
     job.WithQueryInstance(ji), // filter by specific job instance
 )
@@ -848,7 +848,7 @@ With `Manager::LookupInstanceLogs`, you can retrieve the log history for the spe
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 query := job.NewQuery(
     job.WithQueryInstance(ji), // filter by specific job instance
 )
@@ -904,7 +904,7 @@ Assign priorities to jobs to control their execution order. Higher priority jobs
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // High priority job (executed first)
 highPriorityJob, err := NewJob(
     WithKind("urgent-task"),
@@ -940,7 +940,7 @@ You can override a job’s default priority when scheduling:
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Schedule with default priority
 mgr.ScheduleJob(normalJob) // uses job's configured priority
 
@@ -974,7 +974,7 @@ Scale your worker pool up or down based on workload demands without stopping the
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Start with 5 workers
 mgr, err := NewManager(WithNumWorkers(5))
 mgr.Start()
@@ -994,7 +994,7 @@ mgr.Start()
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Scale up during high load
 mgr.ResizeWorkers(10) // increase to 10 workers
 
@@ -1020,7 +1020,7 @@ fmt.Printf("Current workers: %d\n", count)
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 // Monitor queue size and scale accordingly
 query := job.NewQuery(
     job.WithQueryState(job.JobScheduled), // filter by scheduled state
@@ -1211,7 +1211,7 @@ To use the Valkey store plugin, create a manager instance with Valkey as the bac
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 import (
     "net"
 
@@ -1256,7 +1256,7 @@ To use the etcd store plugin, simply create a new manager instance with etcd as 
 
 <div class="content">
 
-``` CodeRay
+``` rouge
 import (
     "net"
 
@@ -1293,7 +1293,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 23:14:41 +0900
+Last updated 2025-08-13 23:16:28 +0900
 
 </div>
 
