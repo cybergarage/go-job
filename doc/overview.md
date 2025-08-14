@@ -1107,7 +1107,7 @@ When to use each:
 
 <div class="paragraph">
 
-The Server uses a Manager internally, so all features are available in both.
+The Server uses a Manager internally, so all features are available.
 
 </div>
 
@@ -1340,7 +1340,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 23:10:00 +0900
+Last updated 2025-08-14 23:10:57 +0900
 
 </div>
 

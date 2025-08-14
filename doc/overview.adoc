@@ -491,7 +491,7 @@ When to use each:
 - **Manager**: For direct, in-process job control and tight integration with your Go code.
 - **Server**: For remote job management, gRPC access, or centralized job scheduling across many apps.
 
-The Server uses a Manager internally, so all features are available in both.
+The Server uses a Manager internally, so all features are available.
 
 ==== Remote Operation with gRPC API
 
