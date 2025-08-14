@@ -12,6 +12,8 @@
 - **Query**
   - Limit and offset support
   - Before and after filters
+- **Store Interface**:
+  - Added Redis plugins for distributed job management.
 
 ## 1.0.0 (2025-08-13)
 ### ✨ Features
@@ -25,7 +27,8 @@
   - List and monitor registered jobs
 - **Store Interface**: Introduced Store interface for better abstraction and flexibility in distributed job management
   - **kv.Store interface**: Introduced a new `kv.Store` interface for key-value storage operations, allowing for flexible backend implementations.
-    - Added etcd and valkey plugins for distributed job management.
+    - Added etcd and Valkey plugins for distributed job management.
+    - Added memdb plugins for testing.
 
 ## v0.9.3 (2025-07-26)
 ### 🛠 Enhancements
