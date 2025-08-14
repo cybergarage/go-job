@@ -1229,7 +1229,7 @@ This approach enables:
 |----|----|----|----|----|----|----|----|
 | [Valkey](https://valkey.io/) | \>=8.1.3 | [valkey-go](https://github.com/valkey-io/valkey-go) v1.0.63 | External (Valkey) | Optional | Yes | Production/Distributed | Redis-compatible |
 | [Redis](https://redis.io/) | \>=7.2.4 | [go-redis](https://github.com/redis/go-redis/) v9.12.1 | External (Redis) | Optional | Yes | Production/Distributed | Popular in-memory store |
-| [etcd](https://etcd.io/) | \>=3.6.4 | [etcd](go.https://pkg.go.dev/go.etcd.io/etcd/client/v3) v3.0.1 | External (etcd) | Yes | Yes | Production/Distributed | Strong consistency |
+| [etcd](https://etcd.io/) | \>=3.6.4 | [etcd/client](https://pkg.go.dev/go.etcd.io/etcd/client/v3) v3.0.1 | External (etcd) | Yes | Yes | Production/Distributed | Strong consistency |
 | [go-memdb](https://github.com/hashicorp/go-memdb/) | \>=1.3.5 | (none) | In-memory | No | No | Testing/Development | Fastest but data is lost on restart |
 
 <div class="paragraph">
@@ -1340,7 +1340,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 23:10:57 +0900
+Last updated 2025-08-14 23:38:44 +0900
 
 </div>
 
