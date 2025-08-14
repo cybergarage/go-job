@@ -1156,7 +1156,7 @@ For more details, see the [Command-Line Interface (jobctl)](./cmd/cli/jobctl.md)
 
 <div class="paragraph">
 
-`go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
+`go-job` makes it easy to build distributed systems by allowing you to plug in different storage backends using the `Store` interface. This means that multiple `go-job` instances can work together and share job data through a common store, as shown in the diagram below:
 
 </div>
 
@@ -1172,47 +1172,44 @@ For more details, see the [Command-Line Interface (jobctl)](./cmd/cli/jobctl.md)
 
 <div class="paragraph">
 
-By implementing a custom store (e.g., etcd, FoundationDB), job metadata and execution state can be shared across nodes.
+By choosing or implementing a suitable store (such as etcd or Valkey), you can ensure that job metadata and execution state are accessible from any node in your system.
 
 </div>
 
 <div class="paragraph">
 
-This enables:
+This approach enables:
 
 </div>
 
 <div class="ulist">
 
-- Distributed scheduling
+- Distributed job scheduling across multiple nodes
 
-- Cross-node job coordination
+- Coordination of jobs between different servers
 
-- State persistence across restarts
+- Persistence of job state even if a node restarts
 
-- Fault-tolerant execution
-
-</div>
-
-<div class="paragraph">
-
-`go-job` provides the following store plugins:
-
-</div>
-
-<div class="ulist">
-
-- `valkey` - A key-value store based on the Valkey library
-
-- `etcd` - A distributed key-value store based on etcd
-
-- `memdb` - An in-memory key-value store for testing
+- Fault-tolerant execution, so jobs are not lost if a node fails
 
 </div>
 
 <div class="paragraph">
 
-To learn more about the `Store` interface, see [Design and Architecture](design.md) and [Extension Guide](plugin-guide.md) documentation.
+`go-job` comes with several built-in store plugins you can use right away:
+
+</div>
+
+| Store | Type | Persistence | Distribution | Use Case | Notes |  |  |
+|----|----|----|----|----|----|----|----|
+| Valkey | External (Valkey) | Optional | Yes | Production/Distributed | Redis-compatible | open-source fork | high performance |
+| Redis | External (Redis) | Optional | Yes | Production/Distributed | Popular in-memory store | can persist to disk | high performance |
+| etcd | External (etcd) | Yes | Yes | Production/Distributed | Strong consistency | suited for coordination and metadata |  |
+| memdb | In-memory | No | No | Testing/Development | Fastest but data is lost on restart |  |  |
+
+<div class="paragraph">
+
+For more details about the `Store` interface and how to extend it, see the [Design and Architecture](design.md) and [Extension Guide](plugin-guide.md) documentation.
 
 </div>
 
@@ -1222,7 +1219,7 @@ To learn more about the `Store` interface, see [Design and Architecture](design.
 
 <div class="paragraph">
 
-`valkey` is a fast and lightweight key-value store built on the Valkey library. It offers a simple and efficient way to store and retrieve job metadata and state in `go-job`.
+`Valkey` is a fast and lightweight key-value store built on the Valkey library. It offers a simple and efficient way to store and retrieve job metadata and state in `go-job`.
 
 </div>
 
@@ -1318,7 +1315,11 @@ func main() {
 
 <div id="footer-text">
 
+<<<<<<< HEAD
 Last updated 2025-08-13 22:08:24 +0900
+=======
+Last updated 2025-08-14 11:06:48 +0900
+>>>>>>> 6fc9ca0 (docs: update overview.adoc)
 
 </div>
 

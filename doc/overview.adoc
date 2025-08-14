@@ -501,30 +501,32 @@ For more details, see the link:./cmd/cli/jobctl.md[Command-Line Interface (jobct
 
 === Distributed Support via Store Interface
 
-`go-job` supports pluggable storage through the `Store` interface. The following component diagram shows how multiple `go-job` instances can share a single store.
+`go-job` makes it easy to build distributed systems by allowing you to plug in different storage backends using the `Store` interface.  
+This means that multiple `go-job` instances can work together and share job data through a common store, as shown in the diagram below:
 
 image::img/job-store.png[]
 
-By implementing a custom store (e.g., etcd, FoundationDB), job metadata and execution state can be shared across nodes.
+By choosing or implementing a suitable store (such as etcd or Valkey), you can ensure that job metadata and execution state are accessible from any node in your system.
 
-This enables:
+This approach enables:
 
-* Distributed scheduling
-* Cross-node job coordination
-* State persistence across restarts
-* Fault-tolerant execution
+* Distributed job scheduling across multiple nodes
+* Coordination of jobs between different servers
+* Persistence of job state even if a node restarts
+* Fault-tolerant execution, so jobs are not lost if a node fails
 
-`go-job` provides the following store plugins:
+`go-job` comes with several built-in store plugins you can use right away:
 
-* `valkey` - A key-value store based on the Valkey library
-* `etcd` - A distributed key-value store based on etcd
-* `memdb` - An in-memory key-value store for testing
+[format="csv", options="header"]
+|===
+include::inc/store_plugins.csv[]
+|===
 
-To learn more about the `Store` interface, see link:design.md[Design and Architecture] and link:plugin-guide.md[Extension Guide ] documentation.
+For more details about the `Store` interface and how to extend it, see the link:design.md[Design and Architecture] and link:plugin-guide.md[Extension Guide] documentation.
 
 ===== Valkey Store Plugin
 
-`valkey` is a fast and lightweight key-value store built on the Valkey library.  
+`Valkey` is a fast and lightweight key-value store built on the Valkey library.  
 It offers a simple and efficient way to store and retrieve job metadata and state in `go-job`.
 
 To use the Valkey store plugin, create a manager instance with Valkey as the backend:
