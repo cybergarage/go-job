@@ -1063,6 +1063,68 @@ This enables efficient resource utilization and responsive performance under var
 
 </div>
 
+<div class="imageblock">
+
+<div class="content">
+
+![job framework](img/job-framework.png)
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Server vs. Manager: When to Use Each
+
+<div class="paragraph">
+
+`go-job` provides both a **Manager** and a **Server** component, each serving different use cases:
+
+</div>
+
+<div class="ulist">
+
+- The **Manager** is the core API for embedding job scheduling and execution directly into your Go application. Use the Manager when you want to control jobs programmatically within your own process, such as in microservices, batch processors, or custom automation tools.
+
+- The **Server** is a standalone process that exposes the Manager’s functionality over a gRPC API. Use the Server when you need to manage jobs remotely, integrate with external systems, or provide job scheduling as a service across multiple applications or environments.
+
+</div>
+
+<div class="paragraph">
+
+Typical usage patterns:
+
+</div>
+
+<div class="ulist">
+
+- **Use Manager**:
+
+- When building an application that needs to schedule and execute jobs internally.
+
+- When you want full control and direct access to job APIs in Go.
+
+- For tight integration with your application’s business logic.
+
+- **Use Server**:
+
+- When you want to provide job scheduling as a centralized service.
+
+- When you need remote access via gRPC (e.g., from other languages or platforms).
+
+- For distributed or multi-tenant environments where jobs are managed externally.
+
+</div>
+
+<div class="paragraph">
+
+You can also combine both: run the Server for remote access, and embed a Manager in your application for local job execution. The Server uses a Manager internally, so all features are available through both interfaces.
+
+</div>
+
+</div>
+
 <div class="sect3">
 
 #### Remote Operation with gRPC API
@@ -1290,7 +1352,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 21:54:23 +0900
+Last updated 2025-08-14 22:58:26 +0900
 
 </div>
 

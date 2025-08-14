@@ -477,6 +477,30 @@ This enables efficient resource utilization and responsive performance under var
 
 `go-job` provides a comprehensive gRPC API for remote job management, enabling you to schedule, monitor, and control jobs from external systems or distributed environments. This allows seamless integration with microservices, orchestration platforms, and remote applications.
 
+image::img/job-framework.png[]
+
+==== Server vs. Manager: When to Use Each
+
+`go-job` provides both a *Manager* and a *Server* component, each serving different use cases:
+
+* The **Manager** is the core API for embedding job scheduling and execution directly into your Go application. Use the Manager when you want to control jobs programmatically within your own process, such as in microservices, batch processors, or custom automation tools.
+
+* The **Server** is a standalone process that exposes the Manager's functionality over a gRPC API. Use the Server when you need to manage jobs remotely, integrate with external systems, or provide job scheduling as a service across multiple applications or environments.
+
+Typical usage patterns:
+
+- **Use Manager**:
+    - When building an application that needs to schedule and execute jobs internally.
+    - When you want full control and direct access to job APIs in Go.
+    - For tight integration with your application's business logic.
+
+- **Use Server**:
+    - When you want to provide job scheduling as a centralized service.
+    - When you need remote access via gRPC (e.g., from other languages or platforms).
+    - For distributed or multi-tenant environments where jobs are managed externally.
+
+You can also combine both: run the Server for remote access, and embed a Manager in your application for local job execution. The Server uses a Manager internally, so all features are available through both interfaces.
+
 ==== Remote Operation with gRPC API
 
 `go-job` provides a gRPC API for remote job management, scheduling, and monitoring. This enables integration with external systems and remote orchestration. The gRPC API offers full programmatic access to all core `go-job` functionality:
