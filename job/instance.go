@@ -117,6 +117,9 @@ type InstanceOption func(*jobInstance) error
 // WithJob sets the job for the job instance.
 func WithJob(job Job) InstanceOption {
 	return func(ji *jobInstance) error {
+		if job == nil {
+			return fmt.Errorf("job is %w", ErrNil)
+		}
 		jobOpts := []JobOption{
 			WithKind(job.Kind()),
 			WithDescription(job.Description()),

@@ -26,3 +26,6 @@ var ErrNotFound = errors.New("not found")
 
 // ErrExists is an exists error.
 var ErrExists = errors.New("exists")
+
+// ErrNil is a nil error.
+var ErrNil = errors.New("nil")
