@@ -522,7 +522,7 @@ This approach enables:
 include::inc/store_plugins.csv[]
 |===
 
-For more details about the `Store` interface and how to extend it, see the link:design.md[Design and Architecture] and link:plugin-guide.md[Extension Guide] documentation.
+For more details about the `Store` interface and how to extend it, see the link:design.md[Design and Architecture] and link:extension-guide.md[Extension Guide] documentation.
 
 ===== Valkey Store Plugin
 
