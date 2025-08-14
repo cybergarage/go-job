@@ -114,7 +114,14 @@ type Store interface {
 }
 ----
 
-By default, `go-job` provides ready-to-use key-value store implementations for both Valkey and Etcd.
+By default, `go-job` provides ready-to-use key-value store implementations, including Valkey and Etcd.
+
+The following table summarizes the main differences between the available store plugins:
+
+[format="csv", options="header"]
+|===
+include::inc/store_plugins.csv[]
+|===
 
 These store plugins are built on top of the `kv.Store` interface, making it easy to use them out of the box or to develop your own custom store plugins based on the same interface.
 

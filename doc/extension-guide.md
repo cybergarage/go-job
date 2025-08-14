@@ -193,9 +193,22 @@ type Store interface {
 
 <div class="paragraph">
 
-By default, `go-job` provides ready-to-use key-value store implementations for both Valkey and Etcd.
+By default, `go-job` provides ready-to-use key-value store implementations, including Valkey and Etcd.
 
 </div>
+
+<div class="paragraph">
+
+The following table summarizes the main differences between the available store plugins:
+
+</div>
+
+| Store | Type | Persistence | Distribution | Use Case | Notes |  |  |
+|----|----|----|----|----|----|----|----|
+| Valkey | External (Valkey) | Optional | Yes | Production/Distributed | Redis-compatible | open-source fork | high performance |
+| Redis | External (Redis) | Optional | Yes | Production/Distributed | Popular in-memory store | can persist to disk | high performance |
+| etcd | External (etcd) | Yes | Yes | Production/Distributed | Strong consistency | suited for coordination and metadata |  |
+| memdb | In-memory | No | No | Testing/Development | Fastest but data is lost on restart |  |  |
 
 <div class="paragraph">
 
@@ -301,7 +314,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-13 23:17:32 +0900
+Last updated 2025-08-14 11:04:14 +0900
 
 </div>
 
