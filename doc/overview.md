@@ -1075,51 +1075,39 @@ This enables efficient resource utilization and responsive performance under var
 
 <div class="sect3">
 
-#### Server vs. Manager: When to Use Each
+#### Server vs. Manager: Which to Use?
 
 <div class="paragraph">
 
-`go-job` provides both a **Manager** and a **Server** component, each serving different use cases:
+`go-job` provides two main components:
 
 </div>
 
 <div class="ulist">
 
-- The **Manager** is the core API for embedding job scheduling and execution directly into your Go application. Use the Manager when you want to control jobs programmatically within your own process, such as in microservices, batch processors, or custom automation tools.
+- **Manager**: Embed this in your Go application to schedule and run jobs directly in your process. Use Manager when you want to control jobs from your own code, such as in microservices, batch jobs, or automation tools.
 
-- The **Server** is a standalone process that exposes the Manager’s functionality over a gRPC API. Use the Server when you need to manage jobs remotely, integrate with external systems, or provide job scheduling as a service across multiple applications or environments.
+- **Server**: Run as a standalone process to provide job management over a gRPC API. Use Server when you want to manage jobs remotely, integrate with other systems, or offer job scheduling as a service for multiple applications.
 
 </div>
 
 <div class="paragraph">
 
-Typical usage patterns:
+When to use each:
 
 </div>
 
 <div class="ulist">
 
-- **Use Manager**:
+- **Manager**: For direct, in-process job control and tight integration with your Go code.
 
-- When building an application that needs to schedule and execute jobs internally.
-
-- When you want full control and direct access to job APIs in Go.
-
-- For tight integration with your application’s business logic.
-
-- **Use Server**:
-
-- When you want to provide job scheduling as a centralized service.
-
-- When you need remote access via gRPC (e.g., from other languages or platforms).
-
-- For distributed or multi-tenant environments where jobs are managed externally.
+- **Server**: For remote job management, gRPC access, or centralized job scheduling across many apps.
 
 </div>
 
 <div class="paragraph">
 
-You can also combine both: run the Server for remote access, and embed a Manager in your application for local job execution. The Server uses a Manager internally, so all features are available through both interfaces.
+You can also use both together: run the Server for remote access, and embed a Manager in your app for local jobs. The Server uses a Manager internally, so all features are available in both.
 
 </div>
 
@@ -1352,7 +1340,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 22:58:26 +0900
+Last updated 2025-08-14 23:01:16 +0900
 
 </div>
 
