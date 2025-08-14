@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package valkey
+package redis
 
 import (
 	"context"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
-	"github.com/valkey-io/valkey-go"
+	redis "github.com/redis/go-redis/v9"
 )
 
 // Store represents a Memdb store service instance.
 type Store struct {
 	kv.Config
-	valkey.Client
+	*redis.Client
 
 	opt StoreOption
 }
@@ -43,18 +43,17 @@ func NewStore(option StoreOption) kv.Store {
 
 // Name returns the name of this memdb store.
 func (store *Store) Name() string {
-	return "valkey"
+	return "redis"
 }
 
 // Start starts this memdb.
 func (store *Store) Start() error {
-	var err error
-	store.Client, err = valkey.NewClient(store.opt)
-	if err != nil {
-		return err
+	store.Client = redis.NewClient(&store.opt)
+	stat := store.Client.Ping(context.Background())
+	if stat.Err() != nil {
+		return stat.Err()
 	}
-	cmd := store.B().Ping()
-	return store.Do(context.Background(), cmd.Build()).Error()
+	return nil
 }
 
 // Stop stops this memdb.
@@ -67,10 +66,9 @@ func (store *Store) Clear() error {
 	if store.Client == nil {
 		return kv.ErrNotReady
 	}
-	cmdList := store.B().Flushall()
-	err := store.Do(context.Background(), cmdList.Build()).Error()
-	if err != nil {
-		return err
+	stat := store.Client.FlushAll(context.Background())
+	if stat.Err() != nil {
+		return stat.Err()
 	}
 	return nil
 }
@@ -81,10 +79,9 @@ func (store *Store) Set(ctx context.Context, obj kv.Object) error {
 		return kv.ErrNotReady
 	}
 	listKey := obj.Key().String()
-	cmdList := store.B().Rpush().Key(listKey).Element(string(obj.Bytes()))
-	err := store.Do(ctx, cmdList.Build()).Error()
-	if err != nil {
-		return err
+	stat := store.Client.RPush(ctx, listKey, string(obj.Bytes()))
+	if stat.Err() != nil {
+		return stat.Err()
 	}
 	return nil
 }
@@ -95,12 +92,11 @@ func (store *Store) Range(ctx context.Context, key kv.Key, limit int64) ([]strin
 		return nil, kv.ErrNotReady
 	}
 	listKey := key.String()
-	cmd := store.B().Lrange().Key(listKey).Start(0).Stop(limit)
-	resp := store.Do(ctx, cmd.Build())
-	if resp.Error() != nil {
-		return nil, resp.Error()
+	stat := store.Client.LRange(ctx, listKey, 0, limit)
+	if stat.Err() != nil {
+		return nil, stat.Err()
 	}
-	return resp.AsStrSlice()
+	return stat.Val(), nil
 }
 
 // Get returns a key-value object of the specified key.
@@ -136,15 +132,11 @@ func (store *Store) Remove(ctx context.Context, obj kv.Object) error {
 	key := obj.Key()
 	listKey := key.String()
 	listValue := string(obj.Bytes())
-	cmd := store.B().Lrem().Key(listKey).Count(0).Element(listValue)
-	resp := store.Do(ctx, cmd.Build())
-	if resp.Error() != nil {
-		return resp.Error()
+	stat := store.Client.LRem(ctx, listKey, 0, listValue)
+	if stat.Err() != nil {
+		return stat.Err()
 	}
-	cnt, err := resp.AsInt64()
-	if err != nil {
-		return err
-	}
+	cnt := stat.Val()
 	if cnt < 1 {
 		return kv.NewErrKeyObjectNotExist(key)
 	}
@@ -157,10 +149,9 @@ func (store *Store) Delete(ctx context.Context, key kv.Key) error {
 		return kv.ErrNotReady
 	}
 	listKey := key.String()
-	cmd := store.B().Del().Key(listKey)
-	err := store.Do(ctx, cmd.Build()).Error()
-	if err != nil {
-		return err
+	stat := store.Client.Del(ctx, listKey)
+	if stat.Err() != nil {
+		return stat.Err()
 	}
 	return nil
 }
@@ -170,16 +161,11 @@ func (store *Store) Dump(ctx context.Context) ([]kv.Object, error) {
 	if store.Client == nil {
 		return nil, kv.ErrNotReady
 	}
-	cmd := store.B().Keys().Pattern("*")
-	resp := store.Do(ctx, cmd.Build())
-	if resp.Error() != nil {
-		return nil, resp.Error()
-	}
-	keys, err := resp.AsStrSlice()
+
+	keys, err := store.Client.Keys(ctx, "*").Result()
 	if err != nil {
 		return nil, err
 	}
-
 	objs := []kv.Object{}
 	for _, key := range keys {
 		obj, err := store.Get(ctx, kv.Key(key))

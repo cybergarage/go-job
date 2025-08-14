@@ -22,6 +22,7 @@ import (
 	"github.com/cybergarage/go-job/job/plugins/store/kv/memdb"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/redis"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/valkey"
 )
 
@@ -297,6 +298,7 @@ func TestStores(t *testing.T) {
 		memdb.NewStore(),
 		valkey.NewStore(),
 		etcd.NewStore(),
+		redis.NewStore(),
 	}
 
 	for _, store := range stores {
