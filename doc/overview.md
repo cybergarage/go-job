@@ -1316,10 +1316,14 @@ func main() {
 <div id="footer-text">
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Last updated 2025-08-13 22:08:24 +0900
 =======
 Last updated 2025-08-14 11:06:48 +0900
 >>>>>>> 6fc9ca0 (docs: update overview.adoc)
+=======
+Last updated 2025-08-14 11:45:09 +0900
+>>>>>>> 71f42b9 (docs: update overview.adoc)
 
 </div>
 
