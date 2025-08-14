@@ -141,4 +141,11 @@ image::img/job-store.png[]
 
 > **Note:** In the future, support for sharing the registry across go-job servers may be added through technologies such as shell scripts, Python, and WebAssembly (Wasm), but there are currently no concrete plans for this feature.
 
-The queue, history, and log components can be shared between go-job servers using distributed store plugins. This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see link:extension-guide.md[Extension Guide].
+The queue, history, and log components can be shared between go-job servers using distributed store plugins. The following table summarizes the main differences between the available store plugins:
+
+[format="csv", options="header"]
+|===
+include::inc/store_plugins.csv[]
+|===
+
+This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see link:extension-guide.md[Extension Guide].
