@@ -1,5 +1,5 @@
 Store,Version,Driver,Type,Persistence,Distribution,Use Case,Notes
 link:https://valkey.io/[Valkey],>=8.1.3,link:https://github.com/valkey-io/valkey-go[valkey-go] v1.0.63,External (Valkey),Optional,Yes,Production/Distributed,Redis-compatible
 link:https://redis.io/[Redis],>=7.2.4,link:https://github.com/redis/go-redis/[go-redis] v9.12.1,External (Redis),Optional,Yes,Production/Distributed,Popular in-memory store
-link:https://etcd.io/[etcd],>=3.6.4,link:go.https://pkg.go.dev/go.etcd.io/etcd/client/v3[etcd] v3.0.1,External (etcd),Yes,Yes,Production/Distributed,Strong consistency
+link:https://etcd.io/[etcd],>=3.6.4,link:https://pkg.go.dev/go.etcd.io/etcd/client/v3[etcd/client] v3.0.1,External (etcd),Yes,Yes,Production/Distributed,Strong consistency
 link:https://github.com/hashicorp/go-memdb/[go-memdb],>=1.3.5,(none),In-memory,No,No,Testing/Development,Fastest but data is lost on restart
