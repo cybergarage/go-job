@@ -1175,12 +1175,12 @@ This approach enables:
 
 </div>
 
-| Store | Type | Persistence | Distribution | Use Case | Notes |  |  |
-|----|----|----|----|----|----|----|----|
-| Valkey | External (Valkey) | Optional | Yes | Production/Distributed | Redis-compatible | open-source fork | high performance |
-| Redis | External (Redis) | Optional | Yes | Production/Distributed | Popular in-memory store | can persist to disk | high performance |
-| etcd | External (etcd) | Yes | Yes | Production/Distributed | Strong consistency | suited for coordination and metadata |  |
-| memdb | In-memory | No | No | Testing/Development | Fastest but data is lost on restart |  |  |
+| Store | Version | Type | Persistence | Distribution | Use Case | Notes |  |  |
+|----|----|----|----|----|----|----|----|----|
+| Valkey | 8.1.3 | External (Valkey) | Optional | Yes | Production/Distributed | Redis-compatible | open-source fork | high performance |
+| Redis | 7.2.4 | External (Redis) | Optional | Yes | Production/Distributed | Popular in-memory store | can persist to disk | high performance |
+| etcd | 3.6.4 | External (etcd) | Yes | Yes | Production/Distributed | Strong consistency | suited for coordination and metadata |  |
+| memdb | 1.3.5 | In-memory | No | No | Testing/Development | Fastest but data is lost on restart |  |  |
 
 <div class="paragraph">
 
@@ -1290,7 +1290,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 11:46:11 +0900
+Last updated 2025-08-14 12:36:01 +0900
 
 </div>
 
