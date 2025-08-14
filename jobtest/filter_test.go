@@ -28,22 +28,28 @@ func TestFilter(t *testing.T) {
 	tests := []struct {
 		opts           []job.FilterOption
 		expectedBefore bool
+		expectedAfter  bool
 	}{
 		{
 			opts:           []job.FilterOption{},
 			expectedBefore: false,
+			expectedAfter:  false,
 		},
 		{
 			opts: []job.FilterOption{
 				job.WithFilterBefore(time.Time{}),
+				job.WithFilterAfter(time.Time{}),
 			},
 			expectedBefore: false,
+			expectedAfter:  false,
 		},
 		{
 			opts: []job.FilterOption{
 				job.WithFilterBefore(time.Now()),
+				job.WithFilterAfter(time.Now()),
 			},
 			expectedBefore: true,
+			expectedAfter:  true,
 		},
 	}
 
@@ -56,6 +62,13 @@ func TestFilter(t *testing.T) {
 			}
 			if tt.expectedBefore && before.IsZero() {
 				t.Errorf("expected Before() to return a non-zero time, got zero time")
+			}
+			after, ok := query.After()
+			if ok != tt.expectedAfter {
+				t.Errorf("expected After() to return %t, got %t", tt.expectedAfter, ok)
+			}
+			if tt.expectedAfter && after.IsZero() {
+				t.Errorf("expected After() to return a non-zero time, got zero time")
 			}
 		})
 	}

@@ -22,6 +22,8 @@ import (
 type Filter interface {
 	// Before returns the time before which job instances should be filtered.
 	Before() (time.Time, bool)
+	// After returns the time after which job instances should be filtered.
+	After() (time.Time, bool)
 	// IsUnset returns true if no filter criteria are configured.
 	IsUnset() bool
 	// Matches checks if the specified object matches the filter criteria.
@@ -33,6 +35,7 @@ type FilterOption func(*filter)
 
 type filter struct {
 	before time.Time
+	after  time.Time
 }
 
 // WithFilterBefore sets the time before which job instances should be filtered.
@@ -42,10 +45,18 @@ func WithFilterBefore(before time.Time) FilterOption {
 	}
 }
 
+// WithFilterAfter sets the time after which job instances should be filtered.
+func WithFilterAfter(after time.Time) FilterOption {
+	return func(f *filter) {
+		f.after = after
+	}
+}
+
 // NewFilter creates a new instance of Filter with the given options.
 func NewFilter(opts ...FilterOption) Filter {
 	f := &filter{
 		before: time.Time{},
+		after:  time.Time{},
 	}
 	for _, opt := range opts {
 		opt(f)
@@ -59,6 +70,14 @@ func (f *filter) Before() (time.Time, bool) {
 		return time.Time{}, false
 	}
 	return f.before, true
+}
+
+// After returns the time after which job instances should be filtered.
+func (f *filter) After() (time.Time, bool) {
+	if f.after.IsZero() {
+		return time.Time{}, false
+	}
+	return f.after, true
 }
 
 // IsUnset returns true if no filter criteria are configured.
@@ -80,9 +99,23 @@ func (f *filter) Matches(v any) bool {
 		if before, ok := f.Before(); ok && !v.CreatedAt().Before(before) {
 			return false
 		}
+		if after, ok := f.After(); ok && !v.CreatedAt().After(after) {
+			return false
+		}
 		return true
-	case instanceState:
+	case InstanceState:
 		if before, ok := f.Before(); ok && !v.Timestamp().Before(before) {
+			return false
+		}
+		if after, ok := f.After(); ok && !v.Timestamp().After(after) {
+			return false
+		}
+		return true
+	case Log:
+		if before, ok := f.Before(); ok && !v.Timestamp().Before(before) {
+			return false
+		}
+		if after, ok := f.After(); ok && !v.Timestamp().After(after) {
 			return false
 		}
 		return true
