@@ -1,6 +1,6 @@
 module github.com/cybergarage/go-job
 
-go 1.24
+go 1.25
 
 require (
 	github.com/cybergarage/go-logger v1.3.11
