@@ -74,7 +74,13 @@ func (reg *registryImpl) ListJobs() ([]Job, error) {
 // LookupJob looks up a job by its kind in the registry.
 func (reg *registryImpl) LookupJob(kind Kind) (Job, bool) {
 	job, exists := reg.jobs[kind]
-	return job, exists
+	if !exists {
+		return nil, false
+	}
+	if job == nil {
+		return nil, false
+	}
+	return job, true
 }
 
 // Clear clears all registered jobs.

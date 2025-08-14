@@ -215,6 +215,7 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 		if err != nil {
 			logger.Errorf("failed to re-enqueue instance: %s", err)
 		}
+		return nil, fmt.Errorf("job not registered for instance: %s", instance.Kind())
 	}
 
 	// Recreate the instance with the corresponding job information, including the handler's executor.
