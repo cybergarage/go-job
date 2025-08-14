@@ -1,0 +1,5 @@
+Store,Type,Persistence,Distribution,Use Case,Notes,,
+Valkey,External (Valkey),Optional,Yes,Production/Distributed,Redis-compatible, open-source fork, high performance
+Redis,External (Redis),Optional,Yes,Production/Distributed,Popular in-memory store, can persist to disk, high performance
+etcd,External (etcd),Yes,Yes,Production/Distributed,Strong consistency, suited for coordination and metadata,
+memdb,In-memory,No,No,Testing/Development,Fastest but data is lost on restart,,
