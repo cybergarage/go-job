@@ -39,6 +39,9 @@ func TestJobState(t *testing.T) {
 			if !tt.state.Is(JobStateAll) {
 				t.Errorf("expected JobState %s to be part of JobStateAll", tt.state.String())
 			}
+			if !JobState(JobStateAll).Matches(tt.state) {
+				t.Errorf("expected JobState %s to be part of JobStateAll", tt.state.String())
+			}
 			stateStr := tt.state.String()
 			if stateStr == "" {
 				t.Errorf("expected JobState %s to have a string representation", tt.state)

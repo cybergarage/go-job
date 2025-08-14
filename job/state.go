@@ -127,6 +127,11 @@ func (s JobState) Is(state JobState) bool {
 	return (s & state) != 0
 }
 
+// Matches checks if the current JobState matches the provided state.
+func (s JobState) Matches(state JobState) bool {
+	return (s & state) != 0
+}
+
 // String returns the string representation of the JobState.
 func (s JobState) String() string {
 	switch s {
