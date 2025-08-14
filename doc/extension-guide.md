@@ -111,10 +111,10 @@ type HistoryStore interface {
 type StateStore interface {
     // LogInstanceState adds a new state record for a job instance.
     LogInstanceState(ctx context.Context, state InstanceState) error
-        // LookupInstanceHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
-        LookupInstanceHistory(ctx context.Context, query Query) (InstanceHistory, error)
-        // ClearInstanceHistory clears all state records for a job instance that match the specified filter.
-        ClearInstanceHistory(ctx context.Context, filter Filter) error
+    // LookupInstanceHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
+    LookupInstanceHistory(ctx context.Context, query Query) (InstanceHistory, error)
+    // ClearInstanceHistory clears all state records for a job instance that match the specified filter.
+    ClearInstanceHistory(ctx context.Context, filter Filter) error
 }
 
 // LogStore is an interface that defines methods for logging job instance messages.
@@ -125,10 +125,10 @@ type LogStore interface {
     Warnf(ctx context.Context, job Instance, format string, args ...any) error
     // Errorf logs an error message for a job instance.
     Errorf(ctx context.Context, job Instance, format string, args ...any) error
-        // LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
-        LookupInstanceLogs(ctx context.Context, query Query) ([]Log, error)
-        // ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
-        ClearInstanceLogs(ctx context.Context, filter Filter) error
+    // LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+    LookupInstanceLogs(ctx context.Context, query Query) ([]Log, error)
+    // ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
+    ClearInstanceLogs(ctx context.Context, filter Filter) error
 }
 ```
 
@@ -161,28 +161,28 @@ This interface makes it easy to build your own plugins for storing and managing 
 ``` CodeRay
 // Store represents a key-value store interface.
 type Store interface {
-        // UniqueKeys returns whether keys should be unique.
-        UniqueKeys() bool
-        // Name returns the name of the store.
-        Name() string
-        // Set stores a key-value object. If the key already holds some value, it is overwritten.
-        Set(ctx context.Context, obj Object) error
-        // Get returns a key-value object of the specified key.
-        Get(ctx context.Context, key Key) (Object, error)
-        // Scan returns a result set of all key-value objects whose keys have the specified prefix.
-        Scan(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
-        // Remove removes the specified key-value object.
-        Remove(ctx context.Context, obj Object) error
-        // Delete deletes all key-value objects whose keys have the specified prefix.
-        Delete(ctx context.Context, key Key) error
-        // Dump returns all key-value objects in the store.
-        Dump(ctx context.Context) ([]Object, error)
-        // Start starts the store.
-        Start() error
-        // Stop stops the store.
-        Stop() error
-        // Clear removes all key-value objects from the store.
-        Clear() error
+    // UniqueKeys returns whether keys should be unique.
+    UniqueKeys() bool
+    // Name returns the name of the store.
+    Name() string
+    // Set stores a key-value object. If the key already holds some value, it is overwritten.
+    Set(ctx context.Context, obj Object) error
+    // Get returns a key-value object of the specified key.
+    Get(ctx context.Context, key Key) (Object, error)
+    // Scan returns a result set of all key-value objects whose keys have the specified prefix.
+    Scan(ctx context.Context, key Key, opts ...Option) (ResultSet, error)
+    // Remove removes the specified key-value object.
+    Remove(ctx context.Context, obj Object) error
+    // Delete deletes all key-value objects whose keys have the specified prefix.
+    Delete(ctx context.Context, key Key) error
+    // Dump returns all key-value objects in the store.
+    Dump(ctx context.Context) ([]Object, error)
+    // Start starts the store.
+    Start() error
+    // Stop stops the store.
+    Stop() error
+    // Clear removes all key-value objects from the store.
+    Clear() error
 }
 ```
 
@@ -237,21 +237,21 @@ To use the Valkey store plugin, simply create a manager instance with Valkey as 
 
 ``` CodeRay
 import (
-        "net"
+    "net"
 
-        "github.com/cybergarage/go-job/job"
-        "github.com/cybergarage/go-job/job/plugins/store"
-        "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
+    "github.com/cybergarage/go-job/job"
+    "github.com/cybergarage/go-job/job/plugins/store"
+    "github.com/cybergarage/go-job/job/plugins/store/kv/valkey"
     v1 "github.com/valkey-io/valkey-go"
 )
 
 func main() {
-        valkeyOpt := v1.ClientOption{
-                InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
-        }
-        mgr, err := job.NewManager(
-                job.WithStore(store.NewKvStoreWith(valkey.NewStore(valkeyOpt))),
-        )
+    valkeyOpt := v1.ClientOption{
+        InitAddress: []string{net.JoinHostPort("10.0.0.10", "6379")},
+    }
+    mgr, err := job.NewManager(
+        job.WithStore(store.NewKvStoreWith(valkey.NewStore(valkeyOpt))),
+    )
 }
 ```
 
@@ -277,21 +277,21 @@ To use the etcd store plugin, simply create a new manager instance with etcd as 
 
 ``` CodeRay
 import (
-        "net"
+    "net"
 
-        "github.com/cybergarage/go-job/job"
-        "github.com/cybergarage/go-job/job/plugins/store"
-        "github.com/cybergarage/go-job/job/plugins/store/kv/etcd"
-        v3 "go.etcd.io/etcd/client/v3"
+    "github.com/cybergarage/go-job/job"
+    "github.com/cybergarage/go-job/job/plugins/store"
+    "github.com/cybergarage/go-job/job/plugins/store/kv/etcd"
+    v3 "go.etcd.io/etcd/client/v3"
 )
 
 func main() {
-        etcdOpt := v3.Config{
-                Endpoints: []string{net.JoinHostPort("10.0.0.10", "2379")},
-        }
-        mgr, err := job.NewManager(
-                job.WithStore(store.NewKvStoreWith(etcd.NewStore(etcdOpt))),
-        )
+    etcdOpt := v3.Config{
+        Endpoints: []string{net.JoinHostPort("10.0.0.10", "2379")},
+    }
+    mgr, err := job.NewManager(
+        job.WithStore(store.NewKvStoreWith(etcd.NewStore(etcdOpt))),
+    )
 }
 ```
 
@@ -313,7 +313,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 21:54:23 +0900
+Last updated 2025-08-14 22:51:53 +0900
 
 </div>
 
