@@ -100,6 +100,25 @@ proto: protopkg $(pbs)
 
 # Documentation generation
 
+docs := $(wildcard doc/*.md)
+incs := $(wildcard doc/inc/*.csv)
+imgs := $(wildcard doc/img/*.png)
+
+doc: $(docs) $(imgs) ${incs} cmd-docs doc-proto
+
+%.md : %.adoc ${incs}
+	asciidoctor -b html5 -o - $< | \
+	pandoc -t gfm --wrap=none -f html > $@
+	git commit $@ $< ${incs} -m "docs: update $(notdir $<)"
+
+%.png : %.pu
+	plantuml -tpng $<
+	-git commit $@ $< -m "docs: update $(notdir $<)"
+
+# Documentation generation (Corbra)
+
+cmd-docs: doc-cmd-cli
+
 DOC_ROOT=doc
 DOC_CLI_ROOT=${DOC_ROOT}/cmd/cli
 DOC_CLI_BIN=jobdoc
@@ -110,27 +129,14 @@ doc-cmd-cli:
 	-git add ${DOC_CLI_ROOT}/*.md
 	-git commit ${DOC_CLI_ROOT}/*.md -m "docs: update CLI documentation"
 
+# Documentation generation (Protoc)
+
 doc-proto:
 	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
 	protoc --doc_out=./${DOC_ROOT} --doc_opt=markdown,grpc-api.md \
 		--proto_path=${PKG_PROTO_ROOT}/proto/v1 \
 		$(shell find ${PKG_PROTO_ROOT}/proto/v1 -name "*.proto")
 	-git commit ${DOC_ROOT}/grpc-api.md -m "docs: update proto documentation"
-
-cmd-docs: doc-cmd-cli
-
-%.md : %.adoc
-	asciidoctor -b html5 -o - $< | \
-	pandoc -t gfm --wrap=none -f html > $@
-	git commit $@ $< -m "docs: update $(notdir $<)"
-
-%.png : %.pu
-	plantuml -tpng $<
-	-git commit $@ $< -m "docs: update $(notdir $<)"
-
-images := $(wildcard doc/img/*.png)
-docs := $(wildcard doc/*.md)
-doc: $(docs) $(images) cmd-docs doc-proto
 
 # Valkey container management
 
