@@ -29,6 +29,8 @@ const (
 	LogError // 2
 	// LogWarn represents warning log messages.
 	LogWarn // 4
+	// LogNone represents no log messages.
+	LogNone LogLevel = 0 // 0
 	// LogAll represents all log levels combined.
 	LogAll LogLevel = LogInfo | LogError | LogWarn // 7
 )
@@ -72,6 +74,8 @@ func (l LogLevel) Contains(other LogLevel) bool {
 // String returns the string representation of the Log.
 func (l LogLevel) String() string {
 	switch l {
+	case LogNone:
+		return "NONE"
 	case LogInfo:
 		return logInfoString
 	case LogError:

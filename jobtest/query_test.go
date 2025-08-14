@@ -30,32 +30,38 @@ func TestQuery(t *testing.T) {
 		expectedUUID  bool
 		expectedKind  bool
 		expectedState bool
+		expectedLevel bool
 	}{
 		{
 			opts:          []job.QueryOption{},
 			expectedUUID:  false,
 			expectedKind:  false,
 			expectedState: false,
+			expectedLevel: false,
 		},
 		{
 			opts: []job.QueryOption{
 				job.WithQueryUUID(uuid.Nil),
 				job.WithQueryKind(""),
 				job.WithQueryState(job.JobStateUnset),
+				job.WithQueryLogLevel(job.LogNone),
 			},
 			expectedUUID:  false,
 			expectedKind:  false,
 			expectedState: false,
+			expectedLevel: false,
 		},
 		{
 			opts: []job.QueryOption{
 				job.WithQueryUUID(uuid.New()),
 				job.WithQueryKind("test"),
 				job.WithQueryState(job.JobCreated),
+				job.WithQueryLogLevel(job.LogInfo),
 			},
 			expectedUUID:  true,
 			expectedKind:  true,
 			expectedState: true,
+			expectedLevel: true,
 		},
 	}
 

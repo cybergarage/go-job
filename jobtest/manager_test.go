@@ -110,6 +110,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			processHandler := func(ji job.Instance, responses []any) {
 				ji.Infof("%v", responses)
+				ji.Errorf("%s: %v", job.LogError.String(), responses)
+				ji.Warnf("%s: %v", job.LogWarn.String(), responses)
 				wg.Done()
 			}
 
@@ -259,7 +261,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			}
 
 			query = job.NewQuery(
-				job.WithQueryInstance(ji), // filter by specific job instance
+				job.WithQueryInstance(ji),          // filter by specific job instance
+				job.WithQueryLogLevel(job.LogInfo), // filter logs by level
 			)
 			logs, err := mgr.LookupInstanceLogs(query)
 			if err == nil {
@@ -283,6 +286,10 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			}
 
 			// Clean up
+
+			query = job.NewQuery(
+				job.WithQueryInstance(ji), // filter by specific job instance
+			)
 
 			if err := mgr.Clear(); err != nil {
 				t.Errorf("Failed to clear job manager: %v", err)

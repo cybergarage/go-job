@@ -26,6 +26,8 @@ type Query interface {
 	Kind() (string, bool)
 	// State returns the state of the job instance.
 	State() (JobState, bool)
+	// LogLevel returns the log level of the job instance.
+	LogLevel() (LogLevel, bool)
 	// IsAll returns true if the query matches all objects (no query criteria set).
 	IsAll() bool
 	// Matches checks if the specified object matches the query criteria.
@@ -39,6 +41,7 @@ type query struct {
 	uuid  uuid.UUID
 	kind  string
 	state JobState
+	level LogLevel
 }
 
 // WithQueryUUID sets the UUID for the job query.
@@ -62,6 +65,13 @@ func WithQueryState(state JobState) QueryOption {
 	}
 }
 
+// WithQueryLogLevel sets the level for the job query.
+func WithQueryLogLevel(level LogLevel) QueryOption {
+	return func(q *query) {
+		q.level = level
+	}
+}
+
 // WithQueryInstance sets the job query UUID and kind based on an existing job instance.
 func WithQueryInstance(instance Instance) QueryOption {
 	return func(q *query) {
@@ -79,6 +89,7 @@ func NewQuery(opts ...QueryOption) Query {
 		uuid:  uuid.Nil,
 		kind:  "",
 		state: JobStateUnset,
+		level: LogNone,
 	}
 	for _, opt := range opts {
 		opt(q)
@@ -110,6 +121,14 @@ func (q *query) State() (JobState, bool) {
 	return q.state, true
 }
 
+// LogLevel returns the log level of the job instance.
+func (q *query) LogLevel() (LogLevel, bool) {
+	if q.level == LogNone {
+		return LogNone, false
+	}
+	return q.level, true
+}
+
 // IsAll returns true if the query matches all objects (no query criteria set).
 func (q *query) IsAll() bool {
 	if q == nil {
@@ -118,7 +137,8 @@ func (q *query) IsAll() bool {
 	_, hasUUID := q.UUID()
 	_, hasKind := q.Kind()
 	_, hasState := q.State()
-	return !hasUUID && !hasKind && !hasState
+	_, hasLevel := q.LogLevel()
+	return !hasUUID && !hasKind && !hasState && !hasLevel
 }
 
 // Matches checks if the specified object matches the query criteria.
@@ -145,7 +165,7 @@ func (q *query) Matches(v any) bool {
 		if kind, ok := q.Kind(); ok && kind != v.Kind() {
 			return false
 		}
-		if state, ok := q.State(); ok && state != v.State() {
+		if state, ok := q.State(); ok && !v.State().Matches(state) {
 			return false
 		}
 		return true
@@ -154,6 +174,9 @@ func (q *query) Matches(v any) bool {
 			return false
 		}
 		if kind, ok := q.Kind(); ok && kind != v.Kind() {
+			return false
+		}
+		if level, ok := q.LogLevel(); ok && !v.Level().Contains(level) {
 			return false
 		}
 		return true

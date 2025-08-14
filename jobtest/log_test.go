@@ -31,6 +31,7 @@ func TestLogLevelFilter(t *testing.T) {
 		{"Contains Info", job.LogAll, job.LogInfo, true},
 		{"Contains Error", job.LogAll, job.LogError, true},
 		{"Contains Warning", job.LogAll, job.LogWarn, true},
+		{"Contains None", job.LogNone, job.LogAll, false},
 		{"Does not contain Info", job.LogError, job.LogInfo, false},
 		{"Does not contain Error", job.LogWarn, job.LogError, false},
 	}
