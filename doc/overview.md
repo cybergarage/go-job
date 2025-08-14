@@ -1107,7 +1107,7 @@ When to use each:
 
 <div class="paragraph">
 
-You can also use both together: run the Server for remote access, and embed a Manager in your app for local jobs. The Server uses a Manager internally, so all features are available in both.
+The Server uses a Manager internally, so all features are available in both.
 
 </div>
 
@@ -1340,7 +1340,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 23:01:16 +0900
+Last updated 2025-08-14 23:10:00 +0900
 
 </div>
 
