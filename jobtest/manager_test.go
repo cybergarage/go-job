@@ -18,6 +18,7 @@ import (
 	"context"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
@@ -31,6 +32,8 @@ import (
 // nolint: maintidx
 func ManagerTest(t *testing.T, mgr job.Manager) {
 	t.Helper()
+
+	startTimestamp := time.Now()
 
 	if err := mgr.Start(); err != nil {
 		t.Skipf("Failed to start job manager: %v", err)
@@ -174,6 +177,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 
 			wg.Wait()
 
+			doneTimestamp := time.Now()
+
 			// Lookup job instance (from history)
 
 			instances, err := mgr.LookupInstances(job.NewQuery(job.WithQueryUUID(ji.UUID())))
@@ -263,6 +268,8 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			query = job.NewQuery(
 				job.WithQueryInstance(ji),          // filter by specific job instance
 				job.WithQueryLogLevel(job.LogInfo), // filter logs by level
+				job.WithQueryAfter(startTimestamp), // filter logs after the job started
+				job.WithQueryBefore(doneTimestamp), // filter logs before the job finished
 			)
 			logs, err := mgr.LookupInstanceLogs(query)
 			if err == nil {

@@ -54,6 +54,11 @@ func WithFilterAfter(after time.Time) FilterOption {
 
 // NewFilter creates a new instance of Filter with the given options.
 func NewFilter(opts ...FilterOption) Filter {
+	return newFilter(opts...)
+}
+
+// newFilter creates a new instance of filter with the given options.
+func newFilter(opts ...FilterOption) *filter {
 	f := &filter{
 		before: time.Time{},
 		after:  time.Time{},

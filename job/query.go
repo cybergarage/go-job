@@ -15,22 +15,29 @@
 package job
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
-// Query is an interface that defines methods for querying job instances.
+// Query defines an interface for specifying and evaluating query criteria for jobs, instances, and logs.
 type Query interface {
-	// UUID returns the UUID of the job instance.
+	// Filter provides additional filtering methods for time-based or custom criteria.
+	Filter
+
+	// UUID returns the UUID criterion for the query, if set.
 	UUID() (uuid.UUID, bool)
-	// Kind returns the kind of the job instance.
+	// Kind returns the kind criterion for the query, if set.
 	Kind() (string, bool)
-	// State returns the state of the job instance.
+	// State returns the job state criterion for the query, if set.
 	State() (JobState, bool)
-	// LogLevel returns the log level of the job instance.
+	// LogLevel returns the log level criterion for the query, if set.
 	LogLevel() (LogLevel, bool)
-	// IsAll returns true if the query matches all objects (no query criteria set).
-	IsAll() bool
-	// Matches checks if the specified object matches the query criteria.
+
+	// IsUnset returns true if no query criteria are set.
+	IsUnset() bool
+
+	// Matches returns true if the specified object satisfies all query criteria.
 	Matches(v any) bool
 }
 
@@ -38,41 +45,43 @@ type Query interface {
 type QueryOption func(*query)
 
 type query struct {
+	*filter
+
 	uuid  uuid.UUID
 	kind  string
 	state JobState
 	level LogLevel
 }
 
-// WithQueryUUID sets the UUID for the job query.
+// WithQueryUUID sets the UUID for the query.
 func WithQueryUUID(uuid uuid.UUID) QueryOption {
 	return func(q *query) {
 		q.uuid = uuid
 	}
 }
 
-// WithQueryKind sets the kind for the job query.
+// WithQueryKind sets the kind for the query.
 func WithQueryKind(kind string) QueryOption {
 	return func(q *query) {
 		q.kind = kind
 	}
 }
 
-// WithQueryState sets the state for the job query.
+// WithQueryState sets the state for the query.
 func WithQueryState(state JobState) QueryOption {
 	return func(q *query) {
 		q.state = state
 	}
 }
 
-// WithQueryLogLevel sets the level for the job query.
+// WithQueryLogLevel sets the level for the query.
 func WithQueryLogLevel(level LogLevel) QueryOption {
 	return func(q *query) {
 		q.level = level
 	}
 }
 
-// WithQueryInstance sets the job query UUID and kind based on an existing job instance.
+// WithQueryInstance sets the query UUID and kind based on an existing job instance.
 func WithQueryInstance(instance Instance) QueryOption {
 	return func(q *query) {
 		if instance == nil {
@@ -83,13 +92,27 @@ func WithQueryInstance(instance Instance) QueryOption {
 	}
 }
 
-// NewQuery creates a new instance of Query with the given options.
+// WithQueryBefore sets the time before which target should be filtered.
+func WithQueryBefore(before time.Time) QueryOption {
+	return func(q *query) {
+		q.filter.before = before
+	}
+}
+
+// WithQueryAfter sets the time after which target should be filtered.
+func WithQueryAfter(after time.Time) QueryOption {
+	return func(q *query) {
+		q.filter.after = after
+	}
+}
+
 func NewQuery(opts ...QueryOption) Query {
 	q := &query{
-		uuid:  uuid.Nil,
-		kind:  "",
-		state: JobStateUnset,
-		level: LogNone,
+		filter: newFilter(),
+		uuid:   uuid.Nil,
+		kind:   "",
+		state:  JobStateUnset,
+		level:  LogNone,
 	}
 	for _, opt := range opts {
 		opt(q)
@@ -97,7 +120,7 @@ func NewQuery(opts ...QueryOption) Query {
 	return q
 }
 
-// UUID returns the UUID of the job instance.
+// UUID returns the UUID criterion for the query, if set.
 func (q *query) UUID() (uuid.UUID, bool) {
 	if q.uuid == uuid.Nil {
 		return uuid.Nil, false
@@ -105,7 +128,7 @@ func (q *query) UUID() (uuid.UUID, bool) {
 	return q.uuid, true
 }
 
-// Kind returns the kind of the job instance.
+// Kind returns the kind criterion for the query, if set.
 func (q *query) Kind() (string, bool) {
 	if q.kind == "" {
 		return "", false
@@ -113,7 +136,7 @@ func (q *query) Kind() (string, bool) {
 	return q.kind, true
 }
 
-// State returns the state of the job instance.
+// State returns the job state criterion for the query, if set.
 func (q *query) State() (JobState, bool) {
 	if q.state == JobStateUnset {
 		return JobStateUnset, false
@@ -121,7 +144,7 @@ func (q *query) State() (JobState, bool) {
 	return q.state, true
 }
 
-// LogLevel returns the log level of the job instance.
+// LogLevel returns the log level criterion for the query, if set.
 func (q *query) LogLevel() (LogLevel, bool) {
 	if q.level == LogNone {
 		return LogNone, false
@@ -129,8 +152,8 @@ func (q *query) LogLevel() (LogLevel, bool) {
 	return q.level, true
 }
 
-// IsAll returns true if the query matches all objects (no query criteria set).
-func (q *query) IsAll() bool {
+// IsUnset returns true if no query criteria are set.
+func (q *query) IsUnset() bool {
 	if q == nil {
 		return true
 	}
@@ -138,12 +161,13 @@ func (q *query) IsAll() bool {
 	_, hasKind := q.Kind()
 	_, hasState := q.State()
 	_, hasLevel := q.LogLevel()
-	return !hasUUID && !hasKind && !hasState && !hasLevel
+	hasFilter := !q.filter.IsUnset()
+	return !hasUUID && !hasKind && !hasState && !hasLevel && !hasFilter
 }
 
-// Matches checks if the specified object matches the query criteria.
+// Matches returns true if the specified object satisfies all query criteria.
 func (q *query) Matches(v any) bool {
-	if q.IsAll() {
+	if q.IsUnset() {
 		return true
 	}
 	switch v := v.(type) {
@@ -157,6 +181,9 @@ func (q *query) Matches(v any) bool {
 		if state, ok := q.State(); ok && state != v.State() {
 			return false
 		}
+		if ok := !q.filter.IsUnset(); ok && !q.filter.Matches(v) {
+			return false
+		}
 		return true
 	case InstanceState:
 		if uuid, ok := q.UUID(); ok && uuid != v.UUID() {
@@ -168,6 +195,9 @@ func (q *query) Matches(v any) bool {
 		if state, ok := q.State(); ok && !v.State().Matches(state) {
 			return false
 		}
+		if ok := !q.filter.IsUnset(); ok && !q.filter.Matches(v) {
+			return false
+		}
 		return true
 	case Log:
 		if uuid, ok := q.UUID(); ok && uuid != v.UUID() {
@@ -177,6 +207,9 @@ func (q *query) Matches(v any) bool {
 			return false
 		}
 		if level, ok := q.LogLevel(); ok && !v.Level().Contains(level) {
+			return false
+		}
+		if ok := !q.filter.IsUnset(); ok && !q.filter.Matches(v) {
 			return false
 		}
 		return true

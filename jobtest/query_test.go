@@ -17,6 +17,7 @@ package jobtest
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/google/uuid"
@@ -26,18 +27,22 @@ func TestQuery(t *testing.T) {
 	t.Helper()
 
 	tests := []struct {
-		opts          []job.QueryOption
-		expectedUUID  bool
-		expectedKind  bool
-		expectedState bool
-		expectedLevel bool
+		opts           []job.QueryOption
+		expectedUUID   bool
+		expectedKind   bool
+		expectedState  bool
+		expectedLevel  bool
+		expectedBefore bool
+		expectedAfter  bool
 	}{
 		{
-			opts:          []job.QueryOption{},
-			expectedUUID:  false,
-			expectedKind:  false,
-			expectedState: false,
-			expectedLevel: false,
+			opts:           []job.QueryOption{},
+			expectedUUID:   false,
+			expectedKind:   false,
+			expectedState:  false,
+			expectedLevel:  false,
+			expectedBefore: false,
+			expectedAfter:  false,
 		},
 		{
 			opts: []job.QueryOption{
@@ -45,11 +50,15 @@ func TestQuery(t *testing.T) {
 				job.WithQueryKind(""),
 				job.WithQueryState(job.JobStateUnset),
 				job.WithQueryLogLevel(job.LogNone),
+				job.WithQueryBefore(time.Time{}),
+				job.WithQueryAfter(time.Time{}),
 			},
-			expectedUUID:  false,
-			expectedKind:  false,
-			expectedState: false,
-			expectedLevel: false,
+			expectedUUID:   false,
+			expectedKind:   false,
+			expectedState:  false,
+			expectedLevel:  false,
+			expectedBefore: false,
+			expectedAfter:  false,
 		},
 		{
 			opts: []job.QueryOption{
@@ -57,11 +66,15 @@ func TestQuery(t *testing.T) {
 				job.WithQueryKind("test"),
 				job.WithQueryState(job.JobCreated),
 				job.WithQueryLogLevel(job.LogInfo),
+				job.WithQueryBefore(time.Now()),
+				job.WithQueryAfter(time.Now()),
 			},
-			expectedUUID:  true,
-			expectedKind:  true,
-			expectedState: true,
-			expectedLevel: true,
+			expectedUUID:   true,
+			expectedKind:   true,
+			expectedState:  true,
+			expectedLevel:  true,
+			expectedBefore: true,
+			expectedAfter:  true,
 		},
 	}
 
@@ -90,6 +103,30 @@ func TestQuery(t *testing.T) {
 			}
 			if ok && state == job.JobStateUnset {
 				t.Error("expected non-unset State")
+			}
+
+			level, ok := query.LogLevel()
+			if ok != tt.expectedLevel {
+				t.Errorf("expected LogLevel presence: %v, got: %v", tt.expectedLevel, ok)
+			}
+			if ok && level == job.LogNone {
+				t.Error("expected non-none LogLevel")
+			}
+
+			before, ok := query.Before()
+			if ok != tt.expectedBefore {
+				t.Errorf("expected Before presence: %v, got: %v", tt.expectedBefore, ok)
+			}
+			if ok && before.IsZero() {
+				t.Error("expected non-zero Before")
+			}
+
+			after, ok := query.After()
+			if ok != tt.expectedAfter {
+				t.Errorf("expected After presence: %v, got: %v", tt.expectedAfter, ok)
+			}
+			if ok && after.IsZero() {
+				t.Error("expected non-zero After")
 			}
 		})
 	}
