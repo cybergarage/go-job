@@ -33,6 +33,7 @@ Table of Contents:
 - [Usage Guide](#_usage_guide)
   - [Arbitrary Function Execution](#_arbitrary_function_execution)
   - [Job Scheduling](#_job_scheduling)
+  - [Job Termination Handling](#_job_termination_handling)
   - [Job Monitoring and Observability](#_job_monitoring_and_observability)
   - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
   - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
@@ -616,6 +617,134 @@ mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 <div class="paragraph">
 
 Cron format: `minute hour day-of-month month day-of-week`
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect2">
+
+### Job Termination Handling
+
+<div class="paragraph">
+
+When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
+
+</div>
+
+<div class="sect3">
+
+#### Setting Retry Policy
+
+<div class="paragraph">
+
+You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
+```
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Custom Termination Handling
+
+<div class="paragraph">
+
+You can define custom logic to handle job termination using `WithTerminateProcessor()`. This allows you to inspect the error, decide whether to retry, transform the error, or perform cleanup actions.
+
+</div>
+
+<div class="paragraph">
+
+For example, you might want to retry only on specific errors (such as a timeout):
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job,
+    WithTerminateProcessor(func(inst Instance, err error) error {
+        if errors.Is(err, context.DeadlineExceeded) {
+            // Retry if the job was terminated due to a deadline exceeded
+            return err
+        }
+        // For other errors, do not retry
+        return nil
+    }),
+)
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+The `WithTerminateProcessor` function is called whenever a job instance ends with an error. You can return `nil` to mark the job as successful, return the original error to keep it as failed, or return a new error to transform the result.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Setting Backoff Strategy
+
+<div class="paragraph">
+
+A backoff strategy controls how long the system waits before retrying a failed job. This helps prevent overwhelming the system or external resources with rapid retries.
+
+</div>
+
+<div class="paragraph">
+
+You can set a custom backoff strategy using `WithBackoffStrategy()`. The function you provide should return the duration to wait before the next retry attempt.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithBackoffStrategy(
+    func() time.Duration {
+        // Wait 5 seconds before each retry
+        return 5 * time.Second
+    },
+))
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+You can implement more advanced strategies, such as exponential backoff, by adjusting the returned duration based on the number of attempts or other factors.
+
+</div>
+
+<div class="paragraph">
+
+These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle errors and transient failures.
 
 </div>
 
@@ -1340,7 +1469,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 23:38:44 +0900
+Last updated 2025-08-17 08:10:38 +0900
 
 </div>
 

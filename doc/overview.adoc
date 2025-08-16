@@ -263,6 +263,61 @@ mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 
 Cron format: `minute hour day-of-month month day-of-week`
 
+=== Job Termination Handling
+
+When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
+
+==== Setting Retry Policy
+
+You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
+----
+
+==== Custom Termination Handling
+
+You can define custom logic to handle job termination using `WithTerminateProcessor()`. This allows you to inspect the error, decide whether to retry, transform the error, or perform cleanup actions.
+
+For example, you might want to retry only on specific errors (such as a timeout):
+
+[source,go]
+----
+mgr.ScheduleJob(job, 
+    WithTerminateProcessor(func(inst Instance, err error) error {
+        if errors.Is(err, context.DeadlineExceeded) {
+            // Retry if the job was terminated due to a deadline exceeded
+            return err
+        }
+        // For other errors, do not retry
+        return nil
+    }),
+)
+----
+
+The `WithTerminateProcessor` function is called whenever a job instance ends with an error. You can return `nil` to mark the job as successful, return the original error to keep it as failed, or return a new error to transform the result.
+
+==== Setting Backoff Strategy
+
+A backoff strategy controls how long the system waits before retrying a failed job. This helps prevent overwhelming the system or external resources with rapid retries.
+
+You can set a custom backoff strategy using `WithBackoffStrategy()`. The function you provide should return the duration to wait before the next retry attempt.
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithBackoffStrategy(
+    func() time.Duration {
+        // Wait 5 seconds before each retry
+        return 5 * time.Second
+    },
+))
+----
+
+You can implement more advanced strategies, such as exponential backoff, by adjusting the returned duration based on the number of attempts or other factors.
+
+These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle errors and transient failures.
+
 === Job Monitoring and Observability
 
 `go-job` provides comprehensive monitoring capabilities to track job execution and understand system behavior. You can monitor jobs in real-time using event handlers, or query historical data using manager methods.
