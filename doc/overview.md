@@ -658,98 +658,6 @@ mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
 
 </div>
 
-<div class="sect3">
-
-#### Custom Termination Handling
-
-<div class="paragraph">
-
-You can define custom logic to handle job termination using `WithTerminateProcessor()`. This allows you to inspect the error, decide whether to retry, transform the error, or perform cleanup actions.
-
-</div>
-
-<div class="paragraph">
-
-For example, you might want to avoid retrying only for specific errors (such as a timeout):
-
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` CodeRay
-mgr.ScheduleJob(job,
-    WithTerminateProcessor(func(inst Instance, err error) error {
-        if errors.Is(err, context.DeadlineExceeded) {
-            // Do not retry if the job was terminated due to a deadline being exceeded
-            return nil
-        }
-        // Retry for all other errors
-        return error
-    }),
-)
-```
-
-</div>
-
-</div>
-
-<div class="paragraph">
-
-The `WithTerminateProcessor` function is called whenever a job instance ends with an error. You can return `nil` to mark the job as successful, return the original error to keep it as failed, or return a new error to transform the result.
-
-</div>
-
-</div>
-
-<div class="sect3">
-
-#### Setting Backoff Strategy
-
-<div class="paragraph">
-
-A backoff strategy controls how long the system waits before retrying a failed job. This helps prevent overwhelming the system or external resources with rapid retries.
-
-</div>
-
-<div class="paragraph">
-
-You can set a custom backoff strategy using `WithBackoffStrategy()`. The function you provide should return the duration to wait before the next retry attempt.
-
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` CodeRay
-mgr.ScheduleJob(job, WithBackoffStrategy(
-    func(ji Instance) time.Duration {
-        // Exponential backoff
-        return time.Duration(float64(ji.Attempts()) * time.Second * (0.8 + 0.4*(rand.Float64())))
-    },
-))
-```
-
-</div>
-
-</div>
-
-<div class="paragraph">
-
-You can implement more advanced strategies, such as exponential backoff, by adjusting the returned duration based on the number of attempts or other factors.
-
-</div>
-
-<div class="paragraph">
-
-These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle errors and transient failures.
-
-</div>
-
-</div>
-
 </div>
 
 <div class="sect2">
@@ -794,6 +702,7 @@ job, err := NewJob(
     }),
     WithTerminateProcessor(func(inst Instance, err error) {
         inst.Errorf("Error: %v", err)
+        return err
     }),
 )
 ```
@@ -998,6 +907,98 @@ Provides auditability and debugging capability for each job instance.
 </div>
 
 </div>
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Custom Termination Handling
+
+<div class="paragraph">
+
+You can define custom logic to handle job termination using `WithTerminateProcessor()`. This allows you to inspect the error, decide whether to retry, transform the error, or perform cleanup actions.
+
+</div>
+
+<div class="paragraph">
+
+For example, you might want to avoid retrying only for specific errors (such as a timeout):
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job,
+    WithTerminateProcessor(func(inst Instance, err error) error {
+        if errors.Is(err, context.DeadlineExceeded) {
+            // Do not retry if the job was terminated due to a deadline being exceeded
+            return nil
+        }
+        // Retry for all other errors
+        return error
+    }),
+)
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+The `WithTerminateProcessor` function is called whenever a job instance ends with an error. You can return `nil` to mark the job as successful, return the original error to keep it as failed, or return a new error to transform the result.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Setting Backoff Strategy
+
+<div class="paragraph">
+
+A backoff strategy controls how long the system waits before retrying a failed job. This helps prevent overwhelming the system or external resources with rapid retries.
+
+</div>
+
+<div class="paragraph">
+
+You can set a custom backoff strategy using `WithBackoffStrategy()`. The function you provide should return the duration to wait before the next retry attempt.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithBackoffStrategy(
+    func(ji Instance) time.Duration {
+        // Exponential backoff
+        return time.Duration(float64(ji.Attempts()) * time.Second * (0.8 + 0.4*(rand.Float64())))
+    },
+))
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+You can implement more advanced strategies, such as exponential backoff, by adjusting the returned duration based on the number of attempts or other factors.
+
+</div>
+
+<div class="paragraph">
+
+These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle errors and transient failures.
 
 </div>
 
@@ -1469,7 +1470,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-17 20:21:24 +0900
+Last updated 2025-08-17 20:58:20 +0900
 
 </div>
 
