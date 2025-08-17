@@ -37,7 +37,7 @@ const (
 )
 
 // BackoffStrategy is a function type that defines how long to wait before retrying a job.
-type BackoffStrategy func() time.Duration
+type BackoffStrategy func(ji Instance) time.Duration
 
 // Policy defines the interface for job scheduling, supporting crontab expressions.
 type Policy interface {
@@ -47,8 +47,8 @@ type Policy interface {
 	Priority() Priority
 	// Timeout returns the timeout duration for the job.
 	Timeout() time.Duration
-	// Backoff returns the delay time before retrying a job.
-	Backoff() time.Duration
+	// BackoffStrategy returns the backoff strategy for the job.
+	BackoffStrategy() BackoffStrategy
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
 	// String returns a string representation of the job instance.
@@ -125,7 +125,7 @@ func WithBackoffStrategy(fn BackoffStrategy) PolicyOption {
 // WithBackoffDuration sets a fixed backoff duration with random jitter for the job policy.
 func WithBackoffDuration(duration time.Duration) PolicyOption {
 	return func(s *policy) {
-		s.backoffFn = func() time.Duration {
+		s.backoffFn = func(ji Instance) time.Duration {
 			// #nosec G404 - jitter calculation doesn't require cryptographic randomness
 			return time.Duration(float64(duration) * (0.8 + 0.4*(rand.Float64())))
 		}
@@ -137,7 +137,7 @@ func newPolicy(opts ...PolicyOption) *policy {
 		maxRetries: NoRetry,         // Default to no retries
 		priority:   DefaultPriority, // Default priority
 		timeout:    DefaultTimeout,  // Default timeout
-		backoffFn: func() time.Duration {
+		backoffFn: func(ji Instance) time.Duration {
 			return time.Duration(0)
 		},
 	}
@@ -188,12 +188,9 @@ func (p *policy) Timeout() time.Duration {
 	return p.timeout
 }
 
-// Backoff returns the delay time before retrying a job.
-func (p *policy) Backoff() time.Duration {
-	if p.backoffFn == nil {
-		return 0
-	}
-	return p.backoffFn()
+// BackoffStrategy returns the backoff strategy for the job.
+func (p *policy) BackoffStrategy() BackoffStrategy {
+	return p.backoffFn
 }
 
 // Map returns a map representation of the job instance.

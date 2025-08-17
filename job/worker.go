@@ -79,11 +79,13 @@ func (w *worker) Run() error {
 		logger.Error(err)
 		ji.Error(err)
 	}
-
 	retryInstance := func(ji Instance) {
-		delay := ji.Policy().Backoff()
-		if 0 < delay {
-			time.Sleep(delay) // Wait for the retry delay
+		backoffStrategy := ji.Policy().BackoffStrategy()
+		if backoffStrategy != nil {
+			backoff := backoffStrategy(ji)
+			if 0 < backoff {
+				time.Sleep(backoff) // Wait for the retry delay
+			}
 		}
 		w.manager.EnqueueInstance(ji) // Retry the job
 		err := ji.UpdateState(JobScheduled)
