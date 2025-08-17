@@ -280,7 +280,7 @@ mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
 
 You can define custom logic to handle job termination using `WithTerminateProcessor()`. This allows you to inspect the error, decide whether to retry, transform the error, or perform cleanup actions.
 
-For example, you might want to retry only on specific errors (such as a timeout):
+For example, you might want to avoid retrying only for specific errors (such as a timeout):
 
 [source,go]
 ----

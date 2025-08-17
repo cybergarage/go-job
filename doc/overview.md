@@ -670,7 +670,7 @@ You can define custom logic to handle job termination using `WithTerminateProces
 
 <div class="paragraph">
 
-For example, you might want to retry only on specific errors (such as a timeout):
+For example, you might want to avoid retrying only for specific errors (such as a timeout):
 
 </div>
 
@@ -1469,7 +1469,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-17 19:27:27 +0900
+Last updated 2025-08-17 19:32:37 +0900
 
 </div>
 
