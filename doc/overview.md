@@ -725,9 +725,9 @@ You can set a custom backoff strategy using `WithBackoffStrategy()`. The functio
 
 ``` CodeRay
 mgr.ScheduleJob(job, WithBackoffStrategy(
-    func() time.Duration {
-        // Wait 5 seconds before each retry
-        return 5 * time.Second
+    func(ji Instance) time.Duration {
+        // Exponential backoff
+        return time.Duration(float64(ji.Attempts()) * time.Second * (0.8 + 0.4*(rand.Float64())))
     },
 ))
 ```
@@ -1469,7 +1469,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-17 19:33:58 +0900
+Last updated 2025-08-17 20:21:24 +0900
 
 </div>
 
