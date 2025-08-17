@@ -683,10 +683,10 @@ mgr.ScheduleJob(job,
     WithTerminateProcessor(func(inst Instance, err error) error {
         if errors.Is(err, context.DeadlineExceeded) {
             // Do not retry if the job was terminated due to a deadline being exceeded
-            return err
+            return nil
         }
         // Retry for all other errors
-        return nil
+        return error
     }),
 )
 ```
@@ -1469,7 +1469,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-17 19:32:37 +0900
+Last updated 2025-08-17 19:33:58 +0900
 
 </div>
 

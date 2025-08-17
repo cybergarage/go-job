@@ -288,10 +288,10 @@ mgr.ScheduleJob(job,
     WithTerminateProcessor(func(inst Instance, err error) error {
         if errors.Is(err, context.DeadlineExceeded) {
             // Do not retry if the job was terminated due to a deadline being exceeded
-            return err
+            return nil
         }
         // Retry for all other errors
-        return nil
+        return error
     }),
 )
 ----
