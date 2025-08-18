@@ -199,7 +199,7 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 
 	// If the instance has a executor handler, it means it was dequeued from the local store.
 
-	if instance.Handler().Executor() != nil {
+	if instance.Executor() != nil {
 		return instance, nil
 	}
 

@@ -59,8 +59,6 @@ type Instance interface {
 	Policy() Policy
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState, opts ...any) error
-	// Handler returns the handler for the job instance.
-	Handler() Handler
 	// Process executes the job instance executor with the arguments provided in the context.
 	Process() ([]any, error)
 	// Result returns the processed result set of the executor when the job instance is completed or terminated.
@@ -129,6 +127,8 @@ func WithJob(job Job) InstanceOption {
 			opt(ji.job)
 		}
 
+		// Handler options
+
 		handlerOpts := []HandlerOption{
 			WithExecutor(job.Handler().Executor()),
 			WithStateChangeProcessor(job.Handler().StateChangeProcessor()),
@@ -139,6 +139,7 @@ func WithJob(job Job) InstanceOption {
 			opt(ji.handler)
 		}
 
+		// Schedule options
 		scheduleOpts := []ScheduleOption{
 			WithCrontabSpec(job.Schedule().CrontabSpec()),
 			WithScheduleAt(job.Schedule().Next()),
@@ -147,6 +148,17 @@ func WithJob(job Job) InstanceOption {
 			if err := opt(ji.schedule); err != nil {
 				return err
 			}
+		}
+
+		// Policy options
+		policyOpts := []PolicyOption{
+			WithMaxRetries(job.Policy().MaxRetries()),
+			WithPriority(job.Policy().Priority()),
+			WithTimeout(job.Policy().Timeout()),
+			WithBackoffStrategy(job.Policy().BackoffStrategy()),
+		}
+		for _, opt := range policyOpts {
+			opt(ji.policy)
 		}
 
 		return nil

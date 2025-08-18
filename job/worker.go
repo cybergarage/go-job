@@ -126,7 +126,7 @@ func (w *worker) Run() error {
 					if err != nil {
 						logError(ji, err)
 					}
-					ji.Handler().CompleteProcessor()(ji, res)
+					ji.CompleteProcessor()(ji, res)
 					if ji.IsRecurring() {
 						rescheduleInstance(ji)
 					}

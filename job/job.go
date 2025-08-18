@@ -29,6 +29,8 @@ type Job interface {
 	Handler() Handler
 	// Schedule returns the schedule for the job.
 	Schedule() Schedule
+	// Policy returns the policy for the job.
+	Policy() Policy
 	// RegisteredAt returns the time when the job was registered.
 	RegisteredAt() time.Time
 	// Map returns a map representation of the job.
@@ -40,6 +42,7 @@ type Job interface {
 type job struct {
 	kind         string
 	desc         string
+	policy       *policy
 	schedule     *schedule
 	handler      *handler
 	registeredAt time.Time
@@ -101,6 +104,7 @@ func newJob(opts ...any) (*job, error) {
 		desc:         "",
 		handler:      newHandler(),
 		schedule:     schedule,
+		policy:       newPolicy(),
 		registeredAt: time.Now(),
 	}
 
@@ -112,6 +116,8 @@ func newJob(opts ...any) (*job, error) {
 			opt(j.handler)
 		case ScheduleOption:
 			opt(j.schedule)
+		case PolicyOption:
+			opt(j.policy)
 		default:
 			return nil, fmt.Errorf("invalid job option type: %T", opt)
 		}
@@ -143,6 +149,11 @@ func (j *job) RegisteredAt() time.Time {
 // Schedule returns the schedule of the job.
 func (j *job) Schedule() Schedule {
 	return j.schedule
+}
+
+// Policy returns the policy of the job.
+func (j *job) Policy() Policy {
+	return j.policy
 }
 
 // Map returns a map representation of the job.
