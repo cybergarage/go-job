@@ -7,21 +7,26 @@
   - Job instance cancellation
 - **System Worker**
   - Store cleaner support
+- **Metrics**
+  - Prometheus metrics support added
 ### 🛠 Enhancements
 - **Query**
   - Limit and offset support
 
-## 1.1.0 (2025-0X-XX)
+## 1.1.0 (2025-08-18)
 ### ✨ New Features
 - **Job Management**
-  - Executor supports special instance arguments
-  - Job instance cancellation
-  - Timeout handling for job instances
+  - Job can handle policy options
+  - `Process()` now supports timeout policy option
 ### 🛠 Enhancements
 - **Query**
-  - Before and after filters
-- **Store Interface**:
-  - Added Redis plugins for distributed job management.
+  - Added `WithQueryBefore()` and `WithQueryAfter()` for time-based filtering
+- **Store Interface**
+  - Added Redis plugin implemented for distributed job management
+### 🐛 Bug Fixes
+- **Manager**
+  - `WithJob()` now checks if the passed job is nil
+  - `Registry::LookupJob()` checks whether looked-up job is nil
 
 ## 1.0.0 (2025-08-13)
 ### ✨ Features
