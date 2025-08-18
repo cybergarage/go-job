@@ -87,7 +87,7 @@ message JobInstance {
   optional google.protobuf.Timestamp timed_out_at = 27;
 
   // Total attempt count (initial execution + retries)
-  optional int32 attempt_count = 31;
+  optional int32 attempts = 31;
 }
 
 //////////////////////////////

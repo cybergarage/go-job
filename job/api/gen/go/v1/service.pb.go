@@ -279,7 +279,7 @@ type JobInstance struct {
 	CancelledAt  *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
 	TimedOutAt   *timestamppb.Timestamp `protobuf:"bytes,27,opt,name=timed_out_at,json=timedOutAt,proto3,oneof" json:"timed_out_at,omitempty"`
 	// Total attempt count (initial execution + retries)
-	AttemptCount  *int32 `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3,oneof" json:"attempt_count,omitempty"`
+	Attempts      *int32 `protobuf:"varint,31,opt,name=attempts,proto3,oneof" json:"attempts,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -405,9 +405,9 @@ func (x *JobInstance) GetTimedOutAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *JobInstance) GetAttemptCount() int32 {
-	if x != nil && x.AttemptCount != nil {
-		return *x.AttemptCount
+func (x *JobInstance) GetAttempts() int32 {
+	if x != nil && x.Attempts != nil {
+		return *x.Attempts
 	}
 	return 0
 }
@@ -773,7 +773,7 @@ const file_service_proto_rawDesc = "" +
 	"scheduleAt\x88\x01\x01B\f\n" +
 	"\n" +
 	"_cron_specB\x0e\n" +
-	"\f_schedule_at\"\xc5\x06\n" +
+	"\f_schedule_at\"\xb7\x06\n" +
 	"\vJobInstance\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04uuid\x18\x02 \x01(\tR\x04uuid\x12&\n" +
@@ -789,8 +789,8 @@ const file_service_proto_rawDesc = "" +
 	"\rterminated_at\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampH\x05R\fterminatedAt\x88\x01\x01\x12B\n" +
 	"\fcancelled_at\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampH\x06R\vcancelledAt\x88\x01\x01\x12A\n" +
 	"\ftimed_out_at\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampH\aR\n" +
-	"timedOutAt\x88\x01\x01\x12(\n" +
-	"\rattempt_count\x18\x1f \x01(\x05H\bR\fattemptCount\x88\x01\x01B\b\n" +
+	"timedOutAt\x88\x01\x01\x12\x1f\n" +
+	"\battempts\x18\x1f \x01(\x05H\bR\battempts\x88\x01\x01B\b\n" +
 	"\x06_errorB\r\n" +
 	"\v_created_atB\x0f\n" +
 	"\r_scheduled_atB\x0f\n" +
@@ -798,8 +798,8 @@ const file_service_proto_rawDesc = "" +
 	"\r_completed_atB\x10\n" +
 	"\x0e_terminated_atB\x0f\n" +
 	"\r_cancelled_atB\x0f\n" +
-	"\r_timed_out_atB\x10\n" +
-	"\x0e_attempt_count\"t\n" +
+	"\r_timed_out_atB\v\n" +
+	"\t_attempts\"t\n" +
 	"\x12ScheduleJobRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1c\n" +
 	"\targuments\x18\v \x03(\tR\targuments\x12\x1f\n" +
