@@ -263,19 +263,6 @@ mgr.ScheduleJob(job, WithCrontabSpec("*/30 * * * *"))
 
 Cron format: `minute hour day-of-month month day-of-week`
 
-=== Job Termination Handling
-
-When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
-
-==== Setting Retry Policy
-
-You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
-
-[source,go]
-----
-mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
-----
-
 === Job Monitoring and Observability
 
 `go-job` provides comprehensive monitoring capabilities to track job execution and understand system behavior. You can monitor jobs in real-time using event handlers, or query historical data using manager methods.
@@ -395,6 +382,19 @@ for _, log := range logs {
 ----
 
 Provides auditability and debugging capability for each job instance.
+
+=== Job Termination Handling
+
+When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
+
+==== Setting Retry Policy
+
+You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
+----
 
 ==== Custom Termination Handling
 

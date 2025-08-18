@@ -33,8 +33,8 @@ Table of Contents:
 - [Usage Guide](#_usage_guide)
   - [Arbitrary Function Execution](#_arbitrary_function_execution)
   - [Job Scheduling](#_job_scheduling)
-  - [Job Termination Handling](#_job_termination_handling)
   - [Job Monitoring and Observability](#_job_monitoring_and_observability)
+  - [Job Termination Handling](#_job_termination_handling)
   - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
   - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
   - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
@@ -626,42 +626,6 @@ Cron format: `minute hour day-of-month month day-of-week`
 
 <div class="sect2">
 
-### Job Termination Handling
-
-<div class="paragraph">
-
-When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
-
-</div>
-
-<div class="sect3">
-
-#### Setting Retry Policy
-
-<div class="paragraph">
-
-You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
-
-</div>
-
-<div class="listingblock">
-
-<div class="content">
-
-``` CodeRay
-mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
-```
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect2">
-
 ### Job Monitoring and Observability
 
 <div class="paragraph">
@@ -905,6 +869,42 @@ for _, log := range logs {
 Provides auditability and debugging capability for each job instance.
 
 </div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect2">
+
+### Job Termination Handling
+
+<div class="paragraph">
+
+When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
+
+</div>
+
+<div class="sect3">
+
+#### Setting Retry Policy
+
+<div class="paragraph">
+
+You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
+```
 
 </div>
 
@@ -1470,7 +1470,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-17 20:58:20 +0900
+Last updated 2025-08-18 12:10:38 +0900
 
 </div>
 
