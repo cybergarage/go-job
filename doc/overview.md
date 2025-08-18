@@ -34,7 +34,6 @@ Table of Contents:
   - [Arbitrary Function Execution](#_arbitrary_function_execution)
   - [Job Scheduling](#_job_scheduling)
   - [Job Monitoring and Observability](#_job_monitoring_and_observability)
-  - [Failure Handling and Retry Strategies](#_failure_handling_and_retry_strategies)
   - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
   - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
   - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
@@ -876,25 +875,19 @@ Provides auditability and debugging capability for each job instance.
 
 </div>
 
-</div>
-
-<div class="sect2">
-
-### Failure Handling and Retry Strategies
-
-<div class="paragraph">
-
-When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
-
-</div>
-
 <div class="sect3">
 
 #### Setting Retry Policy
 
 <div class="paragraph">
 
-You can specify how many times a job should be retried if it fails. Use `WithMaxRetries()` to set the maximum number of retry attempts for a job instance. If the job fails, it will be automatically retried up to the specified number of times.
+You can control how many times a job should be retried if it fails, allowing you to build more robust and fault-tolerant workflows. The retry policy can be set at both the job definition level and at the time of scheduling a job instance.
+
+</div>
+
+<div class="paragraph">
+
+To set a default retry policy for all instances of a job, use `WithMaxRetries()` when creating the job. This determines the maximum number of times the job will be retried if it fails due to an error, timeout, or cancellation.
 
 </div>
 
@@ -903,10 +896,36 @@ You can specify how many times a job should be retried if it fails. Use `WithMax
 <div class="content">
 
 ``` CodeRay
-mgr.ScheduleJob(job, WithMaxRetries(1)) // Retry once if the job fails
+job, err := NewJob(
+    WithMaxRetries(1), // Retry once if the job fails
+)
 ```
 
 </div>
+
+</div>
+
+<div class="paragraph">
+
+You can also override the retry policy for a specific job instance at scheduling time by passing `WithMaxRetries()` to `ScheduleJob`. This is useful when you want to adjust the retry behavior for certain executions without changing the job’s default policy.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithMaxRetries(2)) // Retry twice if the job fails
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+If a job instance fails, `go-job` will automatically retry it up to the specified number of times.
 
 </div>
 
@@ -1471,7 +1490,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-18 19:27:20 +0900
+Last updated 2025-08-18 19:54:02 +0900
 
 </div>
 
