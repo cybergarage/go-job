@@ -15,6 +15,7 @@
 package job
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -60,7 +61,7 @@ type Instance interface {
 	// UpdateState updates the state of the job instance and records the state change.
 	UpdateState(state JobState, opts ...any) error
 	// Process executes the job instance executor with the arguments provided in the context.
-	Process() ([]any, error)
+	Process(ctx context.Context) ([]any, error)
 	// Result returns the processed result set of the executor when the job instance is completed or terminated.
 	// If the job instance is not completed or terminated, it returns an error.
 	ResultSet() (ResultSet, error)
@@ -464,7 +465,7 @@ func (ji *jobInstance) Handler() Handler {
 }
 
 // Process executes the job instance executor with the arguments provided in the context.
-func (ji *jobInstance) Process() ([]any, error) {
+func (ji *jobInstance) Process(ctx context.Context) ([]any, error) {
 	if ji.handler == nil {
 		return nil, fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}

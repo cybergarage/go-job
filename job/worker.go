@@ -15,6 +15,7 @@
 package job
 
 import (
+	"context"
 	"time"
 
 	logger "github.com/cybergarage/go-logger/log"
@@ -119,8 +120,22 @@ func (w *worker) Run() error {
 					logError(ji, err)
 					continue
 				}
+
 				w.processing = true
-				res, err := ji.Process()
+
+				ctx := context.Background()
+				var cancel context.CancelFunc
+				timeout := ji.Policy().Timeout()
+				if 0 < timeout {
+					ctx, cancel = context.WithTimeout(ctx, timeout)
+				}
+
+				res, err := ji.Process(ctx)
+
+				if cancel != nil {
+					cancel()
+				}
+
 				if err == nil {
 					err = ji.UpdateState(JobCompleted, newResultWith(res))
 					if err != nil {
