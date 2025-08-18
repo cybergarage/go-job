@@ -937,6 +937,7 @@ mgr.ScheduleJob(job,
     WithTerminateProcessor(func(inst Instance, err error) error {
         if errors.Is(err, context.DeadlineExceeded) {
             // Do not retry if the job was terminated due to a deadline being exceeded
+            ji.Infof("Job (%s) terminated due to deadline exceeded: %v", ji.Kind(), err)
             return nil
         }
         // Retry for all other errors
@@ -1470,7 +1471,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-18 12:10:38 +0900
+Last updated 2025-08-18 12:14:40 +0900
 
 </div>
 
