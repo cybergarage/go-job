@@ -70,3 +70,35 @@ func ExampleManager_ScheduleRegisteredJob() {
 
 	// Output: Result: [3]
 }
+
+func ExampleManager_ResizeWorkers() {
+	// Create a manager with 1 worker (default)
+	mgr, _ := NewManager(WithNumWorkers(1))
+	mgr.Start()
+	defer mgr.Stop()
+
+	// Print the current number of workers
+	fmt.Println("Initial workers:", mgr.NumWorkers())
+
+	// Monitor queue size and scale accordingly
+	query := NewQuery(
+		WithQueryState(JobScheduled), // filter by scheduled state
+	)
+	jobs, _ := mgr.LookupInstances(query)
+	queueSize := len(jobs)
+	currentWorkers := mgr.NumWorkers()
+	if queueSize > currentWorkers*2 {
+		// Scale up if queue is getting too long
+		mgr.ResizeWorkers(currentWorkers + 2)
+	} else if queueSize == 0 && currentWorkers > 2 {
+		// Scale down if no jobs queued
+		mgr.ResizeWorkers(currentWorkers - 1)
+	}
+
+	// Print the current number of workers
+	fmt.Println("Active workers:", mgr.NumWorkers())
+
+	// Output:
+	// Initial workers: 1
+	// Active workers: 1
+}
