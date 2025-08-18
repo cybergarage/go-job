@@ -660,11 +660,11 @@ Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successfu
 ``` CodeRay
 job, err := NewJob(
     ....,
-    WithCompleteProcessor(func(inst Instance, res []any) {
-        inst.Infof("Result: %v", res)
+    WithCompleteProcessor(func(ji Instance, res []any) {
+        ji.Infof("Result: %v", res)
     }),
-    WithTerminateProcessor(func(inst Instance, err error) {
-        inst.Errorf("Error: %v", err)
+    WithTerminateProcessor(func(ji Instance, err error) {
+        ji.Errorf("Error: %v", err)
         return err
     }),
 )
@@ -693,9 +693,8 @@ Use `WithStateChangeProcessor()` to track every state transition throughout a jo
 ``` CodeRay
 job, err := NewJob(
     ....,
-    WithStateChangeProcessor(func(inst Instance, state JobState) error {
-        inst.Infof("State changed to: %v", state)
-        return nil
+    WithStateChangeProcessor(func(ji Instance, state JobState) {
+        ji.Infof("State changed to: %v", state)
     }),
 )
 ```
@@ -953,7 +952,7 @@ For example, you might want to avoid retrying only for specific errors (such as 
 
 ``` CodeRay
 mgr.ScheduleJob(job,
-    WithTerminateProcessor(func(inst Instance, err error) error {
+    WithTerminateProcessor(func(ji Instance, err error) error {
         if errors.Is(err, context.DeadlineExceeded) {
             // Do not retry if the job was terminated due to a deadline being exceeded
             ji.Infof("Job (%s) terminated due to deadline exceeded: %v", ji.Kind(), err)
@@ -1490,7 +1489,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-18 19:54:02 +0900
+Last updated 2025-08-18 20:34:15 +0900
 
 </div>
 
