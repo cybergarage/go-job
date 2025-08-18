@@ -31,7 +31,9 @@ func ExampleNewJob_simple() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: no args and no return
+
+	// Output:
+	// Created job: no args and no return
 }
 
 func ExampleNewJob_concat() {
@@ -49,7 +51,9 @@ func ExampleNewJob_concat() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: concat (two args and one return)
+
+	// Output:
+	// Created job: concat (two args and one return)
 }
 
 func ExampleNewJob_split() {
@@ -70,7 +74,9 @@ func ExampleNewJob_split() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: split (one arg and two return)
+
+	// Output:
+	// Created job: split (one arg and two return)
 }
 
 func ExampleNewJob_abs() {
@@ -88,7 +94,9 @@ func ExampleNewJob_abs() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: abs (one arg and one return)
+
+	// Output:
+	// Created job: abs (one arg and one return)
 }
 
 func ExampleNewJob_sum() {
@@ -106,7 +114,9 @@ func ExampleNewJob_sum() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: sum (two args and one return)
+
+	// Output:
+	// Created job: sum (two args and one return)
 }
 
 func ExampleNewJob_struct() {
@@ -128,7 +138,9 @@ func ExampleNewJob_struct() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: sum (struct arg and one return)
+
+	// Output:
+	// Created job: sum (struct arg and one return)
 }
 
 func ExampleNewJob_mutatingStruct() {
@@ -155,5 +167,7 @@ func ExampleNewJob_mutatingStruct() {
 		return
 	}
 	fmt.Printf("Created job: %s\n", job.Kind())
-	// Output: Created job: concat (one struct input and one struct output)
+
+	// Output:
+	// Created job: concat (one struct input and one struct output)
 }

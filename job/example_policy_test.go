@@ -45,6 +45,7 @@ func ExampleWithPriority() {
 	ji, _ = mgr.ScheduleRegisteredJob("sum", WithPriority(1))
 	fmt.Printf("Priority: %d\n", ji.Priority())
 
+	// Output:
 	// Priority: 0
 	// Priority: 0
 	// Priority: 1
@@ -75,6 +76,7 @@ func ExampleWithMaxRetries() {
 	ji, _ = mgr.ScheduleRegisteredJob("sum", WithMaxRetries(5))
 	fmt.Printf("MaxRetries: %d\n", ji.MaxRetries())
 
+	// Output:
 	// MaxRetries: 3
 	// MaxRetries: 3
 	// MaxRetries: 5
@@ -105,6 +107,7 @@ func ExampleWithTimeout() {
 	ji, _ = mgr.ScheduleRegisteredJob("sum", WithTimeout(10*time.Second))
 	fmt.Printf("Timeout: %v\n", ji.Timeout())
 
+	// Output:
 	// Timeout: 5s
 	// Timeout: 5s
 	// Timeout: 10s
@@ -112,11 +115,16 @@ func ExampleWithTimeout() {
 
 func ExampleWithBackoffStrategy() {
 	// Create and register a job with a specific backoff strategy
-	_, _ = NewJob(
+	job, _ := NewJob(
 		WithKind("sum"),
 		WithExecutor(func(a, b int) int { return a + b }),
 		WithBackoffStrategy(func(ji Instance) time.Duration {
 			// Exponential backoff
 			return time.Duration(float64(ji.Attempts()) * float64(time.Second) * (0.8 + 0.4*rand.Float64()))
 		}))
+
+	fmt.Printf("BackoffStrategy: %T\n", job.Policy().BackoffStrategy())
+
+	// Output:
+	// BackoffStrategy: job.BackoffStrategy
 }

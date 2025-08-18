@@ -80,5 +80,7 @@ func ExampleWithExecutor_struct() {
 		}),
 	)
 	fmt.Printf("%T\n", job.Handler().Executor())
-	// Output: func(*job.ConcatString) *job.ConcatString
+
+	// Output:
+	// func(*job.ConcatString) *job.ConcatString
 }

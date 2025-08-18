@@ -41,7 +41,8 @@ func ExampleManager_ScheduleJob() {
 	// Wait for the job to complete
 	mgr.StopWithWait()
 
-	// Output: Result: [3]
+	// Output:
+	// Result: [3]
 }
 
 func ExampleManager_ScheduleRegisteredJob() {
@@ -68,7 +69,8 @@ func ExampleManager_ScheduleRegisteredJob() {
 	// Wait for the job to complete
 	mgr.StopWithWait()
 
-	// Output: Result: [3]
+	// Output:
+	// Result: [3]
 }
 
 func ExampleManager_ResizeWorkers() {
