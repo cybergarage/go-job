@@ -199,7 +199,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 				if err != nil {
 					t.Errorf("Expected job instance to have a result set, but got error: %v", err)
 				}
-				attempt := instances[0].AttemptCount()
+				attempt := instances[0].Attempts()
 				if attempt != 1 {
 					t.Errorf("Expected job instance to have 1 attempt, but got %d", attempt)
 				}

@@ -117,6 +117,6 @@ func ExampleWithBackoffStrategy() {
 		WithExecutor(func(a, b int) int { return a + b }),
 		WithBackoffStrategy(func(ji Instance) time.Duration {
 			// Exponential backoff
-			return time.Duration(float64(ji.AttemptCount()) * float64(time.Second) * (0.8 + 0.4*rand.Float64()))
+			return time.Duration(float64(ji.Attempts()) * float64(time.Second) * (0.8 + 0.4*rand.Float64()))
 		}))
 }

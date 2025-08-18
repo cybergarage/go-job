@@ -55,7 +55,7 @@ func newInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 		case JobProcessing:
 			attempt++
 			jiOpts = append(jiOpts, WithProcessingAt(state.Timestamp()))
-			jiOpts = append(jiOpts, WithAttemptCount(attempt))
+			jiOpts = append(jiOpts, WithAttempts(attempt))
 		case JobCompleted:
 			jiOpts = append(jiOpts, WithCompletedAt(state.Timestamp()))
 			resultSet, ok := stateMap.ResultSet()

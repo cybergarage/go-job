@@ -70,8 +70,8 @@ type Instance interface {
 	Logs() ([]Log, error)
 	// State returns the current state of the job instance.
 	State() JobState
-	// AttemptCount returns the number of attempts made to process this job instance.
-	AttemptCount() int
+	// Attempts returns the number of attempts made to process this job instance.
+	Attempts() int
 	// IsRecurring checks if the job instance is recurring.
 	IsRecurring() bool
 	// IsRetriable checks if the job instance can be retried.
@@ -191,8 +191,8 @@ func withInstanceStore(store Store) InstanceOption {
 	}
 }
 
-// WithAttemptCount sets the number of attempts made to process the job instance.
-func WithAttemptCount(attempt int) InstanceOption {
+// WithAttempts sets the number of attempts made to process the job instance.
+func WithAttempts(attempt int) InstanceOption {
 	return func(ji *jobInstance) error {
 		ji.attempt = attempt
 		return nil
@@ -539,8 +539,8 @@ func (ji *jobInstance) State() JobState {
 	return ji.state
 }
 
-// AttemptCount returns the number of attempts made to process this job instance.
-func (ji *jobInstance) AttemptCount() int {
+// Attempts returns the number of attempts made to process this job instance.
+func (ji *jobInstance) Attempts() int {
 	return ji.attempt
 }
 

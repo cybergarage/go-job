@@ -9,12 +9,13 @@
 package v1
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -279,7 +280,7 @@ type JobInstance struct {
 	CancelledAt  *timestamppb.Timestamp `protobuf:"bytes,26,opt,name=cancelled_at,json=cancelledAt,proto3,oneof" json:"cancelled_at,omitempty"`
 	TimedOutAt   *timestamppb.Timestamp `protobuf:"bytes,27,opt,name=timed_out_at,json=timedOutAt,proto3,oneof" json:"timed_out_at,omitempty"`
 	// Total attempt count (initial execution + retries)
-	AttemptCount  *int32 `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3,oneof" json:"attempt_count,omitempty"`
+	Attempts      *int32 `protobuf:"varint,31,opt,name=attempt_count,json=attemptCount,proto3,oneof" json:"attempt_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -405,9 +406,9 @@ func (x *JobInstance) GetTimedOutAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *JobInstance) GetAttemptCount() int32 {
-	if x != nil && x.AttemptCount != nil {
-		return *x.AttemptCount
+func (x *JobInstance) GetAttempts() int32 {
+	if x != nil && x.Attempts != nil {
+		return *x.Attempts
 	}
 	return 0
 }
