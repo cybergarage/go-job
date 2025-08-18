@@ -71,7 +71,7 @@ proto/job/v1/job_service.proto
 | terminated_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | cancelled_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 | timed_out_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
-| attempt_count | [int32](#int32) | optional | Total attempt count (initial execution &#43; retries) |
+| attempts | [int32](#int32) | optional | Total attempt count (initial execution &#43; retries) |
 
 
 
