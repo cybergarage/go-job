@@ -982,7 +982,7 @@ You can set a custom backoff strategy using `WithBackoffStrategy()`. The functio
 mgr.ScheduleJob(job, WithBackoffStrategy(
     func(ji Instance) time.Duration {
         // Exponential backoff
-        return time.Duration(float64(ji.Attempts()) * time.Second * (0.8 + 0.4*(rand.Float64())))
+                return time.Duration(float64(ji.Attempts()) * float64(time.Second) * (0.8 + 0.4*rand.Float64()))
     },
 ))
 ```
@@ -1471,7 +1471,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-18 12:16:50 +0900
+Last updated 2025-08-18 19:27:20 +0900
 
 </div>
 
