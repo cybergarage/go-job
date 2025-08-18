@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func ExampleManager_ScheduleJob() {
+func ExampleManager_scheduleJob() {
 	// Create a job manager
 	mgr, _ := NewManager()
 	// Create a job with a custom executor
@@ -45,7 +45,7 @@ func ExampleManager_ScheduleJob() {
 	// Result: [3]
 }
 
-func ExampleManager_ScheduleRegisteredJob() {
+func ExampleManager_scheduleRegisteredJob() {
 	// Create a job manager
 	mgr, _ := NewManager()
 	// Create a job with a custom executor
@@ -73,7 +73,7 @@ func ExampleManager_ScheduleRegisteredJob() {
 	// Result: [3]
 }
 
-func ExampleManager_ResizeWorkers() {
+func ExampleManager_resizeWorkers() {
 	// Create a manager with 1 worker (default)
 	mgr, _ := NewManager(WithNumWorkers(1))
 	mgr.Start()
