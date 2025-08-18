@@ -383,7 +383,7 @@ for _, log := range logs {
 
 Provides auditability and debugging capability for each job instance.
 
-=== Job Termination Handling
+=== Failure Handling and Retry Strategies
 
 When a job instance is terminated (for example, due to an error, timeout, or cancellation), you can control how the system responds. This includes implementing retry logic, custom error handling, and backoff strategies to improve reliability and robustness.
 
@@ -437,7 +437,7 @@ mgr.ScheduleJob(job, WithBackoffStrategy(
 
 You can implement more advanced strategies, such as exponential backoff, by adjusting the returned duration based on the number of attempts or other factors.
 
-These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle errors and transient failures.
+These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle
 
 === Priority Management & Worker Scaling
 

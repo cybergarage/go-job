@@ -34,7 +34,7 @@ Table of Contents:
   - [Arbitrary Function Execution](#_arbitrary_function_execution)
   - [Job Scheduling](#_job_scheduling)
   - [Job Monitoring and Observability](#_job_monitoring_and_observability)
-  - [Job Termination Handling](#_job_termination_handling)
+  - [Failure Handling and Retry Strategies](#_failure_handling_and_retry_strategies)
   - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
   - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
   - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
@@ -880,7 +880,7 @@ Provides auditability and debugging capability for each job instance.
 
 <div class="sect2">
 
-### Job Termination Handling
+### Failure Handling and Retry Strategies
 
 <div class="paragraph">
 
@@ -999,7 +999,7 @@ You can implement more advanced strategies, such as exponential backoff, by adju
 
 <div class="paragraph">
 
-These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle errors and transient failures.
+These features allow you to build robust, fault-tolerant job processing pipelines that can gracefully handle
 
 </div>
 
@@ -1471,7 +1471,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-18 12:14:40 +0900
+Last updated 2025-08-18 12:16:50 +0900
 
 </div>
 
