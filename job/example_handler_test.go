@@ -14,7 +14,11 @@
 
 package job
 
-import "fmt"
+import (
+	"context"
+	"errors"
+	"fmt"
+)
 
 func ExampleWithDescription() {
 	// Create a job with a specific description
@@ -83,4 +87,43 @@ func ExampleWithExecutor_struct() {
 
 	// Output:
 	// func(*job.ConcatString) *job.ConcatString
+}
+
+func ExampleWithCompleteProcessor() {
+	// Create a job with a specific complete processor
+	job, _ := NewJob(
+		WithCompleteProcessor(func(ji Instance, res []any) {
+			ji.Infof("Job completed with result: %v", res)
+		}),
+	)
+	fmt.Printf("%T\n", job.Handler().CompleteProcessor())
+	// Output: job.CompleteProcessor
+}
+
+func ExampleWithTerminateProcessor() {
+	// Create a job with a specific terminate processor
+	job, _ := NewJob(
+		WithTerminateProcessor(func(ji Instance, err error) error {
+			if errors.Is(err, context.DeadlineExceeded) {
+				// Do not retry if the job was terminated due to a deadline being exceeded
+				ji.Infof("Job (%s) terminated due to deadline exceeded: %v", ji.Kind(), err)
+				return nil
+			}
+			// Retry for all other errors
+			return err
+		}),
+	)
+	fmt.Printf("%T\n", job.Handler().TerminateProcessor())
+	// Output: func(job.Instance, error) error
+}
+
+func ExampleWithStateChangeProcessor() {
+	// Create a job with a specific state change processor
+	job, _ := NewJob(
+		WithStateChangeProcessor(func(ji Instance, state JobState) {
+			ji.Infof("State changed to: %v", state)
+		}),
+	)
+	fmt.Printf("%T\n", job.Handler().StateChangeProcessor())
+	// Output: func(job.Instance, job.JobState)
 }
