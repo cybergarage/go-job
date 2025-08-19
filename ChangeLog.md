@@ -3,7 +3,6 @@
 ## 1.2.0 (2025-0X-XX)
 ### ✨ New Features
 - **Job Management**
-  - Executor supports special instance arguments
   - Job instance cancellation
 - **System Worker**
   - Store cleaner support
@@ -12,6 +11,11 @@
 ### 🛠 Enhancements
 - **Query**
   - Limit and offset support
+
+## 1.1.1 (2025-0X-XX)
+### 🛠 Enhancements
+- **Job Management**
+  - Executor supports special instance arguments
 
 ## 1.1.0 (2025-08-18)
 ### ✨ New Features
