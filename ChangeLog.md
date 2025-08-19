@@ -16,6 +16,8 @@
 ### 🛠 Enhancements
 - **Job Management**
   - Executor supports special instance arguments
+- **Logging**
+  - Added debug log level and Debugf methods
 
 ## 1.1.0 (2025-08-18)
 ### ✨ New Features
