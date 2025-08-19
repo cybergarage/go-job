@@ -130,7 +130,9 @@ func (h *handler) Execute(params ...any) ([]any, error) {
 	if h.executor == nil {
 		return nil, fmt.Errorf("no executor set for job handler")
 	}
-	res, err := Execute(h.executor, params...)
+	args := make([]any, len(params))
+	copy(args, params)
+	res, err := Execute(h.executor, args)
 	if err != nil {
 		return nil, err
 	}

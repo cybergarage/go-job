@@ -164,7 +164,7 @@ func TestExecutor(t *testing.T) {
 			t.Fatalf("failed to marshal params: %v", err)
 		}
 		t.Run(fmt.Sprintf("%T(%s)", tt.fn, string(paramsJSON)), func(t *testing.T) {
-			got, err := job.Execute(tt.fn, tt.params...)
+			got, err := job.Execute(tt.fn, tt.params)
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 				return
