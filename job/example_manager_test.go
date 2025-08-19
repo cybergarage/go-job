@@ -30,7 +30,7 @@ func ExampleManager_scheduleJob() {
 	// Schedule the job with the manager
 	mgr.ScheduleJob(
 		job,
-		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
+		WithScheduleAt(time.Now()), // Immediate scheduling is the default, so this option is redundant
 		WithCompleteProcessor(func(inst Instance, res []any) {
 			fmt.Printf("Result: %v\n", res)
 		}),
@@ -58,7 +58,7 @@ func ExampleManager_scheduleRegisteredJob() {
 	// Schedule the registered job
 	mgr.ScheduleRegisteredJob(
 		job.Kind(),
-		WithScheduleAt(time.Now()), // Schedule the job to run immediately.
+		WithScheduleAt(time.Now()), // Immediate scheduling is the default, so this option is redundant
 		WithCompleteProcessor(func(inst Instance, res []any) {
 			fmt.Printf("Result: %v\n", res)
 		}),
