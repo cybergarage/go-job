@@ -28,6 +28,17 @@ type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
 func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
+	var mgr Manager
+	var instance Instance
+	for _, opt := range opts {
+		switch v := opt.(type) {
+		case Manager:
+			mgr = v
+		case Instance:
+			instance = v
+		}
+	}
+
 	fnObj := reflect.ValueOf(fn)
 	fnType := fnObj.Type()
 	if fnType.Kind() != reflect.Func {

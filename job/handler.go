@@ -78,7 +78,7 @@ type Handler interface {
 	// TerminateProcessor returns the error processor function set for the job handler.
 	TerminateProcessor() TerminateProcessor
 	// Execute runs the job with the provided parameters.
-	Execute(params ...any) ([]any, error)
+	Execute(args []any, opts ...any) ([]any, error)
 	// HandleTerminated processes errors that occur during job execution.
 	HandleTerminated(job Instance, err error) error
 	// HandleCompleted processes the responses from a job execution.
@@ -126,20 +126,18 @@ func (h *handler) CompleteProcessor() CompleteProcessor {
 }
 
 // Execute runs the job using the executor function, if set.
-func (h *handler) Execute(params ...any) ([]any, error) {
+func (h *handler) Execute(args []any, opts ...any) ([]any, error) {
 	if h.executor == nil {
 		return nil, fmt.Errorf("no executor set for job handler")
 	}
-	args := make([]any, len(params))
-	copy(args, params)
-	res, err := Execute(h.executor, args)
+	res, err := Execute(h.executor, args, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-// HandleTerminated processes errors that occur during job execution using the error handler, if set.
+// HandleTerminated processes errors that occur duri`n`g job execution using the error handler, if set.
 func (h *handler) HandleTerminated(job Instance, err error) error {
 	if h.terminateProcessor == nil {
 		return err
