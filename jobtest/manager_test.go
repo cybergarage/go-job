@@ -89,6 +89,26 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			},
 			args: []any{&sumOpt{1, 2}},
 		},
+		{
+			kind: "sum (instance)",
+			opts: []any{
+				job.WithExecutor(func(ji job.Instance, a, b int) int {
+					ji.Warnf("Calculating sum: %d + %d", a, b)
+					return a + b
+				}),
+			},
+			args: []any{nil, 1, 2},
+		},
+		{
+			kind: "sum (manager+instance)",
+			opts: []any{
+				job.WithExecutor(func(mgr job.Manager, ji job.Instance, a, b int) int {
+					ji.Warnf("NumWorkers: %d", mgr.NumWorkers())
+					return a + b
+				}),
+			},
+			args: []any{nil, nil, 1, 2},
+		},
 	}
 
 	for _, tt := range tests {

@@ -28,12 +28,14 @@ type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
 func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
-	var mgr Manager
+	var managerType = reflect.TypeOf((*Manager)(nil)).Elem()
+	var instanceType = reflect.TypeOf((*Instance)(nil)).Elem()
+	var manager Manager
 	var instance Instance
 	for _, opt := range opts {
 		switch v := opt.(type) {
 		case Manager:
-			mgr = v
+			manager = v
 		case Instance:
 			instance = v
 		}
@@ -88,7 +90,8 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 		}
 
 		argValue := reflect.ValueOf(arg)
-		if argValue.Type().AssignableTo(fnType) {
+
+		if argValue.IsValid() && argValue.Type().AssignableTo(fnType) {
 			return argValue, true
 		}
 
@@ -107,6 +110,14 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 				return ptrValue, true
 			}
 		case reflect.Array, reflect.Slice:
+			return reflect.Value{}, false
+		case reflect.Interface:
+			switch fnType {
+			case managerType:
+				return reflect.ValueOf(manager), true
+			case instanceType:
+				return reflect.ValueOf(instance), true
+			}
 			return reflect.Value{}, false
 		default:
 			fnVal := reflect.New(fnType).Interface()
