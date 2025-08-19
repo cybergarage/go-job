@@ -43,6 +43,8 @@ type LogHistory interface {
 	Warnf(job Instance, format string, args ...any) error
 	// Errorf logs an error message for a job instance.
 	Errorf(job Instance, format string, args ...any) error
+	// Debugf logs a debug message for a job instance.
+	Debugf(job Instance, format string, args ...any) error
 	// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
 	LookupLogs(query Query) ([]Log, error)
 }
@@ -107,6 +109,11 @@ func (history *history) Warnf(job Instance, format string, args ...any) error {
 // Errorf logs an error message for a job instance.
 func (history *history) Errorf(job Instance, format string, args ...any) error {
 	return history.store.Errorf(context.Background(), job, format, args...)
+}
+
+// Debugf logs a debug message for a job instance.
+func (history *history) Debugf(job Instance, format string, args ...any) error {
+	return history.store.Debugf(context.Background(), job, format, args...)
 }
 
 // LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.

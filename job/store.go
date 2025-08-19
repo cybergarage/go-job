@@ -72,6 +72,8 @@ type LogStore interface {
 	Warnf(ctx context.Context, job Instance, format string, args ...any) error
 	// Errorf logs an error message for a job instance.
 	Errorf(ctx context.Context, job Instance, format string, args ...any) error
+	// Debugf logs a debug message for a job instance.
+	Debugf(ctx context.Context, job Instance, format string, args ...any) error
 	// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
 	LookupInstanceLogs(ctx context.Context, query Query) ([]Log, error)
 	// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.

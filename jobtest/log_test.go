@@ -34,6 +34,8 @@ func TestLogLevelFilter(t *testing.T) {
 		{"Contains None", job.LogNone, job.LogAll, false},
 		{"Does not contain Info", job.LogError, job.LogInfo, false},
 		{"Does not contain Error", job.LogWarn, job.LogError, false},
+		{"Does not contain Warning", job.LogInfo, job.LogWarn, false},
+		{"Does not contain Debug", job.LogInfo, job.LogDebug, false},
 	}
 
 	for _, tt := range tests {
@@ -52,6 +54,7 @@ func TestLogLevelStrings(t *testing.T) {
 		{job.LogInfo},
 		{job.LogError},
 		{job.LogWarn},
+		{job.LogDebug},
 	}
 
 	for _, tt := range tests {
@@ -75,7 +78,7 @@ func TestLogLevelStrings(t *testing.T) {
 	}
 }
 
-func TestLogLJSON(t *testing.T) {
+func TestLogJSON(t *testing.T) {
 	tests := []struct {
 		uuid    job.UUID
 		level   job.LogLevel

@@ -233,6 +233,11 @@ func (store *kvStore) Errorf(ctx context.Context, ji job.Instance, format string
 	return store.Logf(ctx, ji, job.LogError, format, args...)
 }
 
+// Debugf logs a debug message for a job instance.
+func (store *kvStore) Debugf(ctx context.Context, ji job.Instance, format string, args ...any) error {
+	return store.Logf(ctx, ji, job.LogDebug, format, args...)
+}
+
 // LookupInstanceLogs lists all log entries for a job instance. The returned logs are sorted by their timestamp.
 func (store *kvStore) LookupInstanceLogs(ctx context.Context, query job.Query) ([]job.Log, error) {
 	rs, err := store.Scan(ctx, kv.NewLogListKey())

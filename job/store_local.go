@@ -161,6 +161,11 @@ func (store *localStore) Errorf(ctx context.Context, job Instance, format string
 	return store.Logf(ctx, job, LogError, format, args...)
 }
 
+// Debugf logs a debug message for a job instance.
+func (store *localStore) Debugf(ctx context.Context, job Instance, format string, args ...any) error {
+	return store.Logf(ctx, job, LogDebug, format, args...)
+}
+
 // LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
 func (store *localStore) LookupInstanceLogs(ctx context.Context, query Query) ([]Log, error) {
 	store.Lock()

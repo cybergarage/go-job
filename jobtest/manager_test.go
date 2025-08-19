@@ -93,7 +93,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			kind: "sum (instance)",
 			opts: []any{
 				job.WithExecutor(func(ji job.Instance, a, b int) int {
-					ji.Warnf("Calculating sum: %d + %d", a, b)
+					ji.Debugf("Calculating %s: %d + %d", ji.Kind(), a, b)
 					return a + b
 				}),
 			},
@@ -103,7 +103,7 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 			kind: "sum (manager+instance)",
 			opts: []any{
 				job.WithExecutor(func(mgr job.Manager, ji job.Instance, a, b int) int {
-					ji.Warnf("NumWorkers: %d", mgr.NumWorkers())
+					ji.Debugf("NumWorkers: %d", mgr.NumWorkers())
 					return a + b
 				}),
 			},

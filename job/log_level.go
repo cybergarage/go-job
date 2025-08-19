@@ -29,16 +29,19 @@ const (
 	LogError // 2
 	// LogWarn represents warning log messages.
 	LogWarn // 4
+	// LogDebug represents debug log messages.
+	LogDebug // 8
 	// LogNone represents no log messages.
 	LogNone LogLevel = 0 // 0
 	// LogAll represents all log levels combined.
-	LogAll LogLevel = LogInfo | LogError | LogWarn // 7
+	LogAll LogLevel = LogInfo | LogError | LogWarn | LogDebug // 15
 )
 
 const (
 	logErrorString = "ERROR"
 	logInfoString  = "INFO"
 	logWarnString  = "WARN"
+	logDebugString = "DEBUG"
 )
 
 // newLogLevelFrom creates a new LogLevel from a specified value.
@@ -62,6 +65,8 @@ func NewLogLevelFromString(s string) (LogLevel, error) {
 		return LogError, nil
 	case logWarnString:
 		return LogWarn, nil
+	case logDebugString:
+		return LogDebug, nil
 	}
 	return 0, fmt.Errorf("unknown log level: %s", s)
 }
@@ -82,6 +87,8 @@ func (l LogLevel) String() string {
 		return logErrorString
 	case LogWarn:
 		return logWarnString
+	case LogDebug:
+		return logDebugString
 	default:
 		return "UNKNOWN"
 	}

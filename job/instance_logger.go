@@ -28,6 +28,8 @@ type instanceLogger interface {
 	Errorf(format string, args ...any)
 	// Warnf logs a warning message with formatting.
 	Warnf(format string, args ...any)
+	// Debugf logs a debug message with formatting.
+	Debugf(format string, args ...any)
 }
 
 // Info logs an informational message for the job instance.
@@ -58,4 +60,9 @@ func (ji *jobInstance) Warnf(format string, args ...any) {
 // Errorf logs an error message with formatting for the job instance.
 func (ji *jobInstance) Errorf(format string, args ...any) {
 	ji.history.Errorf(ji, format, args...)
+}
+
+// Debugf logs a debug message with formatting for the job instance.
+func (ji *jobInstance) Debugf(format string, args ...any) {
+	ji.history.Debugf(ji, format, args...)
 }
