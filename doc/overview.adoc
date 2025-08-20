@@ -200,7 +200,7 @@ This means you can use the format that is most convenient for your application, 
 
 ==== Function with Special Argument
 
-`go-job` supports special arguments related to the job instance, such as `job.Manager`, `job.Worker`, and `job.Instance`.
+`go-job` supports special arguments related to the job instance, such as link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager[job.Manager], link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker[job.Worker], and link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance[job.Instance].
 
 [source,go]
 ----
@@ -208,7 +208,7 @@ job, err := job.NewJob(
     WithKind("hello (with special instance argument)"),
     WithExecutor(func(ji job.Instance) { 
         // Output message to go-job logger
-        ji.Infof("Hello, world!") 
+        ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
     }),
 )
 ----

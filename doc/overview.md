@@ -483,7 +483,7 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="paragraph">
 
-`go-job` supports special arguments related to the job instance, such as `job.Manager`, `job.Worker`, and `job.Instance`.
+`go-job` supports special arguments related to the job instance, such as [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager), [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker), and [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance).
 
 </div>
 
@@ -496,7 +496,7 @@ job, err := job.NewJob(
     WithKind("hello (with special instance argument)"),
     WithExecutor(func(ji job.Instance) {
         // Output message to go-job logger
-        ji.Infof("Hello, world!")
+        ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
     }),
 )
 ```
@@ -1561,7 +1561,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-20 14:23:36 +0900
+Last updated 2025-08-20 15:39:44 +0900
 
 </div>
 
