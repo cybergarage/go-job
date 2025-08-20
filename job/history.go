@@ -33,6 +33,8 @@ type StateHistory interface {
 	LogProcessState(job Instance, state JobState, opts ...instanceStateOption) error
 	// LookupHistory lists all state records for a job instance that match the specified query. The returned history is sorted by their timestamp.
 	LookupHistory(query Query) (InstanceHistory, error)
+	// ClearHistory clears all state records for a job instance that match the specified filter.
+	ClearHistory(filter Filter) error
 }
 
 // LogHistory is an interface that defines methods for logging messages related to job instances.
@@ -94,6 +96,11 @@ func (history *history) LookupHistory(query Query) (InstanceHistory, error) {
 		return records[i].Timestamp().Before(records[j].Timestamp())
 	})
 	return records, nil
+}
+
+// ClearHistory clears all state records for a job instance that match the specified filter.
+func (history *history) ClearHistory(filter Filter) error {
+	return history.store.ClearInstanceHistory(context.Background(), filter)
 }
 
 // Infof logs an informational message for a job instance.

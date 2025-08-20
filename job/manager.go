@@ -25,6 +25,9 @@ import (
 
 // Manager is an interface that defines methods for managing jobs.
 type Manager interface {
+	// Store returns the job store.
+	Store() Store
+
 	// RegisterJob registers a job in the registry. If a job with the same kind is already registered,
 	// it will be overwritten with the new job.
 	// If the registered job has a schedule configuration, it will be automatically scheduled and
@@ -37,6 +40,7 @@ type Manager interface {
 	ListJobs() ([]Job, error)
 	// LookupJob looks up a job by its kind in the registry.
 	LookupJob(kind Kind) (Job, bool)
+
 	// ScheduleJob schedules a job instance with the given job and options.
 	// It creates a new job instance and enqueues it in the job queue.
 	// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
@@ -50,14 +54,24 @@ type Manager interface {
 	EnqueueInstance(job Instance) error
 	// DequeueNextInstance returns the next scheduled job instance and dequeues it from the job queue.
 	DequeueNextInstance() (Instance, error)
-	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
-	ListInstances() ([]Instance, error)
 	// LookupInstances looks up all job instances which match the specified query.
 	LookupInstances(query Query) ([]Instance, error)
+	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
+	ListInstances() ([]Instance, error)
+
 	// LookupHistory retrieves all state records for a job instance, sorted by timestamp.
 	LookupInstanceHistory(query Query) (InstanceHistory, error)
+	// ClearInstanceHistory clears all state records for a job instance that match the specified filter.
+	ClearInstanceHistory(filter Filter) error
+
 	// LookupLogs retrieves all logs for a job instance.
 	LookupInstanceLogs(query Query) ([]Log, error)
+
+	// ResizeWorkers scales the number of workers in the group.
+	ResizeWorkers(num int) error
+	// NumWorkers returns the number of workers in the group.
+	NumWorkers() int
+
 	// Start starts the job manager.
 	Start() error
 	// Stop stops the job manager.
@@ -66,12 +80,6 @@ type Manager interface {
 	Clear() error
 	// StopWithWait stops the job manager and waits for all jobs to complete.
 	StopWithWait() error
-	// Store returns the job store.
-	Store() Store
-	// ResizeWorkers scales the number of workers in the group.
-	ResizeWorkers(num int) error
-	// NumWorkers returns the number of workers in the group.
-	NumWorkers() int
 }
 
 type manager struct {
@@ -277,6 +285,11 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 // LookupHistory retrieves all state records for a job instance, sorted by timestamp.
 func (mgr *manager) LookupInstanceHistory(query Query) (InstanceHistory, error) {
 	return mgr.LookupHistory(query)
+}
+
+// ClearInstanceHistory clears all state records for a job instance that match the specified filter.
+func (mgr *manager) ClearInstanceHistory(filter Filter) error {
+	return mgr.repository.ClearHistory(filter)
 }
 
 // LookupLogs retrieves all logs for a job instance.
