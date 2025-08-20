@@ -47,8 +47,10 @@ type LogHistory interface {
 	Errorf(job Instance, format string, args ...any) error
 	// Debugf logs a debug message for a job instance.
 	Debugf(job Instance, format string, args ...any) error
-	// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+	// LookupLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
 	LookupLogs(query Query) ([]Log, error)
+	// ClearLogs clears all log entries for a job instance that match the specified filter.
+	ClearLogs(filter Filter) error
 }
 
 // historyOption is a function that configures the job history.
@@ -123,7 +125,12 @@ func (history *history) Debugf(job Instance, format string, args ...any) error {
 	return history.store.Debugf(context.Background(), job, format, args...)
 }
 
-// LookupInstanceLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
+// LookupLogs lists all log entries for a job instance that match the specified query. The returned logs are sorted by their timestamp.
 func (history *history) LookupLogs(query Query) ([]Log, error) {
 	return history.store.LookupInstanceLogs(context.Background(), query)
+}
+
+// ClearLogs clears all log entries for a job instance that match the specified filter.
+func (history *history) ClearLogs(filter Filter) error {
+	return history.store.ClearInstanceLogs(context.Background(), filter)
 }

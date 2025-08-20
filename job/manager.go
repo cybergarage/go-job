@@ -66,6 +66,8 @@ type Manager interface {
 
 	// LookupLogs retrieves all logs for a job instance.
 	LookupInstanceLogs(query Query) ([]Log, error)
+	// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
+	ClearInstanceLogs(filter Filter) error
 
 	// ResizeWorkers scales the number of workers in the group.
 	ResizeWorkers(num int) error
@@ -295,6 +297,11 @@ func (mgr *manager) ClearInstanceHistory(filter Filter) error {
 // LookupLogs retrieves all logs for a job instance.
 func (mgr *manager) LookupInstanceLogs(query Query) ([]Log, error) {
 	return mgr.LookupLogs(query)
+}
+
+// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
+func (mgr *manager) ClearInstanceLogs(filter Filter) error {
+	return mgr.repository.ClearLogs(filter)
 }
 
 // Start starts the job manager.
