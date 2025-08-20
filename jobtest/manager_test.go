@@ -97,17 +97,17 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 					return a + b
 				}),
 			},
-			args: []any{nil, 1, 2},
+			args: []any{job.Placeholder, 1, 2},
 		},
 		{
-			kind: "sum (manager+instance)",
+			kind: "sum (manager+worker+instance)",
 			opts: []any{
-				job.WithExecutor(func(mgr job.Manager, ji job.Instance, a, b int) int {
+				job.WithExecutor(func(mgr job.Manager, ji job.Instance, w job.Worker, a, b int) int {
 					ji.Debugf("NumWorkers: %d", mgr.NumWorkers())
 					return a + b
 				}),
 			},
-			args: []any{nil, nil, 1, 2},
+			args: []any{job.Placeholder, job.Placeholder, job.Placeholder, 1, 2},
 		},
 	}
 

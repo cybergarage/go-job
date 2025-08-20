@@ -22,6 +22,9 @@ import (
 	"github.com/cybergarage/go-safecast/safecast"
 )
 
+// Placeholder is a placeholder for the job arguments.
+var Placeholder string = "?"
+
 // Executor is a type that represents a function that executes a job.
 // It can be any function type, allowing for flexible job execution.
 type Executor any
@@ -30,14 +33,18 @@ type Executor any
 func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 	var managerType = reflect.TypeOf((*Manager)(nil)).Elem()
 	var instanceType = reflect.TypeOf((*Instance)(nil)).Elem()
+	var workerType = reflect.TypeOf((*Worker)(nil)).Elem()
 	var manager Manager
 	var instance Instance
+	var worker Worker
 	for _, opt := range opts {
 		switch v := opt.(type) {
 		case Manager:
 			manager = v
 		case Instance:
 			instance = v
+		case Worker:
+			worker = v
 		}
 	}
 
@@ -117,6 +124,8 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 				return reflect.ValueOf(manager), true
 			case instanceType:
 				return reflect.ValueOf(instance), true
+			case workerType:
+				return reflect.ValueOf(worker), true
 			}
 			return reflect.Value{}, false
 		default:
