@@ -12,7 +12,7 @@
 - **Query**
   - Limit and offset support
 
-## 1.1.1 (2025-0X-XX)
+## 1.1.1 (2025-08-20)
 ### 🛠 Enhancements
 - **Job Management**
   - Executor supports special instance arguments
