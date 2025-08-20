@@ -50,6 +50,12 @@ func (store *localStore) EnqueueInstance(ctx context.Context, job Instance) erro
 	return nil
 }
 
+// DequeueInstance removes a specific job instance from the store.
+func (store *localStore) DequeueInstance(ctx context.Context, job Instance) error {
+	store.jobs.Delete(job.UUID())
+	return nil
+}
+
 // DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
 func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, error) {
 	now := time.Now()

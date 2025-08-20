@@ -54,6 +54,33 @@ func (store *kvStore) EnqueueInstance(ctx context.Context, job job.Instance) err
 	return store.Set(ctx, obj)
 }
 
+// DequeueInstance removes a specific job instance from the store.
+func (store *kvStore) DequeueInstance(ctx context.Context, job job.Instance) error {
+	rs, err := store.Scan(ctx, kv.NewInstanceListKey())
+	if err != nil {
+		return err
+	}
+
+	for rs.Next() {
+		queueObj, err := rs.Object()
+		if err != nil {
+			return err
+		}
+		queueJob, err := kv.NewInstanceFromBytes(
+			queueObj.Bytes(),
+		)
+		if err != nil {
+			return err
+		}
+		if !job.Equal(queueJob) {
+			continue
+		}
+		return store.Remove(ctx, queueObj)
+	}
+
+	return nil
+}
+
 // DequeueNextInstance retrieves and removes the highest priority job instance from the store. If no job instance is available, it returns nil.
 func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, error) {
 	now := time.Now()
@@ -66,27 +93,27 @@ func (store *kvStore) DequeueNextInstance(ctx context.Context) (job.Instance, er
 	var nextJob job.Instance
 	var nextObj kv.Object
 	for rs.Next() {
-		obj, err := rs.Object()
+		queueObj, err := rs.Object()
 		if err != nil {
 			return nil, err
 		}
-		job, err := kv.NewInstanceFromBytes(
-			obj.Bytes(),
+		queueJob, err := kv.NewInstanceFromBytes(
+			queueObj.Bytes(),
 		)
 		if err != nil {
 			return nil, err
 		}
-		scheduledAt := job.ScheduledAt()
+		scheduledAt := queueJob.ScheduledAt()
 		if scheduledAt.After(now) {
 			continue
 		}
 		switch {
 		case nextJob == nil:
-			nextJob = job
-			nextObj = obj
-		case job.Before(nextJob):
-			nextJob = job
-			nextObj = obj
+			nextJob = queueJob
+			nextObj = queueObj
+		case queueJob.Before(nextJob):
+			nextJob = queueJob
+			nextObj = queueObj
 		}
 	}
 
