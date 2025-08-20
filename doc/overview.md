@@ -222,7 +222,7 @@ A job with no input parameters and no return value can be defined as follows:
 <div class="content">
 
 ``` CodeRay
-job, err := NewJob(
+job, err := job.NewJob(
     WithKind("hello (no input and no return)"),
     WithExecutor(func()  {
         fmt.Println("Hello, world!")
@@ -269,7 +269,7 @@ A job with two input parameters and no return value can be defined like this:
 <div class="content">
 
 ``` CodeRay
-job, err := NewJob(
+job, err := job.NewJob(
     WithKind("sum (two input and no output)"),
     WithExecutor(func(x int, y int) {
         fmt.Println(x + y)
@@ -340,7 +340,7 @@ A job with two input parameters and one output can be defined like this:
 <div class="content">
 
 ``` CodeRay
-job, err := NewJob(
+job, err := job.NewJob(
     WithKind("concat (two input and one output)"),
     WithExecutor(func(a string, b string) string {
         return a + ", " + b
@@ -403,7 +403,7 @@ type ConcatString struct {
     S string
 }
 
-job, err := NewJob(
+job, err := job.NewJob(
     WithKind("concat (one struct input and one struct output)"),
     WithExecutor(func(param *ConcatString) *ConcatString {
         // Store the concatenated string result in the input struct, and return it
@@ -472,6 +472,78 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 <div class="paragraph">
 
 `go-job` will automatically convert the provided arguments to the types expected by your job function. This means you can use the format that is most convenient for your application, whether it’s a struct, JSON, or other supported types.
+
+</div>
+
+</div>
+
+<div class="sect3">
+
+#### Function with Special Argument
+
+<div class="paragraph">
+
+`go-job` supports special arguments related to the job instance, such as `job.Manager`, `job.Worker`, and `job.Instance`.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+job, err := job.NewJob(
+    WithKind("hello (with special instance argument)"),
+    WithExecutor(func(ji job.Instance) {
+        // Output message to go-job logger
+        ji.Infof("Hello, world!")
+    }),
+)
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+Using these special arguments, you can access useful methods provided by the special parameters within the executor function.
+
+</div>
+
+<div class="paragraph">
+
+You can schedule this job by passing a dummy argument as follows:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithArguments("?"))
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+or by using the placeholder constant:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithArguments(job.Placeholder))
+```
+
+</div>
 
 </div>
 
@@ -658,7 +730,7 @@ Use `WithCompleteProcessor()` and `WithTerminateProcessor()` to handle successfu
 <div class="content">
 
 ``` CodeRay
-job, err := NewJob(
+job, err := job.NewJob(
     ....,
     WithCompleteProcessor(func(ji Instance, res []any) {
         ji.Infof("Result: %v", res)
@@ -691,7 +763,7 @@ Use `WithStateChangeProcessor()` to track every state transition throughout a jo
 <div class="content">
 
 ``` CodeRay
-job, err := NewJob(
+job, err := job.NewJob(
     ....,
     WithStateChangeProcessor(func(ji Instance, state JobState) {
         ji.Infof("State changed to: %v", state)
@@ -895,7 +967,7 @@ To set a default retry policy for all instances of a job, use `WithMaxRetries()`
 <div class="content">
 
 ``` CodeRay
-job, err := NewJob(
+job, err := job.NewJob(
     WithMaxRetries(1), // Retry once if the job fails
 )
 ```
@@ -1055,14 +1127,14 @@ Assign priorities to jobs to control their execution order. Higher priority jobs
 
 ``` CodeRay
 // High priority job (executed first)
-highPriorityJob, err := NewJob(
+highPriorityJob, err := job.NewJob(
     WithKind("urgent-task"),
     WithPriority(0), // lower number = higher priority like Unix nice values
     WithExecutor(func() { fmt.Println("Urgent task executing") }),
 )
 
 // Low priority job (executed later)
-lowPriorityJob, err := NewJob(
+lowPriorityJob, err := job.NewJob(
     WithKind("background-task"),
     WithPriority(200), // higher number = lower priority like Unix nice values
     WithExecutor(func() { fmt.Println("Background task executing") }),
@@ -1489,7 +1561,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-18 20:34:15 +0900
+Last updated 2025-08-20 14:23:36 +0900
 
 </div>
 
