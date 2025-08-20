@@ -469,13 +469,28 @@ func (ji *jobInstance) Process(ctx context.Context, opts ...any) ([]any, error) 
 	if ji.handler == nil {
 		return nil, fmt.Errorf("no job handler set for job instance %s", ji.uuid)
 	}
+
+	select {
+	case <-ctx.Done():
+		ji.resultError = ctx.Err()
+		return nil, ji.resultError
+	default:
+	}
+
 	ji.attempt++
 	args := make([]any, len(ji.Arguments()))
 	copy(args, ji.Arguments())
 	ji.resultSet, ji.resultError = ji.Execute(args, opts...)
+
+	if ctx.Err() != nil {
+		ji.resultError = ctx.Err()
+		return nil, ji.resultError
+	}
+
 	if ji.resultError != nil {
 		ji.resultError = ji.HandleTerminated(ji, ji.resultError)
 	}
+
 	return ji.resultSet, ji.resultError
 }
 

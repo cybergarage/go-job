@@ -16,6 +16,7 @@ package job
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	logger "github.com/cybergarage/go-logger/log"
@@ -25,6 +26,8 @@ import (
 type Worker interface {
 	// Start starts the worker to process jobs.
 	Start() error
+	// Cancel cancels the currently processing job. Returns an error if no job is being processed.
+	Cancel() error
 	// Stop cancels the worker from processing jobs.
 	Stop() error
 	// IsProcessing returns true if the worker is currently processing a job.
@@ -39,6 +42,8 @@ type worker struct {
 	manager        Manager
 	done           chan struct{}
 	processingInst Instance
+	jobCtx         context.Context
+	jobCancel      context.CancelFunc
 }
 
 // IsProcessing returns true if the worker is currently processing a job.
@@ -69,6 +74,8 @@ func newWorker(opts ...workerOption) Worker {
 		manager:        nil,
 		done:           make(chan struct{}),
 		processingInst: nil,
+		jobCtx:         nil,
+		jobCancel:      nil,
 	}
 	for _, opt := range opts {
 		opt(w)
@@ -133,18 +140,19 @@ func (w *worker) Run() error {
 
 				w.processingInst = ji
 
-				ctx := context.Background()
-				var cancel context.CancelFunc
+				w.jobCtx, w.jobCancel = context.WithCancel(context.Background())
 				timeout := ji.Policy().Timeout()
 				if 0 < timeout {
-					ctx, cancel = context.WithTimeout(ctx, timeout)
+					w.jobCtx, w.jobCancel = context.WithTimeout(w.jobCtx, timeout)
 				}
 
-				res, err := ji.Process(ctx, w.manager, w, ji)
+				res, err := ji.Process(w.jobCtx, w.manager, w, ji)
 
-				if cancel != nil {
-					cancel()
+				if w.jobCancel != nil {
+					w.jobCancel()
 				}
+				w.jobCtx = nil
+				w.jobCancel = nil
 
 				if err == nil {
 					err = ji.UpdateState(JobCompleted, newResultWith(res))
@@ -156,7 +164,11 @@ func (w *worker) Run() error {
 						rescheduleInstance(ji)
 					}
 				} else {
-					err = ji.UpdateState(JobTerminated, err)
+					jobState := JobTerminated
+					if errors.Is(err, context.Canceled) {
+						jobState = JobCancelled
+					}
+					err = ji.UpdateState(jobState, err)
 					if err != nil {
 						logError(ji, err)
 					}
@@ -180,6 +192,17 @@ func (w *worker) StopWithWait() error {
 		time.Sleep(1 * time.Second) // Wait for worker to finish processing
 	}
 	return w.Stop()
+}
+
+// Cancel cancels the currently processing job. Returns an error if no job is being processed.
+func (w *worker) Cancel() error {
+	if !w.IsProcessing() {
+		return ErrNotProcessing
+	}
+	if w.jobCancel != nil {
+		w.jobCancel()
+	}
+	return nil
 }
 
 // Stop cancels the worker from processing jobs.

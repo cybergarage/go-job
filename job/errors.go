@@ -29,3 +29,6 @@ var ErrExists = errors.New("exists")
 
 // ErrNil is a nil error.
 var ErrNil = errors.New("nil")
+
+// ErrNotProcessing is a not processing error.
+var ErrNotProcessing = errors.New("not processing")
