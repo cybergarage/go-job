@@ -77,6 +77,8 @@ type Instance interface {
 	IsRecurring() bool
 	// IsRetriable checks if the job instance can be retried.
 	IsRetriable() bool
+	// Equal checks if two job instances are equal.
+	Equal(other Instance) bool
 	// Map returns a map representation of the job instance.
 	Map() map[string]any
 	// JSONString returns a JSON string representation of the job instance.
@@ -566,6 +568,15 @@ func (ji *jobInstance) Attempts() int {
 func (ji *jobInstance) IsRetriable() bool {
 	maxRetries := ji.MaxRetries()
 	return maxRetries > 0 && ji.attempt < maxRetries
+}
+
+// Equal checks if two job instances have the same UUID and Kind.
+func (ji *jobInstance) Equal(other Instance) bool {
+	if other == nil {
+		return false
+	}
+	return ji.Kind() == other.Kind() &&
+		ji.UUID() == other.UUID()
 }
 
 // Map returns a map representation of the job instance.
