@@ -1,16 +1,6 @@
 @startuml
 [*] --> Created : Job created
 
-state Cancelled #LightGray
-note right of Cancelled
-  This state is planned for future release.
-end note
-
-state TimedOut #LightGray
-note right of TimedOut
-  This state is planned for future release.
-end note
-
 Created --> Scheduled : Job queued
 Scheduled --> Processing : Job started
 Processing --> Completed : Job completed successfully
