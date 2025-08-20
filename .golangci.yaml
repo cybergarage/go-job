@@ -46,6 +46,7 @@ linters:
     - testableexamples
     - noinlineerr
     - noctx
+    - fatcontext
   settings:
     gocritic:
       disabled-checks:
