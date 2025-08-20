@@ -29,19 +29,29 @@ type Worker interface {
 	Stop() error
 	// IsProcessing returns true if the worker is currently processing a job.
 	IsProcessing() bool
+	// ProcessingInstance returns the job instance being processed, if any.
+	ProcessingInstance() (Instance, bool)
 	// StopWithWait stops the worker and waits for it to finish processing jobs.
 	StopWithWait() error
 }
 
 type worker struct {
-	manager    Manager
-	done       chan struct{}
-	processing bool
+	manager        Manager
+	done           chan struct{}
+	processingInst Instance
 }
 
 // IsProcessing returns true if the worker is currently processing a job.
 func (w *worker) IsProcessing() bool {
-	return w.processing
+	return w.processingInst != nil
+}
+
+// ProcessingInstance returns the job instance being processed, if any.
+func (w *worker) ProcessingInstance() (Instance, bool) {
+	if w.processingInst == nil {
+		return nil, false
+	}
+	return w.processingInst, true
 }
 
 // workerOption is a function that configures a job worker.
@@ -56,9 +66,9 @@ func withWorkerManager(mgr Manager) workerOption {
 // newWorker creates a new instance of the job worker.
 func newWorker(opts ...workerOption) Worker {
 	w := &worker{
-		manager:    nil,
-		done:       make(chan struct{}),
-		processing: false,
+		manager:        nil,
+		done:           make(chan struct{}),
+		processingInst: nil,
 	}
 	for _, opt := range opts {
 		opt(w)
@@ -107,7 +117,7 @@ func (w *worker) Run() error {
 		for {
 			select {
 			case <-w.done:
-				w.processing = false
+				w.processingInst = nil
 				return
 			default:
 				ji, err := w.manager.DequeueNextInstance()
@@ -121,7 +131,7 @@ func (w *worker) Run() error {
 					continue
 				}
 
-				w.processing = true
+				w.processingInst = ji
 
 				ctx := context.Background()
 				var cancel context.CancelFunc
@@ -156,7 +166,7 @@ func (w *worker) Run() error {
 						rescheduleInstance(ji)
 					}
 				}
-				w.processing = false
+				w.processingInst = nil
 			}
 		}
 	}()
