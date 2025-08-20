@@ -24,7 +24,7 @@ func main() {
 	sumJob, _ := job.NewJob(
 		job.WithKind("sum"),
 		job.WithExecutor(func(ji job.Instance, a, b int) int {
-			ji.Debugf("sum(%d, %d)", a, b) // Log the input values using job.Instance method
+			ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
 			return a + b
 		}),
 		job.WithStateChangeProcessor(func(ji job.Instance, state job.JobState) {
