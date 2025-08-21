@@ -26,6 +26,8 @@ type InstanceQueue interface {
 	Enqueue(ctx context.Context, job Instance) error
 	// Dequeue removes and returns a job from the queue.
 	Dequeue(ctx context.Context) (Instance, error)
+	// Remove removes a job from the queue.
+	Remove(ctx context.Context, job Instance) error
 	// List returns a list of all jobs in the queue.
 	List(ctx context.Context) ([]Instance, error)
 	// Size returns the number of jobs in the queue.
@@ -78,6 +80,11 @@ func (q *queueImpl) Dequeue(ctx context.Context) (Instance, error) {
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+// Remove removes a job from the queue.
+func (q *queueImpl) Remove(ctx context.Context, job Instance) error {
+	return q.store.DequeueInstance(ctx, job)
 }
 
 // List returns a list of all jobs in the queue.

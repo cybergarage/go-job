@@ -56,6 +56,8 @@ type Manager interface {
 	DequeueNextInstance() (Instance, error)
 	// LookupInstances looks up all job instances which match the specified query.
 	LookupInstances(query Query) ([]Instance, error)
+	// CancelInstances cancels all job instances which match the specified query.
+	CancelInstances(query Query) ([]Instance, error)
 	// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
 	ListInstances() ([]Instance, error)
 
@@ -69,6 +71,8 @@ type Manager interface {
 	// ClearInstanceLogs clears all log entries for a job instance that match the specified filter.
 	ClearInstanceLogs(filter Filter) error
 
+	// Workers returns a list of all workers in the group.
+	Workers() []Worker
 	// ResizeWorkers scales the number of workers in the group.
 	ResizeWorkers(num int) error
 	// NumWorkers returns the number of workers in the group.
@@ -243,28 +247,19 @@ func (mgr *manager) DequeueNextInstance() (Instance, error) {
 	return newInstance, nil
 }
 
-// ListInstance returns a list of all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
-func (mgr *manager) ListInstance() ([]Instance, error) {
-	return mgr.LookupInstances(NewQuery())
-}
-
-// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
-func (mgr *manager) ListInstances() ([]Instance, error) {
-	return mgr.LookupInstances(NewQuery())
-}
-
 // LookupInstances looks up all job instances which match the specified query.
 func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
-	var instances []Instance
+	matchedInstances := []Instance{}
 
-	queueInstances, err := newInstancesFromQueue(mgr.Queue())
+	allQueueInstances, err := newInstancesFromQueue(mgr.Queue())
 	if err != nil {
 		return nil, err
 	}
-	for _, instance := range queueInstances {
-		if query.Matches(instance) {
-			instances = append(instances, instance)
+	for _, queueInstance := range allQueueInstances {
+		if !query.Matches(queueInstance) {
+			continue
 		}
+		matchedInstances = append(matchedInstances, queueInstance)
 	}
 
 	history, err := mgr.LookupHistory(query)
@@ -275,13 +270,54 @@ func (mgr *manager) LookupInstances(query Query) ([]Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, instance := range historyInstances {
-		if query.Matches(instance) {
-			instances = append(instances, instance)
+	for _, historyInstance := range historyInstances {
+		if !query.Matches(historyInstance) {
+			continue
 		}
+		matchedInstances = append(matchedInstances, historyInstance)
 	}
 
-	return instances, nil
+	return matchedInstances, nil
+}
+
+// CancelInstances cancels all job instances which match the specified query.
+func (mgr *manager) CancelInstances(query Query) ([]Instance, error) {
+	canceledInstances := []Instance{}
+
+	allQueueInstances, err := newInstancesFromQueue(mgr.Queue())
+	if err != nil {
+		return nil, err
+	}
+	for _, queueInstance := range allQueueInstances {
+		if !query.Matches(queueInstance) {
+			continue
+		}
+		if err := mgr.Queue().Remove(context.Background(), queueInstance); err != nil {
+			return canceledInstances, err
+		}
+		if err := queueInstance.UpdateState(JobCancelled); err != nil {
+			return canceledInstances, err
+		}
+		canceledInstances = append(canceledInstances, queueInstance)
+	}
+
+	for _, worker := range mgr.Workers() {
+		workerInstance, ok := worker.ProcessingInstance()
+		if !ok {
+			continue
+		}
+		if err := worker.Cancel(); err != nil {
+			return canceledInstances, err
+		}
+		canceledInstances = append(canceledInstances, workerInstance)
+	}
+
+	return canceledInstances, nil
+}
+
+// ListInstances returns all job instances which are currently scheduled, processing, completed, or terminated after the manager started.
+func (mgr *manager) ListInstances() ([]Instance, error) {
+	return mgr.LookupInstances(NewQuery())
 }
 
 // LookupHistory retrieves all state records for a job instance, sorted by timestamp.
