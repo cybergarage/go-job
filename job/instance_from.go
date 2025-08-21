@@ -68,7 +68,7 @@ func newInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 			if ok {
 				jiOpts = append(jiOpts, WithResultError(err))
 			}
-		case JobCancelled:
+		case JobCanceled:
 			jiOpts = append(jiOpts, WithCancelledAt(state.Timestamp()))
 		case JobTimedOut:
 			jiOpts = append(jiOpts, WithTimedOutAt(state.Timestamp()))

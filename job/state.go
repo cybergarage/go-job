@@ -32,8 +32,8 @@ const (
 	JobScheduled
 	// JobProcessing indicates the job is currently being processed.
 	JobProcessing
-	// JobCancelled indicates the job was cancelled before completion.
-	JobCancelled
+	// JobCanceled indicates the job was cancelled before completion.
+	JobCanceled
 	// JobTimedOut indicates the job has exceeded its allowed execution time.
 	JobTimedOut
 	// JobCompleted indicates the job has completed (either successfully or unsuccessfully).
@@ -46,13 +46,13 @@ const (
 	// JobStateActive represents the active states of a job (scheduled or processing).
 	JobStateActive = JobScheduled | JobProcessing
 	// JobStateFinal represents the final states of a job (cancelled, timed out, completed, or terminated).
-	JobStateFinal = JobCancelled | JobTimedOut | JobCompleted | JobTerminated
+	JobStateFinal = JobCanceled | JobTimedOut | JobCompleted | JobTerminated
 	// JobStateError represents the error states of a job (cancelled, timed out, or terminated).
-	JobStateError = JobCancelled | JobTimedOut | JobTerminated
+	JobStateError = JobCanceled | JobTimedOut | JobTerminated
 	// JobStateSuccess represents the successful completion of a job.
 	JobStateSuccess = JobCompleted
 	// JobStateAll represents all possible states of a job.
-	JobStateAll = JobCreated | JobScheduled | JobProcessing | JobCancelled | JobTimedOut | JobCompleted | JobTerminated
+	JobStateAll = JobCreated | JobScheduled | JobProcessing | JobCanceled | JobTimedOut | JobCompleted | JobTerminated
 )
 
 const (
@@ -86,7 +86,7 @@ func newStateFrom(a any) (JobState, error) {
 		case v1.JobState_JOB_STATE_PROCESSING:
 			return JobProcessing, nil
 		case v1.JobState_JOB_STATE_CANCELLED:
-			return JobCancelled, nil
+			return JobCanceled, nil
 		case v1.JobState_JOB_STATE_TIMED_OUT:
 			return JobTimedOut, nil
 		case v1.JobState_JOB_STATE_COMPLETED:
@@ -108,7 +108,7 @@ func newStateFromString(s string) (JobState, error) {
 	case jobStateProcessingString:
 		return JobProcessing, nil
 	case jobStateCancelledString:
-		return JobCancelled, nil
+		return JobCanceled, nil
 	case jobStateTimedOutString:
 		return JobTimedOut, nil
 	case jobStateCompletedString:
@@ -141,7 +141,7 @@ func (s JobState) String() string {
 		return jobStateScheduledString
 	case JobProcessing:
 		return jobStateProcessingString
-	case JobCancelled:
+	case JobCanceled:
 		return jobStateCancelledString
 	case JobTimedOut:
 		return jobStateTimedOutString
@@ -165,7 +165,7 @@ func (s JobState) protoState() (v1.JobState, error) {
 		return v1.JobState_JOB_STATE_SCHEDULED, nil
 	case JobProcessing:
 		return v1.JobState_JOB_STATE_PROCESSING, nil
-	case JobCancelled:
+	case JobCanceled:
 		return v1.JobState_JOB_STATE_CANCELLED, nil
 	case JobTimedOut:
 		return v1.JobState_JOB_STATE_TIMED_OUT, nil

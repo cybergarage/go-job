@@ -25,7 +25,7 @@ func TestJobState(t *testing.T) {
 		{state: JobCreated},
 		{state: JobScheduled},
 		{state: JobProcessing},
-		{state: JobCancelled},
+		{state: JobCanceled},
 		{state: JobTimedOut},
 		{state: JobCompleted},
 		{state: JobTerminated},

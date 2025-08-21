@@ -166,7 +166,7 @@ func (w *worker) Run() error {
 				} else {
 					jobState := JobTerminated
 					if errors.Is(err, context.Canceled) {
-						jobState = JobCancelled
+						jobState = JobCanceled
 					} else if errors.Is(err, context.DeadlineExceeded) {
 						jobState = JobTimedOut
 					}
