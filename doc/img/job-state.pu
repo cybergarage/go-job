@@ -10,7 +10,7 @@ Completed --> Scheduled : [if recurring] Reschedule
 Terminated --> [*] : [if not retriable and not recurring]
 Completed --> [*] : [if not recurring]
 
-Processing --> Cancelled : Job was cancelled
+Processing --> Cancelled : Job was canceled
 Cancelled --> [*]
 Processing --> TimedOut : Job exceeded time limit
 TimedOut --> Scheduled : [if retriable] Reschedule
