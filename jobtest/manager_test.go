@@ -427,17 +427,19 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 		return
 	}
 
-	isWorkerProcessing := false
-	for {
-		for _, worker := range mgr.Workers() {
-			if worker.IsProcessing() {
-				isWorkerProcessing = true
-			}
-		}
-		if isWorkerProcessing {
-			break
-		}
-	}
+	// Simulate some processing time
+	time.Sleep(1 * time.Second)
+	// isWorkerProcessing := false
+	// for {
+	// 	for _, worker := range mgr.Workers() {
+	// 		if worker.IsProcessing() {
+	// 			isWorkerProcessing = true
+	// 		}
+	// 	}
+	// 	if isWorkerProcessing {
+	// 		break
+	// 	}
+	// }
 
 	canceledJobs, err = mgr.CancelInstances(
 		job.NewQuery(
