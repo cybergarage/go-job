@@ -30,10 +30,10 @@ type WorkerGroup interface {
 	Start() error
 	// Stop stops all workers in the group.
 	Stop() error
+	// Wait waits for all workers in the group to finish processing.
+	Wait() error
 	// Workers returns a list of all workers in the group.
 	Workers() []Worker
-	// StopWithWait stops all workers in the group and waits for them to finish processing.
-	StopWithWait() error
 	// ResizeWorkers scales the number of workers in the group.
 	ResizeWorkers(num int) error
 	// NumWorkers returns the number of workers in the group.
@@ -109,10 +109,10 @@ func (g *workerGroup) Stop() error {
 	return nil
 }
 
-// StopWithWait stops all workers in the group and waits for them to finish processing.
-func (g *workerGroup) StopWithWait() error {
+// Wait waits for all workers in the group to finish processing.
+func (g *workerGroup) Wait() error {
 	for _, w := range g.workers {
-		if err := w.StopWithWait(); err != nil {
+		if err := w.Wait(); err != nil {
 			return err
 		}
 	}
@@ -143,7 +143,11 @@ func (g *workerGroup) ResizeWorkers(num int) error {
 		}
 	} else {
 		for i := num; i < len(g.workers); i++ {
-			if err := g.workers[i].StopWithWait(); err != nil {
+			worker := g.workers[i]
+			if err := worker.Wait(); err != nil {
+				return err
+			}
+			if err := worker.Stop(); err != nil {
 				return err
 			}
 		}

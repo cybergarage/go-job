@@ -82,7 +82,7 @@ type Manager interface {
 	Start() error
 	// Stop stops the job manager.
 	Stop() error
-	// Wait waits for all jobs to complete or terminate.
+	// Wait waits for all scheduled jobs to complete or terminate.
 	Wait() error
 	// Clear clears all jobs and history from the job manager without registered jobs.
 	Clear() error
@@ -384,7 +384,7 @@ func (mgr *manager) Clear() error {
 	return nil
 }
 
-// Wait waits for all jobs to complete or terminate.
+// Wait waits for all scheduled jobs to complete or terminate.
 func (mgr *manager) Wait() error {
 	ctx := context.Background()
 
@@ -395,7 +395,7 @@ func (mgr *manager) Wait() error {
 		time.Sleep(100 * time.Millisecond) // Wait for queue to empty
 	}
 
-	err := mgr.workerGroup.StopWithWait()
+	err := mgr.workerGroup.Wait()
 	if err != nil {
 		return err
 	}
