@@ -298,6 +298,7 @@ func (mgr *manager) CancelInstances(query Query) ([]Instance, error) {
 		if err := queueInstance.UpdateState(JobCanceled); err != nil {
 			return canceledInstances, err
 		}
+		queueInstance.HandleTerminated(queueInstance, context.Canceled)
 		canceledInstances = append(canceledInstances, queueInstance)
 	}
 
