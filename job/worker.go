@@ -149,9 +149,7 @@ func (w *worker) Run() error {
 
 				res, err := ji.Process(w.jobCtx, w.manager, w, ji)
 
-				if w.jobCancel != nil {
-					w.jobCancel()
-				}
+				w.jobCancel()
 				w.jobCtx = nil
 				w.jobCancel = nil
 
@@ -205,6 +203,9 @@ func (w *worker) Cancel() error {
 	if w.jobCancel != nil {
 		w.jobCancel()
 	}
+	w.jobCtx = nil
+	w.jobCancel = nil
+	w.processingInst = nil
 	return nil
 }
 
