@@ -498,16 +498,19 @@ func TestManager(t *testing.T) {
 						t.Skipf("Failed to start job manager: %v", err)
 						return
 					}
-					if err := mgr.Clear(); err != nil {
-						t.Errorf("Failed to clear job manager: %v", err)
-						return
-					}
 					defer func() {
 						if err := mgr.Stop(); err != nil {
 							t.Errorf("Failed to stop job manager: %v", err)
 						}
 					}()
-
+					if err := store.Clear(); err != nil {
+						t.Errorf("Failed to clear store: %v", err)
+						return
+					}
+					if err := mgr.Clear(); err != nil {
+						t.Errorf("Failed to clear job manager: %v", err)
+						return
+					}
 					test(t, mgr)
 				})
 			}
