@@ -83,7 +83,7 @@ message JobInstance {
   optional google.protobuf.Timestamp processed_at = 23;
   optional google.protobuf.Timestamp completed_at = 24;
   optional google.protobuf.Timestamp terminated_at = 25;
-  optional google.protobuf.Timestamp cancelled_at = 26;
+  optional google.protobuf.Timestamp canceled_at = 26;
   optional google.protobuf.Timestamp timed_out_at = 27;
 
   // Total attempt count (initial execution + retries)
