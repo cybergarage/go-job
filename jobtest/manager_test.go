@@ -15,7 +15,6 @@
 package jobtest
 
 import (
-	"context"
 	"reflect"
 	"runtime"
 	"sync"
@@ -24,8 +23,6 @@ import (
 
 	"github.com/cybergarage/go-job/job"
 	"github.com/cybergarage/go-job/job/plugins/store"
-	"github.com/cybergarage/go-job/job/plugins/store/kv"
-	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/memdb"
 	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/redis"
@@ -106,16 +103,16 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 			// Register a test job
 
 			stateHandler := func(ji job.Instance, state job.JobState) {
-				t.Logf("State changed to: %s (%s) %v", ji.Kind(), ji.UUID(), state)
-				store := mgr.Store()
-				switch store := store.(type) {
-				case kv.Store:
-					objs, err := store.Dump(context.Background())
-					if err != nil {
-						t.Errorf("Failed to dump store: %v", err)
-					}
-					kvutil.LogObjects(t, objs)
-				}
+				// t.Logf("State changed to: %s (%s) %v", ji.Kind(), ji.UUID(), state)
+				// store := mgr.Store()
+				// switch store := store.(type) {
+				// case kv.Store:
+				// 	objs, err := store.Dump(context.Background())
+				// 	if err != nil {
+				// 		t.Errorf("Failed to dump store: %v", err)
+				// 	}
+				// kvutil.LogObjects(t, objs)
+				// }
 			}
 
 			processHandler := func(ji job.Instance, responses []any) {
