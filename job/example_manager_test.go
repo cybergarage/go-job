@@ -15,6 +15,7 @@
 package job
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -40,7 +41,9 @@ func ExampleManager_scheduleJob() {
 	mgr.Start()
 
 	// Wait waits for all jobs to complete or terminate.
-	mgr.Wait()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	mgr.Wait(ctx)
 
 	// Stop the job manager
 	mgr.Stop()
@@ -72,7 +75,9 @@ func ExampleManager_scheduleRegisteredJob() {
 	mgr.Start()
 
 	// Wait waits for all jobs to complete or terminate.
-	mgr.Wait()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	mgr.Wait(ctx)
 
 	// Stop the job manager
 	mgr.Stop()
@@ -97,12 +102,14 @@ func ExampleManager_resizeWorkers() {
 	jobs, _ := mgr.LookupInstances(query)
 	queueSize := len(jobs)
 	currentWorkers := mgr.NumWorkers()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	if queueSize > currentWorkers*2 {
 		// Scale up if queue is getting too long
-		mgr.ResizeWorkers(currentWorkers + 2)
+		mgr.ResizeWorkers(ctx, currentWorkers+2)
 	} else if queueSize == 0 && currentWorkers > 2 {
 		// Scale down if no jobs queued
-		mgr.ResizeWorkers(currentWorkers - 1)
+		mgr.ResizeWorkers(ctx, currentWorkers-1)
 	}
 
 	// Print the current number of workers

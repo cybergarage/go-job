@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"context"
 	"reflect"
 	"runtime"
 	"strings"
@@ -182,7 +183,9 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 
 			doneProcessing.Wait()
 
-			if err := mgr.Wait(); err != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := mgr.Wait(ctx); err != nil {
 				t.Errorf("Failed to wait for jobs: %v", err)
 				return
 			}

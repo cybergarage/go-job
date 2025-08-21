@@ -15,6 +15,7 @@
 package job
 
 import (
+	"context"
 	"errors"
 	"sync"
 )
@@ -31,11 +32,11 @@ type WorkerGroup interface {
 	// Stop stops all workers in the group.
 	Stop() error
 	// Wait waits for all workers in the group to finish processing.
-	Wait() error
+	Wait(ctx context.Context) error
 	// Workers returns a list of all workers in the group.
 	Workers() []Worker
 	// ResizeWorkers scales the number of workers in the group.
-	ResizeWorkers(num int) error
+	ResizeWorkers(ctx context.Context, num int) error
 	// NumWorkers returns the number of workers in the group.
 	NumWorkers() int
 }
@@ -110,9 +111,9 @@ func (g *workerGroup) Stop() error {
 }
 
 // Wait waits for all workers in the group to finish processing.
-func (g *workerGroup) Wait() error {
+func (g *workerGroup) Wait(ctx context.Context) error {
 	for _, w := range g.workers {
-		if err := w.Wait(); err != nil {
+		if err := w.Wait(ctx); err != nil {
 			return err
 		}
 	}
@@ -120,7 +121,7 @@ func (g *workerGroup) Wait() error {
 }
 
 // ResizeWorkers scales the number of workers for the job manager.
-func (g *workerGroup) ResizeWorkers(num int) error {
+func (g *workerGroup) ResizeWorkers(ctx context.Context, num int) error {
 	if num <= 0 {
 		return errors.New("number of workers must be positive")
 	}
@@ -144,7 +145,7 @@ func (g *workerGroup) ResizeWorkers(num int) error {
 	} else {
 		for i := num; i < len(g.workers); i++ {
 			worker := g.workers[i]
-			if err := worker.Wait(); err != nil {
+			if err := worker.Wait(ctx); err != nil {
 				return err
 			}
 			if err := worker.Stop(); err != nil {

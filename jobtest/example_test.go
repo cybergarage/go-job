@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -55,7 +56,9 @@ func Example() {
 	mgr.Start()
 
 	// Wait waits for all jobs to complete or terminate.
-	mgr.Wait()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	mgr.Wait(ctx)
 
 	// Retrieve all queued and executed job instances
 	query := job.NewQuery() // queries all job instances (any state)

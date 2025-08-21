@@ -15,8 +15,10 @@
 package jobtest
 
 import (
+	"context"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/cybergarage/go-job/job"
 )
@@ -44,7 +46,9 @@ func TestResizeWorkers(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("Resize to "+strconv.Itoa(tt.newSize), func(t *testing.T) {
-			err := mgr.ResizeWorkers(tt.newSize)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			err := mgr.ResizeWorkers(ctx, tt.newSize)
 			if !tt.expected {
 				if err == nil {
 					t.Errorf("expected error when resizing to %d workers, but got none", tt.newSize)

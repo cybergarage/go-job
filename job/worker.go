@@ -29,7 +29,7 @@ type Worker interface {
 	// Cancel cancels the currently processing job. Returns an error if no job is being processed.
 	Cancel() error
 	// Wait waits for the worker to finish processing jobs.
-	Wait() error
+	Wait(ctx context.Context) error
 	// Stop cancels the worker from processing jobs.
 	Stop() error
 	// IsProcessing returns true if the worker is currently processing a job.
@@ -188,9 +188,17 @@ func (w *worker) Run() error {
 }
 
 // Wait waits for the worker to finish processing jobs.
-func (w *worker) Wait() error {
+func (w *worker) Wait(ctx context.Context) error {
 	for w.IsProcessing() {
-		time.Sleep(1 * time.Second) // Wait for worker to finish processing
+		if deadline, ok := ctx.Deadline(); ok && !deadline.IsZero() {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(1 * time.Second):
+			}
+		} else {
+			time.Sleep(1 * time.Second)
+		}
 	}
 	return nil
 }

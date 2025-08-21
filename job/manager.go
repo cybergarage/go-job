@@ -74,7 +74,7 @@ type Manager interface {
 	// Workers returns a list of all workers in the group.
 	Workers() []Worker
 	// ResizeWorkers scales the number of workers in the group.
-	ResizeWorkers(num int) error
+	ResizeWorkers(ctx context.Context, num int) error
 	// NumWorkers returns the number of workers in the group.
 	NumWorkers() int
 
@@ -83,7 +83,7 @@ type Manager interface {
 	// Stop stops the job manager.
 	Stop() error
 	// Wait waits for all scheduled jobs to complete or terminate.
-	Wait() error
+	Wait(ctx context.Context) error
 	// Clear clears all jobs and history from the job manager without registered jobs.
 	Clear() error
 }
@@ -386,17 +386,23 @@ func (mgr *manager) Clear() error {
 }
 
 // Wait waits for all scheduled jobs to complete or terminate.
-func (mgr *manager) Wait() error {
-	ctx := context.Background()
-
+func (mgr *manager) Wait(ctx context.Context) error {
 	for {
 		if noJobs, _ := mgr.Queue().Empty(ctx); noJobs {
 			break
 		}
-		time.Sleep(100 * time.Millisecond) // Wait for queue to empty
+		if deadline, ok := ctx.Deadline(); ok && !deadline.IsZero() {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(1 * time.Second):
+			}
+		} else {
+			time.Sleep(1 * time.Second)
+		}
 	}
 
-	err := mgr.workerGroup.Wait()
+	err := mgr.workerGroup.Wait(ctx)
 	if err != nil {
 		return err
 	}
