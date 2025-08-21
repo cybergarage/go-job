@@ -425,18 +425,27 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 	}
 
 	// Simulate some processing time
-	time.Sleep(1 * time.Second)
-	// isWorkerProcessing := false
-	// for {
-	// 	for _, worker := range mgr.Workers() {
-	// 		if worker.IsProcessing() {
-	// 			isWorkerProcessing = true
-	// 		}
-	// 	}
-	// 	if isWorkerProcessing {
-	// 		break
-	// 	}
-	// }
+
+	waitTimeout := time.After(10 * time.Second)
+	for {
+		processing := false
+		for _, worker := range mgr.Workers() {
+			if worker.IsProcessing() {
+				processing = true
+				break
+			}
+		}
+		if processing {
+			break
+		}
+		select {
+		case <-waitTimeout:
+			t.Errorf("Timeout waiting for worker to start processing")
+			return
+		default:
+			time.Sleep(1 * time.Millisecond)
+		}
+	}
 
 	canceledJobs, err = mgr.CancelInstances(
 		job.NewQuery(
