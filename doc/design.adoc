@@ -119,11 +119,15 @@ image::img/job-state.png[]
 |Completed
 |The job instance finished successfully.
 
+|Canceled
+|The job instance was canceled before completion.
+
+|TimedOut
+|The job instance timed out before completion.
+
 |===
 
-> **Note:** The canceled and timed-out states are not explicitly defined in the current implementation. In the future, these states may be added to provide more granular control over job instance lifecycles.
-
-Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, and `Terminated`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
+Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, `Terminated`, `Canceled`, and `TimedOut`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
 
 == Job Registration and Processing Flow
 

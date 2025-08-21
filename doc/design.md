@@ -208,20 +208,12 @@ The job state in `go-job` is managed through a combination of job instances and 
 | Processing | The job instance is currently being executed by a worker. |
 | Terminated | The job instance encountered an error or was forcibly stopped before completion. |
 | Completed | The job instance finished successfully. |
-
-<div class="quoteblock">
-
-> <div class="paragraph">
->
-> **Note:** The canceled and timed-out states are not explicitly defined in the current implementation. In the future, these states may be added to provide more granular control over job instance lifecycles.
->
-> </div>
-
-</div>
+| Canceled | The job instance was canceled before completion. |
+| TimedOut | The job instance timed out before completion. |
 
 <div class="paragraph">
 
-Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, and `Terminated`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
+Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, `Terminated`, `Canceled`, and `TimedOut`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
 
 </div>
 
@@ -318,7 +310,7 @@ This enables a distributed architecture where multiple go-job servers can operat
 
 <div id="footer-text">
 
-Last updated 2025-08-14 23:59:46 +0900
+Last updated 2025-08-21 23:29:33 +0900
 
 </div>
 
