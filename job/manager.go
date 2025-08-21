@@ -82,10 +82,10 @@ type Manager interface {
 	Start() error
 	// Stop stops the job manager.
 	Stop() error
+	// Wait waits for all jobs to complete or terminate.
+	Wait() error
 	// Clear clears all jobs and history from the job manager without registered jobs.
 	Clear() error
-	// StopWithWait stops the job manager and waits for all jobs to complete.
-	StopWithWait() error
 }
 
 type manager struct {
@@ -384,8 +384,8 @@ func (mgr *manager) Clear() error {
 	return nil
 }
 
-// StopWithWait stops the job manager and waits for all jobs to complete.
-func (mgr *manager) StopWithWait() error {
+// Wait waits for all jobs to complete or terminate.
+func (mgr *manager) Wait() error {
 	ctx := context.Background()
 
 	for {
@@ -400,5 +400,5 @@ func (mgr *manager) StopWithWait() error {
 		return err
 	}
 
-	return mgr.Stop()
+	return nil
 }

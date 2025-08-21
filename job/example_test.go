@@ -44,8 +44,8 @@ func Example() {
 	// Start the job manager
 	mgr.Start()
 
-	// Wait for the job to complete
-	mgr.StopWithWait()
+	// Wait waits for all jobs to complete or terminate.
+	mgr.Wait()
 
 	// Retrieve and print the job instance state history
 	query := NewQuery(
@@ -64,6 +64,9 @@ func Example() {
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}
+
+	// Stop the job manager
+	mgr.Stop()
 
 	// Output:
 	// Created

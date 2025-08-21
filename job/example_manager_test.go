@@ -38,8 +38,12 @@ func ExampleManager_scheduleJob() {
 	)
 	// Start the job manager
 	mgr.Start()
-	// Wait for the job to complete
-	mgr.StopWithWait()
+
+	// Wait waits for all jobs to complete or terminate.
+	mgr.Wait()
+
+	// Stop the job manager
+	mgr.Stop()
 
 	// Output:
 	// Result: [3]
@@ -66,8 +70,12 @@ func ExampleManager_scheduleRegisteredJob() {
 	)
 	// Start the job manager
 	mgr.Start()
-	// Wait for the job to complete
-	mgr.StopWithWait()
+
+	// Wait waits for all jobs to complete or terminate.
+	mgr.Wait()
+
+	// Stop the job manager
+	mgr.Stop()
 
 	// Output:
 	// Result: [3]

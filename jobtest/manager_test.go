@@ -43,7 +43,7 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 	}
 
 	defer func() {
-		if err := mgr.StopWithWait(); err != nil {
+		if err := mgr.Stop(); err != nil {
 			t.Errorf("Failed to stop job manager: %v", err)
 		}
 	}()
@@ -198,6 +198,11 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 			// Wait for the job to be processed
 
 			wg.Wait()
+
+			if err := mgr.Wait(); err != nil {
+				t.Errorf("Failed to wait for jobs: %v", err)
+				return
+			}
 
 			doneTimestamp := time.Now()
 
