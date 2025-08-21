@@ -100,8 +100,8 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 
 	for _, tt := range tests {
 		t.Run(tt.kind, func(t *testing.T) {
-			var wg sync.WaitGroup
-			wg.Add(1)
+			var doneProcessing sync.WaitGroup
+			doneProcessing.Add(1)
 
 			// Register a test job
 
@@ -122,13 +122,13 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 				ji.Infof("%v", responses)
 				ji.Errorf("%s: %v", job.LogError.String(), responses)
 				ji.Warnf("%s: %v", job.LogWarn.String(), responses)
-				wg.Done()
+				doneProcessing.Done()
 			}
 
 			terminateHandler := func(ji job.Instance, err error) error {
 				ji.Errorf("Error: %v", err)
 				t.Errorf("Error in job execution: %s (%s) %s", ji.Kind(), ji.UUID(), err)
-				wg.Done()
+				doneProcessing.Done()
 				return err
 			}
 
@@ -182,7 +182,7 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 
 			// Wait for the job to be processed
 
-			wg.Wait()
+			doneProcessing.Wait()
 
 			if err := mgr.Wait(); err != nil {
 				t.Errorf("Failed to wait for jobs: %v", err)
@@ -366,8 +366,8 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 
 	// Cancel the scheduled job instance in queue
 
-	scheduledJob, err := mgr.ScheduleJob(
-		sleepJob,
+	scheduledJob, err := mgr.ScheduleRegisteredJob(
+		jobName,
 		job.WithScheduleAfter(1*time.Hour), // Schedule the job after 1 hour
 	)
 	if err != nil {
