@@ -477,20 +477,19 @@ func TestManager(t *testing.T) {
 		ManagerJobCancelTest,
 	}
 
-	stores := []job.Store{
-		job.NewLocalStore(),
-		store.NewKvStoreWith(memdb.NewStore()),
-		store.NewKvStoreWith(valkey.NewStore()),
-		store.NewKvStoreWith(etcd.NewStore()),
-		store.NewKvStoreWith(redis.NewStore()),
-	}
-
-	for _, store := range stores {
-		t.Run(store.Name(), func(t *testing.T) {
-			for _, test := range tests {
-				fnValue := reflect.ValueOf(test)
-				testName := runtime.FuncForPC(fnValue.Pointer()).Name()
-				t.Run(testName, func(t *testing.T) {
+	for _, test := range tests {
+		fnValue := reflect.ValueOf(test)
+		testName := runtime.FuncForPC(fnValue.Pointer()).Name()
+		t.Run(testName, func(t *testing.T) {
+			stores := []job.Store{
+				job.NewLocalStore(),
+				store.NewKvStoreWith(memdb.NewStore()),
+				store.NewKvStoreWith(valkey.NewStore()),
+				store.NewKvStoreWith(etcd.NewStore()),
+				store.NewKvStoreWith(redis.NewStore()),
+			}
+			for _, store := range stores {
+				t.Run(store.Name(), func(t *testing.T) {
 					mgr, err := job.NewManager(
 						job.WithStore(store),
 					)
