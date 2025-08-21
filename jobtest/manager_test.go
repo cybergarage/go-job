@@ -17,6 +17,7 @@ package jobtest
 import (
 	"reflect"
 	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -486,6 +487,9 @@ func TestManager(t *testing.T) {
 	for _, test := range tests {
 		fnValue := reflect.ValueOf(test)
 		testName := runtime.FuncForPC(fnValue.Pointer()).Name()
+		if lastDot := strings.LastIndex(testName, "."); lastDot != -1 {
+			testName = testName[lastDot+1:]
+		}
 		t.Run(testName, func(t *testing.T) {
 			stores := []job.Store{
 				job.NewLocalStore(),
