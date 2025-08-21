@@ -211,7 +211,12 @@ func (w *worker) Cancel() error {
 
 // Stop cancels the worker from processing jobs.
 func (w *worker) Stop() error {
+	err := w.Cancel()
+	if errors.Is(err, ErrNotProcessing) {
+		// If not processing, just close the done channel
+		err = nil
+	}
 	close(w.done)
 	w.done = make(chan struct{})
-	return nil
+	return err
 }
