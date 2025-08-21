@@ -1,16 +1,19 @@
 # ChangeLog
 
+## 1.2.1 (2025-0X-XX)
+### ✨ New Features
+- **System Worker**
+  - Store cleaner support
+### 🛠 Enhancements
+- **Query**
+  - Limit and offset support
+
 ## 1.2.0 (2025-0X-XX)
 ### ✨ New Features
 - **Job Management**
   - Job instance cancellation
-- **System Worker**
-  - Store cleaner support
 - **Metrics**
   - Prometheus metrics support added
-### 🛠 Enhancements
-- **Query**
-  - Limit and offset support
 
 ## 1.1.1 (2025-08-20)
 ### 🛠 Enhancements
