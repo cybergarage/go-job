@@ -30,6 +30,8 @@ type WorkerGroup interface {
 	Start() error
 	// Stop stops all workers in the group.
 	Stop() error
+	// Workers returns a list of all workers in the group.
+	Workers() []Worker
 	// StopWithWait stops all workers in the group and waits for them to finish processing.
 	StopWithWait() error
 	// ResizeWorkers scales the number of workers in the group.
@@ -72,6 +74,13 @@ func newWorkerGroup(opts ...WorkerGroupOption) *workerGroup {
 		opt(g)
 	}
 	return g
+}
+
+// Workers returns a list of all workers in the group.
+func (g *workerGroup) Workers() []Worker {
+	g.Lock()
+	defer g.Unlock()
+	return g.workers
 }
 
 // Start starts all workers in the group.
