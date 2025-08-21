@@ -32,7 +32,7 @@ const (
 	JobScheduled
 	// JobProcessing indicates the job is currently being processed.
 	JobProcessing
-	// JobCanceled indicates the job was cancelled before completion.
+	// JobCanceled indicates the job was canceled before completion.
 	JobCanceled
 	// JobTimedOut indicates the job has exceeded its allowed execution time.
 	JobTimedOut
@@ -45,9 +45,9 @@ const (
 const (
 	// JobStateActive represents the active states of a job (scheduled or processing).
 	JobStateActive = JobScheduled | JobProcessing
-	// JobStateFinal represents the final states of a job (cancelled, timed out, completed, or terminated).
+	// JobStateFinal represents the final states of a job (canceled, timed out, completed, or terminated).
 	JobStateFinal = JobCanceled | JobTimedOut | JobCompleted | JobTerminated
-	// JobStateError represents the error states of a job (cancelled, timed out, or terminated).
+	// JobStateError represents the error states of a job (canceled, timed out, or terminated).
 	JobStateError = JobCanceled | JobTimedOut | JobTerminated
 	// JobStateSuccess represents the successful completion of a job.
 	JobStateSuccess = JobCompleted

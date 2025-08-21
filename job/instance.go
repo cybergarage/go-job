@@ -50,8 +50,8 @@ type Instance interface {
 	CompletedAt() time.Time
 	// TerminatedAt returns the terminated time when the job instance was terminated.
 	TerminatedAt() time.Time
-	// CancelledAt returns the time when the job instance was cancelled.
-	CancelledAt() time.Time
+	// CanceledAt returns the time when the job instance was canceled.
+	CanceledAt() time.Time
 	// TimeoutedAt returns the time when the job instance timed out.
 	TimeoutedAt() time.Time
 	// Arguments returns the arguments for the job instance.
@@ -106,7 +106,7 @@ type jobInstance struct {
 	completedAt  time.Time
 	terminatedAt time.Time
 	processedAt  time.Time
-	cancelledAt  time.Time
+	canceledAt   time.Time
 	timedoutAt   time.Time
 	resultSet    ResultSet
 	resultError  error
@@ -234,10 +234,10 @@ func WithTerminatedAt(t time.Time) InstanceOption {
 	}
 }
 
-// WithCancelledAt sets the time when the job instance was cancelled.
-func WithCancelledAt(t time.Time) InstanceOption {
+// WithCanceledAt sets the time when the job instance was canceled.
+func WithCanceledAt(t time.Time) InstanceOption {
 	return func(ji *jobInstance) error {
-		ji.cancelledAt = t
+		ji.canceledAt = t
 		return nil
 	}
 }
@@ -300,7 +300,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		completedAt:   time.Time{},
 		terminatedAt:  time.Time{},
 		processedAt:   time.Time{},
-		cancelledAt:   time.Time{},
+		canceledAt:    time.Time{},
 		timedoutAt:    time.Time{},
 		resultSet:     nil,
 		resultError:   nil,
@@ -451,9 +451,9 @@ func (ji *jobInstance) TerminatedAt() time.Time {
 	return ji.terminatedAt
 }
 
-// CancelledAt returns the time when the job instance was cancelled.
-func (ji *jobInstance) CancelledAt() time.Time {
-	return ji.cancelledAt
+// CanceledAt returns the time when the job instance was canceled.
+func (ji *jobInstance) CanceledAt() time.Time {
+	return ji.canceledAt
 }
 
 // TimeoutedAt returns the time when the job instance timed out.

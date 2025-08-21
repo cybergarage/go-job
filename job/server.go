@@ -206,7 +206,7 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 			ProcessedAt:  nil,
 			CompletedAt:  nil,
 			TerminatedAt: nil,
-			CancelledAt:  nil,
+			CanceledAt:   nil,
 			TimedOutAt:   nil,
 			Attempts:     nil,
 		},
@@ -283,7 +283,7 @@ func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstanc
 			ProcessedAt:  nil,
 			CompletedAt:  nil,
 			TerminatedAt: nil,
-			CancelledAt:  nil,
+			CanceledAt:   nil,
 			TimedOutAt:   nil,
 			Attempts:     nil})
 	}
