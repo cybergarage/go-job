@@ -16,6 +16,8 @@ package jobtest
 
 import (
 	"context"
+	"reflect"
+	"runtime"
 	"sync"
 	"testing"
 	"time"
@@ -30,7 +32,7 @@ import (
 )
 
 // nolint: maintidx
-func ManagerTest(t *testing.T, mgr job.Manager) {
+func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 	t.Helper()
 
 	startTimestamp := time.Now()
@@ -344,7 +346,16 @@ func ManagerTest(t *testing.T, mgr job.Manager) {
 	}
 }
 
+func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
+	t.Helper()
+}
+
 func TestManager(t *testing.T) {
+	tests := []func(t *testing.T, mgr job.Manager){
+		ManagerJobScheduleTest,
+		ManagerJobCancelTest,
+	}
+
 	stores := []job.Store{
 		job.NewLocalStore(),
 		store.NewMemdbStore(),
@@ -353,16 +364,22 @@ func TestManager(t *testing.T) {
 		store.NewKvStoreWith(redis.NewStore()),
 	}
 
-	for _, store := range stores {
-		t.Run(store.Name(), func(t *testing.T) {
-			mgr, err := job.NewManager(
-				job.WithStore(store),
-			)
-			if err != nil {
-				t.Errorf("Failed to create job manager: %v", err)
-				return
+	for _, test := range tests {
+		fnValue := reflect.ValueOf(test)
+		testName := runtime.FuncForPC(fnValue.Pointer()).Name()
+		t.Run(testName, func(t *testing.T) {
+			for _, store := range stores {
+				t.Run(store.Name(), func(t *testing.T) {
+					mgr, err := job.NewManager(
+						job.WithStore(store),
+					)
+					if err != nil {
+						t.Errorf("Failed to create job manager: %v", err)
+						return
+					}
+					test(t, mgr)
+				})
 			}
-			ManagerTest(t, mgr)
 		})
 	}
 }
