@@ -58,6 +58,7 @@ func (store *Store) Start() error {
 	defer cancel()
 	_, err = store.Client.Status(ctx, store.opt.Endpoints[0])
 	if err != nil {
+		store.Client = nil
 		return errors.Join(err, store.Stop())
 	}
 	return nil
