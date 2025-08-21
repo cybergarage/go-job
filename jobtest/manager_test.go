@@ -26,6 +26,9 @@ import (
 	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/redis"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/valkey"
 )
 
 // nolint: maintidx
@@ -341,13 +344,24 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 		return err
 	}
 
-	sleepJob, _ := job.NewJob(
+	sleepJob, err := job.NewJob(
 		job.WithKind(jobName),
 		job.WithExecutor(func() {
 			time.Sleep(1 * time.Hour) // Simulate a long-running job
 		}),
 		job.WithTerminateProcessor(terminateHandler), // Set terminate handler
 	)
+
+	if err != nil {
+		t.Errorf("Failed to create sleep job: %v", err)
+		return
+	}
+
+	_, err = mgr.RegisterJob(sleepJob)
+	if err != nil {
+		t.Errorf("Failed to register job: %v", err)
+		return
+	}
 
 	// Cancel the scheduled job instance in queue
 
@@ -406,7 +420,6 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 	scheduledJob, err = mgr.ScheduleJob(
 		sleepJob,
 		job.WithScheduleAt(time.Now()), // Schedule the job immediately
-
 	)
 	if err != nil {
 		t.Errorf("Failed to schedule job: %v", err)
@@ -457,16 +470,16 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	tests := []func(t *testing.T, mgr job.Manager){
-		// ManagerJobScheduleTest,
+		ManagerJobScheduleTest,
 		ManagerJobCancelTest,
 	}
 
 	stores := []job.Store{
-		// job.NewLocalStore(),
+		job.NewLocalStore(),
 		store.NewMemdbStore(),
-		// store.NewKvStoreWith(valkey.NewStore()),
-		// store.NewKvStoreWith(etcd.NewStore()),
-		// store.NewKvStoreWith(redis.NewStore()),
+		store.NewKvStoreWith(valkey.NewStore()),
+		store.NewKvStoreWith(etcd.NewStore()),
+		store.NewKvStoreWith(redis.NewStore()),
 	}
 
 	for _, test := range tests {
@@ -482,16 +495,14 @@ func TestManager(t *testing.T) {
 						t.Errorf("Failed to create job manager: %v", err)
 						return
 					}
-					if err := mgr.Clear(); err != nil {
-						t.Errorf("Failed to clear job manager: %v", err)
-						return
-					}
-
 					if err := mgr.Start(); err != nil {
 						t.Skipf("Failed to start job manager: %v", err)
 						return
 					}
-
+					if err := mgr.Clear(); err != nil {
+						t.Errorf("Failed to clear job manager: %v", err)
+						return
+					}
 					defer func() {
 						if err := mgr.Stop(); err != nil {
 							t.Errorf("Failed to stop job manager: %v", err)
