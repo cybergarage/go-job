@@ -49,8 +49,8 @@ func main() {
 	// Start the job manager
 	mgr.Start()
 
-	// Wait for the job to complete
-	mgr.StopWithWait()
+	// Wait waits for all jobs to complete or terminate.
+	mgr.Wait()
 
 	// Retrieve all queued and executed job instances
 	query := job.NewQuery() // queries all job instances (any state)
@@ -76,5 +76,8 @@ func main() {
 	for _, log := range logs {
 		fmt.Println(log.Message())
 	}
+
+	// Stop the job manager
+	mgr.Stop()
 }
 ```
