@@ -504,14 +504,19 @@ func (ji *jobInstance) ResultSet() (ResultSet, error) {
 
 // UpdateState updates the state of the job instance and records the state change.
 func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
+	now := time.Now()
 	ji.state = state
 	switch state {
 	case JobCompleted:
-		ji.completedAt = time.Now()
+		ji.completedAt = now
 	case JobTerminated:
-		ji.terminatedAt = time.Now()
+		ji.terminatedAt = now
 	case JobCanceled:
-		ji.canceledAt = time.Now()
+		ji.canceledAt = now
+		ji.terminatedAt = now
+	case JobTimedOut:
+		ji.timedoutAt = now
+		ji.terminatedAt = now
 	}
 
 	opts = append(opts,
