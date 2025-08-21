@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
 	"github.com/cybergarage/go-job/job/plugins/store/kvutil"
 )
@@ -120,7 +121,7 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 				wg.Done()
 			}
 
-			errorHandler := func(ji job.Instance, err error) error {
+			terminateHandler := func(ji job.Instance, err error) error {
 				ji.Errorf("Error: %v", err)
 				t.Errorf("Error in job execution: %s (%s) %s", ji.Kind(), ji.UUID(), err)
 				wg.Done()
@@ -133,7 +134,7 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 				job.WithKind(tt.kind),
 				job.WithStateChangeProcessor(stateHandler),
 				job.WithCompleteProcessor(processHandler),
-				job.WithTerminateProcessor(errorHandler),
+				job.WithTerminateProcessor(terminateHandler),
 			)
 
 			j, err := job.NewJob(opts...)
@@ -336,11 +337,16 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 
 	jobName := "sleep"
 
+	terminateHandler := func(ji job.Instance, err error) error {
+		return err
+	}
+
 	sleepJob, _ := job.NewJob(
 		job.WithKind(jobName),
 		job.WithExecutor(func() {
 			time.Sleep(1 * time.Hour) // Simulate a long-running job
 		}),
+		job.WithTerminateProcessor(terminateHandler), // Set terminate handler
 	)
 
 	// Cancel the scheduled job instance in queue
@@ -375,6 +381,26 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 		return
 	}
 
+	jobHistory, err := mgr.LookupInstanceHistory(
+		job.NewQuery(
+			job.WithQueryUUID(scheduledJob.UUID()),
+		),
+	)
+	if err != nil {
+		t.Errorf("Failed to retrieve job history: %v", err)
+		return
+	}
+	if len(jobHistory) < 1 {
+		t.Errorf("Expected job history to have at least 1 record, but got %d",
+			len(jobHistory))
+		return
+	}
+	if !canceledJobs[len(canceledJobs)-1].Equal(scheduledJob) {
+		t.Errorf("Expected canceled job to be %v, but got %v",
+			scheduledJob, canceledJobs[len(canceledJobs)-1])
+		return
+	}
+
 	// Cancel the processing job instance which is dequeued
 
 	scheduledJob, err = mgr.ScheduleJob(
@@ -394,7 +420,7 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 				isWorkerProcessing = true
 			}
 		}
-		if !isWorkerProcessing {
+		if isWorkerProcessing {
 			break
 		}
 	}
@@ -414,9 +440,9 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 		return
 	}
 
-	if !canceledJobs[0].Equal(scheduledJob) {
+	if !canceledJobs[len(canceledJobs)-1].Equal(scheduledJob) {
 		t.Errorf("Expected canceled job to be %v, but got %v",
-			scheduledJob, canceledJobs[0])
+			scheduledJob, canceledJobs[len(canceledJobs)-1])
 		return
 	}
 
@@ -436,8 +462,8 @@ func TestManager(t *testing.T) {
 	}
 
 	stores := []job.Store{
-		job.NewLocalStore(),
-		// store.NewMemdbStore(),
+		// job.NewLocalStore(),
+		store.NewMemdbStore(),
 		// store.NewKvStoreWith(valkey.NewStore()),
 		// store.NewKvStoreWith(etcd.NewStore()),
 		// store.NewKvStoreWith(redis.NewStore()),
