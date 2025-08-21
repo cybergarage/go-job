@@ -28,6 +28,8 @@ type Worker interface {
 	Start() error
 	// Cancel cancels the currently processing job. Returns an error if no job is being processed.
 	Cancel() error
+	// Wait waits for the worker to finish processing jobs.
+	Wait() error
 	// Stop cancels the worker from processing jobs.
 	Stop() error
 	// IsProcessing returns true if the worker is currently processing a job.
@@ -48,7 +50,8 @@ type worker struct {
 
 // IsProcessing returns true if the worker is currently processing a job.
 func (w *worker) IsProcessing() bool {
-	return w.processingInst != nil
+	_, processing := w.ProcessingInstance()
+	return processing
 }
 
 // ProcessingInstance returns the job instance being processed, if any.
@@ -188,10 +191,19 @@ func (w *worker) Run() error {
 	return nil
 }
 
-// StopWithWait stops the worker and waits for it to finish processing jobs.
-func (w *worker) StopWithWait() error {
+// Wait waits for the worker to finish processing jobs.
+func (w *worker) Wait() error {
 	for w.IsProcessing() {
 		time.Sleep(1 * time.Second) // Wait for worker to finish processing
+	}
+	return nil
+}
+
+// StopWithWait stops the worker and waits for it to finish processing jobs.
+func (w *worker) StopWithWait() error {
+	err := w.Wait()
+	if err != nil {
+		return err
 	}
 	return w.Stop()
 }
