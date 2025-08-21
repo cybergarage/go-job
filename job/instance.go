@@ -475,18 +475,15 @@ func (ji *jobInstance) Process(ctx context.Context, opts ...any) ([]any, error) 
 	select {
 	case <-ctx.Done():
 		ji.resultError = ctx.Err()
-		return nil, ji.resultError
 	default:
-	}
+		ji.attempt++
+		args := make([]any, len(ji.Arguments()))
+		copy(args, ji.Arguments())
+		ji.resultSet, ji.resultError = ji.Execute(args, opts...)
 
-	ji.attempt++
-	args := make([]any, len(ji.Arguments()))
-	copy(args, ji.Arguments())
-	ji.resultSet, ji.resultError = ji.Execute(args, opts...)
-
-	if ctx.Err() != nil {
-		ji.resultError = ctx.Err()
-		return nil, ji.resultError
+		if ctx.Err() != nil {
+			ji.resultError = ctx.Err()
+		}
 	}
 
 	if ji.resultError != nil {
@@ -513,6 +510,8 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 		ji.completedAt = time.Now()
 	case JobTerminated:
 		ji.terminatedAt = time.Now()
+	case JobCanceled:
+		ji.canceledAt = time.Now()
 	}
 
 	opts = append(opts,
