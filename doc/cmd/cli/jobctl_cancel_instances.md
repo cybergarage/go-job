@@ -1,13 +1,13 @@
-## jobctl list instances
+## jobctl cancel instances
 
-List scheduled job instances
+Cancel job instances
 
 ### Synopsis
 
-List all scheduled job instances.
+Cancel job instances by the specified query.
 
 ```
-jobctl list instances [flags]
+jobctl cancel instances [flags]
 ```
 
 ### Options
@@ -25,5 +25,5 @@ jobctl list instances [flags]
 
 ### SEE ALSO
 
-* [jobctl list](jobctl_list.md)	 - List all resources
+* [jobctl cancel](jobctl_cancel.md)	 - cancel the specified resource
 

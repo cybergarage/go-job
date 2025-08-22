@@ -16,6 +16,7 @@ jobctl is a command-line interface for managing jobs in the go-job framework.
 
 ### SEE ALSO
 
+* [jobctl cancel](jobctl_cancel.md)	 - cancel the specified resource
 * [jobctl get](jobctl_get.md)	 - Get the specified resource
 * [jobctl list](jobctl_list.md)	 - List all resources
 * [jobctl schedule](jobctl_schedule.md)	 - Schedule a job

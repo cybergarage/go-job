@@ -1,15 +1,15 @@
-## jobctl list
+## jobctl cancel
 
-List all resources
+cancel the specified resource
 
 ### Synopsis
 
-List all resources in the specified category
+cancel the specified resource in the specified query.
 
 ### Options
 
 ```
-  -h, --help   help for list
+  -h, --help   help for cancel
 ```
 
 ### Options inherited from parent commands
@@ -22,6 +22,5 @@ List all resources in the specified category
 ### SEE ALSO
 
 * [jobctl](jobctl.md)	 - Job Control CLI
-* [jobctl list instances](jobctl_list_instances.md)	 - List scheduled job instances
-* [jobctl list jobs](jobctl_list_jobs.md)	 - List registered jobs
+* [jobctl cancel instances](jobctl_cancel_instances.md)	 - Cancel job instances
 
