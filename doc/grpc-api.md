@@ -4,6 +4,8 @@
 ## Table of Contents
 
 - [service.proto](#service-proto)
+    - [CancelInstancesRequest](#job-v1-CancelInstancesRequest)
+    - [CancelInstancesResponse](#job-v1-CancelInstancesResponse)
     - [Job](#job-v1-Job)
     - [JobInstance](#job-v1-JobInstance)
     - [ListRegisteredJobsRequest](#job-v1-ListRegisteredJobsRequest)
@@ -29,6 +31,36 @@
 
 ## service.proto
 proto/job/v1/job_service.proto
+
+
+<a name="job-v1-CancelInstancesRequest"></a>
+
+### CancelInstancesRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| query | [Query](#job-v1-Query) |  | Lookup query |
+
+
+
+
+
+
+<a name="job-v1-CancelInstancesResponse"></a>
+
+### CancelInstancesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| instances | [JobInstance](#job-v1-JobInstance) | repeated | List of job instances |
+
+
+
+
 
 
 <a name="job-v1-Job"></a>
@@ -245,6 +277,7 @@ and monitor their progress through various states.
 | ScheduleJob | [ScheduleJobRequest](#job-v1-ScheduleJobRequest) | [ScheduleJobResponse](#job-v1-ScheduleJobResponse) | ScheduleJob schedules a job for execution with the specified parameters. The job must be pre-registered in the system before it can be scheduled. |
 | ListRegisteredJobs | [ListRegisteredJobsRequest](#job-v1-ListRegisteredJobsRequest) | [ListRegisteredJobsResponse](#job-v1-ListRegisteredJobsResponse) | ListRegisteredJobs returns all currently registered jobs in the system. |
 | LookupInstances | [LookupInstancesRequest](#job-v1-LookupInstancesRequest) | [LookupInstancesResponse](#job-v1-LookupInstancesResponse) | LookupInstances searches for job instances based on the provided query criteria. |
+| CancelInstances | [CancelInstancesRequest](#job-v1-CancelInstancesRequest) | [CancelInstancesResponse](#job-v1-CancelInstancesResponse) | CancelInstances cancels for job instances based on the provided query criteria. |
 
  
 
