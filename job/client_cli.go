@@ -185,3 +185,27 @@ func (cli *cliClient) LookupInstances(query Query) ([]Instance, error) {
 	}
 	return instances, nil
 }
+
+// CancelInstances cancels job instances based on the provided query.
+func (cli *cliClient) CancelInstances(query Query) ([]Instance, error) {
+	var cmdArgs []string
+	cmdArgs = append(cmdArgs, cli.args...)
+	cmdArgs = append(cmdArgs, "cancel", "instances")
+	out, err := cli.Execute(jobctl, cmdArgs...)
+	if err != nil {
+		return nil, err
+	}
+	var maps []map[string]any
+	if err := json.Unmarshal(out, &maps); err != nil {
+		return nil, err
+	}
+	instances := make([]Instance, len(maps))
+	for n, m := range maps {
+		i, err := NewInstanceFromMap(m)
+		if err != nil {
+			return nil, err
+		}
+		instances[n] = i
+	}
+	return instances, nil
+}

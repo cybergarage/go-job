@@ -34,6 +34,8 @@ type Client interface {
 	ListRegisteredJobs() ([]Job, error)
 	// LookupInstances looks up job instances based on the provided query.
 	LookupInstances(query Query) ([]Instance, error)
+	// CancelInstances cancels job instances based on the provided query.
+	CancelInstances(query Query) ([]Instance, error)
 }
 
 // NewClient returns a new default gRPC client.

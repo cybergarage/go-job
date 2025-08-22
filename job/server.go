@@ -238,29 +238,12 @@ func (server *server) ListRegisteredJobs(ctx context.Context, req *v1.ListRegist
 
 // LookupInstances looks up all job instances which match the specified query.
 func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstancesRequest) (*v1.LookupInstancesResponse, error) {
-	queryOpts := []QueryOption{}
-	queryKind := req.GetQuery().Kind
-	if queryKind != nil && 0 < len(*queryKind) {
-		queryOpts = append(queryOpts, WithQueryKind(*queryKind))
-	}
-	queryUUID := req.GetQuery().Uuid
-	if queryUUID != nil && 0 < len(*queryUUID) {
-		uuid, err := NewUUIDFrom(*queryUUID)
-		if err != nil {
-			return nil, err
-		}
-		queryOpts = append(queryOpts, WithQueryUUID(uuid))
-	}
-	queryState := req.GetQuery().State
-	if queryState != nil {
-		state, err := newStateFrom(*queryState)
-		if err != nil {
-			return nil, err
-		}
-		queryOpts = append(queryOpts, WithQueryState(state))
+	query, err := newQueryFromGrpcQuery(req.GetQuery())
+	if err != nil {
+		return nil, err
 	}
 
-	allInstances, err := server.Manager().LookupInstances(NewQuery(queryOpts...))
+	allInstances, err := server.Manager().LookupInstances(query)
 	if err != nil {
 		return nil, err
 	}
@@ -289,6 +272,46 @@ func (server *server) LookupInstances(ctx context.Context, req *v1.LookupInstanc
 	}
 
 	return &v1.LookupInstancesResponse{
+		Instances: instances,
+	}, nil
+}
+
+// CancelInstances cancels job instances which match the specified query.
+func (server *server) CancelInstances(ctx context.Context, req *v1.CancelInstancesRequest) (*v1.CancelInstancesResponse, error) {
+	query, err := newQueryFromGrpcQuery(req.GetQuery())
+	if err != nil {
+		return nil, err
+	}
+
+	allInstances, err := server.Manager().CancelInstances(query)
+	if err != nil {
+		return nil, err
+	}
+
+	instances := []*v1.JobInstance{}
+	for _, instance := range allInstances {
+		state, err := instance.State().protoState()
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, &v1.JobInstance{
+			Kind:         instance.Kind(),
+			Uuid:         instance.UUID().String(),
+			State:        state,
+			Arguments:    nil,
+			Results:      nil,
+			Error:        nil,
+			CreatedAt:    nil,
+			ScheduledAt:  nil,
+			ProcessedAt:  nil,
+			CompletedAt:  nil,
+			TerminatedAt: nil,
+			CanceledAt:   nil,
+			TimedOutAt:   nil,
+			Attempts:     nil})
+	}
+
+	return &v1.CancelInstancesResponse{
 		Instances: instances,
 	}, nil
 }

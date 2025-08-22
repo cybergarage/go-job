@@ -152,33 +152,48 @@ func (client *grpcClient) ListRegisteredJobs() ([]Job, error) {
 func (client *grpcClient) LookupInstances(query Query) ([]Instance, error) {
 	c := v1.NewJobServiceClient(client.conn)
 
-	pbQuery := &v1.Query{
-		Kind:  nil,
-		Uuid:  nil,
-		State: nil,
-	}
-	kind, ok := query.Kind()
-	if ok {
-		pbQuery.Kind = &kind
-	}
-	id, ok := query.UUID()
-	if ok {
-		idStr := id.String()
-		pbQuery.Uuid = &idStr
-	}
-	state, ok := query.State()
-	if ok {
-		pbState, err := state.protoState()
-		if err != nil {
-			return nil, err
-		}
-		pbQuery.State = &pbState
-	}
+	pbQuery := newGrpcQueryFromQuery(query)
 
 	req := &v1.LookupInstancesRequest{
 		Query: pbQuery,
 	}
 	res, err := c.LookupInstances(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	pbInstances := make([]Instance, len(res.GetInstances()))
+	for i, pbInstance := range res.GetInstances() {
+		uuid, err := NewUUIDFrom(pbInstance.GetUuid())
+		if err != nil {
+			return nil, err
+		}
+		state, err := newStateFrom(pbInstance.GetState())
+		if err != nil {
+			return nil, err
+		}
+		pbInstances[i], err = NewInstance(
+			WithUUID(uuid),
+			WithKind(pbInstance.GetKind()),
+			WithState(state),
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return pbInstances, nil
+}
+
+// CancelInstances cancels job instances based on the provided query.
+func (client *grpcClient) CancelInstances(query Query) ([]Instance, error) {
+	c := v1.NewJobServiceClient(client.conn)
+
+	pbQuery := newGrpcQueryFromQuery(query)
+
+	req := &v1.CancelInstancesRequest{
+		Query: pbQuery,
+	}
+	res, err := c.CancelInstances(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
