@@ -483,17 +483,17 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="paragraph">
 
-`go-job` supports special arguments related to the job instance, such as [context.Context](https://pkg.go.dev/context), [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager), [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker), and [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance).
+`go-job` allows you to use special arguments in your job functions, such as [context.Context](https://pkg.go.dev/context), [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager), [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker), and [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance). These arguments let you control job execution and access useful job-related information.
 
 </div>
 
 <div class="sect4">
 
-##### Context Argument
+##### Using context.Context for Cancellation and Timeout
 
 <div class="paragraph">
 
-Using these special context.Context arguments, you can handle context cancellation and timeout.
+If your job function takes a `context.Context` argument, you can easily handle cancellation and timeout. For example, you can stop a long-running job when the context is canceled:
 
 </div>
 
@@ -508,11 +508,12 @@ job, err := job.NewJob(
         for {
             select {
             case <-ctx.Done():
+                // Job is canceled or timed out
                 return
             default:
-                                time.Sleep(1 * time.Hour) // Simulate a long-running job
+                time.Sleep(1 * time.Hour) // Simulate a long-running job
             }
-                }
+        }
     }),
 )
 ```
@@ -523,7 +524,7 @@ job, err := job.NewJob(
 
 <div class="paragraph">
 
-You can schedule this job by passing a dummy argument as follows:
+To schedule this job, just pass a dummy argument (the actual context will be injected automatically):
 
 </div>
 
@@ -541,7 +542,7 @@ mgr.ScheduleJob(job, WithArguments("?"))
 
 <div class="paragraph">
 
-or by using the placeholder constant:
+Or use the provided placeholder constant:
 
 </div>
 
@@ -561,11 +562,17 @@ mgr.ScheduleJob(job, WithArguments(job.Placeholder))
 
 <div class="sect4">
 
-##### Manager, Worker, and Instance Arguments
+##### Accessing Manager, Worker, and Instance in Job Functions
 
 <div class="paragraph">
 
-Using these special `go-job` arguments, you can access useful methods provided by the special parameters within the executor function.
+You can also use special arguments like `job.Manager`, `job.Worker`, or `job.Instance` in your job function to get information about the job or control its execution.
+
+</div>
+
+<div class="paragraph">
+
+For example, to log job details using the `Instance` argument:
 
 </div>
 
@@ -577,7 +584,7 @@ Using these special `go-job` arguments, you can access useful methods provided b
 job, err := job.NewJob(
     WithKind("info (with special instance argument)"),
     WithExecutor(func(ji job.Instance) {
-        // Output message to go-job logger
+        // Log job details
         ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
     }),
 )
@@ -589,7 +596,7 @@ job, err := job.NewJob(
 
 <div class="paragraph">
 
-You can schedule this job by passing a dummy argument as follows:
+Schedule this job the same way:
 
 </div>
 
@@ -607,7 +614,7 @@ mgr.ScheduleJob(job, WithArguments("?"))
 
 <div class="paragraph">
 
-or by using the placeholder constant:
+Or with the placeholder:
 
 </div>
 
@@ -620,6 +627,12 @@ mgr.ScheduleJob(job, WithArguments(job.Placeholder))
 ```
 
 </div>
+
+</div>
+
+<div class="paragraph">
+
+These features make it easy to write flexible and powerful job functions that can respond to cancellation, access job metadata, and interact with the job system.
 
 </div>
 
@@ -1639,7 +1652,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-22 21:34:45 +0900
+Last updated 2025-08-22 21:37:07 +0900
 
 </div>
 
