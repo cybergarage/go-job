@@ -3,7 +3,7 @@
 ## 1.2.1 (2025-0X-XX)
 ### ✨ New Features
 - **System Worker**
-  - Store cleaner support
+  - Store cleaner plugin
 ### 🛠 Enhancements
 - **Query**
   - Limit and offset support
