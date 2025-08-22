@@ -7,13 +7,13 @@ Schedule a job
 Schedule a job to run with the specified kind and arguments.
 
 ```
-jobctl schedule [flags]
+jobctl schedule kind [args...] [flags]
 ```
 
 ### Examples
 
 ```
-job schedule kind args...
+job schedule kind arg1 arg2
 ```
 
 ### Options
