@@ -22,6 +22,8 @@ import (
 func init() {
 	rootCmd.AddCommand(cancelCmd)
 	cancelCmd.AddCommand(cancelInstancesCmd)
+	cancelInstancesCmd.Flags().StringP("kind", "k", "", "Kind of the instances to cancel")
+	cancelInstancesCmd.Flags().StringP("uuid", "u", "", "UUID of the instances to cancel")
 }
 
 var cancelCmd = &cobra.Command{ // nolint:exhaustruct
@@ -35,11 +37,8 @@ var cancelInstancesCmd = &cobra.Command{ // nolint:exhaustruct
 	Short: "Cancel job instances",
 	Long:  "Cancel job instances by the specified query.",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		cmd.Flags().StringP("kind", "k", "", "Kind of the instances to cancel")
-		cmd.Flags().StringP("uuid", "u", "", "UUID of the instances to cancel")
-
-		kind := cmd.Flags().Lookup("kind").Value.String()
-		uuidStr := cmd.Flags().Lookup("uuid").Value.String()
+		kind, _ := cmd.Flags().GetString("kind")
+		uuidStr, _ := cmd.Flags().GetString("uuid")
 
 		opts := []job.QueryOption{}
 		if 0 < len(kind) {
