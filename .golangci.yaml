@@ -46,6 +46,7 @@ linters:
     - testableexamples
     - noinlineerr
     - noctx
+    - contextcheck
     - fatcontext
   settings:
     gocritic:
