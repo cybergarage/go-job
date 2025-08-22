@@ -37,13 +37,15 @@ var cancelInstancesCmd = &cobra.Command{ // nolint:exhaustruct
 	Short: "Cancel job instances",
 	Long:  "Cancel job instances by the specified query.",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		kind, _ := cmd.Flags().GetString("kind")
-		uuidStr, _ := cmd.Flags().GetString("uuid")
 
 		opts := []job.QueryOption{}
+
+		kind, _ := cmd.Flags().GetString("kind")
 		if 0 < len(kind) {
 			opts = append(opts, job.WithQueryKind(kind))
 		}
+
+		uuidStr, _ := cmd.Flags().GetString("uuid")
 		if 0 < len(uuidStr) {
 			uuid, err := job.NewUUIDFrom(uuidStr)
 			if err != nil {
@@ -51,6 +53,7 @@ var cancelInstancesCmd = &cobra.Command{ // nolint:exhaustruct
 			}
 			opts = append(opts, job.WithQueryUUID(uuid))
 		}
+
 		instances, err := GetClient().CancelInstances(job.NewQuery(opts...))
 		if err != nil {
 			return err
