@@ -61,28 +61,14 @@ var listJobsCmd = &cobra.Command{ // nolint:exhaustruct
 
 var listInstancesCmd = &cobra.Command{ // nolint:exhaustruct
 	Use:   "instances",
-	Short: "List job instances",
-	Long:  "List all job instances.",
+	Short: "List scheduled job instances",
+	Long:  "List all scheduled job instances.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		query := job.NewQuery()
 		instances, err := GetClient().LookupInstances(query)
 		if err != nil {
 			return err
 		}
-		cmd.Printf("[\n")
-		for n, instance := range instances {
-			json, err := encoding.MapToJSON(instance.Map())
-			if err != nil {
-				return err
-			}
-			cmd.Printf("  %s", json)
-			if n < len(instances)-1 {
-				cmd.Printf(",\n")
-			} else {
-				cmd.Printf("\n")
-			}
-		}
-		cmd.Printf("]\n")
-		return nil
+		return printInstances(cmd, instances)
 	},
 }
