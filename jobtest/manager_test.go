@@ -24,6 +24,11 @@ import (
 	"time"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/store"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/etcd"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/memdb"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/redis"
+	"github.com/cybergarage/go-job/jobtest/plugins/store/kv/valkey"
 )
 
 // nolint: maintidx
@@ -487,7 +492,7 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 
 func TestManager(t *testing.T) {
 	tests := []func(t *testing.T, mgr job.Manager){
-		// ManagerJobScheduleTest,
+		ManagerJobScheduleTest,
 		ManagerJobCancelTest,
 	}
 
@@ -500,10 +505,10 @@ func TestManager(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			stores := []job.Store{
 				job.NewLocalStore(),
-				// store.NewKvStoreWith(memdb.NewStore()),
-				// store.NewKvStoreWith(valkey.NewStore()),
-				// store.NewKvStoreWith(etcd.NewStore()),
-				// store.NewKvStoreWith(redis.NewStore()),
+				store.NewKvStoreWith(memdb.NewStore()),
+				store.NewKvStoreWith(valkey.NewStore()),
+				store.NewKvStoreWith(etcd.NewStore()),
+				store.NewKvStoreWith(redis.NewStore()),
 			}
 			for _, store := range stores {
 				t.Run(store.Name(), func(t *testing.T) {
