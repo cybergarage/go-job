@@ -124,7 +124,7 @@ message ListRegisteredJobsResponse {
 }
 
 //////////////////////////////
-// LookupInstancesRequest/Response
+// Query
 //////////////////////////////
 
 message Query {
@@ -136,12 +136,30 @@ message Query {
   optional JobState state = 3;
 }
 
+//////////////////////////////
+// LookupInstancesRequest/Response
+//////////////////////////////
+
 message LookupInstancesRequest {
   // Lookup query
   Query query = 1;
 }
 
 message LookupInstancesResponse {
+  // List of job instances
+  repeated JobInstance instances = 1;
+}
+
+//////////////////////////////
+// CancelInstancesRequest/Response
+//////////////////////////////
+
+message CancelInstancesRequest {
+  // Lookup query
+  Query query = 1;
+}
+
+message CancelInstancesResponse {
   // List of job instances
   repeated JobInstance instances = 1;
 }
@@ -166,4 +184,7 @@ service JobService {
   
   // LookupInstances searches for job instances based on the provided query criteria.
   rpc LookupInstances(LookupInstancesRequest) returns (LookupInstancesResponse);
+
+  // CancelInstances cancels for job instances based on the provided query criteria.
+  rpc CancelInstances(CancelInstancesRequest) returns (CancelInstancesResponse);
 }

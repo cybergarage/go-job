@@ -754,6 +754,96 @@ func (x *LookupInstancesResponse) GetInstances() []*JobInstance {
 	return nil
 }
 
+type CancelInstancesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Lookup query
+	Query         *Query `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelInstancesRequest) Reset() {
+	*x = CancelInstancesRequest{}
+	mi := &file_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelInstancesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelInstancesRequest) ProtoMessage() {}
+
+func (x *CancelInstancesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelInstancesRequest.ProtoReflect.Descriptor instead.
+func (*CancelInstancesRequest) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CancelInstancesRequest) GetQuery() *Query {
+	if x != nil {
+		return x.Query
+	}
+	return nil
+}
+
+type CancelInstancesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of job instances
+	Instances     []*JobInstance `protobuf:"bytes,1,rep,name=instances,proto3" json:"instances,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelInstancesResponse) Reset() {
+	*x = CancelInstancesResponse{}
+	mi := &file_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelInstancesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelInstancesResponse) ProtoMessage() {}
+
+func (x *CancelInstancesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelInstancesResponse.ProtoReflect.Descriptor instead.
+func (*CancelInstancesResponse) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CancelInstancesResponse) GetInstances() []*JobInstance {
+	if x != nil {
+		return x.Instances
+	}
+	return nil
+}
+
 var File_service_proto protoreflect.FileDescriptor
 
 const file_service_proto_rawDesc = "" +
@@ -821,6 +911,10 @@ const file_service_proto_rawDesc = "" +
 	"\x16LookupInstancesRequest\x12#\n" +
 	"\x05query\x18\x01 \x01(\v2\r.job.v1.QueryR\x05query\"L\n" +
 	"\x17LookupInstancesResponse\x121\n" +
+	"\tinstances\x18\x01 \x03(\v2\x13.job.v1.JobInstanceR\tinstances\"=\n" +
+	"\x16CancelInstancesRequest\x12#\n" +
+	"\x05query\x18\x01 \x01(\v2\r.job.v1.QueryR\x05query\"L\n" +
+	"\x17CancelInstancesResponse\x121\n" +
 	"\tinstances\x18\x01 \x03(\v2\x13.job.v1.JobInstanceR\tinstances*\xce\x01\n" +
 	"\bJobState\x12\x13\n" +
 	"\x0fJOB_STATE_UNSET\x10\x00\x12\x15\n" +
@@ -830,14 +924,15 @@ const file_service_proto_rawDesc = "" +
 	"\x13JOB_STATE_CANCELLED\x10\b\x12\x17\n" +
 	"\x13JOB_STATE_TIMED_OUT\x10\x10\x12\x17\n" +
 	"\x13JOB_STATE_COMPLETED\x10 \x12\x18\n" +
-	"\x14JOB_STATE_TERMINATED\x10@2\xc4\x02\n" +
+	"\x14JOB_STATE_TERMINATED\x10@2\x98\x03\n" +
 	"\n" +
 	"JobService\x12=\n" +
 	"\n" +
 	"GetVersion\x12\x16.job.v1.VersionRequest\x1a\x17.job.v1.VersionResponse\x12F\n" +
 	"\vScheduleJob\x12\x1a.job.v1.ScheduleJobRequest\x1a\x1b.job.v1.ScheduleJobResponse\x12[\n" +
 	"\x12ListRegisteredJobs\x12!.job.v1.ListRegisteredJobsRequest\x1a\".job.v1.ListRegisteredJobsResponse\x12R\n" +
-	"\x0fLookupInstances\x12\x1e.job.v1.LookupInstancesRequest\x1a\x1f.job.v1.LookupInstancesResponseB*Z(github.com/cybergarage/go-job/api/job/v1b\x06proto3"
+	"\x0fLookupInstances\x12\x1e.job.v1.LookupInstancesRequest\x1a\x1f.job.v1.LookupInstancesResponse\x12R\n" +
+	"\x0fCancelInstances\x12\x1e.job.v1.CancelInstancesRequest\x1a\x1f.job.v1.CancelInstancesResponseB*Z(github.com/cybergarage/go-job/api/job/v1b\x06proto3"
 
 var (
 	file_service_proto_rawDescOnce sync.Once
@@ -852,7 +947,7 @@ func file_service_proto_rawDescGZIP() []byte {
 }
 
 var file_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_service_proto_goTypes = []any{
 	(JobState)(0),                      // 0: job.v1.JobState
 	(*VersionRequest)(nil),             // 1: job.v1.VersionRequest
@@ -866,37 +961,43 @@ var file_service_proto_goTypes = []any{
 	(*Query)(nil),                      // 9: job.v1.Query
 	(*LookupInstancesRequest)(nil),     // 10: job.v1.LookupInstancesRequest
 	(*LookupInstancesResponse)(nil),    // 11: job.v1.LookupInstancesResponse
-	(*timestamppb.Timestamp)(nil),      // 12: google.protobuf.Timestamp
+	(*CancelInstancesRequest)(nil),     // 12: job.v1.CancelInstancesRequest
+	(*CancelInstancesResponse)(nil),    // 13: job.v1.CancelInstancesResponse
+	(*timestamppb.Timestamp)(nil),      // 14: google.protobuf.Timestamp
 }
 var file_service_proto_depIdxs = []int32{
-	12, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
-	12, // 1: job.v1.Job.schedule_at:type_name -> google.protobuf.Timestamp
+	14, // 0: job.v1.Job.registered_at:type_name -> google.protobuf.Timestamp
+	14, // 1: job.v1.Job.schedule_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: job.v1.JobInstance.state:type_name -> job.v1.JobState
-	12, // 3: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
-	12, // 4: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
-	12, // 5: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
-	12, // 6: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
-	12, // 7: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
-	12, // 8: job.v1.JobInstance.canceled_at:type_name -> google.protobuf.Timestamp
-	12, // 9: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
+	14, // 3: job.v1.JobInstance.created_at:type_name -> google.protobuf.Timestamp
+	14, // 4: job.v1.JobInstance.scheduled_at:type_name -> google.protobuf.Timestamp
+	14, // 5: job.v1.JobInstance.processed_at:type_name -> google.protobuf.Timestamp
+	14, // 6: job.v1.JobInstance.completed_at:type_name -> google.protobuf.Timestamp
+	14, // 7: job.v1.JobInstance.terminated_at:type_name -> google.protobuf.Timestamp
+	14, // 8: job.v1.JobInstance.canceled_at:type_name -> google.protobuf.Timestamp
+	14, // 9: job.v1.JobInstance.timed_out_at:type_name -> google.protobuf.Timestamp
 	4,  // 10: job.v1.ScheduleJobResponse.instance:type_name -> job.v1.JobInstance
 	3,  // 11: job.v1.ListRegisteredJobsResponse.jobs:type_name -> job.v1.Job
 	0,  // 12: job.v1.Query.state:type_name -> job.v1.JobState
 	9,  // 13: job.v1.LookupInstancesRequest.query:type_name -> job.v1.Query
 	4,  // 14: job.v1.LookupInstancesResponse.instances:type_name -> job.v1.JobInstance
-	1,  // 15: job.v1.JobService.GetVersion:input_type -> job.v1.VersionRequest
-	5,  // 16: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
-	7,  // 17: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
-	10, // 18: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
-	2,  // 19: job.v1.JobService.GetVersion:output_type -> job.v1.VersionResponse
-	6,  // 20: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
-	8,  // 21: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
-	11, // 22: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
-	19, // [19:23] is the sub-list for method output_type
-	15, // [15:19] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 15: job.v1.CancelInstancesRequest.query:type_name -> job.v1.Query
+	4,  // 16: job.v1.CancelInstancesResponse.instances:type_name -> job.v1.JobInstance
+	1,  // 17: job.v1.JobService.GetVersion:input_type -> job.v1.VersionRequest
+	5,  // 18: job.v1.JobService.ScheduleJob:input_type -> job.v1.ScheduleJobRequest
+	7,  // 19: job.v1.JobService.ListRegisteredJobs:input_type -> job.v1.ListRegisteredJobsRequest
+	10, // 20: job.v1.JobService.LookupInstances:input_type -> job.v1.LookupInstancesRequest
+	12, // 21: job.v1.JobService.CancelInstances:input_type -> job.v1.CancelInstancesRequest
+	2,  // 22: job.v1.JobService.GetVersion:output_type -> job.v1.VersionResponse
+	6,  // 23: job.v1.JobService.ScheduleJob:output_type -> job.v1.ScheduleJobResponse
+	8,  // 24: job.v1.JobService.ListRegisteredJobs:output_type -> job.v1.ListRegisteredJobsResponse
+	11, // 25: job.v1.JobService.LookupInstances:output_type -> job.v1.LookupInstancesResponse
+	13, // 26: job.v1.JobService.CancelInstances:output_type -> job.v1.CancelInstancesResponse
+	22, // [22:27] is the sub-list for method output_type
+	17, // [17:22] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_service_proto_init() }
@@ -914,7 +1015,7 @@ func file_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_service_proto_rawDesc), len(file_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

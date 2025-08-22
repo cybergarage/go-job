@@ -25,6 +25,7 @@ const (
 	JobService_ScheduleJob_FullMethodName        = "/job.v1.JobService/ScheduleJob"
 	JobService_ListRegisteredJobs_FullMethodName = "/job.v1.JobService/ListRegisteredJobs"
 	JobService_LookupInstances_FullMethodName    = "/job.v1.JobService/LookupInstances"
+	JobService_CancelInstances_FullMethodName    = "/job.v1.JobService/CancelInstances"
 )
 
 // JobServiceClient is the client API for JobService service.
@@ -44,6 +45,8 @@ type JobServiceClient interface {
 	ListRegisteredJobs(ctx context.Context, in *ListRegisteredJobsRequest, opts ...grpc.CallOption) (*ListRegisteredJobsResponse, error)
 	// LookupInstances searches for job instances based on the provided query criteria.
 	LookupInstances(ctx context.Context, in *LookupInstancesRequest, opts ...grpc.CallOption) (*LookupInstancesResponse, error)
+	// CancelInstances cancels for job instances based on the provided query criteria.
+	CancelInstances(ctx context.Context, in *CancelInstancesRequest, opts ...grpc.CallOption) (*CancelInstancesResponse, error)
 }
 
 type jobServiceClient struct {
@@ -94,6 +97,16 @@ func (c *jobServiceClient) LookupInstances(ctx context.Context, in *LookupInstan
 	return out, nil
 }
 
+func (c *jobServiceClient) CancelInstances(ctx context.Context, in *CancelInstancesRequest, opts ...grpc.CallOption) (*CancelInstancesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CancelInstancesResponse)
+	err := c.cc.Invoke(ctx, JobService_CancelInstances_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // JobServiceServer is the server API for JobService service.
 // All implementations must embed UnimplementedJobServiceServer
 // for forward compatibility.
@@ -111,6 +124,8 @@ type JobServiceServer interface {
 	ListRegisteredJobs(context.Context, *ListRegisteredJobsRequest) (*ListRegisteredJobsResponse, error)
 	// LookupInstances searches for job instances based on the provided query criteria.
 	LookupInstances(context.Context, *LookupInstancesRequest) (*LookupInstancesResponse, error)
+	// CancelInstances cancels for job instances based on the provided query criteria.
+	CancelInstances(context.Context, *CancelInstancesRequest) (*CancelInstancesResponse, error)
 	mustEmbedUnimplementedJobServiceServer()
 }
 
@@ -132,6 +147,9 @@ func (UnimplementedJobServiceServer) ListRegisteredJobs(context.Context, *ListRe
 }
 func (UnimplementedJobServiceServer) LookupInstances(context.Context, *LookupInstancesRequest) (*LookupInstancesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LookupInstances not implemented")
+}
+func (UnimplementedJobServiceServer) CancelInstances(context.Context, *CancelInstancesRequest) (*CancelInstancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelInstances not implemented")
 }
 func (UnimplementedJobServiceServer) mustEmbedUnimplementedJobServiceServer() {}
 func (UnimplementedJobServiceServer) testEmbeddedByValue()                    {}
@@ -226,6 +244,24 @@ func _JobService_LookupInstances_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _JobService_CancelInstances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelInstancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JobServiceServer).CancelInstances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: JobService_CancelInstances_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JobServiceServer).CancelInstances(ctx, req.(*CancelInstancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // JobService_ServiceDesc is the grpc.ServiceDesc for JobService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +284,10 @@ var JobService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LookupInstances",
 			Handler:    _JobService_LookupInstances_Handler,
+		},
+		{
+			MethodName: "CancelInstances",
+			Handler:    _JobService_CancelInstances_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
