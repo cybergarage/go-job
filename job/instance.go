@@ -479,7 +479,7 @@ func (ji *jobInstance) Process(ctx context.Context, opts ...any) ([]any, error) 
 		ji.attempt++
 		args := make([]any, len(ji.Arguments()))
 		copy(args, ji.Arguments())
-		ji.resultSet, ji.resultError = ji.Execute(args, opts...)
+		ji.resultSet, ji.resultError = ji.Execute(ctx, args, opts...)
 
 		if ctx.Err() != nil {
 			ji.resultError = ctx.Err()

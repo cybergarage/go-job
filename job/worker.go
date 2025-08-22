@@ -147,7 +147,7 @@ func (w *worker) Run() error {
 					w.jobCtx, w.jobCancel = context.WithTimeout(w.jobCtx, timeout)
 				}
 
-				res, err := ji.Process(w.jobCtx, w.manager, w, ji)
+				res, err := ji.Process(w.jobCtx, w.jobCtx, w.manager, w, ji)
 
 				w.jobCancel()
 				w.jobCtx = nil

@@ -15,6 +15,7 @@
 package job
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -78,7 +79,7 @@ type Handler interface {
 	// TerminateProcessor returns the error processor function set for the job handler.
 	TerminateProcessor() TerminateProcessor
 	// Execute runs the job with the provided parameters.
-	Execute(args []any, opts ...any) ([]any, error)
+	Execute(ctx context.Context, args []any, opts ...any) ([]any, error)
 	// HandleTerminated processes errors that occur during job execution.
 	HandleTerminated(job Instance, err error) error
 	// HandleCompleted processes the responses from a job execution.
@@ -126,15 +127,20 @@ func (h *handler) CompleteProcessor() CompleteProcessor {
 }
 
 // Execute runs the job using the executor function, if set.
-func (h *handler) Execute(args []any, opts ...any) ([]any, error) {
+func (h *handler) Execute(ctx context.Context, args []any, opts ...any) ([]any, error) {
 	if h.executor == nil {
 		return nil, fmt.Errorf("no executor set for job handler")
 	}
-	res, err := Execute(h.executor, args, opts...)
-	if err != nil {
-		return nil, err
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+		res, err := Execute(h.executor, args, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
 	}
-	return res, nil
 }
 
 // HandleTerminated processes errors that occur duri`n`g job execution using the error handler, if set.
