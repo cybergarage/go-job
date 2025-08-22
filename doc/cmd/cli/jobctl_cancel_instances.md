@@ -13,7 +13,9 @@ jobctl cancel instances [flags]
 ### Options
 
 ```
-  -h, --help   help for instances
+  -h, --help          help for instances
+  -k, --kind string   Kind of the instances to cancel
+  -u, --uuid string   UUID of the instances to cancel
 ```
 
 ### Options inherited from parent commands
