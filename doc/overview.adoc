@@ -198,22 +198,59 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 `go-job` will automatically convert the provided arguments to the types expected by your job function.  
 This means you can use the format that is most convenient for your application, whether it's a struct, JSON, or other supported types.
 
-==== Function with Special Argument
+==== Function with Special Arguments
 
-`go-job` supports special arguments related to the job instance, such as link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager[job.Manager], link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker[job.Worker], and link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance[job.Instance].
+`go-job` supports special arguments related to the job instance, such as link:https://pkg.go.dev/context[context.Context], link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager[job.Manager], link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker[job.Worker], and link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance[job.Instance].
+
+===== Context Argument
+
+Using these special context.Context arguments, you can handle context cancellation and timeout.
 
 [source,go]
 ----
 job, err := job.NewJob(
-    WithKind("hello (with special instance argument)"),
+    WithKind("sleep"),
+    WithExecutor(func(ctx context.Context) { 
+        for {
+            select {
+            case <-ctx.Done():
+                return
+            default:
+				time.Sleep(1 * time.Hour) // Simulate a long-running job
+            }
+		}
+    }),
+)
+----
+
+You can schedule this job by passing a dummy argument as follows:
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithArguments("?"))
+----
+
+or by using the placeholder constant:
+
+[source,go]
+----
+mgr.ScheduleJob(job, WithArguments(job.Placeholder))
+----
+
+===== Manager, Worker, and Instance Arguments
+
+Using these special `go-job` arguments, you can access useful methods provided by the special parameters within the executor function.
+
+[source,go]
+----
+job, err := job.NewJob(
+    WithKind("info (with special instance argument)"),
     WithExecutor(func(ji job.Instance) { 
         // Output message to go-job logger
         ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
     }),
 )
 ----
-
-Using these special arguments, you can access useful methods provided by the special parameters within the executor function.
 
 You can schedule this job by passing a dummy argument as follows:
 

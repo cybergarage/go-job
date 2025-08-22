@@ -479,11 +479,21 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="sect3">
 
-#### Function with Special Argument
+#### Function with Special Arguments
 
 <div class="paragraph">
 
-`go-job` supports special arguments related to the job instance, such as [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager), [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker), and [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance).
+`go-job` supports special arguments related to the job instance, such as [context.Context](https://pkg.go.dev/context), [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager), [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker), and [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance).
+
+</div>
+
+<div class="sect4">
+
+##### Context Argument
+
+<div class="paragraph">
+
+Using these special context.Context arguments, you can handle context cancellation and timeout.
 
 </div>
 
@@ -493,21 +503,21 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 ``` CodeRay
 job, err := job.NewJob(
-    WithKind("hello (with special instance argument)"),
-    WithExecutor(func(ji job.Instance) {
-        // Output message to go-job logger
-        ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
+    WithKind("sleep"),
+    WithExecutor(func(ctx context.Context) {
+        for {
+            select {
+            case <-ctx.Done():
+                return
+            default:
+                                time.Sleep(1 * time.Hour) // Simulate a long-running job
+            }
+                }
     }),
 )
 ```
 
 </div>
-
-</div>
-
-<div class="paragraph">
-
-Using these special arguments, you can access useful methods provided by the special parameters within the executor function.
 
 </div>
 
@@ -542,6 +552,74 @@ or by using the placeholder constant:
 ``` CodeRay
 mgr.ScheduleJob(job, WithArguments(job.Placeholder))
 ```
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect4">
+
+##### Manager, Worker, and Instance Arguments
+
+<div class="paragraph">
+
+Using these special `go-job` arguments, you can access useful methods provided by the special parameters within the executor function.
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+job, err := job.NewJob(
+    WithKind("info (with special instance argument)"),
+    WithExecutor(func(ji job.Instance) {
+        // Output message to go-job logger
+        ji.Infof("%s (%s): attempts %d", ji.UUID(), ji.Kind(), ji.Attempts())
+    }),
+)
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+You can schedule this job by passing a dummy argument as follows:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithArguments("?"))
+```
+
+</div>
+
+</div>
+
+<div class="paragraph">
+
+or by using the placeholder constant:
+
+</div>
+
+<div class="listingblock">
+
+<div class="content">
+
+``` CodeRay
+mgr.ScheduleJob(job, WithArguments(job.Placeholder))
+```
+
+</div>
 
 </div>
 
@@ -1561,7 +1639,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-20 15:43:28 +0900
+Last updated 2025-08-22 21:34:45 +0900
 
 </div>
 
