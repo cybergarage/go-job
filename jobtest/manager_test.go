@@ -348,8 +348,15 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 
 	sleepJob, err := job.NewJob(
 		job.WithKind(jobName),
-		job.WithExecutor(func() {
-			time.Sleep(1 * time.Hour) // Simulate a long-running job
+		job.WithExecutor(func(ctx context.Context) {
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					time.Sleep(1 * time.Hour) // Simulate a long-running job
+				}
+			}
 		}),
 		job.WithTerminateProcessor(terminateHandler), // Set terminate handler
 	)
@@ -370,6 +377,7 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 	scheduledJob, err := mgr.ScheduleRegisteredJob(
 		jobName,
 		job.WithScheduleAfter(1*time.Hour), // Schedule the job after 1 hour
+		job.WithArguments("?"),
 	)
 	if err != nil {
 		t.Errorf("Failed to schedule job: %v", err)
@@ -422,6 +430,7 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 	scheduledJob, err = mgr.ScheduleJob(
 		sleepJob,
 		job.WithScheduleAt(time.Now()), // Schedule the job immediately
+		job.WithArguments("?"),
 	)
 	if err != nil {
 		t.Errorf("Failed to schedule job: %v", err)

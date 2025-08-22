@@ -15,6 +15,7 @@
 package job
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -31,12 +32,16 @@ type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
 func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
+	var ctxType = reflect.TypeOf((*context.Context)(nil)).Elem()
 	var managerType = reflect.TypeOf((*Manager)(nil)).Elem()
 	var instanceType = reflect.TypeOf((*Instance)(nil)).Elem()
 	var workerType = reflect.TypeOf((*Worker)(nil)).Elem()
+
 	var manager Manager
 	var instance Instance
 	var worker Worker
+	var ctx context.Context
+
 	for _, opt := range opts {
 		switch v := opt.(type) {
 		case Manager:
@@ -45,6 +50,8 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 			instance = v
 		case Worker:
 			worker = v
+		case context.Context:
+			ctx = v
 		}
 	}
 
@@ -120,6 +127,8 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 			return reflect.Value{}, false
 		case reflect.Interface:
 			switch fnType {
+			case ctxType:
+				return reflect.ValueOf(ctx), true
 			case managerType:
 				return reflect.ValueOf(manager), true
 			case instanceType:
