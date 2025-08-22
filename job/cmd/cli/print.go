@@ -20,6 +20,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func printJobs(cmd *cobra.Command, jobs []job.Job) error {
+	cmd.Printf("[\n")
+	for n, job := range jobs {
+		json, err := encoding.MapToJSON(job.Map())
+		if err != nil {
+			return err
+		}
+		cmd.Printf("  %s", json)
+		if n < len(jobs)-1 {
+			cmd.Printf(",\n")
+		} else {
+			cmd.Printf("\n")
+		}
+	}
+	cmd.Printf("]\n")
+	return nil
+}
+
+func printInstance(cmd *cobra.Command, instance job.Instance) error {
+	json, err := encoding.MapToJSON(instance.Map())
+	if err != nil {
+		return err
+	}
+	cmd.Println(json)
+	return nil
+}
+
 func printInstances(cmd *cobra.Command, instances []job.Instance) error {
 	cmd.Printf("[\n")
 	for n, instance := range instances {

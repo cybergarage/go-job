@@ -16,7 +16,6 @@ package cli
 
 import (
 	"github.com/cybergarage/go-job/job"
-	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/spf13/cobra"
 )
 
@@ -41,21 +40,7 @@ var listJobsCmd = &cobra.Command{ // nolint:exhaustruct
 		if err != nil {
 			return err
 		}
-		cmd.Printf("[\n")
-		for n, job := range jobs {
-			json, err := encoding.MapToJSON(job.Map())
-			if err != nil {
-				return err
-			}
-			cmd.Printf("  %s", json)
-			if n < len(jobs)-1 {
-				cmd.Printf(",\n")
-			} else {
-				cmd.Printf("\n")
-			}
-		}
-		cmd.Printf("]\n")
-		return nil
+		return printJobs(cmd, jobs)
 	},
 }
 

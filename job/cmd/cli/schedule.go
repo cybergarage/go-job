@@ -15,7 +15,6 @@
 package cli
 
 import (
-	"github.com/cybergarage/go-job/job/encoding"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +23,7 @@ func init() {
 }
 
 var scheduleCmd = &cobra.Command{ // nolint:exhaustruct
-	Use:   "schedule",
+	Use:   "schedule kind [args...]",
 	Short: "Schedule a job",
 	Long:  "Schedule a job to run with the specified kind and arguments.",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,14 +43,8 @@ var scheduleCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		json, err := encoding.MapToJSON(job.Map())
-		if err != nil {
-			return err
-		}
-		cmd.Println(json)
-
-		return nil
+		return printInstance(cmd, job)
 	},
 	Args:    cobra.MinimumNArgs(1), // Ensure at least one argument is provided
-	Example: `job schedule kind args...`,
+	Example: `job schedule kind arg1 arg2`,
 }
