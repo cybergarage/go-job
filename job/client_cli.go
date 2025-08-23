@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"strconv"
 )
 
 const (
@@ -36,8 +37,6 @@ type CommandExecutor func(name string, args ...string) ([]byte, error)
 // shell client implementation for client.
 type cliClient struct {
 	args     []string
-	host     string
-	port     int
 	executor CommandExecutor
 }
 
@@ -45,8 +44,6 @@ type cliClient struct {
 func NewCliClient(args ...string) CLIClient {
 	client := &cliClient{
 		args:     args,
-		host:     "",
-		port:     DefaultGRPCPort,
 		executor: nil,
 	}
 	client.SetCommandExecutor(func(name string, args ...string) ([]byte, error) {
@@ -63,12 +60,12 @@ func (cli *cliClient) Name() string {
 
 // SetPort sets a port number.
 func (cli *cliClient) SetPort(port int) {
-	cli.port = port
+	cli.args = append(cli.args, "--port", strconv.Itoa(port))
 }
 
 // SetHost sets a host name.
 func (cli *cliClient) SetHost(host string) {
-	cli.host = host
+	cli.args = append(cli.args, "--host", host)
 }
 
 // SetCommandExecutor sets the command executor.
@@ -92,7 +89,11 @@ func (cli *cliClient) Close() error {
 
 // Execute executes a command and returns the output.
 func (cli *cliClient) Execute(name string, args ...string) ([]byte, error) {
-	return cli.executor(name, args...)
+	out, err := cli.executor(name, args...)
+	if err != nil {
+		return out, fmt.Errorf("%w (%s %v:%s)", err, name, args, string(out))
+	}
+	return out, nil
 }
 
 func (cli *cliClient) trimOutput(out []byte) string {
