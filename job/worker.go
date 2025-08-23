@@ -133,6 +133,8 @@ func (w *worker) Run() error {
 					logger.Error(err)
 					continue
 				}
+				mQueuedJobs.WithLabelValues(ji.Kind()).Dec()
+
 				err = ji.UpdateState(JobProcessing)
 				if err != nil {
 					logError(ji, err)
@@ -147,7 +149,10 @@ func (w *worker) Run() error {
 					w.jobCtx, w.jobCancel = context.WithTimeout(w.jobCtx, timeout)
 				}
 
+				startedAt := time.Now()
+				mExecutedJobs.WithLabelValues(ji.Kind()).Inc()
 				res, err := ji.Process(w.jobCtx, w.jobCtx, w.manager, w, ji)
+				mJobDuration.WithLabelValues(ji.Kind()).Observe(time.Since(startedAt).Seconds())
 
 				w.jobCancel()
 				w.jobCtx = nil

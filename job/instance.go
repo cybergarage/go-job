@@ -508,13 +508,17 @@ func (ji *jobInstance) UpdateState(state JobState, opts ...any) error {
 	ji.state = state
 	switch state {
 	case JobCompleted:
+		mCompletedJobs.WithLabelValues(ji.Kind()).Inc()
 		ji.completedAt = now
 	case JobTerminated:
+		mTerminatedJobs.WithLabelValues(ji.Kind()).Inc()
 		ji.terminatedAt = now
 	case JobCanceled:
+		mCanceledJobs.WithLabelValues(ji.Kind()).Inc()
 		ji.canceledAt = now
 		ji.terminatedAt = now
 	case JobTimedOut:
+		mTimedOutJobs.WithLabelValues(ji.Kind()).Inc()
 		ji.timedoutAt = now
 		ji.terminatedAt = now
 	}

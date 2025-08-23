@@ -194,6 +194,8 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 		return nil, err
 	}
 
+	mQueuedJobs.WithLabelValues(ji.Kind()).Inc()
+
 	return ji, nil
 }
 

@@ -97,6 +97,7 @@ func (g *workerGroup) Start() error {
 			return errors.Join(err, g.Stop())
 		}
 	}
+	mWorkers.Set(float64(len(g.workers)))
 	return nil
 }
 
@@ -154,6 +155,7 @@ func (g *workerGroup) ResizeWorkers(ctx context.Context, num int) error {
 		}
 		g.workers = g.workers[:num]
 	}
+	mWorkers.Set(float64(len(g.workers)))
 	return nil
 }
 

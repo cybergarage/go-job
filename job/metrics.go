@@ -14,21 +14,103 @@
 
 package job
 
-/*
 import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+const (
+	labelKind = "kind"
+)
+
 var (
-	// Total number of registered jobs
-	// nolint: exhaustruct
-	mRegisteredJobs = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "mysql_registered_jobs_total",
-		Help: "Total number of registered jobs",
+	// Current number of registered jobs.
+	mRegisteredJobs = prometheus.NewGauge(
+		prometheus.GaugeOpts{ // nolint: exhaustruct
+			Name: "go_job_registered",
+			Help: "Current number of registered jobs",
+		})
+
+	// Current number of queued jobs by kind.
+	mQueuedJobs = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{ // nolint: exhaustruct
+			Name: "go_job_queued",
+			Help: "Current number of queued jobs by kind",
+		},
+		[]string{labelKind},
+	)
+
+	// Total number of executed jobs by kind.
+	mExecutedJobs = prometheus.NewCounterVec(
+		prometheus.CounterOpts{ // nolint: exhaustruct
+			Name: "go_job_executed_total",
+			Help: "Total number of executed jobs by kind",
+		},
+		[]string{labelKind},
+	)
+
+	// Total number of successfully completed jobs by kind.
+	mCompletedJobs = prometheus.NewCounterVec(
+		prometheus.CounterOpts{ // nolint: exhaustruct
+			Name: "go_job_completed_total",
+			Help: "Total number of successfully completed jobs by kind",
+		},
+		[]string{labelKind},
+	)
+
+	// Total number of terminated jobs by kind.
+	mTerminatedJobs = prometheus.NewCounterVec(
+		prometheus.CounterOpts{ // nolint: exhaustruct
+			Name: "go_job_terminated_total",
+			Help: "Total number of terminated jobs by kind",
+		},
+		[]string{labelKind},
+	)
+
+	// Total number of canceled jobs by kind.
+	mCanceledJobs = prometheus.NewCounterVec(
+		prometheus.CounterOpts{ // nolint: exhaustruct
+			Name: "go_job_canceled_total",
+			Help: "Total number of canceled jobs by kind",
+		},
+		[]string{labelKind},
+	)
+
+	// Total number of timed out jobs by kind.
+	mTimedOutJobs = prometheus.NewCounterVec(
+		prometheus.CounterOpts{ // nolint: exhaustruct
+			Name: "go_job_timedout_total",
+			Help: "Total number of timed out jobs by kind",
+		},
+		[]string{labelKind},
+	)
+
+	// Histogram of job execution durations in seconds, labeled by job type.
+	mJobDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{ // nolint: exhaustruct
+			Name:    "go_job_duration_seconds",
+			Help:    "Histogram of job execution durations in seconds by job type",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{labelKind},
+	)
+
+	// Current number of workers.
+	mWorkers = prometheus.NewGauge(prometheus.GaugeOpts{ // nolint: exhaustruct
+		Name: "go_job_workers",
+		Help: "Current number of workers",
 	})
 )
 
-func init() { //nolint:gochecknoinits
-	prometheus.MustRegister(mRegisteredJobs)
+func init() { // Register all metrics with Prometheus
+	prometheus.MustRegister(
+		mRegisteredJobs,
+		mQueuedJobs,
+		mExecutedJobs,
+		mCompletedJobs,
+		mTerminatedJobs,
+		mCanceledJobs,
+		mTimedOutJobs,
+		mJobDuration,
+		mWorkers,
+	)
 }
-*/

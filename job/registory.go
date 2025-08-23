@@ -50,6 +50,7 @@ func (reg *registryImpl) RegisterJob(job Job) error {
 		return fmt.Errorf("job with kind %q is already registered", job.Kind())
 	}
 	reg.jobs[job.Kind()] = job
+	mRegisteredJobs.Inc()
 	return nil
 }
 
@@ -59,6 +60,7 @@ func (reg *registryImpl) UnregisterJob(kind Kind) error {
 		return fmt.Errorf("job with kind %q is not registered", kind)
 	}
 	delete(reg.jobs, kind)
+	mRegisteredJobs.Dec()
 	return nil
 }
 
