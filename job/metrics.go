@@ -15,11 +15,18 @@
 package job
 
 import (
+	"net"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
-	labelKind = "kind"
+	labelKind             = "kind"
+	defaultPrometheusPort = 9181
 )
 
 var (
@@ -113,4 +120,59 @@ func init() { // Register all metrics with Prometheus
 		mJobDuration,
 		mWorkers,
 	)
+}
+
+type metricsServer struct {
+	// Embed the Prometheus metrics registry.
+	registry   *prometheus.Registry
+	httpServer *http.Server
+	Addr       string
+	Port       int
+}
+
+func newMetricsServer() *metricsServer {
+	return &metricsServer{
+		registry:   prometheus.NewRegistry(),
+		httpServer: nil,
+		Addr:       "",
+	}
+}
+
+func (ms *metricsServer) Start(port int) error {
+	err := ms.Stop()
+	if err != nil {
+		return err
+	}
+
+	addr := net.JoinHostPort(ms.Addr, strconv.Itoa(ms.Port))
+	ms.httpServer = &http.Server{ // nolint:exhaustruct
+		Addr:    addr,
+		Handler: promhttp.Handler(),
+	}
+
+	c := make(chan error)
+	go func() {
+		c <- ms.httpServer.ListenAndServe()
+	}()
+
+	select {
+	case err = <-c:
+	case <-time.After(time.Millisecond * 500):
+		err = nil
+	}
+
+	return err
+}
+
+func (ms *metricsServer) Stop() error {
+	if ms.httpServer == nil {
+		return nil
+	}
+
+	err := ms.httpServer.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

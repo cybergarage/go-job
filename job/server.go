@@ -41,10 +41,11 @@ type Server interface {
 type server struct {
 	v1.UnimplementedJobServiceServer
 
-	grpcServer *grpc.Server
-	manager    Manager
-	addr       string
-	port       int
+	grpcServer    *grpc.Server
+	metricsServer *metricsServer
+	manager       Manager
+	addr          string
+	port          int
 }
 
 // NewServer returns a new job server instance.
@@ -58,6 +59,7 @@ func NewServer(opts ...any) (Server, error) {
 		addr:                          DefaultGrpcAddr,
 		port:                          DefaultGrpcPort,
 		grpcServer:                    nil,
+		metricsServer:                 newMetricsServer(),
 		UnimplementedJobServiceServer: v1.UnimplementedJobServiceServer{},
 	}, nil
 }
@@ -111,9 +113,13 @@ func (server *server) grpcStop() error {
 
 // Start starts the job server.
 func (server *server) Start() error {
+	metricsServerStart := func() error {
+		return server.metricsServer.Start(defaultPrometheusPort)
+	}
 	starters := []func() error{
 		server.manager.Start,
 		server.grpcStart,
+		metricsServerStart,
 	}
 	var errs error
 	for _, starter := range starters {
@@ -136,6 +142,7 @@ func (server *server) Stop() error {
 	stoppers := []func() error{
 		server.manager.Stop,
 		server.grpcStop,
+		server.metricsServer.Stop,
 	}
 	var errs error
 	for _, stopper := range stoppers {
