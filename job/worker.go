@@ -154,7 +154,9 @@ func (w *worker) Run() error {
 				res, err := ji.Process(w.jobCtx, w.jobCtx, w.manager, w, ji)
 				mJobDuration.WithLabelValues(ji.Kind()).Observe(time.Since(startedAt).Seconds())
 
-				w.jobCancel()
+				if w.jobCancel != nil {
+					w.jobCancel()
+				}
 				w.jobCtx = nil
 				w.jobCancel = nil
 
