@@ -36,7 +36,7 @@ type grpcClient struct {
 func NewGrpcClient() Client {
 	client := &grpcClient{
 		host: "",
-		port: DefaultGrpcPort,
+		port: DefaultGRPCPort,
 		conn: nil,
 	}
 	return client

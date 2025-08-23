@@ -46,7 +46,7 @@ func NewCliClient(args ...string) CLIClient {
 	client := &cliClient{
 		args:     args,
 		host:     "",
-		port:     DefaultGrpcPort,
+		port:     DefaultGRPCPort,
 		executor: nil,
 	}
 	client.SetCommandExecutor(func(name string, args ...string) ([]byte, error) {

@@ -20,10 +20,12 @@ const (
 )
 
 const (
-	// DefaultGrpcAddr is the default address of the gRPC server.
-	DefaultGrpcAddr = ""
-	// DefaultGrpcPort is the default port number of the gRPC server.
-	DefaultGrpcPort = 50053
+	// DefaultBindAddr is the default address of the gRPC and Prometheus server.
+	DefaultBindAddr = ""
+	// DefaultGRPCPort is the default gRPC port for the job server.
+	DefaultGRPCPort = 59051
+	// DefaultPrometheusPort is the default Prometheus port for the job server.
+	DefaultPrometheusPort = 9090
 	// DefaultAPIVersion is the default API version.
 	DefaultAPIVersion = "v1"
 )

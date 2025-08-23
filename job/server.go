@@ -28,6 +28,8 @@ import (
 
 // Server is an interface that defines methods for managing the job server.
 type Server interface {
+	// Config is the interface for the job server configuration.
+	Config
 	// Manager returns the job manager associated with the server.
 	Manager() Manager
 	// Start starts the job server.
@@ -40,12 +42,12 @@ type Server interface {
 
 type server struct {
 	v1.UnimplementedJobServiceServer
+	*config
 
 	grpcServer    *grpc.Server
 	metricsServer *metricsServer
 	manager       Manager
 	addr          string
-	port          int
 }
 
 // NewServer returns a new job server instance.
@@ -55,9 +57,9 @@ func NewServer(opts ...any) (Server, error) {
 		return nil, err
 	}
 	return &server{
+		config:                        newConfig(),
 		manager:                       mgr,
-		addr:                          DefaultGrpcAddr,
-		port:                          DefaultGrpcPort,
+		addr:                          DefaultBindAddr,
 		grpcServer:                    nil,
 		metricsServer:                 newMetricsServer(),
 		UnimplementedJobServiceServer: v1.UnimplementedJobServiceServer{},
@@ -69,13 +71,13 @@ func (server *server) Manager() Manager {
 	return server.manager
 }
 
-func (server *server) bindAddr() string {
-	return net.JoinHostPort(server.addr, strconv.Itoa(server.port))
+func (server *server) grpcBindAddr() string {
+	return net.JoinHostPort(server.addr, strconv.Itoa(server.config.GRPCPort()))
 }
 
 func (server *server) grpcStart() error {
 	var err error
-	listener, err := net.Listen("tcp", server.bindAddr())
+	listener, err := net.Listen("tcp", server.grpcBindAddr())
 	if err != nil {
 		return err
 	}
@@ -114,7 +116,7 @@ func (server *server) grpcStop() error {
 // Start starts the job server.
 func (server *server) Start() error {
 	metricsServerStart := func() error {
-		return server.metricsServer.Start(defaultPrometheusPort)
+		return server.metricsServer.Start(DefaultPrometheusPort)
 	}
 	starters := []func() error{
 		server.manager.Start,
@@ -132,7 +134,7 @@ func (server *server) Start() error {
 		return errs
 	}
 
-	logger.Infof("%s/%s (%s) started", ProductName, Version, server.bindAddr())
+	logger.Infof("%s/%s (%s,%d) started", ProductName, Version, server.grpcBindAddr(), server.config.PrometheusPort())
 
 	return nil
 }
@@ -155,7 +157,7 @@ func (server *server) Stop() error {
 		return errs
 	}
 
-	logger.Infof("%s/%s (%s) terminated", ProductName, Version, server.bindAddr())
+	logger.Infof("%s/%s (%s,%d) terminated", ProductName, Version, server.grpcBindAddr(), server.config.PrometheusPort())
 
 	return nil
 }

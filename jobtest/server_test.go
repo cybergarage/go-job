@@ -124,6 +124,7 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	wg.Wait()
 
 	// Lookup job instance
+
 	instances, err := client.LookupInstances(
 		job.NewQuery(
 			job.WithQueryUUID(instance.UUID()),
@@ -187,6 +188,7 @@ func TestServerAPIs(t *testing.T) {
 
 	for _, cli := range clients {
 		for _, srv := range servers {
+			cli.SetPort(srv.GRPCPort())
 			t.Run(fmt.Sprintf("client(%s)_server(%s)", cli.Name(), srv.Manager().Store().Name()), func(t *testing.T) {
 				ServerAPIsTest(t, cli, srv)
 			})

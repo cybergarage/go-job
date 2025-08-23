@@ -59,5 +59,5 @@ func Execute() error {
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&gRPCHost, "host", "localhost", fmt.Sprintf("gRPC host or address for a %v instance", job.ProductName))
-	rootCmd.PersistentFlags().IntVar(&gRPCPort, "port", job.DefaultGrpcPort, fmt.Sprintf("gRPC port number for a %v instance", job.ProductName))
+	rootCmd.PersistentFlags().IntVar(&gRPCPort, "port", job.DefaultGRPCPort, fmt.Sprintf("gRPC port number for a %v instance", job.ProductName))
 }

@@ -25,8 +25,7 @@ import (
 )
 
 const (
-	labelKind             = "kind"
-	defaultPrometheusPort = 9181
+	labelKind = "kind"
 )
 
 var (
@@ -127,7 +126,6 @@ type metricsServer struct {
 	registry   *prometheus.Registry
 	httpServer *http.Server
 	Addr       string
-	Port       int
 }
 
 func newMetricsServer() *metricsServer {
@@ -144,10 +142,11 @@ func (ms *metricsServer) Start(port int) error {
 		return err
 	}
 
-	addr := net.JoinHostPort(ms.Addr, strconv.Itoa(ms.Port))
+	addr := net.JoinHostPort(ms.Addr, strconv.Itoa(port))
 	ms.httpServer = &http.Server{ // nolint:exhaustruct
-		Addr:    addr,
-		Handler: promhttp.Handler(),
+		Addr:              addr,
+		ReadHeaderTimeout: 5 * time.Second,
+		Handler:           promhttp.Handler(),
 	}
 
 	c := make(chan error)
