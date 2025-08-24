@@ -24,11 +24,58 @@ Table of Contents:
 
 </div>
 
+- [System Plugin Development](#_system_plugin_development)
+  - [Built-in System Jobs](#_built_in_system_jobs)
 - [Store Plugin Development](#_store_plugin_development)
   - [Store Interface](#_store_interface)
   - [kv.Store Interface](#_kv_store_interface)
     - [Valkey Store Plugin](#_valkey_store_plugin)
     - [Etcd Store Plugin](#_etcd_store_plugin)
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1">
+
+## System Plugin Development
+
+<div class="sectionbody">
+
+<div class="paragraph">
+
+`go-job` includes several built-in system jobs that help you keep your job server clean and running smoothly—no extra setup required.
+
+</div>
+
+<div class="sect2">
+
+### Built-in System Jobs
+
+<div class="paragraph">
+
+These system jobs are available out of the box. You can schedule and configure them just like any other job in your application.
+
+</div>
+
+<div class="paragraph">
+
+The following table lists each system job and what it does:
+
+</div>
+
+| Plugin Name    | Function          | Description                     |
+|----------------|-------------------|---------------------------------|
+| HistoryCleaner | NewHistoryCleaner | Deletes old job history records |
+| LogCleaner     | NewLogCleaner     | Deletes old job log records     |
+
+<div class="paragraph">
+
+For step-by-step usage and scheduling examples, see [the official usage examples](https://pkg.go.dev/github.com/cybergarage/go-job/job/plugins/job).
+
+</div>
 
 </div>
 
@@ -313,7 +360,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-14 23:38:44 +0900
+Last updated 2025-08-24 22:42:26 +0900
 
 </div>
 

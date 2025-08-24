@@ -8,6 +8,23 @@ This guide provides an overview of how to extend `go-job` with custom plugins, a
 
 toc::[]
 
+== System Plugin Development
+
+`go-job` includes several built-in system jobs that help you keep your job server clean and running smoothly—no extra setup required.
+
+=== Built-in System Jobs
+
+These system jobs are available out of the box. You can schedule and configure them just like any other job in your application.
+
+The following table lists each system job and what it does:
+
+[format="csv", options="header"]
+|===
+include::inc/job-plugins.csv[]
+|===
+
+For step-by-step usage and scheduling examples, see link:https://pkg.go.dev/github.com/cybergarage/go-job/job/plugins/job[the official usage examples].
+
 == Store Plugin Development 
 
 The `go-job` framework supports custom store plugins that can be used to manage job instances, their states, and logs. A store plugin must implement the `Store` interface, which defines methods for managing job instances and their histories.
