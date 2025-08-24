@@ -17,6 +17,7 @@ package jobtest
 import (
 	"bytes"
 	"fmt"
+	"net/http"
 	"os"
 	"sync"
 	"testing"
@@ -61,19 +62,6 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	if err != nil {
 		t.Fatalf("Failed to register job: %v", err)
 	}
-
-	// Start the server
-
-	err = server.Start()
-	if err != nil {
-		t.Fatalf("failed to start job server: %v", err)
-	}
-	defer func() {
-		err := server.Stop()
-		if err != nil {
-			t.Errorf("failed to stop job server: %v", err)
-		}
-	}()
 
 	// Open a client to the server
 
@@ -186,12 +174,46 @@ func TestServerAPIs(t *testing.T) {
 		servers = append(servers, server)
 	}
 
-	for _, cli := range clients {
-		for _, srv := range servers {
-			cli.SetPort(srv.GRPCPort())
-			t.Run(fmt.Sprintf("client(%s)_server(%s)", cli.Name(), srv.Manager().Store().Name()), func(t *testing.T) {
-				ServerAPIsTest(t, cli, srv)
-			})
-		}
+	for _, server := range servers {
+		t.Run(fmt.Sprintf("server(%s)", server.Manager().Store().Name()), func(t *testing.T) {
+			// Start the server
+
+			err := server.Start()
+			if err != nil {
+				t.Fatalf("failed to start job server: %v", err)
+			}
+			defer func() {
+				err := server.Stop()
+				if err != nil {
+					t.Errorf("failed to stop job server: %v", err)
+				}
+			}()
+
+			// Client tests
+
+			for _, cli := range clients {
+				cli.SetPort(server.GRPCPort())
+				t.Run(fmt.Sprintf("client(%s)", cli.Name()), func(t *testing.T) {
+					ServerAPIsTest(t, cli, server)
+				})
+			}
+
+			// Prometheus metrics endpoint health check
+
+			metricsURL := fmt.Sprintf("http://localhost:%d/metrics", server.PrometheusPort())
+			resp, err := http.Get(metricsURL)
+			if err != nil {
+				t.Fatalf("failed to access Prometheus metrics endpoint: %v", err)
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("unexpected status code from /metrics: %d", resp.StatusCode)
+			}
+			buf := new(bytes.Buffer)
+			_, err = buf.ReadFrom(resp.Body)
+			if err != nil {
+				t.Fatalf("failed to read response body: %v", err)
+			}
+		})
 	}
 }
