@@ -48,6 +48,7 @@ linters:
     - noctx
     - contextcheck
     - fatcontext
+    - embeddedstructfieldcheck
   settings:
     gocritic:
       disabled-checks:
@@ -96,7 +97,7 @@ linters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  fix: true
+  fix: false
 formatters:
   enable:
     - gci
