@@ -69,7 +69,7 @@ The core design principles of `go-job` are:
 
 <div class="paragraph">
 
-For a comparison of design concepts with other OSS job frameworks, see [go-job Comparison (OpenAI Research](https://github.com/cybergarage/go-job/blob/main/doc/design-comparison.md).
+For a comparison of design concepts with other OSS job frameworks, see [go-job Comparison (OpenAI Research)](https://github.com/cybergarage/go-job/blob/main/doc/design-comparison.md).
 
 </div>
 
@@ -355,7 +355,7 @@ This enables a distributed architecture where multiple go-job servers can operat
 
 <div id="footer-text">
 
-Last updated 2025-08-24 20:39:23 +0900
+Last updated 2025-08-24 20:42:47 +0900
 
 </div>
 
