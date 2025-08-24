@@ -1,0 +1,10 @@
+= Prometheus Metrics
+
+`go-job` includes a built-in Prometheus metrics endpoint that exposes a variety of metrics related to the job server's performance and health.
+
+== Metrics
+
+[format="csv", options="header"]
+|===
+include::inc/metrics.csv[]
+|===
