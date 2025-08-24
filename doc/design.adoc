@@ -129,6 +129,8 @@ image::img/job-state.png[]
 
 Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, `Terminated`, `Canceled`, and `TimedOut`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
 
+include::metrics.adoc[leveloffset=+1]
+
 == Job Registration and Processing Flow
 
 The `go-job` server is designed to be modular and extensible. Each component, including the registry, manager, and worker, can be independently developed and maintained. 
