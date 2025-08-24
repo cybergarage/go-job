@@ -28,8 +28,8 @@ Table of Contents:
 - [Terminology](#_terminology)
 - [Key Components](#_key_components)
 - [Job State Lifecycle](#_job_state_lifecycle)
-- [Prometheus Metrics](#_prometheus_metrics)
 - [Job Registration and Processing Flow](#_job_registration_and_processing_flow)
+- [Prometheus Metrics](#_prometheus_metrics)
 
 </div>
 
@@ -224,50 +224,6 @@ Each job instance can transition through various states, such as `Scheduled`, `P
 
 <div class="sect1">
 
-## Prometheus Metrics
-
-<div class="sectionbody">
-
-<div class="paragraph">
-
-`go-job` includes a built-in Prometheus metrics endpoint that exposes a variety of metrics related to the job server’s performance and health.
-
-</div>
-
-<div class="imageblock">
-
-<div class="content">
-
-![job framework](img/job-framework.png)
-
-</div>
-
-</div>
-
-<div class="sect2">
-
-### Metrics
-
-| Metric Name | Type | Labels | Description |
-|----|----|----|----|
-| go_job_registered | Gauge |  | Current number of registered jobs |
-| go_job_queued | GaugeVec | kind | Current number of queued jobs by kind |
-| go_job_executed_total | CounterVec | kind | Total number of executed jobs by kind |
-| go_job_completed_total | CounterVec | kind | Total number of successfully completed jobs by kind |
-| go_job_terminated_total | CounterVec | kind | Total number of terminated jobs by kind |
-| go_job_canceled_total | CounterVec | kind | Total number of canceled jobs by kind |
-| go_job_timedout_total | CounterVec | kind | Total number of timed out jobs by kind |
-| go_job_duration_seconds | Histogram | kind | Histogram of job execution durations in seconds by kind |
-| go_job_workers | Gauge |  | Current number of workers |
-
-</div>
-
-</div>
-
-</div>
-
-<div class="sect1">
-
 ## Job Registration and Processing Flow
 
 <div class="sectionbody">
@@ -349,13 +305,57 @@ This enables a distributed architecture where multiple go-job servers can operat
 
 </div>
 
+<div class="sect1">
+
+## Prometheus Metrics
+
+<div class="sectionbody">
+
+<div class="paragraph">
+
+`go-job` includes a built-in Prometheus metrics endpoint that exposes a variety of metrics related to the job server’s performance and health.
+
+</div>
+
+<div class="imageblock">
+
+<div class="content">
+
+![job framework](img/job-framework.png)
+
+</div>
+
+</div>
+
+<div class="sect2">
+
+### Observability and Metrics
+
+| Metric Name | Type | Labels | Description |
+|----|----|----|----|
+| go_job_registered | Gauge |  | Current number of registered jobs |
+| go_job_queued | GaugeVec | kind | Current number of queued jobs by kind |
+| go_job_executed_total | CounterVec | kind | Total number of executed jobs by kind |
+| go_job_completed_total | CounterVec | kind | Total number of successfully completed jobs by kind |
+| go_job_terminated_total | CounterVec | kind | Total number of terminated jobs by kind |
+| go_job_canceled_total | CounterVec | kind | Total number of canceled jobs by kind |
+| go_job_timedout_total | CounterVec | kind | Total number of timed out jobs by kind |
+| go_job_duration_seconds | Histogram | kind | Histogram of job execution durations in seconds by kind |
+| go_job_workers | Gauge |  | Current number of workers |
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 <div id="footer">
 
 <div id="footer-text">
 
-Last updated 2025-08-24 13:51:02 +0900
+Last updated 2025-08-24 20:39:23 +0900
 
 </div>
 
