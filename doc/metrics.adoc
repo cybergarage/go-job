@@ -4,7 +4,7 @@
 
 image::img/job-framework.png[]
 
-== Metrics
+== Observability and Metrics
 
 [format="csv", options="header"]
 |===

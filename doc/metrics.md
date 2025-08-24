@@ -32,7 +32,7 @@
 
 <div class="sect1">
 
-## Metrics
+## Observability and Metrics
 
 <div class="sectionbody">
 
@@ -58,7 +58,7 @@
 
 <div id="footer-text">
 
-Last updated 2025-08-24 13:49:35 +0900
+Last updated 2025-08-24 13:52:48 +0900
 
 </div>
 
