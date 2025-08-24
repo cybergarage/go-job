@@ -16,6 +16,16 @@
 
 </div>
 
+<div class="imageblock">
+
+<div class="content">
+
+![job framework](img/job-framework.png)
+
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -48,7 +58,7 @@
 
 <div id="footer-text">
 
-Last updated 2025-08-24 13:38:36 +0900
+Last updated 2025-08-24 13:49:35 +0900
 
 </div>
 

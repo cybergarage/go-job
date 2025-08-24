@@ -2,6 +2,8 @@
 
 `go-job` includes a built-in Prometheus metrics endpoint that exposes a variety of metrics related to the job server's performance and health.
 
+image::img/job-framework.png[]
+
 == Metrics
 
 [format="csv", options="header"]
