@@ -310,7 +310,7 @@ This enables a distributed architecture where multiple go-job servers can operat
 
 <div id="footer-text">
 
-Last updated 2025-08-21 23:29:33 +0900
+Last updated 2025-08-23 23:31:55 +0900
 
 </div>
 
