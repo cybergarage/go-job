@@ -22,7 +22,7 @@ jobctl cancel instances [flags]
 
 ```
       --host string   gRPC host or address for a go-job instance (default "localhost")
-      --port int      gRPC port number for a go-job instance (default 50053)
+      --port int      gRPC port number for a go-job instance (default 59051)
 ```
 
 ### SEE ALSO
