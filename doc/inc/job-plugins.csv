@@ -1,3 +1,3 @@
-Plugin Name,Function,Description
-HistoryCleaner,NewHistoryCleaner,Deletes old job history records
-LogCleaner,NewLogCleaner,Deletes old job log records
+Plugin Name,Kind,Description
+HistoryCleaner,system.history.cleaner,Deletes old job history records
+LogCleaner,system.log.cleaner,Deletes old job log records
