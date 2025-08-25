@@ -74,7 +74,17 @@ func withRegisteredAt(t time.Time) JobOption {
 
 // NewJob creates a new job with the given name and options.
 func NewJob(opts ...any) (Job, error) {
-	return newJob(opts...)
+	job, err := newJob(opts...)
+	if err != nil {
+		return nil, err
+	}
+	switch {
+	case job.kind == "":
+		return nil, fmt.Errorf("job kind is required")
+	case job.handler.executor == nil:
+		return nil, fmt.Errorf("job handler is required")
+	}
+	return job, nil
 }
 
 // newJobFromMap creates a new job from a map representation.
@@ -121,13 +131,6 @@ func newJob(opts ...any) (*job, error) {
 		default:
 			return nil, fmt.Errorf("invalid job option type: %T", opt)
 		}
-	}
-
-	switch {
-	case j.kind == "":
-		return nil, fmt.Errorf("job kind is required")
-	case j.handler.executor == nil:
-		return nil, fmt.Errorf("job handler is required")
 	}
 
 	return j, nil

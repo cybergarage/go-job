@@ -139,6 +139,7 @@ func (client *grpcClient) ListRegisteredJobs() ([]Job, error) {
 			WithKind(pbJob.GetKind()),
 			WithDescription(pbJob.GetDescription()),
 			withRegisteredAt(pbJob.GetRegisteredAt().AsTime()),
+			WithExecutor(func() {}),
 		)
 		if err != nil {
 			return nil, err
