@@ -123,6 +123,13 @@ func newJob(opts ...any) (*job, error) {
 		}
 	}
 
+	switch {
+	case j.kind == "":
+		return nil, fmt.Errorf("job kind is required")
+	case j.handler.executor == nil:
+		return nil, fmt.Errorf("job handler is required")
+	}
+
 	return j, nil
 }
 
