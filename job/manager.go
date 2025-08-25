@@ -30,10 +30,7 @@ type Manager interface {
 
 	// RegisterJob registers a job in the registry. If a job with the same kind is already registered,
 	// it will be overwritten with the new job.
-	// If the registered job has a schedule configuration, it will be automatically scheduled and
-	// the resulting job instance will be returned.
-	// If the job has no schedule configuration, nil will be returned for the instance.
-	RegisterJob(job Job) (Instance, error)
+	RegisterJob(job Job) error
 	// UnregisterJob removes a job from the registry by its kind.
 	UnregisterJob(kind Kind) error
 	// ListJobs returns a slice of all registered jobs.
@@ -145,18 +142,12 @@ func (mgr *manager) Store() Store {
 
 // RegisterJob registers a job in the registry. If a job with the same kind is already registered,
 // it will be overwritten with the new job.
-// If the registered job has a schedule configuration, it will be automatically scheduled and
-// the resulting job instance will be returned.
-// If the job has no schedule configuration, nil will be returned for the instance.
-func (mgr *manager) RegisterJob(job Job) (Instance, error) {
+func (mgr *manager) RegisterJob(job Job) error {
 	err := mgr.repository.RegisterJob(job)
 	if err != nil {
-		return nil, fmt.Errorf("failed to register job: %w", err)
+		return fmt.Errorf("failed to register job: %w", err)
 	}
-	if !job.Schedule().IsScheduled() {
-		return nil, nil
-	}
-	return mgr.ScheduleJob(job)
+	return nil
 }
 
 // ScheduleRegisteredJob schedules a registered job by its kind with the given options.
@@ -178,7 +169,7 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 	_, ok := mgr.LookupJob(job.Kind())
 	if !ok {
-		_, err := mgr.RegisterJob(job)
+		err := mgr.RegisterJob(job)
 		if err != nil {
 			return nil, err
 		}

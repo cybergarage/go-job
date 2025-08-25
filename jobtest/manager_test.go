@@ -146,13 +146,9 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 				return
 			}
 
-			ji, err := mgr.RegisterJob(j)
+			err = mgr.RegisterJob(j)
 			if err != nil {
 				t.Errorf("Failed to register job: %v", err)
-				return
-			}
-			if ji != nil {
-				t.Errorf("Expected job instance to be nil, but got %v", ji)
 				return
 			}
 
@@ -167,7 +163,7 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 
 			// Schedule the job with arguments
 
-			ji, err = mgr.ScheduleRegisteredJob(
+			ji, err := mgr.ScheduleRegisteredJob(
 				tt.kind,
 				job.WithScheduleAfter(0), // immediate scheduling
 				job.WithArguments(tt.args...),
@@ -366,7 +362,7 @@ func ManagerJobCancelTest(t *testing.T, mgr job.Manager) {
 		return
 	}
 
-	_, err = mgr.RegisterJob(sleepJob)
+	err = mgr.RegisterJob(sleepJob)
 	if err != nil {
 		t.Errorf("Failed to register job: %v", err)
 		return

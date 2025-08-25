@@ -23,6 +23,8 @@ import (
 func ExampleWithDescription() {
 	// Create a job with a specific description
 	job, _ := NewJob(
+		WithKind("description"),
+		WithExecutor(func() {}),
 		WithDescription("This job sums two numbers"),
 	)
 	fmt.Printf("%s\n", job.Description())
@@ -33,6 +35,7 @@ func ExampleWithKind() {
 	// Create a job with a specific kind
 	job, _ := NewJob(
 		WithKind("sum"),
+		WithExecutor(func() {}),
 	)
 	fmt.Printf("%s\n", job.Kind())
 	// Output: sum
@@ -41,6 +44,7 @@ func ExampleWithKind() {
 func ExampleWithExecutor_hello() {
 	// Create a job with a specific executor
 	job, _ := NewJob(
+		WithKind("hello"),
 		WithExecutor(func() {
 			fmt.Println("Hello, world!")
 		}),
@@ -52,6 +56,7 @@ func ExampleWithExecutor_hello() {
 func ExampleWithExecutor_sum() {
 	// Create a job with a specific executor
 	job, _ := NewJob(
+		WithKind("sum"),
 		WithExecutor(func(a, b int) int {
 			return a + b
 		}),
@@ -63,6 +68,7 @@ func ExampleWithExecutor_sum() {
 func ExampleWithExecutor_concat() {
 	// Create a job with a specific executor
 	job, _ := NewJob(
+		WithKind("concat"),
 		WithExecutor(func(a string, b string) string {
 			return a + ", " + b
 		}),
@@ -78,6 +84,7 @@ func ExampleWithExecutor_struct() {
 		S string
 	}
 	job, _ := NewJob(
+		WithKind("struct"),
 		WithExecutor(func(param *ConcatString) *ConcatString {
 			param.S = param.A + ", " + param.B
 			return param
@@ -92,6 +99,8 @@ func ExampleWithExecutor_struct() {
 func ExampleWithCompleteProcessor() {
 	// Create a job with a specific complete processor
 	job, _ := NewJob(
+		WithKind("complete"),
+		WithExecutor(func() {}),
 		WithCompleteProcessor(func(ji Instance, res []any) {
 			ji.Infof("Job completed with result: %v", res)
 		}),
@@ -103,6 +112,8 @@ func ExampleWithCompleteProcessor() {
 func ExampleWithTerminateProcessor() {
 	// Create a job with a specific terminate processor
 	job, _ := NewJob(
+		WithKind("terminate"),
+		WithExecutor(func() {}),
 		WithTerminateProcessor(func(ji Instance, err error) error {
 			if errors.Is(err, context.DeadlineExceeded) {
 				// Do not retry if the job was terminated due to a deadline being exceeded
@@ -120,6 +131,8 @@ func ExampleWithTerminateProcessor() {
 func ExampleWithStateChangeProcessor() {
 	// Create a job with a specific state change processor
 	job, _ := NewJob(
+		WithKind("state"),
+		WithExecutor(func() {}),
 		WithStateChangeProcessor(func(ji Instance, state JobState) {
 			ji.Infof("State changed to: %v", state)
 		}),

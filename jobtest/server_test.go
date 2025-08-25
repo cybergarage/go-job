@@ -58,7 +58,7 @@ func ServerAPIsTest(t *testing.T, client job.Client, server job.Server) {
 	if err != nil {
 		t.Fatalf("Failed to create job: %v", err)
 	}
-	_, err = server.Manager().RegisterJob(j)
+	err = server.Manager().RegisterJob(j)
 	if err != nil {
 		t.Fatalf("Failed to register job: %v", err)
 	}
