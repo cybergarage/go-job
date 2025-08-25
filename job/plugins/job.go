@@ -14,28 +14,9 @@
 
 package plugins
 
+import (
+	"github.com/cybergarage/go-job/job"
+)
+
 // Job represents a job plugin interface.
-type Job interface {
-	Kind() string
-	Executor() any
-}
-
-type jobImpl struct {
-	kind     string
-	executor any
-}
-
-func NewJob(kind string, exec any) Job {
-	return &jobImpl{
-		kind:     kind,
-		executor: exec,
-	}
-}
-
-func (j *jobImpl) Kind() string {
-	return j.kind
-}
-
-func (j *jobImpl) Executor() any {
-	return j.executor
-}
+type Job = job.Job

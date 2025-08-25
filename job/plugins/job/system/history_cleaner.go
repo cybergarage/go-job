@@ -33,16 +33,18 @@ const (
 //   - ji: job.Instance - The job instance representing the history cleaner job.
 //   - before: time.Time - A timestamp indicating that all job instances completed before this time should be deleted.
 func NewHistoryCleaner() plugins.Job {
-	return plugins.NewJob(
-		HistoryCleaner,
-		func(ctx context.Context, mgr job.Manager, ji job.Instance, before time.Time) {
-			filter := job.NewFilter(
-				job.WithFilterBefore(before),
-			)
-			err := mgr.ClearInstanceHistory(filter)
-			if err != nil {
-				ji.Errorf("Failed to clear job history: %v", err)
-			}
-		},
+	job, _ := job.NewJob(
+		job.WithKind(HistoryCleaner),
+		job.WithExecutor(
+			func(ctx context.Context, mgr job.Manager, ji job.Instance, before time.Time) {
+				filter := job.NewFilter(
+					job.WithFilterBefore(before),
+				)
+				err := mgr.ClearInstanceHistory(filter)
+				if err != nil {
+					ji.Errorf("Failed to clear job history: %v", err)
+				}
+			}),
 	)
+	return job
 }

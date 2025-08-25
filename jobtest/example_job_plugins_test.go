@@ -12,34 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package system
+package jobtest
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins/job/system"
 )
 
-func ExampleNewHistoryCleaner() {
+func ExampleManager_scheduleRegisteredJob_systemHistoryCleaner() {
 	// Create a job manager
 	mgr, _ := job.NewManager()
 
 	// Schedule the job with the manager
-	mgr.ScheduleRegisteredJob(
-		HistoryCleaner,
-		job.WithCrontabSpec("0 0 * * *"), // Every day at midnight
+	_, err := mgr.ScheduleJob(
+		system.NewHistoryCleaner(),
+		job.WithCrontabSpec("0 0 * * *"),                                   // Every day at midnight
 		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete history older than 30 days
 	)
+
+	fmt.Println(err)
+
+	// Output:
+	// <nil>
 }
 
-func ExampleNewLogCleaner() {
+func ExampleManager_scheduleRegisteredJob_systemLogCleaner() {
 	// Create a job manager
 	mgr, _ := job.NewManager()
 
 	// Schedule the job with the manager
-	mgr.ScheduleRegisteredJob(
-		LogCleaner,
-		job.WithCrontabSpec("0 0 * * *"), // Every day at midnight
+	_, err := mgr.ScheduleJob(
+		system.NewLogCleaner(),
+		job.WithCrontabSpec("0 0 * * *"),                                   // Every day at midnight
 		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete log older than 30 days
 	)
+
+	fmt.Println(err)
+
+	// Output:
+	// <nil>
 }
