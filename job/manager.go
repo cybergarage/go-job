@@ -43,7 +43,8 @@ type Manager interface {
 
 	// ScheduleJob schedules a job instance with the given job and options.
 	// It creates a new job instance and enqueues it in the job queue.
-	// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
+	// If no schedule option is set, the job instance will be scheduled to run immediately by default.
+	// If the specified job is not registered, the manager will register the job automatically.
 	ScheduleJob(job Job, opts ...any) (Instance, error)
 	// ScheduleRegisteredJob schedules a registered job by its kind with the given options.
 	// If the job is not registered, an error will be returned.
@@ -172,8 +173,17 @@ func (mgr *manager) ScheduleRegisteredJob(kind Kind, opts ...any) (Instance, err
 
 // ScheduleJob schedules a job instance with the given job and options.
 // It creates a new job instance and enqueues it in the job queue.
-// If the schedule option is not set, the job instance will be scheduled to run immediately as default.
+// If no schedule option is set, the job instance will be scheduled to run immediately by default.
+// If the specified job is not registered, the manager will register the job automatically.
 func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
+	_, ok := mgr.LookupJob(job.Kind())
+	if !ok {
+		_, err := mgr.RegisterJob(job)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	jobOpts := []any{
 		WithJob(job),
 		WithInstanceHistory(mgr.repository),
