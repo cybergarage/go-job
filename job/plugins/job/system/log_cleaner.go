@@ -15,6 +15,7 @@
 package system
 
 import (
+	"context"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
@@ -27,13 +28,14 @@ const (
 
 // NewLogCleaner returns a job that cleans up old job instance logs.
 // The job executor accepts the following parameters:
+//   - ctx: context.Context - The context for cancellation and timeout.
 //   - mgr: job.Manager - The job manager to perform the cleanup operation.
 //   - ji: job.Instance - The job instance representing the log cleaner job.
 //   - before: time.Time - A timestamp indicating that all job instances completed before this time should be deleted.
 func NewLogCleaner() plugins.Job {
 	return plugins.NewJob(
 		LogCleaner,
-		func(mgr job.Manager, ji job.Instance, before time.Time) {
+		func(ctx context.Context, mgr job.Manager, ji job.Instance, before time.Time) {
 			filter := job.NewFilter(
 				job.WithFilterBefore(before),
 			)

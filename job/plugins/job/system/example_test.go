@@ -28,7 +28,7 @@ func ExampleNewHistoryCleaner() {
 	mgr.ScheduleRegisteredJob(
 		HistoryCleaner,
 		job.WithCrontabSpec("0 0 * * *"), // Every day at midnight
-		job.WithArguments("?", "?", time.Now().Add(-30*24*time.Hour)), // Delete history older than 30 days
+		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete history older than 30 days
 	)
 }
 
@@ -40,6 +40,6 @@ func ExampleNewLogCleaner() {
 	mgr.ScheduleRegisteredJob(
 		LogCleaner,
 		job.WithCrontabSpec("0 0 * * *"), // Every day at midnight
-		job.WithArguments("?", "?", time.Now().Add(-30*24*time.Hour)), // Delete log older than 30 days
+		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete log older than 30 days
 	)
 }
