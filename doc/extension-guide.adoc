@@ -10,11 +10,12 @@ toc::[]
 
 == Job Plugin Development
 
-`go-job` includes several built-in system jobs that help you keep your job server clean and running smoothly—no extra setup required.
+`go-job` provides several built-in system jobs that help you keep your job server clean and running smoothly—no extra setup required.  
+You can also extend `go-job` by creating your own job plugins.
 
 ==== Job Interface
 
-`go-job` provides a simple interface for defining job plugins:
+To create a custom job plugin, simply implement the following interface:
 
 [source,go]
 ----
@@ -29,7 +30,7 @@ type Job interface {
 
 ==== Special Arguments for Executor
 
-You can use special arguments in your executor functions to easily access job context, manager, worker, and instance information.  
+Executor functions can use special arguments to easily access job context, manager, worker, and instance information.  
 This makes it simple to control job execution, handle cancellation and timeout, and access useful metadata.
 
 [format="csv", options="header"]
@@ -37,7 +38,9 @@ This makes it simple to control job execution, handle cancellation and timeout, 
 include::inc/special_arguments.csv[]
 |===
 
-==== Default Registered Jobs
+These special arguments allow your job logic to be more flexible and powerful.
+
+==== Built-in System Jobs
 
 `go-job` comes with several built-in system jobs that are ready to use.  
 You can schedule and configure these jobs just like any other job in your application.

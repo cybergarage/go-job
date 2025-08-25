@@ -27,7 +27,7 @@ Table of Contents:
 - [Job Plugin Development](#_job_plugin_development)
   - [Job Interface](#_job_interface)
   - [Special Arguments for Executor](#_special_arguments_for_executor)
-  - [Default Registered Jobs](#_default_registered_jobs)
+  - [Built-in System Jobs](#_built_in_system_jobs)
 - [Store Plugin Development](#_store_plugin_development)
   - [Store Interface](#_store_interface)
   - [kv.Store Interface](#_kv_store_interface)
@@ -48,7 +48,7 @@ Table of Contents:
 
 <div class="paragraph">
 
-`go-job` includes several built-in system jobs that help you keep your job server clean and running smoothly—no extra setup required.
+`go-job` provides several built-in system jobs that help you keep your job server clean and running smoothly—no extra setup required. You can also extend `go-job` by creating your own job plugins.
 
 </div>
 
@@ -58,7 +58,7 @@ Table of Contents:
 
 <div class="paragraph">
 
-`go-job` provides a simple interface for defining job plugins:
+To create a custom job plugin, simply implement the following interface:
 
 </div>
 
@@ -88,7 +88,7 @@ type Job interface {
 
 <div class="paragraph">
 
-You can use special arguments in your executor functions to easily access job context, manager, worker, and instance information. This makes it simple to control job execution, handle cancellation and timeout, and access useful metadata.
+Executor functions can use special arguments to easily access job context, manager, worker, and instance information. This makes it simple to control job execution, handle cancellation and timeout, and access useful metadata.
 
 </div>
 
@@ -99,11 +99,17 @@ You can use special arguments in your executor functions to easily access job co
 | [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker) | Worker processing the job instance | func(w job.Worker) { …​ } |
 | [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance) | Current job instance | func(ji job.Instance) { …​ } |
 
+<div class="paragraph">
+
+These special arguments allow your job logic to be more flexible and powerful.
+
+</div>
+
 </div>
 
 <div class="sect3">
 
-#### Default Registered Jobs
+#### Built-in System Jobs
 
 <div class="paragraph">
 
@@ -411,7 +417,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-25 20:43:43 +0900
+Last updated 2025-08-25 20:45:46 +0900
 
 </div>
 
