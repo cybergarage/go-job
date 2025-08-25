@@ -479,11 +479,24 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="sect3">
 
-#### Function with Special Arguments
+#### Executor with Special Arguments
 
 <div class="paragraph">
 
-`go-job` allows you to use special arguments in your job functions, such as [context.Context](https://pkg.go.dev/context), [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager), [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker), and [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance). These arguments let you control job execution and access useful job-related information.
+`go-job` supports special arguments to allow you to access job context, manager, worker, and instance information directly within your function.
+
+</div>
+
+| Argument Type | Description | Example Usage in Executor Function |
+|----|----|----|
+| [context.Context](https://pkg.go.dev/context) | Context for cancellation and timeout | func(ctx context.Context) { …​ } |
+| [job.Manager](https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager) | Job manager interface | func(mgr job.Manager) { …​ } |
+| [job.Worker](https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker) | Worker processing the job instance | func(w job.Worker) { …​ } |
+| [job.Instance](https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance) | Current job instance | func(ji job.Instance) { …​ } |
+
+<div class="paragraph">
+
+These special arguments enable you to control job execution, handle cancellation and timeout, and access useful job-related metadata and methods.
 
 </div>
 
@@ -1652,7 +1665,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-24 13:53:22 +0900
+Last updated 2025-08-25 20:40:19 +0900
 
 </div>
 

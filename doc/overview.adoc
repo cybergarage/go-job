@@ -198,10 +198,16 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 `go-job` will automatically convert the provided arguments to the types expected by your job function.  
 This means you can use the format that is most convenient for your application, whether it's a struct, JSON, or other supported types.
 
-==== Function with Special Arguments
+==== Executor with Special Arguments
 
-`go-job` allows you to use special arguments in your job functions, such as link:https://pkg.go.dev/context[context.Context], link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager[job.Manager], link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker[job.Worker], and link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance[job.Instance].  
-These arguments let you control job execution and access useful job-related information.
+`go-job` supports special arguments to allow you to access job context, manager, worker, and instance information directly within your function.
+
+[format="csv", options="header"]
+|===
+include::inc/special_arguments.csv[]
+|===
+
+These special arguments enable you to control job execution, handle cancellation and timeout, and access useful job-related metadata and methods.
 
 ===== Using context.Context for Cancellation and Timeout
 
