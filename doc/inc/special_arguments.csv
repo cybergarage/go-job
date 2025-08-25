@@ -1,0 +1,5 @@
+Argument Type,Description,Example Usage in Executor Function
+link:https://pkg.go.dev/context[context.Context],Context for cancellation and timeout,func(ctx context.Context) { ... }
+link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Manager[job.Manager],Job manager interface,func(mgr job.Manager) { ... }
+link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Worker[job.Worker],Worker processing the job instance,func(w job.Worker) { ... }
+link:https://pkg.go.dev/github.com/cybergarage/go-job/job#Instance[job.Instance],Current job instance,func(ji job.Instance) { ... }
