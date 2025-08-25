@@ -205,7 +205,7 @@ In summary, use **gocron** or **JobRunner** for straightforward scheduling insid
 
 <div id="footer-text">
 
-Last updated 2025-08-14 12:42:15 +0900
+Last updated 2025-08-14 23:38:44 +0900
 
 </div>
 
