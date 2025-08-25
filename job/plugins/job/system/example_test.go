@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package system
 
 import (
 	"time"
@@ -24,10 +24,6 @@ func ExampleNewHistoryCleaner() {
 	// Create a job manager
 	mgr, _ := job.NewManager()
 
-	// Register the history cleaner job
-	mgr.RegisterJob(
-		NewHistoryCleaner(),
-	)
 	// Schedule the job with the manager
 	mgr.ScheduleRegisteredJob(
 		HistoryCleaner,
@@ -40,10 +36,6 @@ func ExampleNewLogCleaner() {
 	// Create a job manager
 	mgr, _ := job.NewManager()
 
-	// Register the log cleaner job
-	mgr.RegisterJob(
-		NewLogCleaner(),
-	)
 	// Schedule the job with the manager
 	mgr.ScheduleRegisteredJob(
 		LogCleaner,

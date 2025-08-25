@@ -12,35 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package system
 
 import (
 	"time"
 
 	"github.com/cybergarage/go-job/job"
+	"github.com/cybergarage/go-job/job/plugins"
 )
 
 const (
-	HistoryCleaner = "system.history.cleaner"
+	LogCleaner = "system.log.cleaner"
 )
 
-// NewHistoryCleaner returns a job that cleans up old job instance history records.
+// NewLogCleaner returns a job that cleans up old job instance logs.
 // The job executor accepts the following parameters:
 //   - mgr: job.Manager - The job manager to perform the cleanup operation.
-//   - ji: job.Instance - The job instance representing the history cleaner job.
+//   - ji: job.Instance - The job instance representing the log cleaner job.
 //   - before: time.Time - A timestamp indicating that all job instances completed before this time should be deleted.
-func NewHistoryCleaner() job.Job {
-	cleaner, _ := job.NewJob(
-		job.WithKind(HistoryCleaner),
-		job.WithExecutor(func(mgr job.Manager, ji job.Instance, before time.Time) {
+func NewLogCleaner() plugins.Job {
+	return plugins.NewJob(
+		LogCleaner,
+		func(mgr job.Manager, ji job.Instance, before time.Time) {
 			filter := job.NewFilter(
 				job.WithFilterBefore(before),
 			)
-			err := mgr.ClearInstanceHistory(filter)
+			err := mgr.ClearInstanceLogs(filter)
 			if err != nil {
-				ji.Errorf("Failed to clear job history: %v", err)
+				ji.Errorf("Failed to clear job logs: %v", err)
 			}
-		}),
+		},
 	)
-	return cleaner
 }
