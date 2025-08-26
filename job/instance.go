@@ -146,6 +146,7 @@ func WithJob(job Job) InstanceOption {
 		scheduleOpts := []ScheduleOption{
 			WithCrontabSpec(job.Schedule().CrontabSpec()),
 			WithScheduleAt(job.Schedule().Next()),
+			WithJitter(job.Schedule().Jitter()),
 		}
 		for _, opt := range scheduleOpts {
 			if err := opt(ji.schedule); err != nil {

@@ -21,6 +21,12 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// ScheduleOption defines a function that configures a job schedule.
+type ScheduleOption func(*schedule) error
+
+// JitterGenerator defines a function that returns a random jitter duration for job scheduling.
+type JitterGenerator func() time.Duration
+
 // Schedule defines the interface for job scheduling, supporting crontab expressions.
 type Schedule interface {
 	// CrontabSpec returns the crontab spec string.
@@ -31,24 +37,20 @@ type Schedule interface {
 	IsRecurring() bool
 	// Next returns the next scheduled time.
 	Next() time.Time
+	// Jitter returns the jitter duration for the job.
+	Jitter() JitterGenerator
 	// Map returns a map representation of the job.
 	Map() map[string]any
 	// String returns a string representation of the job.
 	String() string
 }
 
-// ScheduleOption defines a function that configures a job schedule.
-type ScheduleOption func(*schedule) error
-
-// ScheduleJitterFunc defines a function that returns a random jitter duration for job scheduling.
-type ScheduleJitterFunc func() time.Duration
-
 // schedule implements the JobSchedule interface using a crontab spec string.
 type schedule struct {
 	crontabSpec  string
 	cronSchedule cron.Schedule
 	scheduleAt   time.Time
-	jitterFunc   ScheduleJitterFunc
+	jitterFunc   JitterGenerator
 }
 
 // WithCrontabSpec sets the crontab spec string for the job schedule.
@@ -84,7 +86,7 @@ func WithScheduleAfter(d time.Duration) ScheduleOption {
 }
 
 // WithJitter sets the job schedule jitter function.
-func WithJitter(jitterFunc ScheduleJitterFunc) ScheduleOption {
+func WithJitter(jitterFunc JitterGenerator) ScheduleOption {
 	return func(js *schedule) error {
 		js.jitterFunc = jitterFunc
 		return nil
@@ -136,6 +138,11 @@ func (js *schedule) IsRecurring() bool {
 // IsScheduled returns true if the schedule has timing configuration.
 func (js *schedule) IsScheduled() bool {
 	return js.cronSchedule != nil || !js.scheduleAt.IsZero()
+}
+
+// Jitter returns the jitter duration for the job.
+func (js *schedule) Jitter() JitterGenerator {
+	return js.jitterFunc
 }
 
 // Next returns the next scheduled time.
