@@ -6,13 +6,16 @@
   - Limit and offset support
 
 ## 1.2.1 (2025-08-26)
-## 🚀 Features & Enhancements
-- **Added JobStateInitial**
-  - Introduced a new `JobStateInitial` state for jobs.
-    ([5a6340f](https://github.com/cybergarage/go-job/commit/5a6340f))
+### 🚀 Features
+- **System Job History & Log Cleaner Plugins**
+  - Introduced new `plugins.Job` and `plugins.Store` interfaces to improve plugin flexibility.
+    ([0a472e3](https://github.com/cybergarage/go-job/commit/0a472e3), [f516010](https://github.com/cybergarage/go-job/commit/f516010))
+  - Added  `system.NewHistoryCleaner()` and `NewLogCleaner()`, and enabled system jobs to accept a context parameter.
+    ([57d108e](https://github.com/cybergarage/go-job/commit/57d108e), [f067f92](https://github.com/cybergarage/go-job/commit/f067f92),[2f39154](https://github.com/cybergarage/go-job/commit/2f39154), [916661e](https://github.com/cybergarage/go-job/commit/916661e))
 - **Scheduler Jitter Support**
   - Added the `WithJitter()` method to allow setting a jitter (random delay) duration in the job scheduler.
     ([b678e50](https://github.com/cybergarage/go-job/commit/b678e50))
+### 🚀 Enhancements
 - **Job Creation Validation**
   - The `NewJob` function now validates that both `kind` and `handler` are set when creating a job.
     ([2161942](https://github.com/cybergarage/go-job/commit/2161942), [44dc8ea](https://github.com/cybergarage/go-job/commit/44dc8ea))
@@ -20,22 +23,13 @@
   - `RegisterJob` now only registers a job without scheduling it.
   - `ScheduleJob` will automatically register a job if it is not already registered.
     ([fd5c8ec](https://github.com/cybergarage/go-job/commit/fd5c8ec), [bc23dd8](https://github.com/cybergarage/go-job/commit/bc23dd8))
-- **Plugin Refactoring & New Interfaces**
-  - Introduced new `plugins.Job` and `plugins.Store` interfaces to improve plugin flexibility.
-    ([0a472e3](https://github.com/cybergarage/go-job/commit/0a472e3), [f516010](https://github.com/cybergarage/go-job/commit/f516010))
-- **System Job Improvements**
-  - Improved `system.NewHistoryCleaner()` and `NewLogCleaner()`, and enabled system jobs to accept a context parameter.
-    ([57d108e](https://github.com/cybergarage/go-job/commit/57d108e), [f067f92](https://github.com/cybergarage/go-job/commit/f067f92))
-- **Job History & Log Cleaner Plugins**
-  - Added plugins for job history cleaning and job log cleaning.
-    ([2f39154](https://github.com/cybergarage/go-job/commit/2f39154), [916661e](https://github.com/cybergarage/go-job/commit/916661e))
-## 🛠️ Dependency
+### 🛠️ Dependency
 - **Dependency Update**
   - Bumped `github.com/go-viper/mapstructure/v2` to latest version.
     ([ba889d7](https://github.com/cybergarage/go-job/commit/ba889d7), [9438f03](https://github.com/cybergarage/go-job/commit/9438f03))
 
 ## 1.2.0 (2025-08-24)
-## 🚀 Features
+### 🚀 Features
 - **Job Cancellation & Control**
   - Enhanced `jobctl` with new `cancel` and `schedule` commands for better job management.
     ([b8f7ca8](https://github.com/cybergarage/go-job/commit/b8f7ca8), [1d2e16d](https://github.com/cybergarage/go-job/commit/1d2e16d), [89f08e5](https://github.com/cybergarage/go-job/commit/89f08e5), [83ca91a](https://github.com/cybergarage/go-job/commit/83ca91a))
@@ -60,7 +54,7 @@
 - **Prometheus Metrics**
   - Added Prometheus metrics server to monitor job lifecycle and worker status.  
     ([3cd693e](https://github.com/cybergarage/go-job/commit/3cd693e), [688f295](https://github.com/cybergarage/go-job/commit/688f295))
-## 🛠 Fixes and Improvements
+### 🛠 Fixes and Improvements
 - Improved cancellation and timeout handling in `Execute` and related methods.
   ([9901727](https://github.com/cybergarage/go-job/commit/9901727), [0f78ee5](https://github.com/cybergarage/go-job/commit/0f78ee5), [66872e9](https://github.com/cybergarage/go-job/commit/66872e9))
 - Fixed worker state handling for cancellations and timeouts.
