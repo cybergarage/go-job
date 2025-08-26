@@ -19,12 +19,26 @@ To create a custom job plugin, simply implement the following interface:
 
 [source,go]
 ----
-package plugins
+package job
 
-// Job represents a job plugin interface.
+// Job represents a job that can be scheduled to run at a specific time or interval.
 type Job interface {
-    Kind() string      // Returns the unique kind name of the job
-    Executor() any     // Returns the executor function for the job
+	// Kind returns the name of the job.
+	Kind() string
+	// Description returns a description of the job.
+	Description() string
+	// Handler returns the job handler for the job.
+	Handler() Handler
+	// Schedule returns the schedule for the job.
+	Schedule() Schedule
+	// Policy returns the policy for the job.
+	Policy() Policy
+	// RegisteredAt returns the time when the job was registered.
+	RegisteredAt() time.Time
+	// Map returns a map representation of the job.
+	Map() map[string]any
+	// String returns a string representation of the job.
+	String() string
 }
 ----
 
@@ -66,6 +80,8 @@ The Store interface specifies the required methods that every store plugin must 
 
 [source,go]
 ----
+package job
+
 // Store defines the interface for job queue, history, and logging.
 type Store interface {
     // Name returns the name of the store.
