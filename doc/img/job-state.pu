@@ -18,11 +18,11 @@ Completed --> Scheduled : [if recurring] Reschedule
 Processing --> Cancelled : Job was canceled
 Processing --> TimedOut : Job exceeded time limit
 TimedOut --> Scheduled : [if retriable] Reschedule
-}
 
 Terminated --> [*] : [if not retriable and not recurring]
 Completed --> [*] : [if not recurring]
 Cancelled --> [*]
 TimedOut --> [*] : [if not retriable and not recurring]
+}
 
 @enduml
