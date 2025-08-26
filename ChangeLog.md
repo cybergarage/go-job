@@ -1,12 +1,38 @@
 # ChangeLog
 
-## 1.2.1 (2025-0X-XX)
-### ✨ New Features
-- **System Worker**
-  - Store cleaner plugin
+## 1.2.2 (2025-0X-XX)
 ### 🛠 Enhancements
 - **Query**
   - Limit and offset support
+
+## 1.2.1 (2025-08-26)
+## 🚀 Features & Enhancements
+- **Added JobStateInitial**
+  - Introduced a new `JobStateInitial` state for jobs.
+    ([5a6340f](https://github.com/cybergarage/go-job/commit/5a6340f))
+- **Scheduler Jitter Support**
+  - Added the `WithJitter()` method to allow setting a jitter (random delay) duration in the job scheduler.
+    ([b678e50](https://github.com/cybergarage/go-job/commit/b678e50))
+- **Job Creation Validation**
+  - The `NewJob` function now validates that both `kind` and `handler` are set when creating a job.
+    ([2161942](https://github.com/cybergarage/go-job/commit/2161942), [44dc8ea](https://github.com/cybergarage/go-job/commit/44dc8ea))
+- **Job Manager Behavior Change**
+  - `RegisterJob` now only registers a job without scheduling it.
+  - `ScheduleJob` will automatically register a job if it is not already registered.
+    ([fd5c8ec](https://github.com/cybergarage/go-job/commit/fd5c8ec), [bc23dd8](https://github.com/cybergarage/go-job/commit/bc23dd8))
+- **Plugin Refactoring & New Interfaces**
+  - Introduced new `plugins.Job` and `plugins.Store` interfaces to improve plugin flexibility.
+    ([0a472e3](https://github.com/cybergarage/go-job/commit/0a472e3), [f516010](https://github.com/cybergarage/go-job/commit/f516010))
+- **System Job Improvements**
+  - Improved `system.NewHistoryCleaner()` and `NewLogCleaner()`, and enabled system jobs to accept a context parameter.
+    ([57d108e](https://github.com/cybergarage/go-job/commit/57d108e), [f067f92](https://github.com/cybergarage/go-job/commit/f067f92))
+- **Job History & Log Cleaner Plugins**
+  - Added plugins for job history cleaning and job log cleaning.
+    ([2f39154](https://github.com/cybergarage/go-job/commit/2f39154), [916661e](https://github.com/cybergarage/go-job/commit/916661e))
+## 🛠️ Dependency
+- **Dependency Update**
+  - Bumped `github.com/go-viper/mapstructure/v2` to latest version.
+    ([ba889d7](https://github.com/cybergarage/go-job/commit/ba889d7), [9438f03](https://github.com/cybergarage/go-job/commit/9438f03))
 
 ## 1.2.0 (2025-08-24)
 ## 🚀 Features
