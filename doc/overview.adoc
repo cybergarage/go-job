@@ -621,6 +621,19 @@ if queueSize > currentWorkers*2 {
 
 This enables efficient resource utilization and responsive performance under varying workloads.
 
+=== System Jobs
+
+`go-job` comes with several built-in system jobs that are ready to use.  
+You can schedule and configure these jobs just like any other job in your application.
+
+The following table lists each system job and its purpose:
+
+[format="csv", options="header"]
+|===
+include::inc/job-plugins.csv[]
+|===
+
+For step-by-step usage and scheduling examples, see link:extension-guide.md[Extension Guide] documentation or link:../jobtest/example_job_plugins_test.go[the usage examples].
 
 === Remote Management with gRPC API
 

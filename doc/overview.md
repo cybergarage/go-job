@@ -35,6 +35,7 @@ Table of Contents:
   - [Job Scheduling](#_job_scheduling)
   - [Job Monitoring and Observability](#_job_monitoring_and_observability)
   - [Priority Management & Worker Scaling](#_priority_management_worker_scaling)
+  - [System Jobs](#_system_jobs)
   - [Remote Management with gRPC API](#_remote_management_with_grpc_api)
   - [Distributed Support via Store Interface](#_distributed_support_via_store_interface)
 
@@ -1380,6 +1381,35 @@ This enables efficient resource utilization and responsive performance under var
 
 <div class="sect2">
 
+### System Jobs
+
+<div class="paragraph">
+
+`go-job` comes with several built-in system jobs that are ready to use. You can schedule and configure these jobs just like any other job in your application.
+
+</div>
+
+<div class="paragraph">
+
+The following table lists each system job and its purpose:
+
+</div>
+
+| Function | Kind | Description |
+|----|----|----|
+| [NewHistoryCleaner](../job/plugins/job/system/history_cleaner.go) | system.history.cleaner | Deletes old job history records |
+| [NewLogCleaner](../job/plugins/job/system/log_cleaner.go) | system.log.cleaner | Deletes old job log records |
+
+<div class="paragraph">
+
+For step-by-step usage and scheduling examples, see [Extension Guide](extension-guide.md) documentation or [the usage examples](../jobtest/example_job_plugins_test.go).
+
+</div>
+
+</div>
+
+<div class="sect2">
+
 ### Remote Management with gRPC API
 
 <div class="paragraph">
@@ -1665,7 +1695,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-26 12:04:11 +0900
+Last updated 2025-08-26 12:16:11 +0900
 
 </div>
 
