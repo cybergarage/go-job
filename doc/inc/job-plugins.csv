@@ -1,3 +1,3 @@
-Plugin Name,Function,Kind,Description
-HistoryCleaner,link:../job/plugins/job/system/history_cleaner.go[NewHistoryCleaner],system.history.cleaner,Deletes old job history records
-LogCleaner,link:../job/plugins/job/system/log_cleaner.go[NewLogCleaner],system.log.cleaner,Deletes old job log records
+Function,Kind,Description
+link:../job/plugins/job/system/history_cleaner.go[NewHistoryCleaner],system.history.cleaner,Deletes old job history records
+link:../job/plugins/job/system/log_cleaner.go[NewLogCleaner],system.log.cleaner,Deletes old job log records
