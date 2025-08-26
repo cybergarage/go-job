@@ -204,7 +204,7 @@ This means you can use the format that is most convenient for your application, 
 
 [format="csv", options="header"]
 |===
-include::inc/special_arguments.csv[]
+include::inc/special-arguments.csv[]
 |===
 
 These special arguments enable you to control job execution, handle cancellation and timeout, and access useful job-related metadata and methods.
@@ -697,7 +697,7 @@ This approach enables:
 
 [format="csv", options="header"]
 |===
-include::inc/store_plugins.csv[]
+include::inc/store-plugins.csv[]
 |===
 
 For more details about the `Store` interface and how to extend it, see the link:design.md[Design and Architecture] and link:extension-guide.md[Extension Guide] documentation.
