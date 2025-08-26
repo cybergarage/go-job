@@ -43,6 +43,8 @@ const (
 )
 
 const (
+	// JobStateInitial represents the initial state of a job (created but not yet scheduled).
+	JobStateInitial = JobCreated
 	// JobStateActive represents the active states of a job (scheduled or processing).
 	JobStateActive = JobScheduled | JobProcessing
 	// JobStateFinal represents the final states of a job (canceled, timed out, completed, or terminated).
