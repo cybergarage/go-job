@@ -39,6 +39,7 @@
 | Metric Name | Type | Labels | Description |
 |----|----|----|----|
 | go_job_registered | Gauge |  | Current number of registered jobs |
+| go_job_workers | Gauge |  | Current number of workers |
 | go_job_queued | GaugeVec | kind | Current number of queued jobs by kind |
 | go_job_executed_total | CounterVec | kind | Total number of executed jobs by kind |
 | go_job_completed_total | CounterVec | kind | Total number of successfully completed jobs by kind |
@@ -46,7 +47,6 @@
 | go_job_canceled_total | CounterVec | kind | Total number of canceled jobs by kind |
 | go_job_timedout_total | CounterVec | kind | Total number of timed out jobs by kind |
 | go_job_duration_seconds | Histogram | kind | Histogram of job execution durations in seconds by kind |
-| go_job_workers | Gauge |  | Current number of workers |
 
 </div>
 
@@ -58,7 +58,7 @@
 
 <div id="footer-text">
 
-Last updated 2025-08-26 12:04:11 +0900
+Last updated 2025-08-24 13:52:48 +0900
 
 </div>
 
