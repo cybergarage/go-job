@@ -1,9 +1,7 @@
 @startuml
 
-[*] --> Initial : Job created
-
 State Initial {
-Created : 
+[*] --> Created : Job created
 }
 
 State Active {
