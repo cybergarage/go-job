@@ -40,11 +40,15 @@ type Schedule interface {
 // ScheduleOption defines a function that configures a job schedule.
 type ScheduleOption func(*schedule) error
 
+// ScheduleJitterFunc defines a function that returns a random jitter duration for job scheduling.
+type ScheduleJitterFunc func() time.Duration
+
 // schedule implements the JobSchedule interface using a crontab spec string.
 type schedule struct {
 	crontabSpec  string
 	cronSchedule cron.Schedule
 	scheduleAt   time.Time
+	jitterFunc   ScheduleJitterFunc
 }
 
 // WithCrontabSpec sets the crontab spec string for the job schedule.
@@ -79,6 +83,14 @@ func WithScheduleAfter(d time.Duration) ScheduleOption {
 	}
 }
 
+// WithJitter sets the job schedule jitter function.
+func WithJitter(jitterFunc ScheduleJitterFunc) ScheduleOption {
+	return func(js *schedule) error {
+		js.jitterFunc = jitterFunc
+		return nil
+	}
+}
+
 // newCrontabSpecFrom creates a crontab spec string from various input types.
 func newCrontabSpecFrom(a any) (string, error) {
 	switch v := a.(type) {
@@ -94,6 +106,7 @@ func newSchedule(opts ...ScheduleOption) (*schedule, error) {
 		crontabSpec:  "",
 		cronSchedule: nil,
 		scheduleAt:   time.Time{},
+		jitterFunc:   func() time.Duration { return 0 },
 	}
 	for _, opt := range opts {
 		if err := opt(js); err != nil {
@@ -127,10 +140,14 @@ func (js *schedule) IsScheduled() bool {
 
 // Next returns the next scheduled time.
 func (js *schedule) Next() time.Time {
-	if js.cronSchedule != nil {
-		return js.cronSchedule.Next(time.Now())
+	jitter := time.Duration(0)
+	if js.jitterFunc != nil {
+		jitter = js.jitterFunc()
 	}
-	return js.scheduleAt
+	if js.cronSchedule != nil {
+		return js.cronSchedule.Next(time.Now()).Add(jitter)
+	}
+	return js.scheduleAt.Add(jitter)
 }
 
 // Map returns a map representation of the job schedule.

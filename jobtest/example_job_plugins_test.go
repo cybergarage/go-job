@@ -16,6 +16,7 @@ package jobtest
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
@@ -31,6 +32,9 @@ func ExampleManager_scheduleRegisteredJob_systemHistoryCleaner() {
 		system.NewHistoryCleaner(),
 		job.WithCrontabSpec("0 0 * * *"),                                   // Every day at midnight
 		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete history older than 30 days
+		job.WithJitter(func() time.Duration { // Add random jitter
+			return time.Duration(rand.Int63n(60)) * time.Second
+		}),
 	)
 
 	fmt.Println(err)
@@ -48,6 +52,9 @@ func ExampleManager_scheduleRegisteredJob_systemLogCleaner() {
 		system.NewLogCleaner(),
 		job.WithCrontabSpec("0 0 * * *"),                                   // Every day at midnight
 		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete log older than 30 days
+		job.WithJitter(func() time.Duration { // Add random jitter
+			return time.Duration(rand.Int63n(60)) * time.Second
+		}),
 	)
 
 	fmt.Println(err)
