@@ -1,0 +1,9 @@
+Component,Description
+Server,"Provides gRPC endpoints for job scheduling and management, allowing clients to interact with the job system through the manager."
+Manager,"Coordinates job scheduling and execution across go-job components."
+Registry,"Holds job definitions and their associated executors."
+Worker,"Processes job instances by executing the registered functions."
+Queue,"Manages job instances, ensuring they are processed in the correct order."
+History,"Tracks state transitions of job instances, providing an execution history."
+Log,"Captures logs for each job instance, providing detailed execution information."
+Store,"Provides abstracted persistence for job metadata and execution state, enabling distributed operation and fault tolerance."

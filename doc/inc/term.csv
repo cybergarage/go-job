@@ -1,0 +1,6 @@
+Term,Definition
+Job,"A reusable definition that specifies work to be performed, including the executor function, scheduling rules, and retry policies."
+Job Instance,"A specific execution of a job with concrete arguments, unique identifier, and state tracking throughout its lifecycle."
+Executor,"A Go function that implements the actual business logic for a specific job type."
+Processor,"A function that processes job instances, including completion and termination logic."
+Worker,"A component that executes job instances by invoking the registered executors, handling retries, and managing state transitions."

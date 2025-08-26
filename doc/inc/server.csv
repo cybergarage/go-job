@@ -1,0 +1,7 @@
+Feature,Manager,Server
+Usage,Embedded in your Go application,Standalone process accessible over the network
+Job Scheduling,Yes (within the application),Yes (via gRPC API from clients)
+Job State & Log Management,Yes (within the application),Yes (remotely via gRPC API)
+Metrics Export,No,Yes (Prometheus-compatible endpoint)
+Best For,Standalone/local job management,Distributed/remote job management and monitoring
+API Exposure,No external API,gRPC API and Prometheus metrics endpoint
