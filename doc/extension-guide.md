@@ -137,10 +137,10 @@ The following table lists each system job and its purpose:
 
 </div>
 
-| Plugin Name | Function | Kind | Description |
-|----|----|----|----|
-| HistoryCleaner | [NewHistoryCleaner](../job/plugins/job/system/history_cleaner.go) | system.history.cleaner | Deletes old job history records |
-| LogCleaner | [NewLogCleaner](../job/plugins/job/system/log_cleaner.go) | system.log.cleaner | Deletes old job log records |
+| Function | Kind | Description |
+|----|----|----|
+| [NewHistoryCleaner](../job/plugins/job/system/history_cleaner.go) | system.history.cleaner | Deletes old job history records |
+| [NewLogCleaner](../job/plugins/job/system/log_cleaner.go) | system.log.cleaner | Deletes old job log records |
 
 <div class="paragraph">
 
@@ -433,7 +433,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-26 12:02:54 +0900
+Last updated 2025-08-26 12:04:11 +0900
 
 </div>
 
