@@ -66,7 +66,7 @@ The following table lists each system job and its purpose:
 include::inc/job-plugins.csv[]
 |===
 
-For step-by-step usage and scheduling examples, see link:https://pkg.go.dev/github.com/cybergarage/go-job/job/plugins/job[the official usage examples].
+For step-by-step usage and scheduling examples, see link:../jobtest/example_job_plugins_test.go[the usage examples].
 
 == Store Plugin Development 
 

@@ -144,7 +144,7 @@ The following table lists each system job and its purpose:
 
 <div class="paragraph">
 
-For step-by-step usage and scheduling examples, see [the official usage examples](https://pkg.go.dev/github.com/cybergarage/go-job/job/plugins/job).
+For step-by-step usage and scheduling examples, see [the usage examples](../jobtest/example_job_plugins_test.go).
 
 </div>
 
@@ -433,7 +433,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-26 12:04:11 +0900
+Last updated 2025-08-26 12:06:15 +0900
 
 </div>
 
