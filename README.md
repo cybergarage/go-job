@@ -138,5 +138,4 @@ func main() {
 `go-job` is developed in collaboration with the following Cybergarage projects:
 
 - [go-logger](https://github.com/cybergarage/go-logger) ![go logger](https://img.shields.io/github/v/tag/cybergarage/go-logger)
-
 - [go-safecast](https://github.com/cybergarage/go-safecast) ![go safecast](https://img.shields.io/github/v/tag/cybergarage/go-safecast)
