@@ -202,15 +202,15 @@ The job state in `go-job` is managed through a combination of job instances and 
 
 </div>
 
-| State | Description |
-|----|----|
-| Created | The job instance has been created and is awaiting scheduling. |
-| Scheduled | The job instance has been queued and is waiting to be processed by a worker. |
-| Processing | The job instance is currently being executed by a worker. |
-| Terminated | The job instance encountered an error or was forcibly stopped before completion. |
-| Completed | The job instance finished successfully. |
-| Canceled | The job instance was canceled before completion. |
-| TimedOut | The job instance timed out before completion. |
+| Category | State | Description |
+|----|----|----|
+| Initial | Created | The job instance has been created and is awaiting scheduling. |
+| Active | Scheduled | The job instance has been queued and is waiting to be processed by a worker. |
+| Active | Processing | The job instance is currently being executed by a worker. |
+| Final | Terminated | The job instance encountered an error or was forcibly stopped before completion. |
+| Final | Completed | The job instance finished successfully. |
+| Final | Canceled | The job instance was canceled before completion. |
+| Final | TimedOut | The job instance timed out before completion. |
 
 <div class="paragraph">
 
@@ -355,7 +355,7 @@ This enables a distributed architecture where multiple go-job servers can operat
 
 <div id="footer-text">
 
-Last updated 2025-08-26 12:04:11 +0900
+Last updated 2025-08-26 13:22:55 +0900
 
 </div>
 

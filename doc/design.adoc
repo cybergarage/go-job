@@ -100,31 +100,9 @@ The job state in `go-job` is managed through a combination of job instances and 
 
 image::img/job-state.png[]
 
-[cols="1,3", options="header"]
+[format="csv", options="header"]
 |===
-|State       |Description
-
-|Created
-|The job instance has been created and is awaiting scheduling.
-
-|Scheduled
-|The job instance has been queued and is waiting to be processed by a worker.
-
-|Processing
-|The job instance is currently being executed by a worker.
-
-|Terminated
-|The job instance encountered an error or was forcibly stopped before completion.
-
-|Completed
-|The job instance finished successfully.
-
-|Canceled
-|The job instance was canceled before completion.
-
-|TimedOut
-|The job instance timed out before completion.
-
+include::inc/job-state.csv[]
 |===
 
 Each job instance can transition through various states, such as `Scheduled`, `Processing`, `Completed`, `Terminated`, `Canceled`, and `TimedOut`. These states are tracked in the job manager, allowing you to monitor the progress and outcome of each job instance.
@@ -149,7 +127,7 @@ The queue, history, and log components can be shared between go-job servers usin
 
 [format="csv", options="header"]
 |===
-include::inc/store_plugins.csv[]
+include::inc/store-plugins.csv[]
 |===
 
 This enables a distributed architecture where multiple go-job servers can operate together, sharing job instances and state information. To learn more about the store plugins, see link:extension-guide.md[Extension Guide].
