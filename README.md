@@ -114,24 +114,27 @@ func main() {
 
 # User Guides
 
-- Get Started
+- Getting Started
   - [Quick Start](doc/quick-start.md)
+- Usage & Features
   - [Feature Overview and Usage Guide](doc/overview.md)
-  - [go-job Comparison (OpenAI Research)](doc/design-comparison.md)
-
-- References
-  - [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 - Operation
   - [Command-Line Interface (jobctl)](doc/cmd/cli/jobctl.md)
-    - [gRPC API](doc/grpc-api.md)
+  - [gRPC API](doc/grpc-api.md)
   - [Metrics (Prometheus)](doc/metrics.md)
+- Design & Comparison
+  - [go-job Comparison (OpenAI Research)](doc/design-comparison.md)
+
+# References
+
+- [Go Reference](https://pkg.go.dev/github.com/cybergarage/go-job)
 
 # Developer Guides
 
-- Development
+- Architecture & Development
   - [Design and Architecture](doc/design.md)
-- Extending `go-job`
-  - [Extension Guide ](doc/extension-guide.md)
+- Extending go-job
+  - [Extension Guide](doc/extension-guide.md)
 
 # Related Projects
 
