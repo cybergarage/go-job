@@ -25,25 +25,11 @@ For a comparison of design concepts with other OSS job frameworks, see link:http
 
 This section defines the key terms and concepts used throughout the `go-job` system. Understanding these terms is essential for working effectively with the job scheduling and execution framework.
 
-[cols="1,3", options="header"]
+[format="csv", options="header"]
 |===
-|Term |Definition
-
-|Job
-|A reusable definition that specifies work to be performed, including the executor function, scheduling rules, and retry policies.
-
-|Job Instance
-|A specific execution of a job with concrete arguments, unique identifier, and state tracking throughout its lifecycle.
-
-|Executor
-|A Go function that implements the actual business logic for a specific job type.
-
-| Processor
-|A function that processes job instances, including completion and termination logic.
-
-|Worker
-|A component that executes job instances by invoking the registered executors, handling retries, and managing state transitions.
+include::inc/term.csv[]
 |===
+
 
 == Key Components
 
@@ -53,33 +39,19 @@ The main components of `go-job` are:
 
 image::img/job-framework.png[]
 
-[cols="1,3", options="header"]
+[format="csv", options="header"]
 |===
-|Component |Description
+include::inc/component.csv[]
+|===
 
-|Server
-|Provides gRPC endpoints for job scheduling and management, allowing clients to interact with the job system through the manager.
+== Deployment Options
 
-|Manager
-|Coordinates job scheduling and execution across go-job components.
+go-job can be used in two main ways: by embedding the manager directly in your Go application, or by running the standalone server component.
+This section explains the differences between these deployment options and helps you choose the best approach for your use case.
 
-|Registry  
-|Holds job definitions and their associated executors.
-
-|Worker
-|Processes job instances by executing the registered functions.
-
-|Queue
-|Manages job instances, ensuring they are processed in the correct order.
-
-|History
-|Tracks state transitions of job instances, providing an execution history.
-
-|Log
-|Captures logs for each job instance, providing detailed execution information.
-
-|Store
-|Provides abstracted persistence for job metadata and execution state, enabling distributed operation and fault tolerance.
+[format="csv", options="header"]
+|===
+include::inc/server.csv[]
 |===
 
 === Selecting Manager Usage
@@ -91,6 +63,8 @@ For more information about embedding the manager in your Go application, see the
 === Selecting Server Usage
 
 Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
+
+In addition to the gRPC API, the server also exposes a Prometheus-compatible metrics endpoint. This allows you to monitor job execution, server health, and other key metrics using standard Prometheus tools.
 
 For more information about the server component, see the link:grpc-api.md[gRPC API] and link:cmd/cli/jobctl.md[CLI (jobctl)] documentation.
 

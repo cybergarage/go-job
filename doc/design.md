@@ -27,6 +27,7 @@ Table of Contents:
 - [Design Concept](#_design_concept)
 - [Terminology](#_terminology)
 - [Key Components](#_key_components)
+- [Deployment Options](#_deployment_options)
 - [Job State Lifecycle](#_job_state_lifecycle)
 - [Job Registration and Processing Flow](#_job_registration_and_processing_flow)
 - [Prometheus Metrics](#_prometheus_metrics)
@@ -140,6 +141,31 @@ The main components of `go-job` are:
 | Log | Captures logs for each job instance, providing detailed execution information. |
 | Store | Provides abstracted persistence for job metadata and execution state, enabling distributed operation and fault tolerance. |
 
+</div>
+
+</div>
+
+<div class="sect1">
+
+## Deployment Options
+
+<div class="sectionbody">
+
+<div class="paragraph">
+
+go-job can be used in two main ways: by embedding the manager directly in your Go application, or by running the standalone server component. This section explains the differences between these deployment options and helps you choose the best approach for your use case.
+
+</div>
+
+| Feature | Manager | Server |
+|----|----|----|
+| Usage | Embedded in your Go application | Standalone process accessible over the network |
+| Job Scheduling | Yes (within the application) | Yes (via gRPC API from clients) |
+| Job State & Log Management | Yes (within the application) | Yes (remotely via gRPC API) |
+| Metrics Export | No | Yes (Prometheus-compatible endpoint) |
+| Best For | Standalone/local job management | Distributed/remote job management and monitoring |
+| API Exposure | No external API | gRPC API and Prometheus metrics endpoint |
+
 <div class="sect2">
 
 ### Selecting Manager Usage
@@ -165,6 +191,12 @@ For more information about embedding the manager in your Go application, see the
 <div class="paragraph">
 
 Alternatively, you can use the go-job server component, which provides a gRPC interface for remote job management. This enables clients to schedule jobs and retrieve job states and logs over the network.
+
+</div>
+
+<div class="paragraph">
+
+In addition to the gRPC API, the server also exposes a Prometheus-compatible metrics endpoint. This allows you to monitor job execution, server health, and other key metrics using standard Prometheus tools.
 
 </div>
 
@@ -355,7 +387,7 @@ This enables a distributed architecture where multiple go-job servers can operat
 
 <div id="footer-text">
 
-Last updated 2025-08-26 21:30:51 +0900
+Last updated 2025-08-27 08:21:58 +0900
 
 </div>
 
