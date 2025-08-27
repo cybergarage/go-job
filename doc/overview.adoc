@@ -207,7 +207,7 @@ This means you can use the format that is most convenient for your application, 
 include::inc/special-arguments.csv[]
 |===
 
-These special arguments enable you to control job execution, handle cancellation and timeout, and access useful job-related metadata and methods.
+These auto-injected arguments are automatically supplied when omitted. They enable you to control job execution, handle cancellation and timeouts, and access useful job-related metadata and methods.
 
 ===== Using context.Context for Cancellation and Timeout
 
@@ -248,7 +248,7 @@ mgr.ScheduleJob(job, WithArguments(time.Duration(1*time.Hour)))
 
 ===== Accessing Manager, Worker, and Instance in Job Functions
 
-You can also use special arguments like `job.Manager`, `job.Worker`, or `job.Instance` in your job function to get information about the job or control its execution.
+You can also use auto-injected arguments like `job.Manager`, `job.Worker`, or `job.Instance` in your job function to get information about the job or control its execution.
 
 For example, to log job details using the `Instance` argument:
 

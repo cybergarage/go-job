@@ -497,7 +497,7 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="paragraph">
 
-These special arguments enable you to control job execution, handle cancellation and timeout, and access useful job-related metadata and methods.
+These auto-injected arguments are automatically supplied when omitted. They enable you to control job execution, handle cancellation and timeouts, and access useful job-related metadata and methods.
 
 </div>
 
@@ -580,7 +580,7 @@ mgr.ScheduleJob(job, WithArguments(time.Duration(1*time.Hour)))
 
 <div class="paragraph">
 
-You can also use special arguments like `job.Manager`, `job.Worker`, or `job.Instance` in your job function to get information about the job or control its execution.
+You can also use auto-injected arguments like `job.Manager`, `job.Worker`, or `job.Instance` in your job function to get information about the job or control its execution.
 
 </div>
 
@@ -1695,7 +1695,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 23:11:28 +0900
+Last updated 2025-08-27 23:18:30 +0900
 
 </div>
 
