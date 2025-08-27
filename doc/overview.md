@@ -630,7 +630,7 @@ mgr.ScheduleJob(job, WithArguments("?"))
 
 <div class="paragraph">
 
-Or with the placeholder:
+Alternatively, you can schedule this job without specifying any arguments, and the auto-injected arguments will be filled in automatically:
 
 </div>
 
@@ -639,7 +639,7 @@ Or with the placeholder:
 <div class="content">
 
 ``` CodeRay
-mgr.ScheduleJob(job, WithArguments(job.Placeholder))
+mgr.ScheduleJob(job)
 ```
 
 </div>
@@ -1697,7 +1697,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 23:35:07 +0900
+Last updated 2025-08-27 23:42:40 +0900
 
 </div>
 

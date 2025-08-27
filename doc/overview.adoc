@@ -272,11 +272,11 @@ Schedule this job the same way:
 mgr.ScheduleJob(job, WithArguments("?"))
 ----
 
-Or with the placeholder:
+Alternatively, you can schedule this job without specifying any arguments, and the auto-injected arguments will be filled in automatically:
 
 [source,go]
 ----
-mgr.ScheduleJob(job, WithArguments(job.Placeholder))
+mgr.ScheduleJob(job)
 ----
 
 These features make it easy to write flexible and powerful job functions that can respond to cancellation, access job metadata, and interact with the job system.
