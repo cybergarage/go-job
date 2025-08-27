@@ -127,7 +127,7 @@ func main() {
 
 # References
 
-- [Go Reference](https://pkg.go.dev/github.com/cybergarage/go-job)
+- [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/go-job.svg)](https://pkg.go.dev/github.com/cybergarage/go-job)
 
 # Developer Guides
 
