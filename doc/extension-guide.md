@@ -26,7 +26,7 @@ Table of Contents:
 
 - [Job Plugin Development](#_job_plugin_development)
   - [Job Interface](#_job_interface)
-  - [Auto-Injected for Executor](#_auto_injected_for_executor)
+  - [Auto-Injected Arguments for Executor](#_auto_injected_arguments_for_executor)
   - [Built-in System Jobs](#_built_in_system_jobs)
 - [Store Plugin Development](#_store_plugin_development)
   - [Store Interface](#_store_interface)
@@ -98,7 +98,7 @@ type Job interface {
 
 <div class="sect3">
 
-#### Auto-Injected for Executor
+#### Auto-Injected Arguments for Executor
 
 <div class="paragraph">
 
@@ -433,7 +433,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 23:19:12 +0900
+Last updated 2025-08-27 23:30:25 +0900
 
 </div>
 

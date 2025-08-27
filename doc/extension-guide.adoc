@@ -42,14 +42,14 @@ type Job interface {
 }
 ----
 
-==== Auto-Injected for Executor
+==== Auto-Injected Arguments for Executor
 
 Executor functions can use special auto-injected to easily access job context, manager, worker, and instance information.  
 This makes it simple to control job execution, handle cancellation and timeout, and access useful metadata.
 
 [format="csv", options="header"]
 |===
-include::inc/special-arguments.csv[]
+include::inc/auto-injected-arguments.csv[]
 |===
 
 These auto-injected arguments are automatically supplied when omitted. They enable you to control job execution, handle cancellation and timeouts, and access useful job-related metadata and methods.
