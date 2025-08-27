@@ -26,7 +26,7 @@ Table of Contents:
 
 - [Job Plugin Development](#_job_plugin_development)
   - [Job Interface](#_job_interface)
-  - [Special Arguments for Executor](#_special_arguments_for_executor)
+  - [Auto-Injected for Executor](#_auto_injected_for_executor)
   - [Built-in System Jobs](#_built_in_system_jobs)
 - [Store Plugin Development](#_store_plugin_development)
   - [Store Interface](#_store_interface)
@@ -98,11 +98,11 @@ type Job interface {
 
 <div class="sect3">
 
-#### Special Arguments for Executor
+#### Auto-Injected for Executor
 
 <div class="paragraph">
 
-Executor functions can use special arguments to easily access job context, manager, worker, and instance information. This makes it simple to control job execution, handle cancellation and timeout, and access useful metadata.
+Executor functions can use special auto-injected to easily access job context, manager, worker, and instance information. This makes it simple to control job execution, handle cancellation and timeout, and access useful metadata.
 
 </div>
 
@@ -433,7 +433,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-26 21:30:51 +0900
+Last updated 2025-08-27 22:50:38 +0900
 
 </div>
 
