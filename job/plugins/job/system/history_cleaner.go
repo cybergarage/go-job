@@ -16,6 +16,7 @@ package system
 
 import (
 	"context"
+	"math/rand"
 	"time"
 
 	"github.com/cybergarage/go-job/job"
@@ -35,6 +36,10 @@ const (
 func NewHistoryCleaner() plugins.Job {
 	job, _ := job.NewJob(
 		job.WithKind(HistoryCleaner),
+		job.WithJitter(func() time.Duration {
+			r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(rand.Intn(1000000)))) // nolint: gosec
+			return time.Duration(r.Intn(10)) * time.Second
+		}),
 		job.WithExecutor(
 			func(ctx context.Context, mgr job.Manager, ji job.Instance, before time.Time) {
 				filter := job.NewFilter(
