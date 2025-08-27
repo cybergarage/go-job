@@ -518,14 +518,14 @@ If your job function takes a `context.Context` argument, you can easily handle c
 ``` CodeRay
 job, err := job.NewJob(
     WithKind("sleep"),
-    WithExecutor(func(ctx context.Context) {
+    WithExecutor(func(ctx context.Context, d time.Duration) {
         for {
             select {
             case <-ctx.Done():
                 // Job is canceled or timed out
                 return
             default:
-                time.Sleep(1 * time.Hour) // Simulate a long-running job
+                time.Sleep(d)
             }
         }
     }),
@@ -538,7 +538,7 @@ job, err := job.NewJob(
 
 <div class="paragraph">
 
-To schedule this job, just pass a dummy argument (the actual context will be injected automatically):
+To schedule this job, pass the duration argument along with a dummy value (the actual context will be injected automatically):
 
 </div>
 
@@ -547,7 +547,7 @@ To schedule this job, just pass a dummy argument (the actual context will be inj
 <div class="content">
 
 ``` CodeRay
-mgr.ScheduleJob(job, WithArguments("?"))
+mgr.ScheduleJob(job, WithArguments("?", time.Duration(1*time.Hour)))
 ```
 
 </div>
@@ -556,7 +556,7 @@ mgr.ScheduleJob(job, WithArguments("?"))
 
 <div class="paragraph">
 
-Or use the provided placeholder constant:
+Alternatively, you can specify only the duration argument because auto-injected arguments will be filled in automatically when omitted:
 
 </div>
 
@@ -565,7 +565,7 @@ Or use the provided placeholder constant:
 <div class="content">
 
 ``` CodeRay
-mgr.ScheduleJob(job, WithArguments(job.Placeholder))
+mgr.ScheduleJob(job, WithArguments(time.Duration(1*time.Hour)))
 ```
 
 </div>
@@ -1695,7 +1695,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 22:50:21 +0900
+Last updated 2025-08-27 23:11:28 +0900
 
 </div>
 

@@ -30,8 +30,8 @@ func ExampleManager_scheduleRegisteredJob_systemHistoryCleaner() {
 	// Schedule the job with the manager
 	_, err := mgr.ScheduleJob(
 		system.NewHistoryCleaner(),
-		job.WithCrontabSpec("0 0 * * *"),                                   // Every day at midnight
-		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete history older than 30 days
+		job.WithCrontabSpec("0 0 * * *"),                    // Every day at midnight
+		job.WithArguments(time.Now().Add(-30*24*time.Hour)), // Delete history older than 30 days
 		job.WithJitter(func() time.Duration { // Add random jitter
 			return time.Duration(rand.Int63n(60)) * time.Second
 		}),
@@ -50,8 +50,8 @@ func ExampleManager_scheduleRegisteredJob_systemLogCleaner() {
 	// Schedule the job with the manager
 	_, err := mgr.ScheduleJob(
 		system.NewLogCleaner(),
-		job.WithCrontabSpec("0 0 * * *"),                                   // Every day at midnight
-		job.WithArguments("?", "?", "?", time.Now().Add(-30*24*time.Hour)), // Delete log older than 30 days
+		job.WithCrontabSpec("0 0 * * *"),                    // Every day at midnight
+		job.WithArguments(time.Now().Add(-30*24*time.Hour)), // Delete log older than 30 days
 		job.WithJitter(func() time.Duration { // Add random jitter
 			return time.Duration(rand.Int63n(60)) * time.Second
 		}),
