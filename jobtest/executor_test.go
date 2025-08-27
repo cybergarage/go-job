@@ -15,6 +15,7 @@
 package jobtest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -155,6 +156,13 @@ func TestExecutor(t *testing.T) {
 			},
 			params:   []any{"{\"A\": \"Hello\",\"B\": \"world!\"}"},
 			expected: []any{concatString{"Hello", "world!", "Hello world!"}},
+		},
+		{
+			fn: func(ctx context.Context) any {
+				return ctx.Err()
+			},
+			params:   []any{context.Background()},
+			expected: []any{nil},
 		},
 	}
 

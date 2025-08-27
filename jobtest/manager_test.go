@@ -86,6 +86,16 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 			args: []any{job.Placeholder, 1, 2},
 		},
 		{
+			kind: "sum (instance-no-placeholder)",
+			opts: []any{
+				job.WithExecutor(func(ji job.Instance, a, b int) int {
+					ji.Debugf("Calculating %s: %d + %d", ji.Kind(), a, b)
+					return a + b
+				}),
+			},
+			args: []any{1, 2},
+		},
+		{
 			kind: "sum (manager+worker+instance)",
 			opts: []any{
 				job.WithExecutor(func(mgr job.Manager, ji job.Instance, w job.Worker, a, b int) int {
@@ -94,6 +104,16 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 				}),
 			},
 			args: []any{job.Placeholder, job.Placeholder, job.Placeholder, 1, 2},
+		},
+		{
+			kind: "sum (manager+worker+instance-no-placeholders)",
+			opts: []any{
+				job.WithExecutor(func(mgr job.Manager, ji job.Instance, w job.Worker, a, b int) int {
+					ji.Debugf("NumWorkers: %d", mgr.NumWorkers())
+					return a + b
+				}),
+			},
+			args: []any{1, 2},
 		},
 	}
 

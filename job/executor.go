@@ -32,10 +32,13 @@ type Executor any
 
 // Execute calls the given function with the provided parameters and returns results as []any.
 func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
-	var ctxType = reflect.TypeOf((*context.Context)(nil)).Elem()
-	var managerType = reflect.TypeOf((*Manager)(nil)).Elem()
-	var instanceType = reflect.TypeOf((*Instance)(nil)).Elem()
-	var workerType = reflect.TypeOf((*Worker)(nil)).Elem()
+	fnObj := reflect.ValueOf(fn)
+	fnType := fnObj.Type()
+	if fnType.Kind() != reflect.Func {
+		return nil, fmt.Errorf("executor is not a function (%s)", fnType)
+	}
+
+	// inner variables
 
 	var manager Manager
 	var instance Instance
@@ -55,17 +58,61 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 		}
 	}
 
-	fnObj := reflect.ValueOf(fn)
-	fnType := fnObj.Type()
-	if fnType.Kind() != reflect.Func {
-		return nil, fmt.Errorf("executor is not a function (%s)", fnType)
+	spArgs := map[reflect.Type]any{
+		reflect.TypeOf((*context.Context)(nil)).Elem(): ctx,
+		reflect.TypeOf((*Manager)(nil)).Elem():         manager,
+		reflect.TypeOf((*Instance)(nil)).Elem():        instance,
+		reflect.TypeOf((*Worker)(nil)).Elem():          worker,
 	}
 
-	if fnType.NumIn() != len(args) {
-		return nil, fmt.Errorf("argument count mismatch for function %s: want %d, got %d", fnType, fnType.NumIn(), len(args))
+	// inner function for argument assignment
+
+	argAssignable := func(arg any, fnArgType reflect.Type) (reflect.Value, bool) {
+		argValue := reflect.ValueOf(arg)
+		if argValue.IsValid() && argValue.Type().AssignableTo(fnArgType) {
+			return argValue, true
+		}
+		return argValue, false
 	}
 
-	assignTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
+	prepareArguments := func(fnType reflect.Type, args []any) ([]any, error) {
+		if fnType.NumIn() == len(args) {
+			return args, nil
+		}
+		prepArgs := []any{}
+		argIdx := 0
+		for n := range fnType.NumIn() {
+			fnArgType := fnType.In(n)
+			if argIdx < len(args) {
+				arg := args[argIdx]
+				if _, ok := argAssignable(arg, fnArgType); ok {
+					prepArgs = append(prepArgs, arg)
+					argIdx++
+					continue
+				}
+			}
+
+			switch fnArgType.Kind() {
+			case reflect.Interface:
+				v, ok := spArgs[fnArgType]
+				if ok {
+					prepArgs = append(prepArgs, v)
+				}
+			default:
+				if argIdx < len(args) {
+					arg := args[argIdx]
+					prepArgs = append(prepArgs, arg)
+					argIdx++
+				}
+			}
+		}
+		if len(prepArgs) != fnType.NumIn() {
+			return nil, fmt.Errorf("argument count mismatch: want %d, got %d", fnType.NumIn(), len(prepArgs))
+		}
+		return prepArgs, nil
+	}
+
+	assignTo := func(arg any, fnArgType reflect.Type) (reflect.Value, bool) {
 		assignMapTo := func(arg any, fnType reflect.Type) (reflect.Value, bool) {
 			var argMap map[string]any
 
@@ -103,42 +150,35 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 			return structValue, true
 		}
 
-		argValue := reflect.ValueOf(arg)
-
-		if argValue.IsValid() && argValue.Type().AssignableTo(fnType) {
+		argValue, ok := argAssignable(arg, fnArgType)
+		if ok {
 			return argValue, true
 		}
 
-		switch fnType.Kind() {
+		switch fnArgType.Kind() {
 		case reflect.Struct:
-			return assignMapTo(arg, fnType)
+			return assignMapTo(arg, fnArgType)
 		case reflect.Ptr:
-			switch fnType.Elem().Kind() {
+			switch fnArgType.Elem().Kind() {
 			case reflect.Struct:
-				structValue, ok := assignMapTo(arg, fnType.Elem())
+				structValue, ok := assignMapTo(arg, fnArgType.Elem())
 				if !ok {
 					return reflect.Value{}, false
 				}
-				ptrValue := reflect.New(fnType.Elem())
+				ptrValue := reflect.New(fnArgType.Elem())
 				ptrValue.Elem().Set(structValue)
 				return ptrValue, true
 			}
 		case reflect.Array, reflect.Slice:
 			return reflect.Value{}, false
 		case reflect.Interface:
-			switch fnType {
-			case ctxType:
-				return reflect.ValueOf(ctx), true
-			case managerType:
-				return reflect.ValueOf(manager), true
-			case instanceType:
-				return reflect.ValueOf(instance), true
-			case workerType:
-				return reflect.ValueOf(worker), true
+			v, ok := spArgs[fnArgType]
+			if ok {
+				return reflect.ValueOf(v), true
 			}
 			return reflect.Value{}, false
 		default:
-			fnVal := reflect.New(fnType).Interface()
+			fnVal := reflect.New(fnArgType).Interface()
 			err := safecast.To(argValue.Interface(), fnVal)
 			if err == nil {
 				return reflect.ValueOf(fnVal).Elem(), true
@@ -146,6 +186,13 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 		}
 
 		return reflect.Value{}, false
+	}
+
+	// execution (main function)
+
+	args, err := prepareArguments(fnType, args)
+	if err != nil {
+		return nil, err
 	}
 
 	fnArgs := make([]reflect.Value, len(args))
