@@ -204,7 +204,7 @@ This means you can use the format that is most convenient for your application, 
 
 [format="csv", options="header"]
 |===
-include::inc/special-arguments.csv[]
+include::inc/auto-injected-arguments.csv[]
 |===
 
 These auto-injected arguments are automatically supplied when omitted. They enable you to control job execution, handle cancellation and timeouts, and access useful job-related metadata and methods.
