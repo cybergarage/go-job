@@ -272,7 +272,7 @@ In summary, use gocron or JobRunner for straightforward in-process scheduling on
 
 <div id="footer-text">
 
-Last updated 2025-08-27 12:11:40 +0900
+Last updated 2025-08-27 20:11:14 +0900
 
 </div>
 
