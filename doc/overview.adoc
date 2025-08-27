@@ -218,14 +218,16 @@ For example, you can stop a long-running job when the context is canceled:
 ----
 job, err := job.NewJob(
     WithKind("sleep"),
-    WithExecutor(func(ctx context.Context, d time.Duration) { 
-        for {
+    WithExecutor(func(ctx context.Context, d time.Duration) {
+        steps := 10
+        stepDuration := d / time.Duration(steps)
+        for i := 0; i < steps; i++ {
             select {
             case <-ctx.Done():
                 // Job is canceled or timed out
                 return
             default:
-                time.Sleep(d)
+                time.Sleep(stepDuration)
             }
         }
     }),

@@ -519,13 +519,15 @@ If your job function takes a `context.Context` argument, you can easily handle c
 job, err := job.NewJob(
     WithKind("sleep"),
     WithExecutor(func(ctx context.Context, d time.Duration) {
-        for {
+        steps := 10
+        stepDuration := d / time.Duration(steps)
+        for i := 0; i < steps; i++ {
             select {
             case <-ctx.Done():
                 // Job is canceled or timed out
                 return
             default:
-                time.Sleep(d)
+                time.Sleep(stepDuration)
             }
         }
     }),
@@ -1695,7 +1697,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 23:31:21 +0900
+Last updated 2025-08-27 23:35:07 +0900
 
 </div>
 
