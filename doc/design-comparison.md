@@ -45,6 +45,7 @@ Table of Contents:
 
 - [Feature Comparison Table](#_feature_comparison_table)
 - [go-job (v1.2.1)](#_go_job_v1_2_1)
+- [gocron (v2.16.2)](#_gocron_v2_16_2)
 - [JobRunner (v1.0.0)](#_jobrunner_v1_0_0)
 - [Machinery (v1.10.8)](#_machinery_v1_10_8)
 - [Use Cases and Recommendations](#_use_cases_and_recommendations)
@@ -105,6 +106,16 @@ go-job is a lightweight job scheduling and execution framework that can run task
 Typical use cases for go-job include internal job scheduling within a microservice (especially if you might need to scale it later), or as a unified solution where you want scheduling and processing in one package. Because it provides a lot of features (Cron scheduling, queueing, remote APIs, metrics), go-job is well-suited for complex applications that might outgrow a simple cron library but don’t want to immediately jump to a full distributed queue system with external brokers.
 
 </div>
+
+</div>
+
+</div>
+
+<div class="sect1">
+
+## gocron (v2.16.2)
+
+<div class="sectionbody">
 
 <div class="paragraph">
 
@@ -272,7 +283,7 @@ In summary, use gocron or JobRunner for straightforward in-process scheduling on
 
 <div id="footer-text">
 
-Last updated 2025-08-27 20:11:14 +0900
+Last updated 2025-08-28 01:21:46 +0900
 
 </div>
 

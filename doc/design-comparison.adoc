@@ -43,6 +43,7 @@ go-job is a lightweight job scheduling and execution framework that can run task
 
 Typical use cases for go-job include internal job scheduling within a microservice (especially if you might need to scale it later), or as a unified solution where you want scheduling and processing in one package. Because it provides a lot of features (Cron scheduling, queueing, remote APIs, metrics), go-job is well-suited for complex applications that might outgrow a simple cron library but don’t want to immediately jump to a full distributed queue system with external brokers.
 
+== gocron (v2.16.2)
 
 gocron is a focused, fluent job scheduling library for Go. It originated as a Cron-like utility and has evolved into an actively maintained scheduler with a simple API. It’s best known for making it easy to schedule functions to run at intervals or specific times, using a variety of time specifications.
 
