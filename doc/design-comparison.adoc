@@ -27,7 +27,7 @@ toc::[]
 | Distributed Processing Support | Yes – designed to work in both local and distributed modes. Pluggable storage backends (in-memory, file, DB, etc.) allow multiple go-job instances to share state. This enables job coordination across nodes (only one node will execute a given job instance, using the shared store to avoid duplication). | Partial – supports multiple scheduler instances with coordination. A built-in leader election (Elector) can designate one scheduler instance as primary. Alternatively, a distributed lock (Locker) can ensure only one instance runs a given job at each interval. However, tasks are not queued to other nodes; each node runs its own copy of scheduled jobs unless locking/election is used. Not a full task queue, but can operate in HA mode to avoid duplicate work. | No – not inherently distributed. JobRunner is intended for single-process use (often within a single web server). Scaling would require running separate instances with their own schedules or externalizing the job mechanism. It does not provide mechanisms for coordinating jobs across multiple processes. | Yes – built for distributed task execution. Uses message brokers (AMQP, Redis, etc.) to send tasks to workers on any number of nodes. Multiple workers can consume from the same queue, enabling horizontal scaling. Machinery excels at coordinating tasks in a distributed system, at the cost of needing external infrastructure (broker, result backend).
 |===
 
-== go-job v1.2.1
+== go-job (v1.2.1)
 
 go-job is a lightweight job scheduling and execution framework that can run tasks within a Go application or as a standalone service. It aims to combine the ease of an in-process scheduler with features often found in full-fledged task queue systems.
 
@@ -43,7 +43,6 @@ go-job is a lightweight job scheduling and execution framework that can run task
 
 Typical use cases for go-job include internal job scheduling within a microservice (especially if you might need to scale it later), or as a unified solution where you want scheduling and processing in one package. Because it provides a lot of features (Cron scheduling, queueing, remote APIs, metrics), go-job is well-suited for complex applications that might outgrow a simple cron library but don’t want to immediately jump to a full distributed queue system with external brokers.
 
-== gocron
 
 gocron is a focused, fluent job scheduling library for Go. It originated as a Cron-like utility and has evolved into an actively maintained scheduler with a simple API. It’s best known for making it easy to schedule functions to run at intervals or specific times, using a variety of time specifications.
 
@@ -59,7 +58,7 @@ gocron is a focused, fluent job scheduling library for Go. It originated as a Cr
 
 Typical use cases for gocron are applications that need Cron-like scheduling inside a single service. For instance, you might use it to periodically purge cache, send email reminders daily, or perform health checks every minute within one service instance. It’s a great fit when you want a simple, idiomatic way to schedule Go functions and you’re operating mostly on one server (or a set of identical servers where only one should actually run the task at any time). gocron’s simplicity and focus mean it has less overhead and complexity than a full job queue system.
 
-== JobRunner
+== JobRunner (v1.0.0)
 
 JobRunner is a Go library that integrates background job scheduling into your application, originally created to run tasks outside the HTTP request/response flow in web servers. It provides a built-in Cron scheduler and some lightweight monitoring features, making it easy to get started with job scheduling in an existing app.
 
@@ -75,7 +74,7 @@ JobRunner is a Go library that integrates background job scheduling into your ap
 
 Typical use cases for JobRunner are in web applications or API servers where you have a few background jobs to run and you want to keep things simple. For example, sending welcome emails after a user signs up, cleaning up old records periodically, or aggregating stats every hour can be done with JobRunner inside the same binary. It was created to avoid the complexity of setting up separate services or message queues at early stages. It’s particularly handy if you also want a quick way to peek at the job statuses via a web page for debugging. However, as your needs grow (say, requiring multiple instances or more sophisticated job management), you might outgrow JobRunner.
 
-== Machinery
+== Machinery (v1.10.8)
 
 Machinery is an asynchronous task queue framework for Go, built with distributed systems in mind. It’s comparable to background job systems like Celery (in Python) or RQ, providing a way to execute tasks on worker processes, retry them on failure, and scale horizontally using message brokers.
 
