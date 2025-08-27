@@ -2,7 +2,7 @@
 :toclevels: 2
 :toc-title: Table of Contents:
 :source-highlighter: rouge
-= Comparative Analysis: go-job v1.0.0 vs gocron, JobRunner, and Machinery
+= Comparative Analysis: go-job vs gocron, JobRunner, and Machinery
 
 NOTE: This document is produced by OpenAI Research.
 

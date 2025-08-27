@@ -1,6 +1,6 @@
 <div id="header">
 
-# Comparative Analysis: go-job v1.0.0 vs gocron, JobRunner, and Machinery
+# Comparative Analysis: go-job vs gocron, JobRunner, and Machinery
 
 </div>
 
@@ -283,7 +283,7 @@ In summary, use gocron or JobRunner for straightforward in-process scheduling on
 
 <div id="footer-text">
 
-Last updated 2025-08-27 12:04:44 +0900
+Last updated 2025-08-27 12:06:12 +0900
 
 </div>
 
