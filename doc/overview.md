@@ -480,11 +480,11 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="sect3">
 
-#### Executor with Special Arguments
+#### Executor with Auto-Injected
 
 <div class="paragraph">
 
-`go-job` supports special arguments to allow you to access job context, manager, worker, and instance information directly within your function.
+`go-job` supports special auto-injected arguments to allow you to access job context, manager, worker, and instance information directly within your function.
 
 </div>
 
@@ -1695,7 +1695,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-26 21:30:51 +0900
+Last updated 2025-08-27 22:50:21 +0900
 
 </div>
 
