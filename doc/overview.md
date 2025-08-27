@@ -480,7 +480,7 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 
 <div class="sect3">
 
-#### Executor with Auto-Injected
+#### Executor with Auto-Injected Arguments
 
 <div class="paragraph">
 
@@ -1695,7 +1695,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 23:30:25 +0900
+Last updated 2025-08-27 23:31:21 +0900
 
 </div>
 

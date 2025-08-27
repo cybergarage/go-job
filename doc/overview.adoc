@@ -198,7 +198,7 @@ mgr.ScheduleJob(job, WithArguments(jsonArg))
 `go-job` will automatically convert the provided arguments to the types expected by your job function.  
 This means you can use the format that is most convenient for your application, whether it's a struct, JSON, or other supported types.
 
-==== Executor with Auto-Injected
+==== Executor with Auto-Injected Arguments
 
 `go-job` supports special auto-injected arguments to allow you to access job context, manager, worker, and instance information directly within your function.
 
