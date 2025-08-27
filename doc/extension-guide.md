@@ -115,7 +115,7 @@ Executor functions can use special auto-injected to easily access job context, m
 
 <div class="paragraph">
 
-These special arguments allow your job logic to be more flexible and powerful.
+These auto-injected arguments are automatically supplied when omitted. They enable you to control job execution, handle cancellation and timeouts, and access useful job-related metadata and methods.
 
 </div>
 
@@ -433,7 +433,7 @@ func main() {
 
 <div id="footer-text">
 
-Last updated 2025-08-27 22:50:38 +0900
+Last updated 2025-08-27 23:19:12 +0900
 
 </div>
 

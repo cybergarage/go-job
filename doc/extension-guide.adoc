@@ -52,7 +52,7 @@ This makes it simple to control job execution, handle cancellation and timeout, 
 include::inc/special-arguments.csv[]
 |===
 
-These special arguments allow your job logic to be more flexible and powerful.
+These auto-injected arguments are automatically supplied when omitted. They enable you to control job execution, handle cancellation and timeouts, and access useful job-related metadata and methods.
 
 ==== Built-in System Jobs
 
