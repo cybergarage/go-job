@@ -146,7 +146,7 @@ func ManagerJobScheduleTest(t *testing.T, mgr job.Manager) {
 			args: []any{1, 2},
 		},
 		{
-			kind: "sum (manager+worker+instance-no-placeholders-first)",
+			kind: "sum (manager+worker+instance-no-placeholders-last)",
 			opts: []any{
 				job.WithExecutor(func(a, b int, mgr job.Manager, ji job.Instance, w job.Worker) int {
 					ji.Debugf("NumWorkers: %d", mgr.NumWorkers())
