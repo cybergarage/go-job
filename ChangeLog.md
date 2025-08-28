@@ -1,9 +1,18 @@
 # ChangeLog
 
-## 1.2.2 (2025-0X-XX)
+## 1.2.X (2025-0X-XX)
 ### 🛠 Enhancements
 - **Query**
   - Limit and offset support
+
+# ChangeLog
+
+## 1.2.2 (2025-08-28)
+### Features
+- **job**: Improved job executor to supplement missing special auto-injected arguments when omitted ([210e742](https://github.com/cybergarage/go-job/commit/210e742))
+- **schedule**: Added `Schedule::Jitter()` ([296ab80](https://github.com/cybergarage/go-job/commit/296ab80))
+- **plugin**: Improved `NewHistoryCleaner()` to allow setting a jitter function ([1ed01c7](https://github.com/cybergarage/go-job/commit/1ed01c7))
+- **plugin**: Improved `NewLogCleaner()` to allow setting a jitter function ([ae0187c](https://github.com/cybergarage/go-job/commit/ae0187c))
 
 ## 1.2.1 (2025-08-26)
 ### 🚀 Features
