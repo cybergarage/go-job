@@ -8,7 +8,7 @@
 # ChangeLog
 
 ## 1.2.2 (2025-08-28)
-### Features
+### 🚀 Features
 - **job**: Improved job executor to supplement missing special auto-injected arguments when omitted ([210e742](https://github.com/cybergarage/go-job/commit/210e742))
 - **schedule**: Added `Schedule::Jitter()` ([296ab80](https://github.com/cybergarage/go-job/commit/296ab80))
 - **plugin**: Improved `NewHistoryCleaner()` to allow setting a jitter function ([1ed01c7](https://github.com/cybergarage/go-job/commit/1ed01c7))
