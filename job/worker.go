@@ -141,14 +141,18 @@ func (w *worker) Run() error {
 					continue
 				}
 
-				w.processingInst = ji
-
 				w.jobCtx, w.jobCancel = context.WithCancel(context.Background())
 				timeout := ji.Policy().Timeout()
 				if 0 < timeout {
 					w.jobCtx, w.jobCancel = context.WithTimeout(w.jobCtx, timeout)
 				}
 
+				// Set internal options
+				if jiImpl, ok := ji.(*jobInstance); ok {
+					withContext(w.jobCtx)(jiImpl)
+				}
+
+				w.processingInst = ji
 				startedAt := time.Now()
 				mExecutedJobs.WithLabelValues(ji.Kind()).Inc()
 				res, err := ji.Process(w.jobCtx, w.jobCtx, w.manager, w, ji)

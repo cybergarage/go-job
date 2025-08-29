@@ -40,6 +40,8 @@ type Instance interface {
 	Kind() Kind
 	// UUID returns the unique identifier of the job instance.
 	UUID() uuid.UUID
+	// Context returns the context associated with this job instance, typically passed from the worker.
+	Context() context.Context
 	// CreatedAt returns the time when the job instance was created.
 	CreatedAt() time.Time
 	// ScheduledAt returns the time when the job instance was scheduled.
@@ -110,6 +112,7 @@ type jobInstance struct {
 	timedoutAt   time.Time
 	resultSet    ResultSet
 	resultError  error
+	ctx          context.Context
 }
 
 // InstanceOption defines a function that configures a job instance.
@@ -275,6 +278,13 @@ func WithState(state JobState) InstanceOption {
 	}
 }
 
+func withContext(ctx context.Context) InstanceOption {
+	return func(ji *jobInstance) error {
+		ji.ctx = ctx
+		return nil
+	}
+}
+
 // NewInstance creates a new JobInstance with a unique identifier and initial state.
 func NewInstance(opts ...any) (Instance, error) {
 	job, err := newJob()
@@ -305,6 +315,7 @@ func NewInstance(opts ...any) (Instance, error) {
 		timedoutAt:    time.Time{},
 		resultSet:     nil,
 		resultError:   nil,
+		ctx:           context.Background(),
 	}
 
 	for _, opt := range opts {
@@ -412,6 +423,11 @@ func (ji *jobInstance) Kind() Kind {
 // UUID returns the unique identifier of the job instance.
 func (ji *jobInstance) UUID() uuid.UUID {
 	return ji.uuid
+}
+
+// Context returns the context associated with this job instance, typically passed from the worker.
+func (ji *jobInstance) Context() context.Context {
+	return ji.ctx
 }
 
 // Arguments returns the arguments for the job instance.
