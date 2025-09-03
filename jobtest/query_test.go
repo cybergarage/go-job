@@ -62,7 +62,7 @@ func TestQuery(t *testing.T) {
 		},
 		{
 			opts: []job.QueryOption{
-				job.WithQueryUUID(uuid.New()),
+				job.WithQueryUUID(job.NewUUID()),
 				job.WithQueryKind("test"),
 				job.WithQueryState(job.JobCreated),
 				job.WithQueryLogLevel(job.LogInfo),

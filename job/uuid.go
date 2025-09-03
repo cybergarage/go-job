@@ -25,6 +25,10 @@ type UUID = uuid.UUID
 
 // NewUUID generates a new UUID for a job instance.
 func NewUUID() UUID {
+	tuuid, err := uuid.NewV7()
+	if err != nil {
+		return UUID(tuuid)
+	}
 	return UUID(uuid.New())
 }
 
