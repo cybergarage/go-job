@@ -7,6 +7,15 @@
 
 # ChangeLog
 
+## 1.2.3 (2025-09-08)
+### 🚀 Features
+- **Job Instance UUID Generation**
+  - Use UUIDv7 for job instance UUIDs when available; fallback to random UUID generation if not supported.
+    ([661fb3a](https://github.com/cybergarage/go-job/commit/661fb3a))
+- **Worker Context Handling**
+  - Added `Instance.Context()` interface to handle worker-passed context without auto-injected parameters.
+    ([cbc187d](https://github.com/cybergarage/go-job/commit/cbc187d))
+
 ## 1.2.2 (2025-08-28)
 ### 🚀 Features
 - **job**: Improved job executor to supplement missing special auto-injected arguments when omitted ([210e742](https://github.com/cybergarage/go-job/commit/210e742))
