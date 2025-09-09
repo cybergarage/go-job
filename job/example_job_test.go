@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package job_test
 
 import (
 	"fmt"
 	"math"
 	"strings"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func ExampleNewJob_simple() {
-	job, err := NewJob(
-		WithKind("no args and no return"),
-		WithDescription("A simple job that prints a message"),
-		WithExecutor(func() { fmt.Println("Hello, World!") }),
+	job, err := job.NewJob(
+		job.WithKind("no args and no return"),
+		job.WithDescription("A simple job that prints a message"),
+		job.WithExecutor(func() { fmt.Println("Hello, World!") }),
 	)
 	if err != nil {
 		fmt.Printf("Error creating job: %v\n", err)
@@ -37,11 +39,11 @@ func ExampleNewJob_simple() {
 }
 
 func ExampleNewJob_concat() {
-	job, err := NewJob(
-		WithKind("concat (two args and one return)"),
-		WithDescription("Concatenates two strings"),
-		WithExecutor(func(a, b string) string { return a + ", " + b }),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+	job, err := job.NewJob(
+		job.WithKind("concat (two args and one return)"),
+		job.WithDescription("Concatenates two strings"),
+		job.WithExecutor(func(a, b string) string { return a + ", " + b }),
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0])
 		}),
@@ -57,14 +59,14 @@ func ExampleNewJob_concat() {
 }
 
 func ExampleNewJob_split() {
-	job, err := NewJob(
-		WithKind("split (one arg and two return)"),
-		WithDescription("Splits a string into two parts"),
-		WithExecutor(func(s string) (string, string) {
+	job, err := job.NewJob(
+		job.WithKind("split (one arg and two return)"),
+		job.WithDescription("Splits a string into two parts"),
+		job.WithExecutor(func(s string) (string, string) {
 			parts := strings.Split(s, ",")
 			return parts[0], parts[1]
 		}),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0], res[1])
 		}),
@@ -80,11 +82,11 @@ func ExampleNewJob_split() {
 }
 
 func ExampleNewJob_abs() {
-	job, err := NewJob(
-		WithKind("abs (one arg and one return)"),
-		WithDescription("Returns the absolute value of an integer"),
-		WithExecutor(func(a int) int { return int(math.Abs(float64(a))) }),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+	job, err := job.NewJob(
+		job.WithKind("abs (one arg and one return)"),
+		job.WithDescription("Returns the absolute value of an integer"),
+		job.WithExecutor(func(a int) int { return int(math.Abs(float64(a))) }),
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0])
 		}),
@@ -100,11 +102,11 @@ func ExampleNewJob_abs() {
 }
 
 func ExampleNewJob_sum() {
-	job, err := NewJob(
-		WithKind("sum (two args and one return)"),
-		WithDescription("Returns the sum of two integers"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+	job, err := job.NewJob(
+		job.WithKind("sum (two args and one return)"),
+		job.WithDescription("Returns the sum of two integers"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0])
 		}),
@@ -124,11 +126,11 @@ func ExampleNewJob_struct() {
 		A int
 		B int
 	}
-	job, err := NewJob(
-		WithKind("sum (struct arg and one return)"),
-		WithDescription("Returns the sum of two integers from a struct"),
-		WithExecutor(func(opt SumOpt) int { return opt.A + opt.B }),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+	job, err := job.NewJob(
+		job.WithKind("sum (struct arg and one return)"),
+		job.WithDescription("Returns the sum of two integers from a struct"),
+		job.WithExecutor(func(opt SumOpt) int { return opt.A + opt.B }),
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0])
 		}),
@@ -149,15 +151,15 @@ func ExampleNewJob_mutatingStruct() {
 		B string
 		S string
 	}
-	job, err := NewJob(
-		WithKind("concat (one struct input and one struct output)"),
-		WithDescription("Concatenates two strings from a struct"),
-		WithExecutor(func(param *ConcatString) *ConcatString {
+	job, err := job.NewJob(
+		job.WithKind("concat (one struct input and one struct output)"),
+		job.WithDescription("Concatenates two strings from a struct"),
+		job.WithExecutor(func(param *ConcatString) *ConcatString {
 			// Store the concatenated string result in the input struct
 			param.S = param.A + " " + param.B
 			return param
 		}),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			// In this case, log the result to the go-job manager
 			ji.Infof("%v", res[0])
 		}),

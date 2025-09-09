@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package job_test
 
 import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func ExampleWithDescription() {
 	// Create a job with a specific description
-	job, _ := NewJob(
-		WithKind("description"),
-		WithExecutor(func() {}),
-		WithDescription("This job sums two numbers"),
+	job, _ := job.NewJob(
+		job.WithKind("description"),
+		job.WithExecutor(func() {}),
+		job.WithDescription("This job sums two numbers"),
 	)
 	fmt.Printf("%s\n", job.Description())
 	// Output: This job sums two numbers
@@ -33,9 +35,9 @@ func ExampleWithDescription() {
 
 func ExampleWithKind() {
 	// Create a job with a specific kind
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func() {}),
+	job, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func() {}),
 	)
 	fmt.Printf("%s\n", job.Kind())
 	// Output: sum
@@ -43,9 +45,9 @@ func ExampleWithKind() {
 
 func ExampleWithExecutor_hello() {
 	// Create a job with a specific executor
-	job, _ := NewJob(
-		WithKind("hello"),
-		WithExecutor(func() {
+	job, _ := job.NewJob(
+		job.WithKind("hello"),
+		job.WithExecutor(func() {
 			fmt.Println("Hello, world!")
 		}),
 	)
@@ -55,9 +57,9 @@ func ExampleWithExecutor_hello() {
 
 func ExampleWithExecutor_sum() {
 	// Create a job with a specific executor
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int {
+	job, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int {
 			return a + b
 		}),
 	)
@@ -67,9 +69,9 @@ func ExampleWithExecutor_sum() {
 
 func ExampleWithExecutor_concat() {
 	// Create a job with a specific executor
-	job, _ := NewJob(
-		WithKind("concat"),
-		WithExecutor(func(a string, b string) string {
+	job, _ := job.NewJob(
+		job.WithKind("concat"),
+		job.WithExecutor(func(a string, b string) string {
 			return a + ", " + b
 		}),
 	)
@@ -83,9 +85,9 @@ func ExampleWithExecutor_struct() {
 		B string
 		S string
 	}
-	job, _ := NewJob(
-		WithKind("struct"),
-		WithExecutor(func(param *ConcatString) *ConcatString {
+	job, _ := job.NewJob(
+		job.WithKind("struct"),
+		job.WithExecutor(func(param *ConcatString) *ConcatString {
 			param.S = param.A + ", " + param.B
 			return param
 		}),
@@ -93,15 +95,15 @@ func ExampleWithExecutor_struct() {
 	fmt.Printf("%T\n", job.Handler().Executor())
 
 	// Output:
-	// func(*job.ConcatString) *job.ConcatString
+	// func(*job_test.ConcatString) *job_test.ConcatString
 }
 
 func ExampleWithCompleteProcessor() {
 	// Create a job with a specific complete processor
-	job, _ := NewJob(
-		WithKind("complete"),
-		WithExecutor(func() {}),
-		WithCompleteProcessor(func(ji Instance, res []any) {
+	job, _ := job.NewJob(
+		job.WithKind("complete"),
+		job.WithExecutor(func() {}),
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			ji.Infof("Job completed with result: %v", res)
 		}),
 	)
@@ -111,10 +113,10 @@ func ExampleWithCompleteProcessor() {
 
 func ExampleWithTerminateProcessor() {
 	// Create a job with a specific terminate processor
-	job, _ := NewJob(
-		WithKind("terminate"),
-		WithExecutor(func() {}),
-		WithTerminateProcessor(func(ji Instance, err error) error {
+	job, _ := job.NewJob(
+		job.WithKind("terminate"),
+		job.WithExecutor(func() {}),
+		job.WithTerminateProcessor(func(ji job.Instance, err error) error {
 			if errors.Is(err, context.DeadlineExceeded) {
 				// Do not retry if the job was terminated due to a deadline being exceeded
 				ji.Infof("Job (%s) terminated due to deadline exceeded: %v", ji.Kind(), err)
@@ -130,10 +132,10 @@ func ExampleWithTerminateProcessor() {
 
 func ExampleWithStateChangeProcessor() {
 	// Create a job with a specific state change processor
-	job, _ := NewJob(
-		WithKind("state"),
-		WithExecutor(func() {}),
-		WithStateChangeProcessor(func(ji Instance, state JobState) {
+	job, _ := job.NewJob(
+		job.WithKind("state"),
+		job.WithExecutor(func() {}),
+		job.WithStateChangeProcessor(func(ji job.Instance, state job.JobState) {
 			ji.Infof("State changed to: %v", state)
 		}),
 	)

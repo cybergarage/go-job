@@ -12,26 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package job_test
 
 import (
 	"fmt"
 	"math/rand/v2"
 	"time"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func ExampleWithPriority() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 
 	// Create and register a job with a specific priority
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithPriority(0),
+	newJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithPriority(0),
 	)
-	mgr.RegisterJob(job)
-	fmt.Printf("Priority: %d\n", job.Policy().Priority())
+	mgr.RegisterJob(newJob)
+	fmt.Printf("Priority: %d\n", newJob.Policy().Priority())
 
 	// Start the job manager
 	mgr.Start()
@@ -42,7 +44,7 @@ func ExampleWithPriority() {
 	fmt.Printf("Priority: %d\n", ji.Priority())
 
 	// Schedule the registered job with an overridden priority
-	ji, _ = mgr.ScheduleRegisteredJob("sum", WithPriority(1))
+	ji, _ = mgr.ScheduleRegisteredJob("sum", job.WithPriority(1))
 	fmt.Printf("Priority: %d\n", ji.Priority())
 
 	// Output:
@@ -53,16 +55,16 @@ func ExampleWithPriority() {
 
 func ExampleWithMaxRetries() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 
 	// Create and register a job with a specific max retries
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithMaxRetries(3),
+	newJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithMaxRetries(3),
 	)
-	mgr.RegisterJob(job)
-	fmt.Printf("MaxRetries: %d\n", job.Policy().MaxRetries())
+	mgr.RegisterJob(newJob)
+	fmt.Printf("MaxRetries: %d\n", newJob.Policy().MaxRetries())
 
 	// Start the job manager
 	mgr.Start()
@@ -73,7 +75,7 @@ func ExampleWithMaxRetries() {
 	fmt.Printf("MaxRetries: %d\n", ji.MaxRetries())
 
 	// Schedule the registered job with an overridden max retries
-	ji, _ = mgr.ScheduleRegisteredJob("sum", WithMaxRetries(5))
+	ji, _ = mgr.ScheduleRegisteredJob("sum", job.WithMaxRetries(5))
 	fmt.Printf("MaxRetries: %d\n", ji.MaxRetries())
 
 	// Output:
@@ -84,16 +86,16 @@ func ExampleWithMaxRetries() {
 
 func ExampleWithTimeout() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 
 	// Create and register a job with a specific timeout
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithTimeout(5*time.Second),
+	newJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithTimeout(5*time.Second),
 	)
-	mgr.RegisterJob(job)
-	fmt.Printf("Timeout: %v\n", job.Policy().Timeout())
+	mgr.RegisterJob(newJob)
+	fmt.Printf("Timeout: %v\n", newJob.Policy().Timeout())
 
 	// Start the job manager
 	mgr.Start()
@@ -104,7 +106,7 @@ func ExampleWithTimeout() {
 	fmt.Printf("Timeout: %v\n", ji.Timeout())
 
 	// Schedule the registered job with an overridden timeout
-	ji, _ = mgr.ScheduleRegisteredJob("sum", WithTimeout(10*time.Second))
+	ji, _ = mgr.ScheduleRegisteredJob("sum", job.WithTimeout(10*time.Second))
 	fmt.Printf("Timeout: %v\n", ji.Timeout())
 
 	// Output:
@@ -115,10 +117,10 @@ func ExampleWithTimeout() {
 
 func ExampleWithBackoffStrategy() {
 	// Create and register a job with a specific backoff strategy
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithBackoffStrategy(func(ji Instance) time.Duration {
+	job, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithBackoffStrategy(func(ji job.Instance) time.Duration {
 			// Exponential backoff
 			return time.Duration(float64(ji.Attempts()) * float64(time.Second) * (0.8 + 0.4*rand.Float64()))
 		}))

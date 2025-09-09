@@ -12,30 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package job_test
 
 import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func ExampleManager_scheduleJob() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 	// Create a job with a custom executor
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
+	newJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
 	)
 	// Schedule the job with the manager
 	mgr.ScheduleJob(
-		job,
-		WithScheduleAt(time.Now()), // Immediate scheduling is the default, so this option is redundant
-		WithCompleteProcessor(func(inst Instance, res []any) {
+		newJob,
+		job.WithScheduleAt(time.Now()), // Immediate scheduling is the default, so this option is redundant
+		job.WithCompleteProcessor(func(inst job.Instance, res []any) {
 			fmt.Printf("Result: %v\n", res)
 		}),
-		WithArguments(1, 2),
+		job.WithArguments(1, 2),
 	)
 	// Start the job manager
 	mgr.Start()
@@ -54,22 +56,22 @@ func ExampleManager_scheduleJob() {
 
 func ExampleManager_scheduleRegisteredJob() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 	// Create a job with a custom executor
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
+	newJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
 	)
 	// Register the job with the manager
-	mgr.RegisterJob(job)
+	mgr.RegisterJob(newJob)
 	// Schedule the registered job
 	mgr.ScheduleRegisteredJob(
-		job.Kind(),
-		WithScheduleAt(time.Now()), // Immediate scheduling is the default, so this option is redundant
-		WithCompleteProcessor(func(inst Instance, res []any) {
+		newJob.Kind(),
+		job.WithScheduleAt(time.Now()), // Immediate scheduling is the default, so this option is redundant
+		job.WithCompleteProcessor(func(inst job.Instance, res []any) {
 			fmt.Printf("Result: %v\n", res)
 		}),
-		WithArguments(1, 2),
+		job.WithArguments(1, 2),
 	)
 	// Start the job manager
 	mgr.Start()
@@ -88,7 +90,7 @@ func ExampleManager_scheduleRegisteredJob() {
 
 func ExampleManager_resizeWorkers() {
 	// Create a manager with 1 worker (default)
-	mgr, _ := NewManager(WithNumWorkers(1))
+	mgr, _ := job.NewManager(job.WithNumWorkers(1))
 	mgr.Start()
 	defer mgr.Stop()
 
@@ -96,8 +98,8 @@ func ExampleManager_resizeWorkers() {
 	fmt.Println("Initial workers:", mgr.NumWorkers())
 
 	// Monitor queue size and scale accordingly
-	query := NewQuery(
-		WithQueryState(JobScheduled), // filter by scheduled state
+	query := job.NewQuery(
+		job.WithQueryState(job.JobScheduled), // filter by scheduled state
 	)
 	jobs, _ := mgr.LookupInstances(query)
 	queueSize := len(jobs)

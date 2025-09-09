@@ -12,27 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package job_test
 
 import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func Example() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 
 	// Register a job with a custom executor
-	sumJob, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithScheduleAt(time.Now()), // immediate scheduling is the default, so this option is redundant
-		WithCompleteProcessor(func(ji Instance, res []any) {
+	sumJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithScheduleAt(time.Now()), // immediate scheduling is the default, so this option is redundant
+		job.WithCompleteProcessor(func(ji job.Instance, res []any) {
 			ji.Infof("Result: %v", res)
 		}),
-		WithTerminateProcessor(func(ji Instance, err error) error {
+		job.WithTerminateProcessor(func(ji job.Instance, err error) error {
 			ji.Errorf("Error executing job: %v", err)
 			return err
 		}),
@@ -40,7 +42,7 @@ func Example() {
 	mgr.RegisterJob(sumJob)
 
 	// Schedule the registered job
-	ji, _ := mgr.ScheduleRegisteredJob("sum", WithArguments(1, 2))
+	ji, _ := mgr.ScheduleRegisteredJob("sum", job.WithArguments(1, 2))
 
 	// Start the job manager
 	mgr.Start()
@@ -51,8 +53,8 @@ func Example() {
 	mgr.Wait(ctx)
 
 	// Retrieve and print the job instance state history
-	query := NewQuery(
-		WithQueryInstance(ji), // filter by specific job instance
+	query := job.NewQuery(
+		job.WithQueryInstance(ji), // filter by specific job instance
 	)
 	history, _ := mgr.LookupInstanceHistory(query)
 	for _, record := range history {
@@ -60,8 +62,8 @@ func Example() {
 	}
 
 	// Retrieve and print the job instance logs
-	query = NewQuery(
-		WithQueryInstance(ji), // filter by specific job instance
+	query = job.NewQuery(
+		job.WithQueryInstance(ji), // filter by specific job instance
 	)
 	logs, _ := mgr.LookupInstanceLogs(query)
 	for _, log := range logs {

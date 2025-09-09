@@ -12,29 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package job_test
 
 import (
 	"fmt"
 	"time"
+
+	"github.com/cybergarage/go-job/job"
 )
 
 func ExampleWithJitter() {
 	// Create a job manager
-	mgr, _ := NewManager()
+	mgr, _ := job.NewManager()
 
 	// Create and register a job with a specific jitter
-	job, _ := NewJob(
-		WithKind("sum"),
-		WithExecutor(func(a, b int) int { return a + b }),
-		WithJitter(
+	newJob, _ := job.NewJob(
+		job.WithKind("sum"),
+		job.WithExecutor(func(a, b int) int { return a + b }),
+		job.WithJitter(
 			func() time.Duration {
 				return 100 * time.Millisecond
 			},
 		),
 	)
-	mgr.RegisterJob(job)
-	fmt.Printf("Jitter: %v\n", job.Schedule().Jitter()())
+	mgr.RegisterJob(newJob)
+	fmt.Printf("Jitter: %v\n", newJob.Schedule().Jitter()())
 
 	// Start the job manager
 	mgr.Start()
@@ -47,7 +49,7 @@ func ExampleWithJitter() {
 	// Schedule the registered job with an overridden jitter
 	ji, _ = mgr.ScheduleRegisteredJob(
 		"sum",
-		WithJitter(
+		job.WithJitter(
 			func() time.Duration {
 				return 200 * time.Millisecond
 			},
