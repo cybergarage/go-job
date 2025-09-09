@@ -5,7 +5,8 @@
 - **Query**
   - Limit and offset support
 
-# ChangeLog
+## 1.2.x (2025-XX-XX)
+- Update example test using job_test package
 
 ## 1.2.3 (2025-09-08)
 ### 🚀 Features
