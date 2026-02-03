@@ -3,7 +3,7 @@ module github.com/cybergarage/go-job
 go 1.25
 
 require (
-	github.com/cybergarage/go-logger v1.3.11
+	github.com/cybergarage/go-logger v1.3.12
 	github.com/cybergarage/go-safecast v1.3.4
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-memdb v1.3.5
