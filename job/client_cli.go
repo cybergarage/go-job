@@ -105,7 +105,7 @@ func (cli *cliClient) trimOutput(out []byte) string {
 
 // GetVersion retrieves the version of the job service.
 func (cli *cliClient) GetVersion() (string, error) {
-	var cmdArgs []string
+	cmdArgs := make([]string, 0, len(cli.args)+2)
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "get", "version")
 	out, err := cli.Execute(jobctl, cmdArgs...)
@@ -118,7 +118,7 @@ func (cli *cliClient) GetVersion() (string, error) {
 // ScheduleJob schedules a job with the specified kind, priority, and arguments.
 // The priority is lower for higher priority jobs, similar to Unix nice values.
 func (cli *cliClient) ScheduleJob(kind string, args ...any) (Instance, error) {
-	cmdArgs := []string{}
+	cmdArgs := make([]string, 0, len(cli.args)+2+len(args))
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "schedule", kind)
 	for _, arg := range args {
@@ -141,7 +141,7 @@ func (cli *cliClient) ScheduleJob(kind string, args ...any) (Instance, error) {
 
 // ListRegisteredJobs lists all registered jobs.
 func (cli *cliClient) ListRegisteredJobs() ([]Job, error) {
-	var cmdArgs []string
+	cmdArgs := make([]string, 0, len(cli.args)+2)
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "list", "jobs")
 	out, err := cli.Execute(jobctl, cmdArgs...)
@@ -165,7 +165,7 @@ func (cli *cliClient) ListRegisteredJobs() ([]Job, error) {
 
 // LookupInstances looks up job instances based on the provided query.
 func (cli *cliClient) LookupInstances(query Query) ([]Instance, error) {
-	var cmdArgs []string
+	cmdArgs := make([]string, 0, len(cli.args)+2)
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "list", "instances")
 	out, err := cli.Execute(jobctl, cmdArgs...)
@@ -189,7 +189,7 @@ func (cli *cliClient) LookupInstances(query Query) ([]Instance, error) {
 
 // CancelInstances cancels job instances based on the provided query.
 func (cli *cliClient) CancelInstances(query Query) ([]Instance, error) {
-	var cmdArgs []string
+	cmdArgs := make([]string, 0, len(cli.args)+2)
 	cmdArgs = append(cmdArgs, cli.args...)
 	cmdArgs = append(cmdArgs, "cancel", "instances")
 	out, err := cli.Execute(jobctl, cmdArgs...)

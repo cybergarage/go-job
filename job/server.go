@@ -188,8 +188,9 @@ func (server *server) ScheduleJob(ctx context.Context, req *v1.ScheduleJobReques
 		opts = append(opts, WithPriority(Priority(*priority)))
 	}
 	if req.GetArguments() != nil {
-		args := []any{}
-		for _, arg := range req.GetArguments() {
+		grpcArgs := req.GetArguments()
+		args := make([]any, 0, len(grpcArgs))
+		for _, arg := range grpcArgs {
 			args = append(args, arg)
 		}
 		if 0 < len(args) {

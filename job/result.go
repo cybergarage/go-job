@@ -16,6 +16,7 @@ package job
 
 import (
 	"fmt"
+	"strings"
 )
 
 // ResultSet represents the result of a job execution.
@@ -31,13 +32,14 @@ func (r ResultSet) String() string {
 	if len(r) == 0 {
 		return "[]"
 	}
-	result := "["
+	var result strings.Builder
+	result.WriteString("[")
 	for i, v := range r {
 		if i > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += fmt.Sprintf("%v", v)
+		result.WriteString(fmt.Sprintf("%v", v))
 	}
-	result += "]"
-	return result
+	result.WriteString("]")
+	return result.String()
 }

@@ -60,7 +60,7 @@ func (store *localStore) DequeueInstance(ctx context.Context, job Instance) erro
 func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, error) {
 	now := time.Now()
 	var nextJob Instance
-	store.jobs.Range(func(key, value interface{}) bool {
+	store.jobs.Range(func(key, value any) bool {
 		if job, ok := value.(Instance); ok {
 			scheduledAt := job.ScheduledAt()
 			if scheduledAt.Before(now) {
@@ -84,7 +84,7 @@ func (store *localStore) DequeueNextInstance(ctx context.Context) (Instance, err
 // ListInstances lists all job instances in the store.
 func (store *localStore) ListInstances(ctx context.Context) ([]Instance, error) {
 	jobs := make([]Instance, 0)
-	store.jobs.Range(func(key, value interface{}) bool {
+	store.jobs.Range(func(key, value any) bool {
 		if job, ok := value.(Instance); ok {
 			jobs = append(jobs, job)
 		}

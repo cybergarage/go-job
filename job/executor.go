@@ -59,10 +59,10 @@ func Execute(fn any, args []any, opts ...any) (ResultSet, error) {
 	}
 
 	spArgs := map[reflect.Type]any{
-		reflect.TypeOf((*context.Context)(nil)).Elem(): ctx,
-		reflect.TypeOf((*Manager)(nil)).Elem():         manager,
-		reflect.TypeOf((*Instance)(nil)).Elem():        instance,
-		reflect.TypeOf((*Worker)(nil)).Elem():          worker,
+		reflect.TypeFor[context.Context](): ctx,
+		reflect.TypeFor[Manager]():         manager,
+		reflect.TypeFor[Instance]():        instance,
+		reflect.TypeFor[Worker]():          worker,
 	}
 
 	// inner function for argument assignment

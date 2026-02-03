@@ -165,7 +165,7 @@ func TestServerAPIs(t *testing.T) {
 		job.NewServer,
 	}
 
-	servers := []job.Server{}
+	servers := make([]job.Server, 0, len(serversConstructors))
 	for _, constructor := range serversConstructors {
 		server, err := constructor()
 		if err != nil {

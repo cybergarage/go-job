@@ -16,6 +16,7 @@ package job
 
 import (
 	"fmt"
+	"maps"
 	"time"
 
 	"github.com/cybergarage/go-job/job/encoding"
@@ -76,9 +77,7 @@ func withStateTimestamp(ts time.Time) instanceStateOption {
 // withStateOption is a functional option to set additional options for the instance state.
 func withStateOption(opts map[string]any) func(*instanceState) {
 	return func(state *instanceState) {
-		for k, v := range opts {
-			state.opts[k] = v
-		}
+		maps.Copy(state.opts, opts)
 	}
 }
 

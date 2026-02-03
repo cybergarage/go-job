@@ -16,6 +16,7 @@ package jobtest
 
 import (
 	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/cybergarage/go-job/job/plugins/store/kv"
@@ -155,13 +156,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 						t.Fatalf("expected %d objects, got %d", i+1, len(retrievedObjs))
 					}
 					for _, obj := range retrievedObjs {
-						found := false
-						for _, expectedObj := range objs[:i+1] {
-							if obj.Equal(expectedObj) {
-								found = true
-								break
-							}
-						}
+						found := slices.ContainsFunc(objs[:i+1], obj.Equal)
 						if !found {
 							t.Errorf("unexpected object: %v", obj)
 						}
@@ -257,13 +252,7 @@ func StoreTest(t *testing.T, store kv.Store) {
 						t.Fatalf("expected %d objects, got %d", i+1, len(retrievedObjs))
 					}
 					for _, obj := range retrievedObjs {
-						found := false
-						for _, expectedObj := range objs[:i+1] {
-							if obj.Equal(expectedObj) {
-								found = true
-								break
-							}
-						}
+						found := slices.ContainsFunc(objs[:i+1], obj.Equal)
 						if !found {
 							t.Errorf("unexpected object: %v", obj)
 						}

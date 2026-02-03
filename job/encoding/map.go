@@ -17,6 +17,7 @@ package encoding
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 )
 
 // MapFrom converts any struct to map[string]any using JSON marshaling/unmarshaling.
@@ -48,12 +49,8 @@ func MapFromJSON(jsonStr string) (map[string]any, error) {
 // MergeMaps merges two maps into one, with values from m2 overwriting those in m1.
 func MergeMaps(m1, m2 map[string]any) map[string]any {
 	m := make(map[string]any)
-	for k, v := range m1 {
-		m[k] = v
-	}
-	for k, v := range m2 {
-		m[k] = v
-	}
+	maps.Copy(m, m1)
+	maps.Copy(m, m2)
 	return m
 }
 

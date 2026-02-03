@@ -37,7 +37,7 @@ func newInstancesFromHistory(history InstanceHistory) ([]Instance, error) {
 		uuid := state.UUID()
 		jiOpts, ok := jiOptsMap[uuid]
 		if !ok {
-			jiOpts = make([]any, 0)
+			jiOpts = make([]any, 0, 2)
 			jiOpts = append(jiOpts, WithUUID(state.UUID()))
 			jiOpts = append(jiOpts, WithKind(state.Kind()))
 		}

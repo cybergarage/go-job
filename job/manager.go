@@ -175,10 +175,11 @@ func (mgr *manager) ScheduleJob(job Job, opts ...any) (Instance, error) {
 		}
 	}
 
-	jobOpts := []any{
+	jobOpts := make([]any, 0, 2+len(opts))
+	jobOpts = append(jobOpts,
 		WithJob(job),
 		WithInstanceHistory(mgr.repository),
-	}
+	)
 	jobOpts = append(jobOpts, opts...)
 	ji, err := NewInstance(jobOpts...)
 	if err != nil {
