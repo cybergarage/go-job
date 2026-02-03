@@ -51,7 +51,7 @@ func GetRootCommand() *cobra.Command {
 }
 
 func Execute() {
-	log.SetSharedLogger(log.NewStdoutLogger(log.LevelInfo))
+	log.SetDefault(log.NewStdoutLogger(log.LevelInfo))
 
 	server, err := job.NewServer()
 	if err != nil {
