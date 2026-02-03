@@ -32,7 +32,7 @@ type grpcClient struct {
 	conn *grpc.ClientConn
 }
 
-// NewClient returns a new gRPC client.
+// NewGrpcClient returns a new gRPC client.
 func NewGrpcClient() Client {
 	client := &grpcClient{
 		host: "",

@@ -44,7 +44,7 @@ type WorkerGroup interface {
 // WorkerGroupOption defines a function that configures a worker group.
 type WorkerGroupOption func(*workerGroup)
 
-// WithWorkerGroupNumber sets the number of workers in the group.
+// WithNumWorkers sets the number of workers in the group.
 func WithNumWorkers(number int) WorkerGroupOption {
 	return func(g *workerGroup) {
 		g.workers = make([]Worker, number)

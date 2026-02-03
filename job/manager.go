@@ -96,7 +96,7 @@ type manager struct {
 // ManagerOption is a function that configures a job manager.
 type ManagerOption func(*manager)
 
-// WithManagerQueue sets the queue for the job manager.
+// WithStore sets the store for the job manager.
 func WithStore(store Store) ManagerOption {
 	return func(m *manager) {
 		m.store = store

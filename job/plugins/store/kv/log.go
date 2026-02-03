@@ -41,7 +41,7 @@ func NewObjectFromLog(log job.Log, keySuffixes ...string) (Object, error) {
 	}, nil
 }
 
-// NewLogFromMap creates a new log entry from a map representation.
+// NewLogFromBytes creates a new log entry from a JSON-encoded byte slice.
 func NewLogFromBytes(b []byte) (job.Log, error) {
 	m, err := encoding.MapFromJSON(string(b))
 	if err != nil {

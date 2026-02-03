@@ -70,7 +70,7 @@ func WithCrontabSpec(spec string) ScheduleOption {
 	}
 }
 
-// WithSchedule sets the cron.Schedule for the job schedule.
+// WithScheduleAt sets the scheduled time for the job schedule.
 func WithScheduleAt(t time.Time) ScheduleOption {
 	return func(js *schedule) error {
 		js.scheduleAt = t
@@ -78,7 +78,7 @@ func WithScheduleAt(t time.Time) ScheduleOption {
 	}
 }
 
-// WithScheduleNow sets the job schedule to the current time.
+// WithScheduleAfter sets the job schedule time to now plus the given duration.
 func WithScheduleAfter(d time.Duration) ScheduleOption {
 	return func(js *schedule) error {
 		return WithScheduleAt(time.Now().Add(d))(js)

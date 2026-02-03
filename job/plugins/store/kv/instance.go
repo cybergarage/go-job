@@ -21,7 +21,7 @@ import (
 	"github.com/cybergarage/go-job/job/encoding"
 )
 
-// NewInstanceKeyFromUUID creates a new key from a UUID string.
+// NewInstanceKeyFrom creates a new key for a job instance.
 func NewInstanceKeyFrom(ji job.Instance, suffixes ...string) Key {
 	return newKeyFrom(instancePrefix, suffixes...)
 }
